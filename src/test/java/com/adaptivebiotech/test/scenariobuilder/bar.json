@@ -1,0 +1,50 @@
+{
+	"techTransfer": {
+		"workspace": "Adaptive-Testing",
+		"flowcellId": "XTESTSCENARIOX",
+		"specimens": [
+			{
+				"name": "magna-test-63530763-ca97-47bc-8281-4bed87de29a7",
+				"externalSubjectId": "magna-test-63530763-ca97-47bc-8281-4bed87de29a7",
+				"sampleType": "Blood",
+				"sampleSource": "BCells",
+				"samples": [
+					{
+						"name": "1-magna-test-63530763-ca97-47bc-8281-4bed87de29a7",
+						"externalId": "1-magna-test-63530763-ca97-47bc-8281-4bed87de29a7",
+						"test": "RUOID",
+						"tsvPath": "s3n://cora-data-test/orca/96e0e401-a1d7-47dc-b917-ba3e3187cb5e/HWMMCBGX2_0_Genentech-Wilderbeek_6600579760-04.adap.txt.results.tsv"
+					},
+					{
+						"name": "2-magna-test-63530763-ca97-47bc-8281-4bed87de29a7",
+						"externalId": "2-magna-test-63530763-ca97-47bc-8281-4bed87de29a7",
+						"test": "RUOMRD",
+						"tsvPath": "s3n://cora-data-test/orca/96e0e401-a1d7-47dc-b917-ba3e3187cb5e/JandJ_highSharing.tsv"
+					}
+				],
+				"collectionDate": 1527551700347
+			}
+		]
+	},
+	"project": {
+		"id": "6fa83ef4-196c-4651-8085-f1222970a049",
+		"key": "6fa83ef4-196c-4651-8085-f1222970a049",
+		"name": "Adaptive-Testing",
+		"stage": "Active",
+		"recordType": "Pharma Project",
+		"transitionedToV2": false,
+		"isIuo": false,
+		"isFda": false,
+		"account": {
+			"id": "32940dc2-40a0-4662-ae9b-2e5b742d8dea",
+			"key": "32940dc2-40a0-4662-ae9b-2e5b742d8dea",
+			"name": "Adaptive-Testing"
+		},
+		"accountId": "32940dc2-40a0-4662-ae9b-2e5b742d8dea"
+	},
+	"fastForwardStatus": {
+		"stageName": "SecondaryAnalysis",
+		"stageStatus": "Ready",
+		"actor": "selenium test"
+	}
+}
