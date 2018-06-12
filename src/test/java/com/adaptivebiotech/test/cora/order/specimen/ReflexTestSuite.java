@@ -27,7 +27,7 @@ import com.adaptivebiotech.ui.cora.workflow.History;
  * - it must pass LIMS extraction point
  * - the old test can't be active
  */
-@Test (enabled = false, groups = { "cora" })
+@Test (enabled = false, groups = { "regression" })
 public class ReflexTestSuite extends OrderTestBase {
 
     @BeforeMethod

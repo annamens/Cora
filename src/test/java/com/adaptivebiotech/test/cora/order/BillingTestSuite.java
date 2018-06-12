@@ -26,7 +26,7 @@ import com.adaptivebiotech.ui.cora.order.Specimen;
 import com.adaptivebiotech.ui.cora.shipment.Accession;
 import com.adaptivebiotech.ui.cora.shipment.Shipment;
 
-@Test (groups = { "cora" })
+@Test (groups = { "regression" })
 public class BillingTestSuite extends OrderTestBase {
 
     private Diagnostic diagnostic;

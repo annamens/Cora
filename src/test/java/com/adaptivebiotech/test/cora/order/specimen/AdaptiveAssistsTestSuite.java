@@ -36,7 +36,7 @@ import com.adaptivebiotech.ui.cora.shipment.Shipment;
 import com.adaptivebiotech.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.utils.PageHelper.SpecimenType;
 
-@Test (groups = { "cora" })
+@Test (groups = { "regression" })
 public class AdaptiveAssistsTestSuite extends OrderTestBase {
 
     private Specimen specimen;
