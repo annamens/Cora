@@ -1,6 +1,8 @@
 package com.adaptivebiotech.test.cora.order;
 
 import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Active;
+import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Cancelled;
+import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Completed;
 import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.utils.TestHelper.randomWords;
 import static org.testng.Assert.assertEquals;
@@ -24,17 +26,20 @@ public class TransferTrfTestSuite extends OrderTestBase {
 
     public void pendingOrder () {
         // search for pending orders
-        Order expected = list.getAllPendingOrders ().getOriginals ().list.get (0);
+        list.isCorrectPage ();
+        Order expected = list.getAllDiagnosticOrders (Pending).getOriginals ().list.get (0);
         list.doOrderSearch (expected.order_number);
         String postfix = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
         list.clickOrder (expected.order_number);
 
         // test: transfer a pending TRF order
         diagnostic.isCorrectPage ();
-        diagnostic.enterPatientNotes (randomWords (30));
-        diagnostic.enterOrderNotes (randomWords (25));
-        diagnostic.clickSave ();
         expected = diagnostic.parseOrder (Pending);
+        expected.patient.notes = randomWords (30);
+        expected.notes = randomWords (25);
+
+        diagnostic.enterPatientNotes (expected.patient.notes);
+        diagnostic.enterOrderNotes (expected.notes);
         diagnostic.transferTrf ();
         diagnostic.isCorrectPage ();
 
@@ -46,6 +51,13 @@ public class TransferTrfTestSuite extends OrderTestBase {
 
         // cleanup
         diagnostic.clickCancelOrder ();
+
+        // trying "See original" link
+        diagnostic.clickSeeOriginal ();
+        assertEquals (diagnostic.getOrderNum (Active), expected.order_number);
+        assertEquals (diagnostic.getOrderName (Active), expected.name);
+
+        // cleanup
         list.searchAndClickOrder (expected.order_number);
         diagnostic.isCorrectPage ();
         diagnostic.clickCancelOrder ();
@@ -53,17 +65,21 @@ public class TransferTrfTestSuite extends OrderTestBase {
 
     public void activeOrder () {
         // search for active orders
-        Order expected = list.getAllActiveOrders ().getOriginals ().list.get (0);
+        list.isCorrectPage ();
+        Order expected = list.getAllDiagnosticOrders (Active).getOriginals ().list.get (0);
         list.doOrderSearch (expected.order_number);
         String postfix = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
         list.clickOrder (expected.order_number);
 
         // test: transfer a active TRF order
-        diagnostic.isActiveOrderStatusPage ();
+        diagnostic.isOrderStatusPage ();
         diagnostic.clickOrderDetails ();
-        diagnostic.editPatientNotes (randomWords (30));
-        diagnostic.editOrderNotes (randomWords (25));
         expected = diagnostic.parseOrder (Active);
+        expected.patient.notes = randomWords (30);
+        expected.notes = randomWords (25);
+
+        diagnostic.editPatientNotes (expected.patient.notes);
+        diagnostic.editOrderNotes (expected.notes);
         diagnostic.transferTrf ();
         diagnostic.isCorrectPage ();
 
@@ -75,11 +91,87 @@ public class TransferTrfTestSuite extends OrderTestBase {
 
         // cleanup
         diagnostic.clickCancelOrder ();
+
+        // trying "See original" link
+        diagnostic.clickSeeOriginal ();
+        assertEquals (diagnostic.getOrderNum (Active), expected.order_number);
+        assertEquals (diagnostic.getOrderName (Active), expected.name);
+    }
+
+    public void cancelledOrder () {
+        // search for cancelled orders
+        list.isCorrectPage ();
+        Order expected = list.getAllDiagnosticOrders (Cancelled).getOriginals ().list.get (0);
+        list.doOrderSearch (expected.order_number);
+        String postfix = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
+        list.clickOrder (expected.order_number);
+
+        // test: transfer a pending TRF order
+        diagnostic.isOrderStatusPage ();
+        diagnostic.clickOrderDetails ();
+        expected = diagnostic.parseOrder (Cancelled);
+        expected.patient.notes = randomWords (30);
+        expected.notes = randomWords (25);
+
+        diagnostic.editPatientNotes (expected.patient.notes);
+        diagnostic.editOrderNotes (expected.notes);
+        diagnostic.transferTrf ();
+        diagnostic.isCorrectPage ();
+
+        // test: verify the newly cloned order
+        Order actual = diagnostic.parseOrder (Pending);
+        assertEquals (actual.order_number, String.join ("-", expected.order_number, postfix));
+        assertEquals (actual.name, String.join ("-", expected.name, postfix));
+        verifyTrfCopied (actual, expected);
+
+        // cleanup
+        diagnostic.clickCancelOrder ();
+
+        // trying "See original" link
+        diagnostic.clickSeeOriginal ();
+        assertEquals (diagnostic.getOrderNum (Cancelled), expected.order_number);
+        assertEquals (diagnostic.getOrderName (Cancelled), expected.name);
+    }
+
+    public void completedOrder () {
+        // search for completed orders
+        list.isCorrectPage ();
+        Order expected = list.getAllDiagnosticOrders (Completed).getOriginals ().list.get (0);
+        list.doOrderSearch (expected.order_number);
+        String postfix = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
+        list.clickOrder (expected.order_number);
+
+        // test: transfer a pending TRF order
+        diagnostic.isOrderStatusPage ();
+        diagnostic.clickOrderDetails ();
+        expected = diagnostic.parseOrder (Completed);
+        expected.patient.notes = randomWords (30);
+        expected.notes = randomWords (25);
+
+        diagnostic.editPatientNotes (expected.patient.notes);
+        diagnostic.editOrderNotes (expected.notes);
+        diagnostic.transferTrf ();
+        diagnostic.isCorrectPage ();
+
+        // test: verify the newly cloned order
+        Order actual = diagnostic.parseOrder (Pending);
+        assertEquals (actual.order_number, String.join ("-", expected.order_number, postfix));
+        actual.name = expected.name;
+        verifyTrfCopied (actual, expected);
+
+        // cleanup
+        diagnostic.clickCancelOrder ();
+
+        // trying "See original" link
+        diagnostic.clickSeeOriginal ();
+        assertEquals (diagnostic.getOrderNum (Completed), expected.order_number);
+        assertEquals (diagnostic.getOrderName (Completed), expected.name);
     }
 
     public void doubleTransfers () {
         // search for pending orders
-        Order expected = list.getAllPendingOrders ().getOriginals ().list.get (0);
+        list.isCorrectPage ();
+        Order expected = list.getAllDiagnosticOrders (Pending).getOriginals ().list.get (0);
         list.doOrderSearch (expected.order_number);
         String postfix1 = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
         list.clickOrder (expected.order_number);
@@ -91,31 +183,44 @@ public class TransferTrfTestSuite extends OrderTestBase {
         diagnostic.isCorrectPage ();
 
         // test: first cloned order
-        diagnostic.enterPatientNotes (randomWords (30));
-        diagnostic.enterOrderNotes (randomWords (25));
-        diagnostic.clickSave ();
         Order actual1 = diagnostic.parseOrder (Pending);
+        actual1.patient.notes = randomWords (30);
+        actual1.notes = randomWords (25);
         assertEquals (actual1.order_number, String.join ("-", expected.order_number, postfix1));
         assertEquals (actual1.name, String.join ("-", expected.name, postfix1));
+        diagnostic.enterPatientNotes (actual1.patient.notes);
+        diagnostic.enterOrderNotes (actual1.notes);
         diagnostic.transferTrf ();
         diagnostic.isCorrectPage ();
 
         // test: second cloned order
-        actual1.order_number = actual1.order_number.replace ("-" + postfix1, "");
-        actual1.name = actual1.name.replace ("-" + postfix1, "");
-
         String postfix2 = String.valueOf ((char) (postfix1.charAt (0) + 1));
         Order actual2 = diagnostic.parseOrder (Pending);
         assertEquals (actual2.order_number, String.join ("-", expected.order_number, postfix2));
         assertEquals (actual2.name, String.join ("-", expected.name, postfix2));
+        actual1.order_number = expected.order_number;
+        actual1.name = expected.name;
         verifyTrfCopied (actual2, actual1);
 
         // cleanup
         diagnostic.clickCancelOrder ();
-        list.searchAndClickOrder (String.join ("-", actual1.order_number, postfix1));
+
+        // go to the parent order
+        diagnostic.clickSeeOriginal ();
+        assertEquals (diagnostic.getOrderNum (Active), String.join ("-", expected.order_number, postfix1));
+        assertEquals (diagnostic.getOrderName (Active), String.join ("-", expected.name, postfix1));
+
+        // cleanup
+        list.searchAndClickOrder (String.join ("-", expected.order_number, postfix1));
         diagnostic.isCorrectPage ();
         diagnostic.clickCancelOrder ();
 
+        // one more time, go to the parent order
+        diagnostic.clickSeeOriginal ();
+        assertEquals (diagnostic.getOrderNum (Active), expected.order_number);
+        assertEquals (diagnostic.getOrderName (Active), expected.name);
+
+        // cleanup
         list.searchAndClickOrder (expected.order_number);
         diagnostic.isCorrectPage ();
         diagnostic.clickCancelOrder ();

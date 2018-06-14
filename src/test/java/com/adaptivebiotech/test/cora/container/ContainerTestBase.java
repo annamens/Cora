@@ -10,13 +10,12 @@ import static com.adaptivebiotech.utils.TestHelper.freezerAB018055;
 import static com.adaptivebiotech.utils.TestHelper.freezerAB018078;
 import static com.adaptivebiotech.utils.TestHelper.freezerAB018082;
 import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
+import static com.adaptivebiotech.utils.TestHelper.mapper;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.fail;
 import java.util.stream.IntStream;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
 import com.adaptivebiotech.dto.ContainerHistory;
 import com.adaptivebiotech.dto.Containers;
 import com.adaptivebiotech.dto.Containers.Container;
@@ -26,7 +25,6 @@ import com.adaptivebiotech.utils.PageHelper.ContainerType;
 
 public class ContainerTestBase extends CoraBaseBrowser {
 
-    private final Header[] headers          = new Header[] { new BasicHeader ("X-Api-UserName", "svc_test_user") };
     protected Container    freezerDestroyed = freezerDestroyed ();
     protected Container    freezerAB018055  = freezerAB018055 ();
     protected Container    freezerAB018078  = freezerAB018078 ();

@@ -4,30 +4,34 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestPassword;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.BaseEnvironment.initialization;
+import static com.adaptivebiotech.test.utils.HttpClientHelper.body;
 import static com.adaptivebiotech.test.utils.HttpClientHelper.formPost;
+import static com.adaptivebiotech.test.utils.HttpClientHelper.get;
+import static com.adaptivebiotech.test.utils.HttpClientHelper.post;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.Logging.info;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.adaptivebiotech.utils.TestHelper.mapper;
 import static org.testng.Assert.fail;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
+import com.adaptivebiotech.dto.AssayResponse;
+import com.adaptivebiotech.dto.Diagnostic;
+import com.adaptivebiotech.dto.HttpResponse;
 import com.adaptivebiotech.test.utils.BaseBrowser;
 import com.adaptivebiotech.ui.cora.CoraPage;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CoraBaseBrowser extends BaseBrowser {
 
-    protected static ObjectMapper mapper = new ObjectMapper ();
+    protected final Header[] headers = new Header[] { new BasicHeader ("X-Api-UserName", "svc_test_user") };
 
     static {
         try {
             initialization ();
-            mapper.setSerializationInclusion (NON_NULL);
-            mapper.configure (FAIL_ON_UNKNOWN_PROPERTIES, false);
         } catch (Exception e) {
             error (String.valueOf (e), e);
             fail (String.valueOf (e));
@@ -51,5 +55,30 @@ public class CoraBaseBrowser extends BaseBrowser {
         forms.put ("userName", coraTestUser);
         forms.put ("password", coraTestPassword);
         formPost (coraTestUrl + "/cora/login", forms);
+    }
+
+    protected HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
+        try {
+            String json = mapper.writeValueAsString (diagnostic);
+            info ("payload=" + json);
+
+            String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
+            return mapper.readValue (post (url, body (json), headers), HttpResponse.class);
+        } catch (Exception e) {
+            error (String.valueOf (e), e);
+            fail (String.valueOf (e));
+            return null;
+        }
+    }
+
+    protected AssayResponse getTests () {
+        try {
+            String url = coraTestUrl + "/cora/api/v1/tests?categoryId=63780203-caeb-483d-930c-8392afb5d927";
+            return mapper.readValue (get (url), AssayResponse.class);
+        } catch (Exception e) {
+            error (String.valueOf (e), e);
+            fail (String.valueOf (e));
+            return null;
+        }
     }
 }

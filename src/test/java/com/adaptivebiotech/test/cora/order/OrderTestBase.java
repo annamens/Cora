@@ -2,6 +2,7 @@ package com.adaptivebiotech.test.cora.order;
 
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.utils.PageHelper.formatDt1;
+import static com.adaptivebiotech.utils.TestHelper.mapper;
 import static com.adaptivebiotech.utils.TestHelper.patientMedicare;
 import static com.adaptivebiotech.utils.TestHelper.physician1;
 import static com.adaptivebiotech.utils.TestHelper.physician2;
@@ -14,11 +15,9 @@ import com.adaptivebiotech.dto.Orders.Order;
 import com.adaptivebiotech.dto.Patient;
 import com.adaptivebiotech.dto.Physician;
 import com.adaptivebiotech.test.cora.CoraBaseBrowser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class OrderTestBase extends CoraBaseBrowser {
 
-    private ObjectMapper   mapper          = new ObjectMapper ();
     protected Physician    physician1      = physician1 ();
     protected Physician    physicianTRF    = physician2 ();
     protected Patient      patientMedicare = patientMedicare ();
@@ -53,7 +52,7 @@ public class OrderTestBase extends CoraBaseBrowser {
             assertNull (actual.specimenNumber);
             assertNull (actual.specimenType);
             assertNull (actual.collectionDate);
-            assertEquals (actual.reconciliationDate, "");
+            assertNull (actual.reconciliationDate);
             assertEquals (actual.expected_test_type, expected.expected_test_type);
             assertEquals (actual.tests.size (), 0);
             assertEquals (actual.properties.BillingType, expected.properties.BillingType);

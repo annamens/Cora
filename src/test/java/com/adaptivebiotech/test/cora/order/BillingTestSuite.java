@@ -44,7 +44,6 @@ public class BillingTestSuite extends OrderTestBase {
 
     public void insurance () {
         Patient patient = newInsurancePatient ();
-        patient.address = null; // not required for cora
 
         billing.createNewPatient (patient);
         billing.enterInsuranceInfo (patient);
@@ -65,7 +64,6 @@ public class BillingTestSuite extends OrderTestBase {
      */
     public void medicare () {
         Patient patient = newMedicarePatient ();
-        patient.address = null; // not required for cora
 
         billing.createNewPatient (patient);
         billing.enterMedicareInfo (patient);

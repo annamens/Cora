@@ -4,11 +4,14 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraConfig;
 import static com.adaptivebiotech.test.BaseEnvironment.env;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.utils.PageHelper.formatDt1;
+import static com.adaptivebiotech.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.utils.PageHelper.ChargeType.CommercialInsurance;
 import static com.adaptivebiotech.utils.PageHelper.ChargeType.Medicare;
 import static com.adaptivebiotech.utils.PageHelper.PatientRelationship.Child;
 import static com.adaptivebiotech.utils.PageHelper.PatientRelationship.Spouse;
 import static com.adaptivebiotech.utils.PageHelper.PatientStatus.Inpatient;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static java.util.Calendar.DATE;
 import static java.util.UUID.randomUUID;
 import static org.testng.Assert.fail;
@@ -27,9 +30,19 @@ import com.adaptivebiotech.dto.Patient;
 import com.adaptivebiotech.dto.Patient.Address;
 import com.adaptivebiotech.dto.Physician;
 import com.adaptivebiotech.test.BaseEnvironment.envs;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thedeanda.lorem.LoremIpsum;
 
 public class TestHelper {
+
+    public static ObjectMapper mapper = setMapper ();
+
+    private static ObjectMapper setMapper () {
+        ObjectMapper mapper = new ObjectMapper ();
+        mapper.setSerializationInclusion (NON_NULL);
+        mapper.configure (FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
+    }
 
     public static Container freezerDestroyed () {
         Container container = new Container ();
@@ -118,6 +131,15 @@ public class TestHelper {
         return patient;
     }
 
+    // scenario builder takes only client billingType
+    public static Patient newScenarioBuilderPatient () {
+        Patient patient = newPatient ();
+        patient.dateOfBirth = "1999-01-01";
+        patient.billingType = Client;
+        return patient;
+    }
+
+    // address is not required for cora
     public static Patient newInsurancePatient () {
         Patient patient = newPatient ();
         patient.billingType = CommercialInsurance;
@@ -126,17 +148,16 @@ public class TestHelper {
         patient.insurance1.billingInstitution = null;
         patient.insurance1.dischargeDate = null;
         patient.insurance2 = insurance2 ();
-        patient.address = address ();
         return patient;
     }
 
+    // address is not required for cora
     public static Patient newMedicarePatient () {
         Patient patient = newPatient ();
         patient.billingType = Medicare;
         patient.insurance1 = insurance1 ();
         patient.insurance1.groupNumber = null;
         patient.insurance2 = insurance2 ();
-        patient.address = address ();
         return patient;
     }
 

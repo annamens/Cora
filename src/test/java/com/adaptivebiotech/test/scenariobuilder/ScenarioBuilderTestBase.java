@@ -12,13 +12,13 @@ import static com.adaptivebiotech.utils.PageHelper.formatDt2;
 import static com.adaptivebiotech.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.utils.PageHelper.OrderCategory.Diagnostic;
 import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Active;
-import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.utils.PageHelper.TestSkus.RUOID;
 import static com.adaptivebiotech.utils.PageHelper.TestSkus.RUOMRD;
 import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
+import static com.adaptivebiotech.utils.TestHelper.mapper;
 import static com.adaptivebiotech.utils.TestHelper.physician1;
 import static com.adaptivebiotech.utils.TestHelper.randomWords;
 import static com.adaptivebiotech.utils.TestHelper.setDate;
@@ -38,9 +38,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
-import com.adaptivebiotech.dto.AssayResponse;
 import com.adaptivebiotech.dto.Containers.Container;
 import com.adaptivebiotech.dto.Diagnostic;
 import com.adaptivebiotech.dto.Diagnostic.Account;
@@ -69,10 +66,9 @@ import com.adaptivebiotech.utils.PageHelper.StageStatus;
 
 public class ScenarioBuilderTestBase extends CoraBaseBrowser {
 
-    private final Header[] headers          = new Header[] { new BasicHeader ("X-Api-UserName", "svc_test_user") };
-    private final String   accountId        = "4a8d76af-2273-4d7f-8853-ba80467b570f";
-    private Container      freezerDestroyed = freezerDestroyed ();
-    protected Physician    physician1       = physician1 ();
+    private final String accountId        = "4a8d76af-2273-4d7f-8853-ba80467b570f";
+    private Container    freezerDestroyed = freezerDestroyed ();
+    protected Physician  physician1       = physician1 ();
 
     private int[] dateToIntArr (Calendar target) {
         return new int[] { target.get (YEAR), target.get (MONTH) + 1, target.get (DATE), target.get (HOUR), target.get (MINUTE), target.get (SECOND), target.get (MILLISECOND) };
@@ -111,7 +107,6 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
     protected Order order (OrderProperties properties, OrderTest test) {
         Order order = new Order ();
         order.name = "Selenium Test Order";
-        order.status = Pending;
         order.properties = properties;
         order.tests.add (test);
         return order;
@@ -168,31 +163,6 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
         Research research = new Research ();
         research.techTransfer = techTransfer;
         return research;
-    }
-
-    protected HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
-        try {
-            String json = mapper.writeValueAsString (diagnostic);
-            info ("payload=" + json);
-
-            String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
-            return mapper.readValue (post (url, body (json), headers), HttpResponse.class);
-        } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
-        }
-    }
-
-    protected AssayResponse getTests () {
-        try {
-            String url = coraTestUrl + "/cora/api/v1/tests?categoryId=63780203-caeb-483d-930c-8392afb5d927";
-            return mapper.readValue (get (url), AssayResponse.class);
-        } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
-        }
     }
 
     protected Specimen getSpecimen (String specimenId) {
