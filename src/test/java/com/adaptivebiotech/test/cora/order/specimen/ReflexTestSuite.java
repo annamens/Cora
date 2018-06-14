@@ -1,13 +1,13 @@
 package com.adaptivebiotech.test.cora.order.specimen;
 
-import static com.adaptivebiotech.utils.PageHelper.Anticoagulant.EDTA;
-import static com.adaptivebiotech.utils.PageHelper.Assay.Clonality_BCell_2;
-import static com.adaptivebiotech.utils.PageHelper.ChargeType.Client;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.utils.PageHelper.DeliveryType.CustomerShipment;
-import static com.adaptivebiotech.utils.PageHelper.DeliveryType.Reflex;
-import static com.adaptivebiotech.utils.PageHelper.ShippingCondition.Ambient;
-import static com.adaptivebiotech.utils.PageHelper.SpecimenType.Blood;
+import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
+import static com.adaptivebiotech.test.utils.PageHelper.Assay.Clonality_BCell_2;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
+import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
+import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.Reflex;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.utils.TestHelper.newPatient;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

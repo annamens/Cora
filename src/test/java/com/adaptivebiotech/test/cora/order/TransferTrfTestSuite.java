@@ -1,9 +1,9 @@
 package com.adaptivebiotech.test.cora.order;
 
-import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Active;
-import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Cancelled;
-import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Completed;
-import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Pending;
+import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
+import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Cancelled;
+import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Completed;
+import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.utils.TestHelper.randomWords;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;

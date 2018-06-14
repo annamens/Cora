@@ -8,15 +8,15 @@ import static com.adaptivebiotech.test.utils.HttpClientHelper.post;
 import static com.adaptivebiotech.test.utils.HttpClientHelper.put;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.Logging.info;
-import static com.adaptivebiotech.utils.PageHelper.formatDt2;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.utils.PageHelper.OrderCategory.Diagnostic;
-import static com.adaptivebiotech.utils.PageHelper.OrderStatus.Active;
-import static com.adaptivebiotech.utils.PageHelper.ShippingCondition.Ambient;
-import static com.adaptivebiotech.utils.PageHelper.SpecimenSource.BCells;
-import static com.adaptivebiotech.utils.PageHelper.SpecimenType.Blood;
-import static com.adaptivebiotech.utils.PageHelper.TestSkus.RUOID;
-import static com.adaptivebiotech.utils.PageHelper.TestSkus.RUOMRD;
+import static com.adaptivebiotech.test.utils.PageHelper.formatDt2;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
+import static com.adaptivebiotech.test.utils.PageHelper.OrderCategory.Diagnostic;
+import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
+import static com.adaptivebiotech.test.utils.PageHelper.TestSkus.RUOID;
+import static com.adaptivebiotech.test.utils.PageHelper.TestSkus.RUOMRD;
 import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
 import static com.adaptivebiotech.utils.TestHelper.mapper;
 import static com.adaptivebiotech.utils.TestHelper.physician1;
@@ -60,9 +60,9 @@ import com.adaptivebiotech.dto.SpecimenResponse;
 import com.adaptivebiotech.dto.Workflow.Stage;
 import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 import com.adaptivebiotech.test.utils.Timeout;
-import com.adaptivebiotech.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.utils.PageHelper.StageName;
-import com.adaptivebiotech.utils.PageHelper.StageStatus;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.test.utils.PageHelper.StageName;
+import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 
 public class ScenarioBuilderTestBase extends CoraBaseBrowser {
 

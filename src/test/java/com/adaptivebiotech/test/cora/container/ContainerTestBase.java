@@ -21,7 +21,7 @@ import com.adaptivebiotech.dto.Containers;
 import com.adaptivebiotech.dto.Containers.Container;
 import com.adaptivebiotech.dto.HttpResponse;
 import com.adaptivebiotech.test.cora.CoraBaseBrowser;
-import com.adaptivebiotech.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 public class ContainerTestBase extends CoraBaseBrowser {
 

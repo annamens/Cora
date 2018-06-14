@@ -1,8 +1,8 @@
 package com.adaptivebiotech.test.cora.order.patient;
 
-import static com.adaptivebiotech.utils.PageHelper.PatientRelationship.Child;
-import static com.adaptivebiotech.utils.PageHelper.PatientRelationship.Spouse;
-import static com.adaptivebiotech.utils.PageHelper.PatientStatus.Inpatient;
+import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Child;
+import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Spouse;
+import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.Inpatient;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.test.cora.order.OrderTestBase;

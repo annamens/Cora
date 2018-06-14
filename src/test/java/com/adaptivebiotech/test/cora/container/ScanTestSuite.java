@@ -1,10 +1,10 @@
 package com.adaptivebiotech.test.cora.container;
 
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Slide;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.SlideBox5;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertEquals;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static java.util.Arrays.asList;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;

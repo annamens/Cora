@@ -1,7 +1,7 @@
 package com.adaptivebiotech.test.cora.container;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.utils.PageHelper.ShippingCondition.DryIce;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
 import static com.adaptivebiotech.utils.TestHelper.randomWords;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -12,13 +12,13 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.dto.ContainerHistory;
 import com.adaptivebiotech.dto.Containers;
 import com.adaptivebiotech.dto.Containers.Container;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.ui.cora.CoraPage;
 import com.adaptivebiotech.ui.cora.container.ContainerList;
 import com.adaptivebiotech.ui.cora.container.Detail;
 import com.adaptivebiotech.ui.cora.container.History;
 import com.adaptivebiotech.ui.cora.shipment.Accession;
 import com.adaptivebiotech.ui.cora.shipment.Shipment;
-import com.adaptivebiotech.utils.PageHelper.ContainerType;
 
 @Test (groups = { "container" })
 public class MoveToFreezerTestSuite extends ContainerTestBase {

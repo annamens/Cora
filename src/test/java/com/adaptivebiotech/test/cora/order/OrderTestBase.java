@@ -1,7 +1,7 @@
 package com.adaptivebiotech.test.cora.order;
 
 import static com.adaptivebiotech.test.utils.Logging.error;
-import static com.adaptivebiotech.utils.PageHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.PageHelper.formatDt1;
 import static com.adaptivebiotech.utils.TestHelper.mapper;
 import static com.adaptivebiotech.utils.TestHelper.patientMedicare;
 import static com.adaptivebiotech.utils.TestHelper.physician1;

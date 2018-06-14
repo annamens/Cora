@@ -128,7 +128,7 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>

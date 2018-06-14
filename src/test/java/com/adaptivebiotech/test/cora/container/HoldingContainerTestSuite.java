@@ -1,16 +1,16 @@
 package com.adaptivebiotech.test.cora.container;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Conical;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Freezer;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.MatrixTube;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.MatrixTube5ml;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.OtherTube;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Plate;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Slide;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.SlideWithCoverslip;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Vacutainer;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Conical;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Freezer;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.MatrixTube;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.MatrixTube5ml;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.OtherTube;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideWithCoverslip;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Vacutainer;
 import static com.adaptivebiotech.utils.TestHelper.randomWords;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -24,12 +24,12 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.dto.ContainerHistory;
 import com.adaptivebiotech.dto.Containers;
 import com.adaptivebiotech.dto.Containers.Container;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.ui.cora.CoraPage;
 import com.adaptivebiotech.ui.cora.container.AddContainer;
 import com.adaptivebiotech.ui.cora.container.Detail;
 import com.adaptivebiotech.ui.cora.container.History;
 import com.adaptivebiotech.ui.cora.container.MyCustody;
-import com.adaptivebiotech.utils.PageHelper.ContainerType;
 
 @Test (groups = { "container" })
 public class HoldingContainerTestSuite extends ContainerTestBase {

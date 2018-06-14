@@ -1,16 +1,16 @@
 package com.adaptivebiotech.test.cora.order;
 
-import static com.adaptivebiotech.utils.PageHelper.Anticoagulant.EDTA;
-import static com.adaptivebiotech.utils.PageHelper.Assay.Clonality_BCell_2;
-import static com.adaptivebiotech.utils.PageHelper.ChargeType.Client;
-import static com.adaptivebiotech.utils.PageHelper.ChargeType.InternalPharmaBilling;
-import static com.adaptivebiotech.utils.PageHelper.ChargeType.NoCharge;
-import static com.adaptivebiotech.utils.PageHelper.ChargeType.PatientSelfPay;
-import static com.adaptivebiotech.utils.PageHelper.ChargeType.TrialProtocol;
-import static com.adaptivebiotech.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.utils.PageHelper.DeliveryType.CustomerShipment;
-import static com.adaptivebiotech.utils.PageHelper.ShippingCondition.Ambient;
-import static com.adaptivebiotech.utils.PageHelper.SpecimenType.Blood;
+import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
+import static com.adaptivebiotech.test.utils.PageHelper.Assay.Clonality_BCell_2;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.InternalPharmaBilling;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.PatientSelfPay;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.TrialProtocol;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
+import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.utils.TestHelper.newPatient;
