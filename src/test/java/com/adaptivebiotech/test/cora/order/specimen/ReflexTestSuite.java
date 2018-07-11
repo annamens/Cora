@@ -8,7 +8,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShi
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.Reflex;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
-import static com.adaptivebiotech.utils.TestHelper.newPatient;
+import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.test.cora.order.OrderTestBase;
@@ -22,8 +22,7 @@ import com.adaptivebiotech.ui.cora.workflow.History;
 
 /**
  * Note:
- * - to reuse the same specimenId, it can't be the same test
- * - it can't be the same ID and MRD test
+ * - to reuse the same specimenId, it can't be the same ID and MRD test
  * - it must pass LIMS extraction point
  * - the old test can't be active
  */

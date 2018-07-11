@@ -4,7 +4,7 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox100;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox10x10;
-import static com.adaptivebiotech.utils.TestHelper.randomString;
+import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;

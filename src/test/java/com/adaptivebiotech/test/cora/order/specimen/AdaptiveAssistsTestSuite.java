@@ -23,7 +23,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FFPEScrolls
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FFPESlides;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FreshBoneMarrow;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
-import static com.adaptivebiotech.utils.TestHelper.newPatient;
+import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.test.cora.order.OrderTestBase;

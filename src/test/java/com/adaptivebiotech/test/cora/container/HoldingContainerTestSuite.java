@@ -11,7 +11,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideWithCoverslip;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Vacutainer;
-import static com.adaptivebiotech.utils.TestHelper.randomWords;
+import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;

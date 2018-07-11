@@ -3,7 +3,7 @@ package com.adaptivebiotech.test.cora.container;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox5x5;
-import static com.adaptivebiotech.utils.TestHelper.randomWords;
+import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
