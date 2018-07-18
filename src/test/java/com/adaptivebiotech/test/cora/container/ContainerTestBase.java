@@ -6,11 +6,11 @@ import static com.adaptivebiotech.test.utils.HttpClientHelper.body;
 import static com.adaptivebiotech.test.utils.HttpClientHelper.post;
 import static com.adaptivebiotech.test.utils.HttpClientHelper.put;
 import static com.adaptivebiotech.test.utils.Logging.error;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.utils.TestHelper.freezerAB018055;
 import static com.adaptivebiotech.utils.TestHelper.freezerAB018078;
 import static com.adaptivebiotech.utils.TestHelper.freezerAB018082;
 import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
-import static com.adaptivebiotech.utils.TestHelper.mapper;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -25,10 +25,10 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 public class ContainerTestBase extends CoraBaseBrowser {
 
-    protected Container    freezerDestroyed = freezerDestroyed ();
-    protected Container    freezerAB018055  = freezerAB018055 ();
-    protected Container    freezerAB018078  = freezerAB018078 ();
-    protected Container    freezerAB018082  = freezerAB018082 ();
+    protected final Container freezerDestroyed = freezerDestroyed ();
+    protected final Container freezerAB018055  = freezerAB018055 ();
+    protected final Container freezerAB018078  = freezerAB018078 ();
+    protected final Container freezerAB018082  = freezerAB018082 ();
 
     protected Container container (ContainerType type) {
         return container (type, null, null);

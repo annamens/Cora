@@ -10,8 +10,6 @@ import static com.adaptivebiotech.test.utils.TestHelper.address;
 import static com.adaptivebiotech.test.utils.TestHelper.insurance1;
 import static com.adaptivebiotech.test.utils.TestHelper.insurance2;
 import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static org.testng.Assert.fail;
 import java.lang.reflect.Field;
 import java.sql.DriverManager;
@@ -23,18 +21,8 @@ import java.util.Map;
 import com.adaptivebiotech.dto.Containers.Container;
 import com.adaptivebiotech.dto.Patient;
 import com.adaptivebiotech.test.BaseEnvironment.envs;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestHelper {
-
-    public static ObjectMapper mapper = setMapper ();
-
-    private static ObjectMapper setMapper () {
-        ObjectMapper mapper = new ObjectMapper ();
-        mapper.setSerializationInclusion (NON_NULL);
-        mapper.configure (FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper;
-    }
 
     public static Container freezerDestroyed () {
         Container container = new Container ();

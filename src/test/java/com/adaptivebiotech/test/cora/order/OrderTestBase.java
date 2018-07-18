@@ -2,10 +2,10 @@ package com.adaptivebiotech.test.cora.order;
 
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.PageHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.test.utils.TestHelper.physician1;
 import static com.adaptivebiotech.test.utils.TestHelper.physician2;
 import static com.adaptivebiotech.test.utils.TestHelper.setDate;
-import static com.adaptivebiotech.utils.TestHelper.mapper;
 import static com.adaptivebiotech.utils.TestHelper.patientMedicare;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -18,11 +18,11 @@ import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 
 public class OrderTestBase extends CoraBaseBrowser {
 
-    protected Physician    physician1      = physician1 ();
-    protected Physician    physicianTRF    = physician2 ();
-    protected Patient      patientMedicare = patientMedicare ();
-    protected final String icdCode         = "A01.02";
-    protected final String collectionDt    = formatDt1.format (setDate (-3).getTime ());
+    protected final Physician physician1      = physician1 ();
+    protected final Physician physicianTRF    = physician2 ();
+    protected final Patient   patientMedicare = patientMedicare ();
+    protected final String    icdCode         = "A01.02";
+    protected final String    collectionDt    = formatDt1.format (setDate (-3).getTime ());
 
     protected void verifyTrfCopied (Order actual, Order expected) {
         try {

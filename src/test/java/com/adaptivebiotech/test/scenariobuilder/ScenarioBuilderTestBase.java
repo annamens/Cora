@@ -17,11 +17,10 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.TestSkus.RUOID;
 import static com.adaptivebiotech.test.utils.PageHelper.TestSkus.RUOMRD;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
+import static com.adaptivebiotech.test.utils.TestHelper.setDate;
 import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
-import static com.adaptivebiotech.utils.TestHelper.mapper;
-import static com.adaptivebiotech.utils.TestHelper.physician1;
-import static com.adaptivebiotech.utils.TestHelper.randomWords;
-import static com.adaptivebiotech.utils.TestHelper.setDate;
 import static java.util.Arrays.asList;
 import static java.util.Calendar.DATE;
 import static java.util.Calendar.HOUR;
@@ -30,6 +29,7 @@ import static java.util.Calendar.MINUTE;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.SECOND;
 import static java.util.Calendar.YEAR;
+import static java.util.Collections.addAll;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.fail;
@@ -59,26 +59,24 @@ import com.adaptivebiotech.dto.Specimen.Sample;
 import com.adaptivebiotech.dto.SpecimenResponse;
 import com.adaptivebiotech.dto.Workflow.Stage;
 import com.adaptivebiotech.test.cora.CoraBaseBrowser;
-import com.adaptivebiotech.test.utils.Timeout;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
+import com.adaptivebiotech.test.utils.Timeout;
 
 public class ScenarioBuilderTestBase extends CoraBaseBrowser {
 
-    private final String accountId        = "4a8d76af-2273-4d7f-8853-ba80467b570f";
-    private Container    freezerDestroyed = freezerDestroyed ();
-    protected Physician  physician1       = physician1 ();
+    private final Container freezerDestroyed = freezerDestroyed ();
 
     private int[] dateToIntArr (Calendar target) {
         return new int[] { target.get (YEAR), target.get (MONTH) + 1, target.get (DATE), target.get (HOUR), target.get (MINUTE), target.get (SECOND), target.get (MILLISECOND) };
     }
 
-    protected Diagnostic buildDiagnosticOrder (Patient patient, Physician physician) {
+    private Diagnostic buildDiagnosticOrder (Patient patient) {
         Diagnostic diagnostic = new Diagnostic ();
-        diagnostic.account = new Account (accountId);
+        diagnostic.account = new Account ("4a8d76af-2273-4d7f-8853-ba80467b570f");
         diagnostic.patient = patient;
-        diagnostic.provider = physician;
+        diagnostic.provider = new Physician ("4b700554-4999-4585-8708-fd87161b3319");
 
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
@@ -104,11 +102,18 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
         return diagnostic;
     }
 
-    protected Order order (OrderProperties properties, OrderTest test) {
+    protected Diagnostic buildDiagnosticOrder (Patient patient, Order order, Stage stage) {
+        Diagnostic diagnostic = buildDiagnosticOrder (patient);
+        diagnostic.order = order;
+        diagnostic.fastForwardStatus = stage;
+        return diagnostic;
+    }
+
+    protected Order order (OrderProperties properties, OrderTest... test) {
         Order order = new Order ();
         order.name = "Selenium Test Order";
         order.properties = properties;
-        order.tests.add (test);
+        addAll (order.tests, test);
         return order;
     }
 
@@ -184,6 +189,8 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
                 timer.Wait ();
                 response = mapper.readValue (get (url), SpecimenResponse.class);
             } while (!timer.Timedout () && response.name == null);
+            if (response.name == null)
+                fail ("response.name is null");
             return response;
         } catch (Exception e) {
             error (String.valueOf (e), e);

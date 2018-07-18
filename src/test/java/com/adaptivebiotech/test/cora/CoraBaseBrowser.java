@@ -10,7 +10,7 @@ import static com.adaptivebiotech.test.utils.HttpClientHelper.get;
 import static com.adaptivebiotech.test.utils.HttpClientHelper.post;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.Logging.info;
-import static com.adaptivebiotech.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static org.testng.Assert.fail;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -22,6 +22,8 @@ import org.testng.annotations.BeforeSuite;
 import com.adaptivebiotech.dto.AssayResponse;
 import com.adaptivebiotech.dto.Diagnostic;
 import com.adaptivebiotech.dto.HttpResponse;
+import com.adaptivebiotech.dto.Patient;
+import com.adaptivebiotech.dto.PatientResponse;
 import com.adaptivebiotech.test.utils.BaseBrowser;
 import com.adaptivebiotech.ui.cora.CoraPage;
 
@@ -75,6 +77,17 @@ public class CoraBaseBrowser extends BaseBrowser {
         try {
             String url = coraTestUrl + "/cora/api/v1/tests?categoryId=63780203-caeb-483d-930c-8392afb5d927";
             return mapper.readValue (get (url), AssayResponse.class);
+        } catch (Exception e) {
+            error (String.valueOf (e), e);
+            fail (String.valueOf (e));
+            return null;
+        }
+    }
+
+    protected Patient getPatient (Patient patient) {
+        try {
+            String url = coraTestUrl + "/cora/api/v1/patients?firstName=" + patient.firstName + "&lastName=" + patient.lastName;
+            return mapper.readValue (get (url), PatientResponse.class).get (patient);
         } catch (Exception e) {
             error (String.valueOf (e), e);
             fail (String.valueOf (e));
