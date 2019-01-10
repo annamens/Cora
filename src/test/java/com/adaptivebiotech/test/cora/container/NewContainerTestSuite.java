@@ -5,6 +5,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox10
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox10x10;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
+import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
@@ -88,7 +89,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         add.addContainer (SlideBox100, 1);
         add.setContainersLocation (testFreezer1);
         add.clickSave ();
-        assertEquals (add.getLocationValErrors ().get (0), String.format (error3, testFreezer1));
+        assertEquals (add.getLocationValErrors ().get (0), format (error3, testFreezer1));
         containers = add.getContainers ();
 
         // test: verify we have 1 containers in my custody (duplicate names & incompatible freezer)

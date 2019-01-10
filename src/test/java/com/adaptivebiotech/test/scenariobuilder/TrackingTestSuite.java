@@ -1,7 +1,7 @@
 package com.adaptivebiotech.test.scenariobuilder;
 
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.Clonality_BCell_2;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.Tracking_BCell_2;
+import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
+import static com.adaptivebiotech.test.utils.PageHelper.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
@@ -30,8 +30,8 @@ public class TrackingTestSuite extends ScenarioBuilderTestBase {
     @BeforeTest
     public void beforeTest () {
         assays = getTests ();
-        eos_id = assays.get (Clonality_BCell_2).id;
-        eos_mrd = assays.get (Tracking_BCell_2).id;
+        eos_id = assays.get (ID_BCell2_CLIA).id;
+        eos_mrd = assays.get (MRD_BCell2_CLIA).id;
     }
 
     public void aboveLoq () {
@@ -49,7 +49,7 @@ public class TrackingTestSuite extends ScenarioBuilderTestBase {
         list.doOrderTestSearch (patient.id);
         Orders orders = list.getOrderTests ();
 
-        Order test = orders.list.parallelStream ().filter (o -> o.tests.get (0).assay.equals (Clonality_BCell_2))
+        Order test = orders.list.parallelStream ().filter (o -> o.tests.get (0).assay.equals (ID_BCell2_CLIA))
                                 .findAny ().get ();
 
         System.out.println ("test=" + test.workflow.sampleName);

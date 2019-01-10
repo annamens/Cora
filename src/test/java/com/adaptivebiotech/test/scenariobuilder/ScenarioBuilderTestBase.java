@@ -202,7 +202,7 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
     protected HttpResponse newResearchOrder (Research research) {
         try {
             String json = mapper.writeValueAsString (research);
-            info ("payload=" + json);
+            info ("payload:\n" + json);
 
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
             return mapper.readValue (post (url, body (json), headers), HttpResponse.class);

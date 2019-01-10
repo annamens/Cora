@@ -62,7 +62,7 @@ public class CoraBaseBrowser extends BaseBrowser {
     protected HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
         try {
             String json = mapper.writeValueAsString (diagnostic);
-            info ("payload=" + json);
+            info ("payload:\n" + json);
 
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
             return mapper.readValue (post (url, body (json), headers), HttpResponse.class);

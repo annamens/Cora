@@ -21,7 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <parallel>methods</parallel>
         <threads>1</threads>
-        <testng.verbose>1</testng.verbose>
+        <testng.verbose>2</testng.verbose>
     </properties>
     <build>
         <pluginManagement>
@@ -123,12 +123,12 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>selenium-base</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <profiles>
@@ -138,7 +138,6 @@
                 <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
                 <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-test.dna.corp.adaptivebiotech.com</cora.test.url>
-                <cora.jdbc.url>Jus4AaOI6ZDgqyt0WxV+o2xOq8hbTVLjf0cQ7ejDXmhXyMXkjoVxTwrMqHcgH3nnmaplNWN4ZwdNMEOC1xPzwQWgyeSKJ1YfuTuBUGfOhb1BG+STdimyPwhZRaljLsowTVerdYHCTADu+1IzXsb6lw==</cora.jdbc.url>
             </properties>
         </profile>
         <profile>
@@ -147,7 +146,6 @@
                 <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
                 <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-test-2.dna.corp.adaptivebiotech.com</cora.test.url>
-                <cora.jdbc.url>Jus4AaOI6ZDgqyt0WxV+o2xOq8hbTVLjrGakeGuYm7bL1t7D/X6Z8PH9kO8KHK3hBboh1L7J0MTLbW3AXpkA+aeM/OC5NcBh+V1cWPJ8y+km6QR28LOalzMt91IP20Qjp5HbwPDcPB1fMbmI2Wt296Xc8D4kZipm2AQQ40MAnrG5w9MFfHw2qy5aMc8DerVu</cora.jdbc.url>
             </properties>
         </profile>
         <profile>
@@ -156,16 +154,30 @@
                 <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
                 <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-test-3.dna.corp.adaptivebiotech.com</cora.test.url>
-                <cora.jdbc.url>Jus4AaOI6ZDgqyt0WxV+o5NDJGK/ksowFnr6JufNJRCArYA3RoROzmBAUAONDDkVKwU27hiJlOCcZsVpWlJtDy1v21K+hLlyiVBUbAnWUjOgdmezyG0bKN/GVFyrYQfuudFW3tmzeBjY7GWMjvsU2g==</cora.jdbc.url>
             </properties>
         </profile>
         <profile>
-            <id>stage</id>
+            <id>am-test</id>
+            <properties>
+                <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
+                <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
+                <cora.test.url>https://cora-am-test.dna.corp.adaptivebiotech.com</cora.test.url>
+            </properties>
+        </profile>
+        <profile>
+            <id>stage1</id>
             <properties>
                 <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
                 <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-stage.dna.corp.adaptivebiotech.com</cora.test.url>
-                <cora.jdbc.url>Jus4AaOI6ZDgqyt0WxV+o1xzYln9MlDfFm99hPuUlTIBieP5AOkHGxp4qZRj4Cmf3lD0kknaFtyEh9emtxfbnpr4tUqJE5CLON3iliEBgfhclKJz1gPatdmZoQgsiMgQPMMYfotwWzckyIk1nyW81Vk6UXhMqALP/ZhNtZL3J0Q=</cora.jdbc.url>
+            </properties>
+        </profile>
+        <profile>
+            <id>stage2</id>
+            <properties>
+                <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
+                <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
+                <cora.test.url>https://cora-stage-2.dna.corp.adaptivebiotech.com</cora.test.url>
             </properties>
         </profile>
     </profiles>

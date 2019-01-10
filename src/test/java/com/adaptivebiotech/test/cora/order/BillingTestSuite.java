@@ -1,7 +1,7 @@
 package com.adaptivebiotech.test.cora.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.Clonality_BCell_2;
+import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.InternalPharmaBilling;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
@@ -9,8 +9,10 @@ import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.PatientSelfPa
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.TrialProtocol;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
+import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
+import static com.adaptivebiotech.test.utils.TestHelper.insurance1;
 import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.utils.TestHelper.newMedicarePatient;
@@ -51,6 +53,7 @@ public class BillingTestSuite extends OrderTestBase {
 
         // test: remove patient and confirm billing is reset
         billing.removePatient ();
+        billing.removePatientTest ();
         assertNull (billing.getBilling ());
 
         // test: confirm we're able to Activate
@@ -71,6 +74,7 @@ public class BillingTestSuite extends OrderTestBase {
 
         // test: remove patient and confirm billing is reset
         billing.removePatient ();
+        billing.removePatientTest ();
         assertNull (billing.getBilling ());
 
         // test: confirm we're able to Activate
@@ -79,39 +83,83 @@ public class BillingTestSuite extends OrderTestBase {
         activate_and_cancel ();
     }
 
-    public void patientSelfPay () {
+    public void patientSelfPayNonHospital () {
         Patient patient = newPatient ();
         patient.billingType = PatientSelfPay;
+        patient.insurance1.hospitalizationStatus = NonHospital;
 
         billing.createNewPatient (patient);
-        billing.selectBilling (patient.billingType);
+        billing.enterBill (patient);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing is reset
         billing.removePatient ();
+        billing.removePatientTest ();
         assertNull (billing.getBilling ());
 
         // test: confirm we're able to Activate
         billing.selectPatient (patient);
-        billing.selectBilling (patient.billingType);
+        billing.enterBill (patient);
         activate_and_cancel ();
     }
 
-    public void billClient () {
+    public void patientSelfPayInpatient () {
         Patient patient = newPatient ();
-        patient.billingType = Client;
+        patient.billingType = PatientSelfPay;
+        patient.insurance1 = insurance1 ();
 
         billing.createNewPatient (patient);
-        billing.selectBilling (patient.billingType);
+        billing.enterBill (patient);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing is reset
         billing.removePatient ();
+        billing.removePatientTest ();
         assertNull (billing.getBilling ());
 
         // test: confirm we're able to Activate
         billing.selectPatient (patient);
-        billing.selectBilling (patient.billingType);
+        billing.enterBill (patient);
+        activate_and_cancel ();
+    }
+
+    public void billClientNonHospital () {
+        Patient patient = newPatient ();
+        patient.billingType = Client;
+        patient.insurance1.hospitalizationStatus = NonHospital;
+
+        billing.createNewPatient (patient);
+        billing.enterBill (patient);
+        complete_order_and_activate ();
+
+        // test: remove patient and confirm billing is reset
+        billing.removePatient ();
+        billing.removePatientTest ();
+        assertNull (billing.getBilling ());
+
+        // test: confirm we're able to Activate
+        billing.selectPatient (patient);
+        billing.enterBill (patient);
+        activate_and_cancel ();
+    }
+
+    public void billClientInpatient () {
+        Patient patient = newPatient ();
+        patient.billingType = Client;
+        patient.insurance1 = insurance1 ();
+
+        billing.createNewPatient (patient);
+        billing.enterBill (patient);
+        complete_order_and_activate ();
+
+        // test: remove patient and confirm billing is reset
+        billing.removePatient ();
+        billing.removePatientTest ();
+        assertNull (billing.getBilling ());
+
+        // test: confirm we're able to Activate
+        billing.selectPatient (patient);
+        billing.enterBill (patient);
         activate_and_cancel ();
     }
 
@@ -125,6 +173,7 @@ public class BillingTestSuite extends OrderTestBase {
 
         // test: remove patient and confirm billing stays the same
         billing.clickRemovePatient ();
+        billing.removePatientTest ();
         assertEquals (billing.getBilling (), patient.billingType);
 
         // test: confirm we're able to Activate
@@ -142,6 +191,7 @@ public class BillingTestSuite extends OrderTestBase {
 
         // test: remove patient and confirm billing stays the same
         billing.clickRemovePatient ();
+        billing.removePatientTest ();
         assertEquals (billing.getBilling (), patient.billingType);
 
         // test: confirm we're able to Activate
@@ -159,6 +209,7 @@ public class BillingTestSuite extends OrderTestBase {
 
         // test: remove patient and confirm billing stays the same
         billing.clickRemovePatient ();
+        billing.removePatientTest ();
         assertEquals (billing.getBilling (), patient.billingType);
 
         // test: confirm we're able to Activate
@@ -167,6 +218,7 @@ public class BillingTestSuite extends OrderTestBase {
     }
 
     private void activate_and_cancel () {
+        diagnostic.clickAssayTest (ID_BCell2_CLIA);
         diagnostic.clickActivateOrder ();
         diagnostic.clickCancel ();
         diagnostic.clickCancelOrder ();
@@ -198,11 +250,12 @@ public class BillingTestSuite extends OrderTestBase {
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
         accession.clickPass ();
+        accession.verifyLabels ();
         accession.gotoOrderDetail ();
 
         // test: add a test, confirm we're able to Activate and then cancel it
         diagnostic.isCorrectPage ();
-        diagnostic.clickAssayTest (Clonality_BCell_2);
+        diagnostic.clickAssayTest (ID_BCell2_CLIA);
         diagnostic.clickActivateOrder ();
         diagnostic.clickCancel ();
     }

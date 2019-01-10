@@ -1,8 +1,7 @@
 package com.adaptivebiotech.utils;
 
-import static com.adaptivebiotech.test.BaseEnvironment.coraConfig;
 import static com.adaptivebiotech.test.BaseEnvironment.env;
-import static com.adaptivebiotech.test.utils.Logging.error;
+import static com.adaptivebiotech.test.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.CommercialInsurance;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
@@ -10,12 +9,6 @@ import static com.adaptivebiotech.test.utils.TestHelper.address;
 import static com.adaptivebiotech.test.utils.TestHelper.insurance1;
 import static com.adaptivebiotech.test.utils.TestHelper.insurance2;
 import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
-import static org.testng.Assert.fail;
-import java.lang.reflect.Field;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import com.adaptivebiotech.dto.Containers.Container;
@@ -87,9 +80,6 @@ public class TestHelper {
         Patient patient = newPatient ();
         patient.billingType = CommercialInsurance;
         patient.insurance1 = insurance1 ();
-        patient.insurance1.hospitalizationStatus = null;
-        patient.insurance1.billingInstitution = null;
-        patient.insurance1.dischargeDate = null;
         patient.insurance2 = insurance2 ();
         return patient;
     }
@@ -98,44 +88,11 @@ public class TestHelper {
     public static Patient newMedicarePatient () {
         Patient patient = newPatient ();
         patient.billingType = Medicare;
+        patient.abnStatusType = RequiredIncludedBillMedicare;
         patient.insurance1 = insurance1 ();
         patient.insurance1.groupNumber = null;
         patient.insurance2 = insurance2 ();
         return patient;
-    }
-
-    public static Object executeQuery (Object object, String sql) {
-        try {
-            Statement stmt = DriverManager.getConnection (coraConfig).createStatement ();
-            Map <String, String> result = processSingleRow (stmt.executeQuery (sql));
-            stmt.execute (sql);
-            stmt.close ();
-
-            for (Field field : object.getClass ().getFields ())
-                field.set (object, result.get (field.getName ()));
-
-            return object;
-        } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
-        }
-    }
-
-    private static Map <String, String> processSingleRow (ResultSet rs) {
-        try {
-            ResultSetMetaData md = rs.getMetaData ();
-            int columns = md.getColumnCount ();
-            Map <String, String> row = new HashMap <String, String> (columns);
-            if (rs.next ())
-                for (int i = 1; i <= columns; ++i)
-                    row.put (md.getColumnName (i), rs.getString (i));
-            return row;
-        } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
-        }
     }
 
     private static Map <String, String> testdata () {

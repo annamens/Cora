@@ -56,6 +56,7 @@ public class OrderTestBase extends CoraBaseBrowser {
             assertEquals (actual.expected_test_type, expected.expected_test_type);
             assertEquals (actual.tests.size (), 0);
             assertEquals (actual.properties.BillingType, expected.properties.BillingType);
+            assertEquals (actual.patient.abnStatusType, expected.patient.abnStatusType);
 
             if (expected.patient.billingType != null)
                 assertEquals (mapper.writeValueAsString (actual.patient.address),

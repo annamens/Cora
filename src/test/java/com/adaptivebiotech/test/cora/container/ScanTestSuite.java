@@ -1,11 +1,12 @@
 package com.adaptivebiotech.test.cora.container;
 
-import static org.testng.Assert.assertEquals;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static org.testng.Assert.assertEquals;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -87,20 +88,20 @@ public class ScanTestSuite extends ContainerTestBase {
         // test: container doesn't exist
         ContainerList list = new ContainerList ();
         list.scan ("xxxxxx");
-        assertEquals (list.getScanError (), String.format (error1, "xxxxxx"));
+        assertEquals (list.getScanError (), format (error1, "xxxxxx"));
 
         // test: container name isn't unique
         list.scan (scanTest);
-        assertEquals (list.getScanError (), String.format (error2, scanTest));
+        assertEquals (list.getScanError (), format (error2, scanTest));
 
         // test: container's shipment is in Arrived state
         Container testContainer = containers1.list.get (0);
         list.scan (testContainer);
-        assertEquals (list.getScanError (), String.format (error3, testContainer.shipmentNumber));
+        assertEquals (list.getScanError (), format (error3, testContainer.shipmentNumber));
 
         // test: container is a freezer
         list.scan (freezerDestroyed);
-        assertEquals (list.getScanError (), String.format (error4, freezerDestroyed.containerNumber));
+        assertEquals (list.getScanError (), format (error4, freezerDestroyed.containerNumber));
     }
 
     /**
@@ -112,20 +113,20 @@ public class ScanTestSuite extends ContainerTestBase {
 
         // test: container doesn't exist
         my.scan ("xxxxxx");
-        assertEquals (my.getScanError (), String.format (error1, "xxxxxx"));
+        assertEquals (my.getScanError (), format (error1, "xxxxxx"));
 
         // test: container name isn't unique
         my.scan (scanTest);
-        assertEquals (my.getScanError (), String.format (error2, scanTest));
+        assertEquals (my.getScanError (), format (error2, scanTest));
 
         // test: container's shipment is in Arrived state
         Container testContainer = containers1.list.get (1);
         my.scan (testContainer);
-        assertEquals (my.getScanError (), String.format (error3, testContainer.shipmentNumber));
+        assertEquals (my.getScanError (), format (error3, testContainer.shipmentNumber));
 
         // test: container is a freezer
         my.scan (freezerDestroyed);
-        assertEquals (my.getScanError (), String.format (error4, freezerDestroyed.containerNumber));
+        assertEquals (my.getScanError (), format (error4, freezerDestroyed.containerNumber));
     }
 
     /**
@@ -152,36 +153,36 @@ public class ScanTestSuite extends ContainerTestBase {
         my.isCorrectPage ();
         my.scanAndClickHoldingContainer (child1);
         my.chooseHoldingContainer ("xxxxxx");
-        assertEquals (my.getScanError (), String.format (error1, "xxxxxx"));
+        assertEquals (my.getScanError (), format (error1, "xxxxxx"));
 
         // test: container name isn't unique
         my.chooseHoldingContainer (scanTest);
-        assertEquals (my.getScanError (), String.format (error2, scanTest));
+        assertEquals (my.getScanError (), format (error2, scanTest));
 
         // test: container's shipment is in Arrived state (not in My Custody)
         Container testContainer = containers1.list.get (1);
         my.chooseHoldingContainer (testContainer);
-        assertEquals (my.getScanError (), String.format (error5, testContainer.containerNumber));
+        assertEquals (my.getScanError (), format (error5, testContainer.containerNumber));
 
         // test: container is a freezer
         my.chooseHoldingContainer (freezerDestroyed);
-        assertEquals (my.getScanError (), String.format (error5, freezerDestroyed.containerNumber));
+        assertEquals (my.getScanError (), format (error5, freezerDestroyed.containerNumber));
 
         // test: is not a holding container
         my.chooseHoldingContainer (child1);
-        assertEquals (my.getScanError (), String.format (error6, child1.containerNumber));
+        assertEquals (my.getScanError (), format (error6, child1.containerNumber));
 
         // test: no space available
         testContainer = containers2.list.get (0);
         my.chooseHoldingContainer (testContainer);
-        assertEquals (my.getScanError (), String.format (error7, testContainer.containerNumber));
+        assertEquals (my.getScanError (), format (error7, testContainer.containerNumber));
 
         // test: happy path
         my.finalizeHoldingContainer (child1, holding);
 
         // test: is already set to the holding container
         my.setHoldingContainerTest (child1, holding);
-        assertEquals (my.getScanError2 (), String.format (error9, child1.containerNumber, holding.containerNumber));
+        assertEquals (my.getScanError2 (), format (error9, child1.containerNumber, holding.containerNumber));
         my.clickGoBack ();
     }
 
@@ -198,16 +199,16 @@ public class ScanTestSuite extends ContainerTestBase {
         // test: container doesn't exist
         my.scan (holding);
         my.scanToVerify ("xxxxxx");
-        assertEquals (my.getScanVerifyError (), String.format (error8, "xxxxxx"));
+        assertEquals (my.getScanVerifyError (), format (error8, "xxxxxx"));
 
         // test: happy path
         my.scanToVerify (child2);
         my.isVerified (child2);
-        assertEquals (my.getScanVerifyText (), String.format ("1 of %d verified", holding.children.size ()));
+        assertEquals (my.getScanVerifyText (), format ("1 of %d verified", holding.children.size ()));
 
         // test: container is a freezer
         my.scanToVerify (freezerDestroyed);
         assertEquals (my.getScanVerifyError (),
-                      String.format (error10, freezerDestroyed.containerNumber, freezerDestroyed.name));
+                      format (error10, freezerDestroyed.containerNumber, freezerDestroyed.name));
     }
 }

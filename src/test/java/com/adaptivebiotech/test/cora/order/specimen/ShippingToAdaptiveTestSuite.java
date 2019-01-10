@@ -2,7 +2,7 @@ package com.adaptivebiotech.test.cora.order.specimen;
 
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.Other;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.Clonality_BCell_2;
+import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
@@ -316,7 +316,7 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
 
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
-        diagnostic.clickAssayTest (Clonality_BCell_2);
+        diagnostic.clickAssayTest (ID_BCell2_CLIA);
         diagnostic.clickActivateOrder ();
         diagnostic.clickCancel ();
         diagnostic.clickCancelOrder ();
