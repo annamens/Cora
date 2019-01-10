@@ -40,7 +40,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
 
         diagnostic.enterPatientNotes (expected.patient.notes);
         diagnostic.enterOrderNotes (expected.notes);
-        diagnostic.transferTrf ();
+        diagnostic.transferTrf (Pending);
         diagnostic.isCorrectPage ();
 
         // test: verify the newly cloned order
@@ -80,7 +80,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
 
         diagnostic.editPatientNotes (expected.patient.notes);
         diagnostic.editOrderNotes (expected.notes);
-        diagnostic.transferTrf ();
+        diagnostic.transferTrf (Active);
         diagnostic.isCorrectPage ();
 
         // test: verify the newly cloned order
@@ -115,7 +115,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
 
         diagnostic.editPatientNotes (expected.patient.notes);
         diagnostic.editOrderNotes (expected.notes);
-        diagnostic.transferTrf ();
+        diagnostic.transferTrf (Cancelled);
         diagnostic.isCorrectPage ();
 
         // test: verify the newly cloned order
@@ -150,7 +150,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
 
         diagnostic.editPatientNotes (expected.patient.notes);
         diagnostic.editOrderNotes (expected.notes);
-        diagnostic.transferTrf ();
+        diagnostic.transferTrf (Completed);
         diagnostic.isCorrectPage ();
 
         // test: verify the newly cloned order
@@ -179,7 +179,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
         // test: transfer a pending TRF order
         diagnostic.isCorrectPage ();
         expected = diagnostic.parseOrder (Pending);
-        diagnostic.transferTrf ();
+        diagnostic.transferTrf (Pending);
         diagnostic.isCorrectPage ();
 
         // test: first cloned order
@@ -190,7 +190,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
         assertEquals (actual1.name, String.join ("-", expected.name, postfix1));
         diagnostic.enterPatientNotes (actual1.patient.notes);
         diagnostic.enterOrderNotes (actual1.notes);
-        diagnostic.transferTrf ();
+        diagnostic.transferTrf (Pending);
         diagnostic.isCorrectPage ();
 
         // test: second cloned order

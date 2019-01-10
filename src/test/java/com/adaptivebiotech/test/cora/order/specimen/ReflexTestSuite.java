@@ -2,7 +2,7 @@ package com.adaptivebiotech.test.cora.order.specimen;
 
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.Reflex;
@@ -66,7 +66,7 @@ public class ReflexTestSuite extends OrderTestBase {
 
     private String addDiagnosticShipment_and_Activate () {
         Billing billing = new Billing ();
-        billing.selectBilling (Client);
+        billing.selectBilling (NoCharge);
         billing.clickSave ();
         String orderNum = billing.getOrderNum ();
 
@@ -83,6 +83,7 @@ public class ReflexTestSuite extends OrderTestBase {
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
         accession.clickPass ();
+        accession.verifyLabels ();
         accession.gotoOrderDetail ();
 
         Diagnostic diagnostic = new Diagnostic ();

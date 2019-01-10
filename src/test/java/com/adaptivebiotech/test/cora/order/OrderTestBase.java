@@ -34,20 +34,13 @@ public class OrderTestBase extends CoraBaseBrowser {
             assertEquals (actual.customerInstructions, expected.customerInstructions);
             assertEquals (actual.physician.providerFullName, expected.physician.providerFullName);
             assertEquals (actual.physician.accountName, expected.physician.accountName);
-
             assertEquals (actual.patient.fullname, expected.patient.fullname);
             assertEquals (actual.patient.dateOfBirth, expected.patient.dateOfBirth);
             assertEquals (actual.patient.gender, expected.patient.gender);
             assertEquals (actual.patient.patientCode, expected.patient.patientCode);
             assertEquals (actual.patient.mrn, expected.patient.mrn);
             assertEquals (actual.patient.notes, expected.patient.notes);
-
-            if (expected.icdcodes != null)
-                for (int i = 0; i < expected.icdcodes.size (); ++i)
-                    assertTrue (actual.icdcodes.get (i).startsWith (expected.icdcodes.get (i)));
-            else
-                assertNull (actual.icdcodes);
-
+            assertEquals (actual.icdcodes, expected.icdcodes);
             assertEquals (actual.properties.SpecimenDeliveryType, expected.properties.SpecimenDeliveryType);
             assertNull (actual.specimenNumber);
             assertNull (actual.specimenType);
@@ -73,6 +66,7 @@ public class OrderTestBase extends CoraBaseBrowser {
             assertEquals (actual.doraAttachments, expected.doraAttachments);
             assertNull (actual.notes);
         } catch (Exception e) {
+            error ("expected order=" + expected.order_number + ", actual order=" + actual.order_number);
             error (String.valueOf (e), e);
             fail (String.valueOf (e));
         }

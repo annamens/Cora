@@ -21,7 +21,6 @@ import static org.testng.Assert.assertNull;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.dto.Patient;
-import com.adaptivebiotech.ui.cora.CoraPage;
 import com.adaptivebiotech.ui.cora.order.Billing;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 import com.adaptivebiotech.ui.cora.order.Specimen;
@@ -36,8 +35,8 @@ public class BillingTestSuite extends OrderTestBase {
 
     @BeforeMethod
     public void beforeMethod () {
-        new CoraPage ().clickNewDiagnosticOrder ();
         diagnostic = new Diagnostic ();
+        diagnostic.clickNewDiagnosticOrder ();
         diagnostic.isCorrectPage ();
         diagnostic.selectPhysician (physicianTRF);
         diagnostic.enterPatientICD_Codes (icdCode);

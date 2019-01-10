@@ -1,9 +1,11 @@
 package com.adaptivebiotech.test.cora.order.specimen;
 
+import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.CfdRoche;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.Other;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
+import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.PathRequest;
 import static com.adaptivebiotech.test.utils.PageHelper.DiscrepancyType.Specimen;
@@ -22,6 +24,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspens
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FFPEScrolls;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FFPESlides;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FreshBoneMarrow;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
 import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
 import org.testng.annotations.BeforeMethod;
@@ -69,6 +72,14 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
         specimen.enterAntiCoagulantOther ("Citrate");
         specimen.enterCollectionDate (collectionDt);
         addDiagnosticShipment_and_Activate (true);
+    }
+
+    public void specimenType_Blood_Cellfree () {
+        specimen.enterSpecimenType (Blood);
+        specimen.enterCompartment (CellFree);
+        specimen.enterAntiCoagulant (CfdRoche);
+        specimen.enterCollectionDate (collectionDt);
+        addDiagnosticShipment_and_Activate ();
     }
 
     public void specimenType_BoneMarrowAspirateSlide () {
@@ -258,6 +269,12 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
         addDiagnosticShipment_and_Activate ();
     }
 
+    public void specimenType_Plasma () {
+        specimen.enterSpecimenType (Plasma);
+        specimen.enterCollectionDate (collectionDt);
+        addDiagnosticShipment_and_Activate ();
+    }
+
     public void specimenType_Tissue_Skin () {
         specimen.enterSpecimenType (SpecimenType.Tissue);
         specimen.enterSpecimenSource (Skin);
@@ -293,7 +310,7 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
 
     private void addDiagnosticShipment_and_Activate (boolean doManualPass) {
         Billing billing = new Billing ();
-        billing.selectBilling (Client);
+        billing.selectBilling (NoCharge);
         billing.clickSave ();
         String orderNum = billing.getOrderNum ();
 
@@ -312,6 +329,7 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
         if (doManualPass)
             accession.manualPass (Specimen);
         accession.clickPass ();
+        accession.verifyLabels ();
         accession.gotoOrderDetail ();
 
         Diagnostic diagnostic = new Diagnostic ();
