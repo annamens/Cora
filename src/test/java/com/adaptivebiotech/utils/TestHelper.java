@@ -9,6 +9,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.address;
 import static com.adaptivebiotech.test.utils.TestHelper.insurance1;
 import static com.adaptivebiotech.test.utils.TestHelper.insurance2;
 import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
+import static java.util.UUID.randomUUID;
 import java.util.HashMap;
 import java.util.Map;
 import com.adaptivebiotech.dto.Containers.Container;
@@ -70,6 +71,7 @@ public class TestHelper {
     // scenario builder takes only client billingType
     public static Patient newScenarioBuilderPatient () {
         Patient patient = newPatient ();
+        patient.id = randomUUID ().toString ().replace ("-", "");
         patient.dateOfBirth = "1999-01-01";
         patient.billingType = Client;
         return patient;
