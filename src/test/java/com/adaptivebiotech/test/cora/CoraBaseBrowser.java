@@ -1,6 +1,6 @@
 package com.adaptivebiotech.test.cora;
 
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestPassword;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.BaseEnvironment.initialization;
@@ -55,7 +55,7 @@ public class CoraBaseBrowser extends BaseBrowser {
     protected void doCoraLogin () {
         Map <String, String> forms = new HashMap <String, String> ();
         forms.put ("userName", coraTestUser);
-        forms.put ("password", coraTestPassword);
+        forms.put ("password", coraTestPass);
         formPost (coraTestUrl + "/cora/login", forms);
     }
 

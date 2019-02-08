@@ -50,10 +50,9 @@
                         <systemPropertyVariables>
                             <test.env>${project.activeProfiles[0].id}</test.env>
                             <tags>${tags}</tags>
-                            <cora.test.user>${cora.test.user}</cora.test.user>
-                            <cora.test.pass>${cora.test.pass}</cora.test.pass>
+                            <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
+                            <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                             <cora.test.url>${cora.test.url}</cora.test.url>
-                            <cora.jdbc.url>${cora.jdbc.url}</cora.jdbc.url>
                             <test.version>${project.version}</test.version>
                             <test.maxWaitTime>10</test.maxWaitTime>
                         </systemPropertyVariables>
@@ -135,48 +134,36 @@
         <profile>
             <id>test1</id>
             <properties>
-                <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
-                <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-test.dna.corp.adaptivebiotech.com</cora.test.url>
             </properties>
         </profile>
         <profile>
             <id>test2</id>
             <properties>
-                <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
-                <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-test-2.dna.corp.adaptivebiotech.com</cora.test.url>
             </properties>
         </profile>
         <profile>
             <id>test3</id>
             <properties>
-                <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
-                <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-test-3.dna.corp.adaptivebiotech.com</cora.test.url>
             </properties>
         </profile>
         <profile>
             <id>am-test</id>
             <properties>
-                <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
-                <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-am-test.dna.corp.adaptivebiotech.com</cora.test.url>
             </properties>
         </profile>
         <profile>
             <id>stage1</id>
             <properties>
-                <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
-                <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-stage.dna.corp.adaptivebiotech.com</cora.test.url>
             </properties>
         </profile>
         <profile>
             <id>stage2</id>
             <properties>
-                <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
-                <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
                 <cora.test.url>https://cora-stage-2.dna.corp.adaptivebiotech.com</cora.test.url>
             </properties>
         </profile>
