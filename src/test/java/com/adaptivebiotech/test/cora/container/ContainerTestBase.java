@@ -16,10 +16,10 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.fail;
 import java.util.stream.IntStream;
-import com.adaptivebiotech.dto.ContainerHistory;
-import com.adaptivebiotech.dto.Containers;
-import com.adaptivebiotech.dto.Containers.Container;
-import com.adaptivebiotech.dto.HttpResponse;
+import com.adaptivebiotech.cora.dto.ContainerHistory;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
@@ -62,7 +62,7 @@ public class ContainerTestBase extends CoraBaseBrowser {
         } catch (Exception e) {
             error (String.valueOf (e), e);
             fail (String.valueOf (e));
-            return null;
+            throw new RuntimeException (e.getCause ());
         }
     }
 
@@ -76,7 +76,7 @@ public class ContainerTestBase extends CoraBaseBrowser {
         } catch (Exception e) {
             error (String.valueOf (e), e);
             fail (String.valueOf (e));
-            return null;
+            throw new RuntimeException (e.getCause ());
         }
     }
 

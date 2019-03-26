@@ -19,11 +19,11 @@ import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
-import com.adaptivebiotech.dto.AssayResponse;
-import com.adaptivebiotech.dto.Diagnostic;
-import com.adaptivebiotech.dto.HttpResponse;
-import com.adaptivebiotech.dto.Patient;
-import com.adaptivebiotech.dto.PatientResponse;
+import com.adaptivebiotech.common.dto.Patient;
+import com.adaptivebiotech.cora.dto.AssayResponse;
+import com.adaptivebiotech.cora.dto.Diagnostic;
+import com.adaptivebiotech.cora.dto.HttpResponse;
+import com.adaptivebiotech.cora.dto.PatientResponse;
 import com.adaptivebiotech.test.utils.BaseBrowser;
 import com.adaptivebiotech.ui.cora.CoraPage;
 
@@ -48,12 +48,12 @@ public class CoraBaseBrowser extends BaseBrowser {
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method method) throws Exception {
         info ("running: " + getClass ().getSimpleName () + "." + method.getName () + "()");
-        openBrowser ();
+        openBrowser (coraTestUrl);
         new CoraPage ().doLogin ();
     }
 
     protected void doCoraLogin () {
-        Map <String, String> forms = new HashMap <String, String> ();
+        Map <String, String> forms = new HashMap <> ();
         forms.put ("userName", coraTestUser);
         forms.put ("password", coraTestPass);
         formPost (coraTestUrl + "/cora/login", forms);
@@ -61,15 +61,13 @@ public class CoraBaseBrowser extends BaseBrowser {
 
     protected HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
         try {
-            String json = mapper.writeValueAsString (diagnostic);
-            info ("payload:\n" + json);
-
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
-            return mapper.readValue (post (url, body (json), headers), HttpResponse.class);
+            return mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic)), headers),
+                                     HttpResponse.class);
         } catch (Exception e) {
             error (String.valueOf (e), e);
             fail (String.valueOf (e));
-            return null;
+            throw new RuntimeException (e.getCause ());
         }
     }
 
@@ -80,7 +78,7 @@ public class CoraBaseBrowser extends BaseBrowser {
         } catch (Exception e) {
             error (String.valueOf (e), e);
             fail (String.valueOf (e));
-            return null;
+            throw new RuntimeException (e.getCause ());
         }
     }
 
@@ -91,7 +89,7 @@ public class CoraBaseBrowser extends BaseBrowser {
         } catch (Exception e) {
             error (String.valueOf (e), e);
             fail (String.valueOf (e));
-            return null;
+            throw new RuntimeException (e.getCause ());
         }
     }
 }

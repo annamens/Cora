@@ -14,7 +14,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.insurance1;
 import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.dto.Patient;
+import com.adaptivebiotech.common.dto.Patient;
 import com.adaptivebiotech.ui.cora.order.Billing;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 import com.adaptivebiotech.ui.cora.order.Specimen;

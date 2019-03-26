@@ -12,8 +12,8 @@ import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
 import static java.util.UUID.randomUUID;
 import java.util.HashMap;
 import java.util.Map;
-import com.adaptivebiotech.dto.Containers.Container;
-import com.adaptivebiotech.dto.Patient;
+import com.adaptivebiotech.common.dto.Patient;
+import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.test.BaseEnvironment.envs;
 
 public class TestHelper {
@@ -71,7 +71,7 @@ public class TestHelper {
     // scenario builder takes only client billingType
     public static Patient newScenarioBuilderPatient () {
         Patient patient = newPatient ();
-        patient.id = randomUUID ().toString ().replace ("-", "");
+        patient.id = randomUUID ().toString ();
         patient.dateOfBirth = "1999-01-01";
         patient.billingType = Client;
         return patient;
@@ -98,7 +98,7 @@ public class TestHelper {
     }
 
     private static Map <String, String> testdata () {
-        Map <String, String> data = new HashMap <String, String> ();
+        Map <String, String> data = new HashMap <> ();
         switch (envs.valueOf (env)) {
         case test1:
             data.put ("freezerDestroyed_id", "");

@@ -11,9 +11,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
-import com.adaptivebiotech.dto.Orders.Order;
-import com.adaptivebiotech.dto.Patient;
-import com.adaptivebiotech.dto.Physician;
+import com.adaptivebiotech.common.dto.Patient;
+import com.adaptivebiotech.common.dto.Physician;
+import com.adaptivebiotech.common.dto.Orders.Order;
 import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 
 public class OrderTestBase extends CoraBaseBrowser {

@@ -8,7 +8,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.dto.Orders.Order;
+import com.adaptivebiotech.common.dto.Orders.Order;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 import com.adaptivebiotech.ui.cora.order.OrderList;
 

@@ -21,7 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <parallel>methods</parallel>
         <threads>1</threads>
-        <testng.verbose>2</testng.verbose>
+        <testng.verbose>1</testng.verbose>
     </properties>
     <build>
         <pluginManagement>
@@ -57,10 +57,7 @@
                             <test.maxWaitTime>10</test.maxWaitTime>
                         </systemPropertyVariables>
                         <properties>
-                            <property>
-                                <name>surefire.testng.verbose</name>
-                                <value>${testng.verbose}</value>
-                            </property>
+                            <surefire.testng.verbose>${testng.verbose}</surefire.testng.verbose>
                         </properties>
                     </configuration>
                 </plugin>
@@ -122,12 +119,12 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>selenium-base</artifactId>
-            <version>1.1.4</version>
+            <version>1.1.6</version>
         </dependency>
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.0.4</version>
+            <version>1.0.6</version>
         </dependency>
     </dependencies>
     <profiles>

@@ -20,7 +20,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.dto.Patient;
+import com.adaptivebiotech.common.dto.Patient;
 import com.adaptivebiotech.ui.cora.order.Billing;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 import com.adaptivebiotech.ui.cora.order.Specimen;
