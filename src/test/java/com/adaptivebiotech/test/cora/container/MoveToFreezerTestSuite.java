@@ -99,7 +99,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             Containers listContainers = list.getContainers ();
             for (Container primary : containers.list) {
                 if (primary.location.startsWith (freezer.name))
-                    assertEquals (listContainers.getContainerByNumber (primary).location, primary.location);
+                    assertEquals (listContainers.findContainerByNumber (primary).location, primary.location);
             }
         }
     }
@@ -221,7 +221,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             for (Container c : containers.list) {
                 Container child = c.containerType.equals (ContainerType.Plate) ? c : c.children.get (0);
                 if (child.location.startsWith (freezer.name))
-                    assertEquals (listContainers.getContainerByNumber (child).location, child.location);
+                    assertEquals (listContainers.findContainerByNumber (child).location, child.location);
             }
         }
     }

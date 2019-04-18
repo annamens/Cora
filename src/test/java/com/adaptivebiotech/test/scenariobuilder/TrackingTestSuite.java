@@ -3,18 +3,21 @@ package com.adaptivebiotech.test.scenariobuilder;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
+import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.utils.TestHelper.newScenarioBuilderPatient;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.dto.AssayResponse;
-import com.adaptivebiotech.dto.Orders;
-import com.adaptivebiotech.dto.Orders.Order;
-import com.adaptivebiotech.dto.Orders.OrderProperties;
-import com.adaptivebiotech.dto.Orders.OrderTest;
-import com.adaptivebiotech.dto.Patient;
-import com.adaptivebiotech.dto.Workflow.Stage;
+import com.adaptivebiotech.common.dto.Orders;
+import com.adaptivebiotech.common.dto.Orders.Order;
+import com.adaptivebiotech.common.dto.Orders.OrderProperties;
+import com.adaptivebiotech.common.dto.Orders.OrderTest;
+import com.adaptivebiotech.common.dto.Patient;
+import com.adaptivebiotech.cora.dto.AssayResponse;
+import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 import com.adaptivebiotech.ui.cora.order.OrderList;
 import com.adaptivebiotech.ui.cora.workflow.History;
@@ -56,7 +59,7 @@ public class TrackingTestSuite extends ScenarioBuilderTestBase {
 
         History history = new History ();
         history.gotoOrderDebug (test.workflow.sampleName);
-        history.waitForReport ();
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
 
         Diagnostic diagnostic = new Diagnostic ();

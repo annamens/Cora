@@ -73,7 +73,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         main.gotoMyCustody ();
         Containers myContainers = new Containers ();
         for (Container c : my.getContainers ().list)
-            if (containers.getContainerByNumber (c) != null)
+            if (containers.findContainerByNumber (c) != null)
                 myContainers.list.add (c);
 
         assertEquals (myContainers.list.size (), 2);
@@ -96,7 +96,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         main.gotoMyCustody ();
         myContainers = new Containers ();
         for (Container c : my.getContainers ().list)
-            if (containers.getContainerByNumber (c) != null)
+            if (containers.findContainerByNumber (c) != null)
                 myContainers.list.add (c);
 
         assertEquals (myContainers.list.size (), 1);
@@ -149,7 +149,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
 
         main.gotoMyCustody ();
         Containers myContainers = new Containers ();
-        myContainers.list.add (my.getContainers ().getContainerByNumber (c2));
+        myContainers.list.add (my.getContainers ().findContainerByNumber (c2));
         assertEquals (myContainers.list.size (), 1);
         assertEquals (myContainers.list.get (0).containerType, SlideBox5);
         assertEquals (myContainers.list.get (0).name, name33.substring (0, 32));

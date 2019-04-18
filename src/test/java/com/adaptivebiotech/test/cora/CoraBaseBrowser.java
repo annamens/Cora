@@ -4,13 +4,13 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.BaseEnvironment.initialization;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.body;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.formPost;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.get;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.post;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.seleniumfy.test.utils.HttpClientHelper.body;
+import static com.seleniumfy.test.utils.HttpClientHelper.formPost;
+import static com.seleniumfy.test.utils.HttpClientHelper.get;
+import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import static org.testng.Assert.fail;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -24,8 +24,8 @@ import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.PatientResponse;
-import com.adaptivebiotech.test.utils.BaseBrowser;
 import com.adaptivebiotech.ui.cora.CoraPage;
+import com.seleniumfy.test.utils.BaseBrowser;
 
 public class CoraBaseBrowser extends BaseBrowser {
 

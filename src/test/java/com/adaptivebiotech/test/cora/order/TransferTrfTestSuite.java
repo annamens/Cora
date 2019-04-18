@@ -27,7 +27,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
     public void pendingOrder () {
         // search for pending orders
         list.isCorrectPage ();
-        Order expected = list.getAllDiagnosticOrders (Pending).getOriginals ().list.get (0);
+        Order expected = list.getAllDiagnosticOrders (Pending).findOriginals ().list.get (0);
         list.doOrderSearch (expected.order_number);
         String postfix = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
         list.clickOrder (expected.order_number);
@@ -66,7 +66,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
     public void activeOrder () {
         // search for active orders
         list.isCorrectPage ();
-        Order expected = list.getAllDiagnosticOrders (Active).getOriginals ().list.get (0);
+        Order expected = list.getAllDiagnosticOrders (Active).findOriginals ().list.get (0);
         list.doOrderSearch (expected.order_number);
         String postfix = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
         list.clickOrder (expected.order_number);
@@ -101,7 +101,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
     public void cancelledOrder () {
         // search for cancelled orders
         list.isCorrectPage ();
-        Order expected = list.getAllDiagnosticOrders (Cancelled).getOriginals ().list.get (0);
+        Order expected = list.getAllDiagnosticOrders (Cancelled).findOriginals ().list.get (0);
         list.doOrderSearch (expected.order_number);
         String postfix = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
         list.clickOrder (expected.order_number);
@@ -136,7 +136,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
     public void completedOrder () {
         // search for completed orders
         list.isCorrectPage ();
-        Order expected = list.getAllDiagnosticOrders (Completed).getOriginals ().list.get (0);
+        Order expected = list.getAllDiagnosticOrders (Completed).findOriginals ().list.get (0);
         list.doOrderSearch (expected.order_number);
         String postfix = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
         list.clickOrder (expected.order_number);
@@ -171,7 +171,7 @@ public class TransferTrfTestSuite extends OrderTestBase {
     public void doubleTransfers () {
         // search for pending orders
         list.isCorrectPage ();
-        Order expected = list.getAllDiagnosticOrders (Pending).getOriginals ().list.get (0);
+        Order expected = list.getAllDiagnosticOrders (Pending).findOriginals ().list.get (0);
         list.doOrderSearch (expected.order_number);
         String postfix1 = String.valueOf ((char) ('a' + list.getOrders ().list.size () - 1));
         list.clickOrder (expected.order_number);

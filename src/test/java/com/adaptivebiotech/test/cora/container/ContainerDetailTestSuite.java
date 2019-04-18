@@ -62,7 +62,10 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         main.gotoContainerDetail (containers.list.get (0));
 
         // test: >10 files at a time
-        String[] files = new String[] { "attachment.jpg", "test1.png", "test2.png", "test3.png", "test4.png", "test5.png", "test6.png", "test7.png", "test8.png", "test9.png", "test10.png" };
+        String[] files = new String[] {
+                "attachment.jpg", "test1.png", "test2.png", "test3.png", "test4.png", "test5.png", "test6.png",
+                "test7.png", "test8.png", "test9.png", "test10.png"
+        };
         detail.uploadAttachments (files);
         assertEquals (detail.getMaxFileErr (), error2);
     }

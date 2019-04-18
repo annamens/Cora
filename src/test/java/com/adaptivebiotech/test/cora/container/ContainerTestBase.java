@@ -2,15 +2,15 @@ package com.adaptivebiotech.test.cora.container;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.body;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.post;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.put;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.utils.TestHelper.freezerAB018055;
 import static com.adaptivebiotech.utils.TestHelper.freezerAB018078;
 import static com.adaptivebiotech.utils.TestHelper.freezerAB018082;
 import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
+import static com.seleniumfy.test.utils.HttpClientHelper.body;
+import static com.seleniumfy.test.utils.HttpClientHelper.post;
+import static com.seleniumfy.test.utils.HttpClientHelper.put;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
