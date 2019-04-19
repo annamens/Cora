@@ -9,6 +9,10 @@
     <name>Adaptive Biotechnologies Selenium Tests for Cora</name>
     <repositories>
         <repository>
+            <id>adaptivebiotech-ext-release-local</id>
+            <url>https://artifactory.dna.corp.adaptivebiotech.com:443/artifactory/ext-release-local/</url>
+        </repository>
+        <repository>
             <id>adaptivebiotech-libs-release-local</id>
             <url>https://artifactory.dna.corp.adaptivebiotech.com:443/artifactory/libs-release-local/</url>
         </repository>
@@ -102,7 +106,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.adaptivebiotech.test.utils</groupId>
+                                    <groupId>com.seleniumfy.test.utils</groupId>
                                     <artifactId>selenium-base</artifactId>
                                     <includes>chromedriver*,geckodriver*</includes>
                                     <overWrite>true</overWrite>
@@ -116,6 +120,11 @@
         </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>com.seleniumfy.test.utils</groupId>
+            <artifactId>selenium-base</artifactId>
+            <version>1.1.9</version>
+        </dependency>
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
