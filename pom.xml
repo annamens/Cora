@@ -3,15 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>cora</artifactId>
     <groupId>com.adaptivebiotech.integration.test</groupId>
+    <artifactId>cora</artifactId>
     <version>1.0.0</version>
     <name>Adaptive Biotechnologies Selenium Tests for Cora</name>
     <repositories>
-        <repository>
-            <id>adaptivebiotech-ext-release-local</id>
-            <url>https://artifactory.dna.corp.adaptivebiotech.com:443/artifactory/ext-release-local/</url>
-        </repository>
         <repository>
             <id>adaptivebiotech-libs-release-local</id>
             <url>https://artifactory.dna.corp.adaptivebiotech.com:443/artifactory/libs-release-local/</url>
@@ -123,7 +119,7 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.3</version>
+            <version>1.1.5</version>
         </dependency>
     </dependencies>
     <profiles>

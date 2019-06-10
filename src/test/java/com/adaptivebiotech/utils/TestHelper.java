@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import com.adaptivebiotech.common.dto.Patient;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.test.BaseEnvironment.envs;
 
 public class TestHelper {
 
@@ -99,8 +98,8 @@ public class TestHelper {
 
     private static Map <String, String> testdata () {
         Map <String, String> data = new HashMap <> ();
-        switch (envs.valueOf (env)) {
-        case test1:
+        switch (env) {
+        case "test1":
             data.put ("freezerDestroyed_id", "");
             data.put ("freezerDestroyed_num", "");
             data.put ("AB018055_id", "");
@@ -110,7 +109,7 @@ public class TestHelper {
             data.put ("AB018082_id", "");
             data.put ("AB018082_num", "");
             return data;
-        case test2:
+        case "test2":
             data.put ("freezerDestroyed_id", "");
             data.put ("freezerDestroyed_num", "");
             data.put ("AB018055_id", "");
@@ -120,7 +119,7 @@ public class TestHelper {
             data.put ("AB018082_id", "");
             data.put ("AB018082_num", "");
             return data;
-        case test3:
+        case "test3":
             data.put ("freezerDestroyed_id", "c182b9e5-bdbe-44ae-8dfd-12c957cc1fc8");
             data.put ("freezerDestroyed_num", "CO-101825");
             data.put ("AB018055_id", "d8907b46-5e21-403f-bc32-adb149e5c467");
@@ -130,7 +129,7 @@ public class TestHelper {
             data.put ("AB018082_id", "7be0a979-ea12-4452-a9bd-987fe03474c7");
             data.put ("AB018082_num", "CO-100160");
             return data;
-        case stage:
+        case "stage":
         default:
             data.put ("freezerDestroyed_id", "c182b9e5-bdbe-44ae-8dfd-12c957cc1fc8");
             data.put ("freezerDestroyed_num", "CO-113819");
