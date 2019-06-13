@@ -43,7 +43,6 @@
                         <parallel>${parallel}</parallel>
                         <threadCount>${threads}</threadCount>
                         <argLine>-Xmx1024m</argLine>
-                        <argLine>-XX:MaxPermSize=512m</argLine>
                         <includes>
                             <include>**/*TestSuite.java</include>
                         </includes>
