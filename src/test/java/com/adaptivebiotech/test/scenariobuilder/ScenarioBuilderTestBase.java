@@ -1,11 +1,6 @@
 package com.adaptivebiotech.test.scenariobuilder;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.utils.Environment.maxWaitTime;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.body;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.get;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.post;
-import static com.adaptivebiotech.test.utils.HttpClientHelper.put;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.PageHelper.formatDt2;
@@ -21,6 +16,10 @@ import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static com.adaptivebiotech.test.utils.TestHelper.setDate;
 import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
+import static com.seleniumfy.test.utils.HttpClientHelper.body;
+import static com.seleniumfy.test.utils.HttpClientHelper.get;
+import static com.seleniumfy.test.utils.HttpClientHelper.post;
+import static com.seleniumfy.test.utils.HttpClientHelper.put;
 import static java.util.Arrays.asList;
 import static java.util.Calendar.DATE;
 import static java.util.Calendar.HOUR;
@@ -38,38 +37,39 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
-import com.adaptivebiotech.dto.Containers.Container;
-import com.adaptivebiotech.dto.Diagnostic;
-import com.adaptivebiotech.dto.Diagnostic.Account;
-import com.adaptivebiotech.dto.Diagnostic.Task;
-import com.adaptivebiotech.dto.HttpResponse;
-import com.adaptivebiotech.dto.MoveContainer;
-import com.adaptivebiotech.dto.Orders.Order;
-import com.adaptivebiotech.dto.Orders.OrderProperties;
-import com.adaptivebiotech.dto.Orders.OrderTest;
-import com.adaptivebiotech.dto.Patient;
-import com.adaptivebiotech.dto.Physician;
-import com.adaptivebiotech.dto.ProjectResponse;
-import com.adaptivebiotech.dto.ProjectResponse.Project;
-import com.adaptivebiotech.dto.Research;
-import com.adaptivebiotech.dto.Research.TechTransfer;
-import com.adaptivebiotech.dto.Shipment;
-import com.adaptivebiotech.dto.Specimen;
-import com.adaptivebiotech.dto.Specimen.Sample;
-import com.adaptivebiotech.dto.SpecimenResponse;
-import com.adaptivebiotech.dto.Workflow.Stage;
+import com.adaptivebiotech.common.dto.Orders.Order;
+import com.adaptivebiotech.common.dto.Orders.OrderProperties;
+import com.adaptivebiotech.common.dto.Orders.OrderTest;
+import com.adaptivebiotech.common.dto.Patient;
+import com.adaptivebiotech.common.dto.Physician;
+import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Diagnostic;
+import com.adaptivebiotech.cora.dto.Diagnostic.Account;
+import com.adaptivebiotech.cora.dto.Diagnostic.Task;
+import com.adaptivebiotech.cora.dto.HttpResponse;
+import com.adaptivebiotech.cora.dto.MoveContainer;
+import com.adaptivebiotech.cora.dto.Research;
+import com.adaptivebiotech.cora.dto.Research.TechTransfer;
+import com.adaptivebiotech.cora.dto.Shipment;
+import com.adaptivebiotech.cora.dto.Specimen;
+import com.adaptivebiotech.cora.dto.Specimen.Sample;
+import com.adaptivebiotech.cora.dto.SpecimenResponse;
+import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
-import com.adaptivebiotech.test.utils.Timeout;
+import com.seleniumfy.test.utils.Timeout;
 
 public class ScenarioBuilderTestBase extends CoraBaseBrowser {
 
     private final Container freezerDestroyed = freezerDestroyed ();
 
     private int[] dateToIntArr (Calendar target) {
-        return new int[] { target.get (YEAR), target.get (MONTH) + 1, target.get (DATE), target.get (HOUR), target.get (MINUTE), target.get (SECOND), target.get (MILLISECOND) };
+        return new int[] {
+                target.get (YEAR), target.get (MONTH) + 1, target.get (DATE), target.get (HOUR), target.get (MINUTE),
+                target.get (SECOND), target.get (MILLISECOND)
+        };
     }
 
     private Diagnostic buildDiagnosticOrder (Patient patient) {
@@ -125,7 +125,7 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
         return stage;
     }
 
-    protected Task task () {
+    private Task task () {
         Task task = new Task ();
         task.name = "Clonoseq Report Scenario Test Helper";
         task.description = "Moves ClonoSeq workflows through the correct stages for tests.";
@@ -184,7 +184,7 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
         try {
             String url = coraTestUrl + "/cora/api/v1/specimens/" + specimenId;
             SpecimenResponse response = mapper.readValue (get (url), SpecimenResponse.class);
-            Timeout timer = new Timeout (maxWaitTime * 10000, 1000);
+            Timeout timer = new Timeout (millisRetry, waitRetry);
             do {
                 timer.Wait ();
                 response = mapper.readValue (get (url), SpecimenResponse.class);
@@ -193,38 +193,33 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
                 fail ("response.name is null");
             return response;
         } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 
     protected HttpResponse newResearchOrder (Research research) {
         try {
-            String json = mapper.writeValueAsString (research);
-            info ("payload:\n" + json);
-
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
-            return mapper.readValue (post (url, body (json), headers), HttpResponse.class);
+            return mapper.readValue (post (url, body (mapper.writeValueAsString (research)), headers),
+                                     HttpResponse.class);
         } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 
-    protected Project getTestProject () {
-        try {
-            String url = coraTestUrl + "/cora/api/v1/projects/search?name=Adaptive-Testing";
-            Project project = mapper.readValue (get (url), ProjectResponse.class).objects.get (0);
-            project.accountId = project.account != null ? project.account.id : null;
-            return project;
-        } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
-        }
-    }
+    // protected Project getTestProject () {
+    // try {
+    // String url = coraTestUrl + "/cora/api/v1/projects/search?name=Adaptive-Testing";
+    // Project project = mapper.readValue (get (url), ProjectResponse.class).objects.get (0);
+    // project.accountId = project.account != null ? project.account.id : null;
+    // return project;
+    // } catch (Exception e) {
+    // error (e.getMessage (), e);
+    // throw new RuntimeException (e);
+    // }
+    // }
 
     private Shipment shipment (ContainerType type, ContainerType childType, int num) {
         Shipment shipment = new Shipment ();
@@ -253,9 +248,8 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
             String url = coraTestUrl + "/cora/api/v1/shipments/entry";
             return mapper.readValue (post (url, body (mapper.writeValueAsString (shipment))), Shipment.class);
         } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 
@@ -269,23 +263,21 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
             String url = coraTestUrl + "/cora/api/v1/containers/" + container.id + "/storeInFreezer/" + freezerDestroyed.id;
             return mapper.readValue (put (url, body (mapper.writeValueAsString (move)), headers), MoveContainer.class);
         } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 
     private MoveContainer takeCustody (Container container) {
         try {
             info ("take custody[" + container.containerNumber + "]: " + container.id);
-            Map <String, String> body = new HashMap <String, String> ();
+            Map <String, String> body = new HashMap <> ();
             body.put ("comments", "api take custody");
             String url = coraTestUrl + "/cora/api/v1/containers/" + container.id + "/takeCustody";
             return mapper.readValue (put (url, body (mapper.writeValueAsString (body)), headers), MoveContainer.class);
         } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            return null;
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 }

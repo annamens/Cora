@@ -11,7 +11,6 @@ import static com.seleniumfy.test.utils.HttpClientHelper.body;
 import static com.seleniumfy.test.utils.HttpClientHelper.formPost;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
-import static org.testng.Assert.fail;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +34,8 @@ public class CoraBaseBrowser extends BaseBrowser {
         try {
             initialization ();
         } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 
@@ -65,9 +64,8 @@ public class CoraBaseBrowser extends BaseBrowser {
             return mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic)), headers),
                                      HttpResponse.class);
         } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            throw new RuntimeException (e.getCause ());
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 
@@ -76,9 +74,8 @@ public class CoraBaseBrowser extends BaseBrowser {
             String url = coraTestUrl + "/cora/api/v1/tests?categoryId=63780203-caeb-483d-930c-8392afb5d927";
             return mapper.readValue (get (url), AssayResponse.class);
         } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            throw new RuntimeException (e.getCause ());
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 
@@ -87,9 +84,8 @@ public class CoraBaseBrowser extends BaseBrowser {
             String url = coraTestUrl + "/cora/api/v1/patients?firstName=" + patient.firstName + "&lastName=" + patient.lastName;
             return mapper.readValue (get (url), PatientResponse.class).get (patient);
         } catch (Exception e) {
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
-            throw new RuntimeException (e.getCause ());
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 }

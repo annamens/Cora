@@ -67,8 +67,8 @@ public class OrderTestBase extends CoraBaseBrowser {
             assertNull (actual.notes);
         } catch (Exception e) {
             error ("expected order=" + expected.order_number + ", actual order=" + actual.order_number);
-            error (String.valueOf (e), e);
-            fail (String.valueOf (e));
+            error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
     }
 }
