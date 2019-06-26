@@ -60,7 +60,6 @@ public class ContainerTestBase extends CoraBaseBrowser {
                         return c;
                     }).collect (toList ()));
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }
@@ -73,7 +72,6 @@ public class ContainerTestBase extends CoraBaseBrowser {
                     mapper.readValue (put (url, body (mapper.writeValueAsString (containers.list)), headers),
                                       HttpResponse.class).containers);
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }

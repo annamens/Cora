@@ -1,7 +1,6 @@
 package com.adaptivebiotech.test.scenariobuilder;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.PageHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
@@ -193,7 +192,6 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
                 fail ("response.name is null");
             return response;
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }
@@ -204,7 +202,6 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
             return mapper.readValue (post (url, body (mapper.writeValueAsString (research)), headers),
                                      HttpResponse.class);
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }
@@ -216,7 +213,6 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
     // project.accountId = project.account != null ? project.account.id : null;
     // return project;
     // } catch (Exception e) {
-    // error (e.getMessage (), e);
     // throw new RuntimeException (e);
     // }
     // }
@@ -248,7 +244,6 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
             String url = coraTestUrl + "/cora/api/v1/shipments/entry";
             return mapper.readValue (post (url, body (mapper.writeValueAsString (shipment))), Shipment.class);
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }
@@ -263,7 +258,6 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
             String url = coraTestUrl + "/cora/api/v1/containers/" + container.id + "/storeInFreezer/" + freezerDestroyed.id;
             return mapper.readValue (put (url, body (mapper.writeValueAsString (move)), headers), MoveContainer.class);
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }
@@ -276,7 +270,6 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
             String url = coraTestUrl + "/cora/api/v1/containers/" + container.id + "/takeCustody";
             return mapper.readValue (put (url, body (mapper.writeValueAsString (body)), headers), MoveContainer.class);
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }

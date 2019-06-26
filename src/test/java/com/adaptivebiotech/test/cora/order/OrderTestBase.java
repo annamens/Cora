@@ -10,7 +10,6 @@ import static com.adaptivebiotech.utils.TestHelper.patientMedicare;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 import com.adaptivebiotech.common.dto.Orders.Order;
 import com.adaptivebiotech.common.dto.Patient;
 import com.adaptivebiotech.common.dto.Physician;
@@ -67,7 +66,6 @@ public class OrderTestBase extends CoraBaseBrowser {
             assertNull (actual.notes);
         } catch (Exception e) {
             error ("expected order=" + expected.order_number + ", actual order=" + actual.order_number);
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }

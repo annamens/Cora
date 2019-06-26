@@ -4,7 +4,6 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.BaseEnvironment.initialization;
-import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.HttpClientHelper.body;
@@ -34,7 +33,6 @@ public class CoraBaseBrowser extends BaseBrowser {
         try {
             initialization ();
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }
@@ -64,7 +62,6 @@ public class CoraBaseBrowser extends BaseBrowser {
             return mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic)), headers),
                                      HttpResponse.class);
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }
@@ -74,7 +71,6 @@ public class CoraBaseBrowser extends BaseBrowser {
             String url = coraTestUrl + "/cora/api/v1/tests?categoryId=63780203-caeb-483d-930c-8392afb5d927";
             return mapper.readValue (get (url), AssayResponse.class);
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }
@@ -84,7 +80,6 @@ public class CoraBaseBrowser extends BaseBrowser {
             String url = coraTestUrl + "/cora/api/v1/patients?firstName=" + patient.firstName + "&lastName=" + patient.lastName;
             return mapper.readValue (get (url), PatientResponse.class).get (patient);
         } catch (Exception e) {
-            error (e.getMessage (), e);
             throw new RuntimeException (e);
         }
     }
