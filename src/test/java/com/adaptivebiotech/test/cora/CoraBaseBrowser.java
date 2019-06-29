@@ -3,7 +3,7 @@ package com.adaptivebiotech.test.cora;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.BaseEnvironment.initialization;
+import static com.adaptivebiotech.test.cora.CoraEnvironment.initialization;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.HttpClientHelper.body;
@@ -30,11 +30,7 @@ public class CoraBaseBrowser extends BaseBrowser {
     protected final Header[] headers = new Header[] { new BasicHeader ("X-Api-UserName", "svc_test_user") };
 
     static {
-        try {
-            initialization ();
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        initialization ();
     }
 
     @BeforeSuite (alwaysRun = true)

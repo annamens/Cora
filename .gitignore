@@ -1,4 +1,5 @@
 /target/
+/config/
 *.gitignore
 *.DS_Store
 *.classpath

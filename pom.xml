@@ -9,12 +9,8 @@
     <name>Adaptive Biotechnologies Selenium Tests for Cora</name>
     <repositories>
         <repository>
-            <id>adaptivebiotech-libs-release-local</id>
-            <url>https://artifactory.dna.corp.adaptivebiotech.com:443/artifactory/libs-release-local/</url>
-        </repository>
-        <repository>
-            <id>adaptivebiotech-libs-snapshot-local</id>
-            <url>https://artifactory.dna.corp.adaptivebiotech.com:443/artifactory/libs-snapshot-local/</url>
+            <id>adaptivebiotech-libs-release</id>
+            <url>https://artifactory.dna.corp.adaptivebiotech.com:443/artifactory/libs-release/</url>
         </repository>
     </repositories>
     <properties>
@@ -22,6 +18,7 @@
         <parallel>methods</parallel>
         <threads>1</threads>
         <testng.verbose>1</testng.verbose>
+        <output.to.file>true</output.to.file>
     </properties>
     <build>
         <pluginManagement>
@@ -46,14 +43,12 @@
                         <includes>
                             <include>**/*TestSuite.java</include>
                         </includes>
+                        <redirectTestOutputToFile>${output.to.file}</redirectTestOutputToFile>
                         <systemPropertyVariables>
-                            <test.env>${project.activeProfiles[0].id}</test.env>
-                            <tags>${tags}</tags>
-                            <cora.test.user>svc_cora_test_phi_preprod</cora.test.user>
-                            <cora.test.pass>5/f+ssiOuIjC9yK9fXLmKA==</cora.test.pass>
-                            <cora.test.url>${cora.test.url}</cora.test.url>
-                            <test.version>${project.version}</test.version>
-                            <test.maxWaitTime>10</test.maxWaitTime>
+                            <project.version>${git.branch}</project.version>
+                            <test.env>stage-2</test.env>
+                            <test.webdriver.wait>30</test.webdriver.wait>
+                            <path.to.config>config/cora/test.properties</path.to.config>
                         </systemPropertyVariables>
                         <properties>
                             <surefire.testng.verbose>${testng.verbose}</surefire.testng.verbose>
@@ -112,6 +107,25 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>validate-the-git-infos</id>
+                        <goals>
+                            <goal>validateRevision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -121,42 +135,4 @@
             <version>1.1.7</version>
         </dependency>
     </dependencies>
-    <profiles>
-        <profile>
-            <id>test1</id>
-            <properties>
-                <cora.test.url>https://cora-test.dna.corp.adaptivebiotech.com</cora.test.url>
-            </properties>
-        </profile>
-        <profile>
-            <id>test2</id>
-            <properties>
-                <cora.test.url>https://cora-test-2.dna.corp.adaptivebiotech.com</cora.test.url>
-            </properties>
-        </profile>
-        <profile>
-            <id>test3</id>
-            <properties>
-                <cora.test.url>https://cora-test-3.dna.corp.adaptivebiotech.com</cora.test.url>
-            </properties>
-        </profile>
-        <profile>
-            <id>am-test</id>
-            <properties>
-                <cora.test.url>https://cora-am-test.dna.corp.adaptivebiotech.com</cora.test.url>
-            </properties>
-        </profile>
-        <profile>
-            <id>stage1</id>
-            <properties>
-                <cora.test.url>https://cora-stage.dna.corp.adaptivebiotech.com</cora.test.url>
-            </properties>
-        </profile>
-        <profile>
-            <id>stage2</id>
-            <properties>
-                <cora.test.url>https://cora-stage-2.dna.corp.adaptivebiotech.com</cora.test.url>
-            </properties>
-        </profile>
-    </profiles>
 </project>

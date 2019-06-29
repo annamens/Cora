@@ -19,6 +19,7 @@ import static com.seleniumfy.test.utils.HttpClientHelper.body;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import static com.seleniumfy.test.utils.HttpClientHelper.put;
+import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static java.util.Calendar.DATE;
 import static java.util.Calendar.HOUR;
@@ -31,7 +32,7 @@ import static java.util.Collections.addAll;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.fail;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -137,7 +138,7 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
     }
 
     protected Research buildResearchOrder () {
-        SimpleDateFormat formatDt = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter formatDt = DateTimeFormatter.ofPattern ("yyyy-MM-dd'T'HH:mm:ss");
         String uniqueId = randomWords (1) + "-test-" + randomUUID ();
         TechTransfer techTransfer = new TechTransfer ();
         techTransfer.workspace = "Adaptive-Testing";
@@ -160,7 +161,7 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
         specimen.externalSubjectId = specimen.name;
         specimen.sampleType = Blood;
         specimen.sampleSource = BCells;
-        specimen.collectionDate = formatDt.format (setDate (-10).getTime ());
+        specimen.collectionDate = formatDt.format (now ().minusDays (10));
         specimen.samples = asList (id, mrd);
         techTransfer.specimens = asList (specimen);
 
