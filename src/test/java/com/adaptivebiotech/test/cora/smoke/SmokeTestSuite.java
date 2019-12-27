@@ -3,9 +3,7 @@ package com.adaptivebiotech.test.cora.smoke;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import com.adaptivebiotech.common.dto.Physician;
-
 import com.adaptivebiotech.ui.cora.CoraPage;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
@@ -17,8 +15,6 @@ public class SmokeTestSuite extends SmokeTestBase{
 	    @BeforeMethod
 	    public void beforeMethod () {
 	        main = new CoraPage ();
-	        
-
 	    }
 
 	    @AfterMethod
@@ -26,6 +22,7 @@ public class SmokeTestSuite extends SmokeTestBase{
 	       
 	    }
 	    
+	    // SR-T1960
 	    public void SaveNewDiagnosticOrder () {
 	        diagnostic = new Diagnostic();
 	        Physician physician = new Physician ();
