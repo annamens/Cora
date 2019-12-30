@@ -33,6 +33,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.fail;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,7 +83,7 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
         specimen.sampleType = Blood;
         specimen.collectionDate = dateToIntArr (setDate (-10));
         specimen.reconciliationDate = dateToIntArr (setDate (0));
-        specimen.properties = new Specimen.SpecimenProperties (formatDt2.format (setDate (12).getTime ()));
+        specimen.properties = new Specimen.SpecimenProperties (formatDt2.format ((TemporalAccessor) setDate (12).getTime ()));
         diagnostic.specimen = specimen;
 
         Shipment shipment = new Shipment ();
