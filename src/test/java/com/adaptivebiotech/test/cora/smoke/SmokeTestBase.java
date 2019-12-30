@@ -1,6 +1,7 @@
 package com.adaptivebiotech.test.cora.smoke;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
@@ -16,7 +17,7 @@ public class SmokeTestBase extends CoraBaseBrowser {
     protected void verifyOrderNumber () {
 
         String orderNumber = diagnostic.getOrderNum ();
-        assertEquals (orderNumber.matches ("D-\\d{6}"), true);
+        assertTrue (orderNumber.matches ("D-\\d{6}"));
     }
 
 }
