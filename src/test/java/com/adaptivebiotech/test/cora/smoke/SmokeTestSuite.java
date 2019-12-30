@@ -15,7 +15,6 @@ public class SmokeTestSuite extends SmokeTestBase {
     @BeforeMethod
     public void beforeMethod () {
         main = new CoraPage ();
-        testLog ("Login Cora");
     }
 
     // SR-T1960
@@ -29,13 +28,15 @@ public class SmokeTestSuite extends SmokeTestBase {
         physician.allowInternalOrderUpload = true;
 
         main.clickNewDiagnosticOrder ();
-        testLog ("Create new diagnostic order");
+        testLog ("Created new diagnostic order, diagnostic Order page displayed");
         diagnostic.selectPhysician (physician);
-        testLog ("Search and select physician");
+        testLog ("Searched and selected physician");
         verifyPhysicianName ("Matt UVT-Physician");
+        testLog ("Verified physician name displayed in the Diagnostice Order page's Ordering Physician section");
         diagnostic.clickSave ();
-        testLog ("Save the diagnostic order");
+        testLog ("Saved the diagnostic order");
         verifyOrderNumber ();
+        testLog ("Diagnostic Order page displayed an order number, D-######, in the order header");
     }
 
 }
