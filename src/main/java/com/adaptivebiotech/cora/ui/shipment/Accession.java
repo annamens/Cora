@@ -1,0 +1,66 @@
+package com.adaptivebiotech.cora.ui.shipment;
+
+import static java.lang.ClassLoader.getSystemResource;
+import static org.testng.Assert.assertTrue;
+import com.adaptivebiotech.test.utils.PageHelper.DiscrepancyType;
+import com.adaptivebiotech.ui.cora.CoraPage;
+
+/**
+ * @author Harry Soehalim
+ *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
+ */
+public class Accession extends CoraPage {
+
+    @Override
+    public void isCorrectPage () {
+        assertTrue (waitUntilVisible (".navbar"));
+        assertTrue (waitUntilVisible ("[role='tablist']"));
+        assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(2)", "ACCESSION"));
+        pageLoading ();
+    }
+
+    public void uploadIntakeManifest (String file) {
+        waitForElement ("input[data-ng-model='ctrl.intakeManifestFiles']").sendKeys (getSystemResource (file).getPath ());
+        moduleLoading ();
+        assertTrue (click ("[data-ng-click='ctrl.proceedToFullAccessionScreen()']"));
+        pageLoading ();
+    }
+
+    public void clickIntakeComplete () {
+        assertTrue (click ("[data-ng-click*='intake-complete']"));
+        assertTrue (isTextInElement (popupTitle, "Intake Complete Confirmation"));
+        clickPopupOK ();
+        closeNotification ("Accession saved");
+        closeNotification ("Intake complete saved!");
+    }
+
+    public void manualPass (DiscrepancyType type) {
+        String conditionType = "[discrepancy-type='" + type + "'] #conditionType";
+        if (!waitForElement (".specimen-approval [ng-click='ctrl.approveSpecimen(true)']").isEnabled ()) {
+            assertTrue (clickAndSelectValue (conditionType, "ResolvedYes"));
+            assertTrue (click ("[data-ng-click*='accession-save']"));
+        }
+    }
+
+    public void clickPass () {
+        assertTrue (click ("[ng-click='ctrl.approveSpecimen(true)']"));
+        assertTrue (isTextInElement (popupTitle, "Specimen Approval Confirmation"));
+        clickPopupOK ();
+    }
+
+    public void verifyLabels () {
+        assertTrue (click ("[data-ng-click='ctrl.verifyLabels()']"));
+        assertTrue (isTextInElement (popupTitle, "Labels Verified Confirmation"));
+        clickPopupOK ();
+    }
+
+    public void gotoOrderDetail () {
+        assertTrue (click ("[ng-bind='ctrl.order.orderNumber']"));
+        pageLoading ();
+    }
+
+    public void gotoShipment () {
+        assertTrue (click ("[role='presentation'] [data-ng-click*='shipment']"));
+        pageLoading ();
+    }
+}
