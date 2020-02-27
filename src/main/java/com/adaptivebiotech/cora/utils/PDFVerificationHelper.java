@@ -2,48 +2,54 @@ package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.apache.commons.lang3.StringUtils.countMatches;
+import static org.junit.Assert.assertTrue;
 import static org.testng.Assert.assertEquals;
 import java.io.File;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import com.adaptivebiotech.cora.dto.OrderInfo;
+import com.adaptivebiotech.cora.dto.KitOrder;
 import com.adaptivebiotech.test.utils.PageHelper.ReportType;
+import com.testautomationguru.utility.PDFUtil;
 
-public class PDFVerificationHelper extends PDFUtil {
+public class PDFVerificationHelper  {
+    private PDFUtil pdfutil;
 
-    public void verifyHeader (String pdfFilePath, ReportType type, OrderInfo orderInformation) {
+    public void verifyHeader (String pdfFilePath, ReportType type, KitOrder orderInformation) {
 
         try {
 
             String title = "B-CELL " + ( (type == ReportType.clonality) ? "CLONALITY (ID)" : "TRACKING (MRD)") + " REPORT";
-            int pgNum = getPageCount (pdfFilePath);
-            String texts = getText (pdfFilePath);
+            int pgNum = pdfutil.getPageCount (pdfFilePath);
+            String texts = pdfutil.getText (pdfFilePath);
 
-            testLog ("Verify report title ");
             assertEquals (countMatches (texts, title), pgNum);
+            testLog ("The report title was verified");
 
-            testLog ("Verify Report Date");
             assertEquals (countMatches (texts, orderInformation.orderDate_ISO_DATE), pgNum);
+            testLog ("Report Date was verified");
 
-            testLog ("Verify Report #");
             assertEquals (countMatches (texts, orderInformation.reportNum), pgNum);
+            testLog ("Report number was verified");
+            
+            assertEquals (countMatches (texts, orderInformation.externalSubjectId), pgNum);
+            testLog ("Patient ID was verified");
 
-            testLog ("Verify Patient ID");
-            assertEquals (countMatches (texts, orderInformation.externalSubjectId1), pgNum);
+            assertEquals (countMatches (texts, orderInformation.sampleSource), pgNum);
+            testLog ("Specimen Source was verified");
+            
+            assertEquals (countMatches (texts, orderInformation.sampleType), pgNum);
+            testLog ("Specimen Type was verified");
 
-            testLog ("Verify Specimen Type/ Specimen Source");
-            assertEquals (countMatches (texts, title), pgNum);
-
-            testLog ("Verify Collection Date");
-            assertEquals (countMatches (texts, title), pgNum);
+            assertEquals (countMatches (texts,orderInformation.collectionDate), pgNum);
+            testLog ("Collection Date was verified"); 
 
             PDDocument pdf = PDDocument.load (new File (pdfFilePath));
             PDAcroForm form = pdf.getDocumentCatalog ().getAcroForm ();
 
             PDField patientName = form.getField ("patientName");
             assertEquals (patientName.isReadOnly (), false);
-            assertEquals (patientName.getValueAsString ().equals (""), true);
+            assertTrue (patientName.getValueAsString ().equals (""));
 
             PDField dob = form.getField ("dob");
             assertEquals (dob.isReadOnly (), false);

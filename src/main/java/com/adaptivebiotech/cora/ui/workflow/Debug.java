@@ -12,22 +12,17 @@ import com.seleniumfy.test.utils.Timeout;
 public class Debug extends History {
 
     public Debug () {
-        
+
     }
 
     public boolean isFileinFileList (String fileName, int retry, int wait) {
 
         Timeout timer = new Timeout (retry, wait);
+        String xPath = String.format ("//*[text()='%s']", fileName);
         boolean result = false;
         do {
-            List <WebElement> myList = waitForElements (".content > .container > ul > li");
-
-            for (WebElement element : myList) {
-                if (fileName.equals (element.getText ())) {
-                    result = true;
-                    break;
-                }
-            }
+            timer.Wait ();
+            result = waitUntilVisible (xPath);
         } while (!timer.Timedout () && !result);
 
         return result;
@@ -62,7 +57,7 @@ public class Debug extends History {
             timer.Wait ();
             for (WebElement element : myList) {
                 String file = element.getText ();
-                if (result = file.contains ("ClinicalReport-A1")) {
+                if (result = file.contains ("ClinicalReport-" + "A1")) {
                     fileName = file;
                     break;
                 }
@@ -100,7 +95,6 @@ public class Debug extends History {
         Timeout timer = new Timeout (retry, wait);
         boolean result = false;
         String str = null;
-        int count = retry;
         do {
             timer.Wait ();
             refresh ();

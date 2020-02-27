@@ -2,8 +2,8 @@ package com.adaptivebiotech.cora.dto;
 
 import com.adaptivebiotech.test.utils.PageHelper.ReportType;
 
-public final class OrderInfo {
-    public String     externalSubjectId1;
+public final class KitOrder {
+    public String     externalSubjectId;
     public String     sampleName;        // sample name in Clonality or tracking
     public String     orderNum;          // like "R-048487"; order number of ClonalitySample or
                                          // trackingsample
@@ -14,5 +14,8 @@ public final class OrderInfo {
     public String     reportFileName;    // ClinicalReportFileName ; like "A120921397.pdf";
     public String     reportNum;         // report number like "A120921397
     public String     pipelineVersion;
+    public String     collectionDate;    // like 2020-03-12    
+    public String     sampleType;
+    public String     sampleSource;
 
 }

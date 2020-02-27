@@ -2,7 +2,9 @@ package com.adaptivebiotech.test.cora.e2e;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.cora.CoraEnvironment.incomingPath;
+import static com.adaptivebiotech.test.cora.CoraEnvironment.projectAccountID;
 import static com.adaptivebiotech.test.cora.CoraEnvironment.projectID;
+import static com.adaptivebiotech.test.cora.CoraEnvironment.projectName;
 import static com.adaptivebiotech.test.cora.CoraEnvironment.retryTimes;
 import static com.adaptivebiotech.test.cora.CoraEnvironment.sftpServerHostName;
 import static com.adaptivebiotech.test.cora.CoraEnvironment.waitTime;
@@ -28,7 +30,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.adaptivebiotech.cora.dto.HttpResponse;
-import com.adaptivebiotech.cora.dto.OrderInfo;
+import com.adaptivebiotech.cora.dto.KitOrder;
 import com.adaptivebiotech.cora.ui.order.OrderList;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.workflow.Debug;
@@ -36,14 +38,13 @@ import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 import com.adaptivebiotech.test.utils.PageHelper.ReportType;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
-public class E2ETestBase extends CoraBaseBrowser {
+public class KitE2ETestBase extends CoraBaseBrowser {
     protected Diagnostic diagnostic;
     protected String     url                        = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
-    protected String     incoming_Path              = "tech-transfer/CoraTestScenario-TechTransfer/incoming";
     protected String     SR_T1772ClonalityJFilePath = "src/test/resources/SR-T1772_Clonality.json";
     protected String     SR_T1772TrackingJFilePath  = "src/test/resources/SR-T1772_TrackingAboveLOQ1.json";
-    protected OrderInfo  clonalityOrder;
-    protected OrderInfo  trackingOrder;
+    protected KitOrder  clonalityOrder;
+    protected KitOrder  trackingOrder;
 
     protected HttpResponse submitNewOrderRequest (String jsonString) {
 
@@ -56,19 +57,19 @@ public class E2ETestBase extends CoraBaseBrowser {
 
     protected void preCondition (String clonalityJFile, String trackingJFile) {
         testLog ("Process pre-condition");
-        clonalityOrder = new OrderInfo ();
+        clonalityOrder = new KitOrder ();
         clonalityOrder.type = clonality;
         createOrder (clonalityJFile, clonalityOrder);
         testLog ("Clonality order was created");
 
-        trackingOrder = new OrderInfo ();
+        trackingOrder = new KitOrder ();
         trackingOrder.type = tracking;
         createOrder (trackingJFile, trackingOrder);
         testLog ("Tracking order was created");
 
     }
 
-    protected void createOrder (String jFileName, OrderInfo order) {
+    protected void createOrder (String jFileName, KitOrder order) {
 
         String jString = changeClonalityOrTrackingJsonFile (jFileName, order.type);
         if (order.type == clonality) {
@@ -114,10 +115,10 @@ public class E2ETestBase extends CoraBaseBrowser {
             String strVar = getRandomString ();
             if (type == clonality) {
                 clonalityOrder.sampleName = "TSBUNIQUE1-Clonality" + strVar;
-                clonalityOrder.externalSubjectId1 = "TSBUNIQUE1SubjectId" + strVar;
+                clonalityOrder.externalSubjectId = "TSBUNIQUE1SubjectId" + strVar;
             } else {
                 trackingOrder.sampleName = "TSBUNIQUE1-MRD1" + strVar;
-                trackingOrder.externalSubjectId1 = clonalityOrder.externalSubjectId1;
+                trackingOrder.externalSubjectId = clonalityOrder.externalSubjectId;
             }
 
             // read the json file
@@ -132,20 +133,31 @@ public class E2ETestBase extends CoraBaseBrowser {
 
             JSONObject externObj = (JSONObject) specimensArray.get (0);
 
-            externObj.put ("externalSubjectId", clonalityOrder.externalSubjectId1);
+            externObj.put ("externalSubjectId", clonalityOrder.externalSubjectId);
 
             JSONArray sampleArray = (JSONArray) externObj.get ("samples");
             JSONObject sampleObj = (JSONObject) sampleArray.get (0);
-
+            
+            String coDate= (String) externObj.get ("collectionDate");
+            String collectionDate = coDate.toString().substring (0, coDate.toString().indexOf ("T"));
+             
+            
             if (type == clonality) {
                 sampleObj.put ("name", clonalityOrder.sampleName);
+                clonalityOrder.collectionDate = collectionDate;
+                clonalityOrder.sampleType = (String) externObj.get ("sampletype");
+                clonalityOrder.sampleSource = (String) externObj.get ("sampleSource");
             } else {
                 sampleObj.put ("name", trackingOrder.sampleName);
+                trackingOrder.collectionDate = collectionDate;
+                trackingOrder.sampleType = (String) externObj.get ("sampletype");
+                trackingOrder.sampleSource = (String) externObj.get ("sampleSource");
             }
 
             JSONObject projectObj = (JSONObject) jsonObject.get ("project");
             projectObj.put ("id", projectID);
-            projectObj.put ("accountId", projectID);
+            projectObj.put ("accountId", projectAccountID);
+            projectObj.put ("name", projectName);
 
             return mapper.writeValueAsString (jsonObject);
 

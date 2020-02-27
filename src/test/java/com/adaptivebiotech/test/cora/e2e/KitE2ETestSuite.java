@@ -9,7 +9,6 @@ import static com.adaptivebiotech.test.cora.CoraEnvironment.waitTime;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.ui.order.OrderList;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
@@ -20,12 +19,7 @@ import com.adaptivebiotech.test.utils.PageHelper.ReportType;
 import com.adaptivebiotech.ui.cora.workflow.History;;
 
 @Test (groups = { "E2E" })
-public class E2ETestSuite extends E2ETestBase {
-
-    @BeforeMethod
-    public void beforeMethod () {
-
-    }
+public class KitE2ETestSuite extends KitE2ETestBase {
 
     // SR-T1772
     public void VerifyCEKitClonoSEQ () {

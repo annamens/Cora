@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import com.adaptivebiotech.cora.dto.OrderInfo;
+import com.adaptivebiotech.cora.dto.KitOrder;
 import com.adaptivebiotech.test.utils.PageHelper.ReportType;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
@@ -77,7 +77,7 @@ public class SftpServerHelper {
         session.disconnect ();
     }
 
-    public void verifyCorrectDataInReportTrackingTsv (String path, OrderInfo orderInformation,
+    public void verifyCorrectDataInReportTrackingTsv (String path, KitOrder orderInformation,
                                                       String status, int retry, int waitTime) {
 
         try {
@@ -102,7 +102,7 @@ public class SftpServerHelper {
                     String orderNum = dataArray.get (2);
                     // if find the order
                     if (orderNum.equals (orderInformation.orderNum)) {
-                        assertEquals (dataArray.get (0), orderInformation.externalSubjectId1);
+                        assertEquals (dataArray.get (0), orderInformation.externalSubjectId);
                         assertEquals (dataArray.get (1), orderInformation.orderDate_ISO_DATE);
                         assertEquals (dataArray.get (2), orderInformation.orderNum);
                         assertEquals (dataArray.get (3), orderInformation.sampleName);
@@ -134,7 +134,7 @@ public class SftpServerHelper {
         }
     }
 
-    public void verifyCorrectDataInReportTrackingPDF (String path, ReportType type, OrderInfo orderInformation) {
+    public void verifyCorrectDataInReportTrackingPDF (String path, ReportType type, KitOrder orderInformation) {
 
         try {
             String reportTempFile = "target/report.pdf";
