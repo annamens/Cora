@@ -12,9 +12,9 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.time.temporal.TemporalAccessor;
 import com.adaptivebiotech.common.dto.Orders.Order;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.common.dto.Patient;
 import com.adaptivebiotech.common.dto.Physician;
-import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 
 public class OrderTestBase extends CoraBaseBrowser {
 

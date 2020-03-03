@@ -2,14 +2,18 @@ package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.apache.commons.lang3.StringUtils.countMatches;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.testng.Assert.assertEquals;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import com.adaptivebiotech.cora.dto.KitOrder;
 import com.adaptivebiotech.test.utils.PageHelper.ReportType;
+import com.jcraft.jsch.SftpException;
 import com.testautomationguru.utility.PDFUtil;
 
 public class PDFVerificationHelper  {
@@ -48,40 +52,53 @@ public class PDFVerificationHelper  {
             PDAcroForm form = pdf.getDocumentCatalog ().getAcroForm ();
 
             PDField patientName = form.getField ("patientName");
-            assertEquals (patientName.isReadOnly (), false);
-            assertTrue (patientName.getValueAsString ().equals (""));
+            assertFalse (patientName.isReadOnly ());
+            assertEquals (patientName.getValueAsString (), "");
 
             PDField dob = form.getField ("dob");
-            assertEquals (dob.isReadOnly (), false);
-            assertEquals (dob.getValueAsString ().equals (""), true);
+            assertFalse (dob.isReadOnly ());
+            assertEquals (dob.getValueAsString (),"");
 
             PDField mrn = form.getField ("mrn");
-            assertEquals (mrn.isReadOnly (), false);
-            assertEquals (mrn.getValueAsString ().equals (""), true);
+            assertFalse (mrn.isReadOnly ());
+            assertEquals (mrn.getValueAsString (), "");
 
             PDField gender = form.getField ("gender");
-            assertEquals (gender.isReadOnly (), false);
-            assertEquals (gender.getValueAsString ().equals (""), true);
+            assertFalse (gender.isReadOnly ());
+            assertEquals (gender.getValueAsString (), "");
 
             PDField diagnosisCode = form.getField ("diagnosisCode");
-            assertEquals (diagnosisCode.isReadOnly (), false);
-            assertEquals (diagnosisCode.getValueAsString ().equals (""), true);
+            assertFalse (diagnosisCode.isReadOnly ());
+            assertEquals (diagnosisCode.getValueAsString (), "");
 
             PDField dateReceived = form.getField ("dateReceived");
-            assertEquals (dateReceived.isReadOnly (), false);
-            assertEquals (dateReceived.getValueAsString ().equals (""), true);
+            assertFalse (dateReceived.isReadOnly ());
+            assertEquals (dateReceived.getValueAsString (), "");
 
             PDField orderingPhysician = form.getField ("orderingPhysician");
-            assertEquals (orderingPhysician.isReadOnly (), false);
-            assertEquals (orderingPhysician.getValueAsString ().equals (""), true);
+            assertFalse (orderingPhysician.isReadOnly ());
+            assertEquals (orderingPhysician.getValueAsString (), "");
 
             PDField institution = form.getField ("institution");
-            assertEquals (institution.isReadOnly (), false);
-            assertEquals (institution.getValueAsString ().equals (""), true);
+            assertFalse (institution.isReadOnly ());
+            assertEquals (institution.getValueAsString (), "");
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
 
+    }
+    
+    public void verifyCorrectDataInReportTrackingPDF (SftpServerHelper serverHelper, String path, ReportType type, KitOrder orderInformation) {
+        try {
+            String reportTempFile = "target/report.pdf";
+            serverHelper.getChannel ().get (path, reportTempFile);
+            verifyHeader (reportTempFile, type, orderInformation);
+            Files.deleteIfExists (Paths.get (reportTempFile));
+        } catch (SftpException e) {
+            throw new RuntimeException (e);
+        } catch (IOException e) {
+            throw new RuntimeException (e);
+        }
     }
 
 }

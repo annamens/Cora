@@ -11,11 +11,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.ui.container.AddContainer;
+import com.adaptivebiotech.cora.ui.container.Detail;
+import com.adaptivebiotech.cora.ui.container.History;
+import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.ui.cora.CoraPage;
-import com.adaptivebiotech.ui.cora.container.AddContainer;
-import com.adaptivebiotech.ui.cora.container.Detail;
-import com.adaptivebiotech.ui.cora.container.History;
-import com.adaptivebiotech.ui.cora.container.MyCustody;
 
 @Test (groups = { "container" })
 public class ContainerDetailTestSuite extends ContainerTestBase {
@@ -133,4 +133,4 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         List <String> historyHistories2 = history.getDetailHistory ();
         assertEquals (historyHistories2, detailHistories2);
     }
-}
+} 

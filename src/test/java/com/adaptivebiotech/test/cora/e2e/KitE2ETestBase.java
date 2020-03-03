@@ -1,18 +1,20 @@
 package com.adaptivebiotech.test.cora.e2e;
 
+import static com.adaptivebiotech.cora.test.CoraEnvironment.incomingPath;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.projectAccountID;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.projectID;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.projectName;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.retryTimes;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.sftpServerHostName;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.waitTime;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.cora.CoraEnvironment.incomingPath;
-import static com.adaptivebiotech.test.cora.CoraEnvironment.projectAccountID;
-import static com.adaptivebiotech.test.cora.CoraEnvironment.projectID;
-import static com.adaptivebiotech.test.cora.CoraEnvironment.projectName;
-import static com.adaptivebiotech.test.cora.CoraEnvironment.retryTimes;
-import static com.adaptivebiotech.test.cora.CoraEnvironment.sftpServerHostName;
-import static com.adaptivebiotech.test.cora.CoraEnvironment.waitTime;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.ReportType.clonality;
 import static com.adaptivebiotech.test.utils.PageHelper.ReportType.tracking;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.KitClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Processing;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.PENDING_ANALYSIS;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.PENDING_OTHER_REPORTS;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
@@ -20,29 +22,27 @@ import static com.seleniumfy.test.utils.HttpClientHelper.body;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import static org.junit.Assert.assertTrue;
 import static org.testng.Assert.assertEquals;
-import java.io.FileReader;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.KitOrder;
+import com.adaptivebiotech.cora.dto.Research;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.order.OrderList;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.workflow.Debug;
-import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 import com.adaptivebiotech.test.utils.PageHelper.ReportType;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
 public class KitE2ETestBase extends CoraBaseBrowser {
     protected Diagnostic diagnostic;
     protected String     url                        = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
-    protected String     SR_T1772ClonalityJFilePath = "src/test/resources/SR-T1772_Clonality.json";
-    protected String     SR_T1772TrackingJFilePath  = "src/test/resources/SR-T1772_TrackingAboveLOQ1.json";
+    protected String     SR_T1772ClonalityJFilePath = "SR-T1772_Clonality.json";
+    protected String     SR_T1772TrackingJFilePath  = "SR-T1772_TrackingAboveLOQ1.json";
     protected KitOrder  clonalityOrder;
     protected KitOrder  trackingOrder;
 
@@ -107,7 +107,7 @@ public class KitE2ETestBase extends CoraBaseBrowser {
     // Change element values as below in Clonality Json file :
     // 1. externalSubjecteId
     // 2. samples.name
-    @SuppressWarnings ("unchecked")
+    //@SuppressWarnings ("unchecked")
     protected String changeClonalityOrTrackingJsonFile (String jFileName, ReportType type) {
 
         try {
@@ -120,47 +120,32 @@ public class KitE2ETestBase extends CoraBaseBrowser {
                 trackingOrder.sampleName = "TSBUNIQUE1-MRD1" + strVar;
                 trackingOrder.externalSubjectId = clonalityOrder.externalSubjectId;
             }
-
-            // read the json file
-            FileReader reader = new FileReader (jFileName);
-
-            JSONParser jsonParser = new JSONParser ();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse (reader);
-
-            JSONObject techTransObj = (JSONObject) jsonObject.get ("techTransfer");
-
-            JSONArray specimensArray = (JSONArray) techTransObj.get ("specimens");
-
-            JSONObject externObj = (JSONObject) specimensArray.get (0);
-
-            externObj.put ("externalSubjectId", clonalityOrder.externalSubjectId);
-
-            JSONArray sampleArray = (JSONArray) externObj.get ("samples");
-            JSONObject sampleObj = (JSONObject) sampleArray.get (0);
             
-            String coDate= (String) externObj.get ("collectionDate");
-            String collectionDate = coDate.toString().substring (0, coDate.toString().indexOf ("T"));
-             
+            Research research;
+            research = mapper.readValue (new File(jFileName), Research.class);
+            research.project.accountId = projectAccountID;
+            research.project.id = projectID;
+            research.project.name = projectName;
             
+            String collectionDate = research.techTransfer.specimens.get (0).collectionDate.toString ();
+            collectionDate = collectionDate.substring (0, collectionDate .indexOf ("T"));
+                      
             if (type == clonality) {
-                sampleObj.put ("name", clonalityOrder.sampleName);
+                research.techTransfer.specimens.get (0).samples.get (0).name = clonalityOrder.sampleName;
                 clonalityOrder.collectionDate = collectionDate;
-                clonalityOrder.sampleType = (String) externObj.get ("sampletype");
-                clonalityOrder.sampleSource = (String) externObj.get ("sampleSource");
+                clonalityOrder.sampleType =    research.techTransfer.specimens.get (0).sampleType.label;
+                clonalityOrder.sampleSource =  research.techTransfer.specimens.get (0).sampleSource.label;
+                research.techTransfer.specimens.get (0).externalSubjectId = clonalityOrder.externalSubjectId;
             } else {
-                sampleObj.put ("name", trackingOrder.sampleName);
+                research.techTransfer.specimens.get (0).samples.get (0).name = trackingOrder.sampleName;
                 trackingOrder.collectionDate = collectionDate;
-                trackingOrder.sampleType = (String) externObj.get ("sampletype");
-                trackingOrder.sampleSource = (String) externObj.get ("sampleSource");
+                trackingOrder.sampleType = research.techTransfer.specimens.get (0).sampleType.label;
+                trackingOrder.sampleSource = research.techTransfer.specimens.get (0).sampleSource.label;
+                research.techTransfer.specimens.get (0).externalSubjectId = trackingOrder.externalSubjectId;
             }
-
-            JSONObject projectObj = (JSONObject) jsonObject.get ("project");
-            projectObj.put ("id", projectID);
-            projectObj.put ("accountId", projectAccountID);
-            projectObj.put ("name", projectName);
-
-            return mapper.writeValueAsString (jsonObject);
-
+     
+            return mapper.writeValueAsString (research);
+            
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
@@ -186,6 +171,7 @@ public class KitE2ETestBase extends CoraBaseBrowser {
         String fileName;
 
         Debug debugPage = new Debug ();
+        debugPage.waitFor (KitClonoSEQReport, Processing);
         actualMessage = debugPage.getStatusHistoryTableStringValue ("2", "4");
         if (type == ReportType.clonality) {
             fileName = debugPage.getClinicalReportFileName (retryTimes, waitTime);
@@ -202,8 +188,7 @@ public class KitE2ETestBase extends CoraBaseBrowser {
                                          orderDate,
                                          fileName);
 
-        assertEquals (expectedMessage, actualMessage);
-
+        assertEquals (actualMessage, expectedMessage);
     }
 
 }

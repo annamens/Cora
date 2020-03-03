@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.ui.workflow;
 
+import static com.adaptivebiotech.cora.test.CoraEnvironment.reportPrefix;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,7 +57,7 @@ public class Debug extends History {
             timer.Wait ();
             for (WebElement element : myList) {
                 String file = element.getText ();
-                if (result = file.contains ("ClinicalReport-" + "A1")) {
+                if (result = file.contains ("ClinicalReport-" + reportPrefix)) {
                     fileName = file;
                     break;
                 }
@@ -74,12 +74,9 @@ public class Debug extends History {
 
         // get current year of last two digit
         String currYear = Integer.toString (now.getYear ()).substring (2);
-        String expectedFilePre = String.format ("ClinicalReport-A1%s", currYear);
-        assertEquals (actualFileName.substring (0, 19), expectedFilePre);
-
-        int num = Integer.parseInt (actualFileName.substring (19, actualFileName.length () - 4));
-        assertTrue ( (num >= 25) && (num <= 999999));
-
+        String expectedFilePre = String.format ("ClinicalReport-%s%s", reportPrefix, currYear);
+        String pattern = "(^0{4}[2-9][5-9]|^0{3}[1-9]\\d{2}|^0{2}[1-9]\\d{3}|^0[1-9]\\d{4}|[1-9]\\d{5})";
+        assertTrue (actualFileName.replaceAll (expectedFilePre + "(\\d{6})\\.pdf", "$1").matches (pattern));
     }
 
     // For xth1, "1" is for table title

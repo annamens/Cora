@@ -1,4 +1,4 @@
-package com.adaptivebiotech.test.cora;
+package com.adaptivebiotech.cora.test;
 
 import static java.lang.String.format;
 import com.adaptivebiotech.test.BaseEnvironment;

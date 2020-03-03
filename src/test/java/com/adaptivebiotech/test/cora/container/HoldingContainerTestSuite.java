@@ -26,10 +26,10 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.ui.cora.CoraPage;
-import com.adaptivebiotech.ui.cora.container.AddContainer;
-import com.adaptivebiotech.ui.cora.container.Detail;
-import com.adaptivebiotech.ui.cora.container.History;
-import com.adaptivebiotech.ui.cora.container.MyCustody;
+import com.adaptivebiotech.cora.ui.container.AddContainer;
+import com.adaptivebiotech.cora.ui.container.Detail;
+import com.adaptivebiotech.cora.ui.container.History;
+import com.adaptivebiotech.cora.ui.container.MyCustody;
 
 @Test (groups = { "container" })
 public class HoldingContainerTestSuite extends ContainerTestBase {

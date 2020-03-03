@@ -1,17 +1,12 @@
 package com.adaptivebiotech.cora.utils;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import com.adaptivebiotech.cora.dto.KitOrder;
-import com.adaptivebiotech.test.utils.PageHelper.ReportType;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -19,6 +14,9 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 import com.seleniumfy.test.utils.Timeout;
+import com.univocity.parsers.common.record.Record;
+import com.univocity.parsers.tsv.TsvParser;
+import com.univocity.parsers.tsv.TsvParserSettings;
 
 public class SftpServerHelper {
 
@@ -33,6 +31,10 @@ public class SftpServerHelper {
         userName = uName;
         password = pwd;
         serverHost = shost;
+    }
+    
+    public ChannelSftp getChannel() {
+        return sftpChannel;
     }
 
     public void startSftpChannel () {
@@ -78,9 +80,47 @@ public class SftpServerHelper {
     }
 
     public void verifyCorrectDataInReportTrackingTsv (String path, KitOrder orderInformation,
-                                                      String status, int retry, int waitTime) {
-
+                                                      String status, int retry, int waitTime) {  
         try {
+            TsvParserSettings settings = new TsvParserSettings();
+            TsvParser parser = new TsvParser(settings);
+            Timeout timer = new Timeout (retry, waitTime);
+            
+            settings.getFormat().setLineSeparator("\n");
+            boolean result = false;
+            // retry loop
+            do {
+                timer.Wait ();
+                String tsvTempFile = "target/test.tsv";
+                sftpChannel.get (path, tsvTempFile);
+           
+                List<Record >  allRecords = parser.parseAllRecords(new FileReader("target/test.tsv"));
+                for (Record record : allRecords) {
+                    if (record.getString ("Order number").equals (orderInformation.orderNum)){
+                        assertTrue(record.getString ("Subject ID").equals(orderInformation.externalSubjectId));
+                        assertTrue(record.getString ("Order date").equals(orderInformation.orderDate_ISO_DATE));                   
+                        assertTrue(record.getString ("Order number").equals(orderInformation.orderNum));                     
+                        assertTrue(record.getString ("Sample name").equals(orderInformation.sampleName));                        
+                        assertTrue(record.getString ("Report number").equals(orderInformation.reportNum));                       
+                        assertTrue(record.getString ("Pipeline version").equals(orderInformation.pipelineVersion));                      
+                        assertTrue(record.getString ("Status").equals(status));
+                        // Close the file once all data has been read.
+                        Files.deleteIfExists (Paths.get (tsvTempFile));
+                        result = true;
+                        break;
+                    } // if 
+                } // for  
+            } while (!timer.Timedout () && !result); // end of retry loop
+            assertTrue (result);
+            return;
+        } catch (SftpException e) {
+            throw new RuntimeException (e);
+        } catch (IOException e) {
+            throw new RuntimeException (e);
+        } 
+        
+        
+        /* try {
             Timeout timer = new Timeout (retry, waitTime);
             boolean result = false;
             // retry loop
@@ -122,31 +162,13 @@ public class SftpServerHelper {
                 Files.deleteIfExists (Paths.get (tsvTempFile));
 
             } while (!timer.Timedout () && !result); // end of retry loop
-
             assertTrue (result);
             return;
-
-        } catch (SftpException e) {
-
-            throw new RuntimeException (e);
-        } catch (IOException e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    public void verifyCorrectDataInReportTrackingPDF (String path, ReportType type, KitOrder orderInformation) {
-
-        try {
-            String reportTempFile = "target/report.pdf";
-            sftpChannel.get (path, reportTempFile);
-            PDFVerificationHelper pdfHelper = new PDFVerificationHelper ();
-            pdfHelper.verifyHeader (reportTempFile, type, orderInformation);
-            Files.deleteIfExists (Paths.get (reportTempFile));
         } catch (SftpException e) {
             throw new RuntimeException (e);
         } catch (IOException e) {
             throw new RuntimeException (e);
-        }
-    }
+        } */
+    } 
 
 }
