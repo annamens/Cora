@@ -1,27 +1,26 @@
 package com.adaptivebiotech.test.cora.container;
 
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.Logging.error;
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static com.adaptivebiotech.utils.TestHelper.freezerAB018055;
-import static com.adaptivebiotech.utils.TestHelper.freezerAB018078;
-import static com.adaptivebiotech.utils.TestHelper.freezerAB018082;
-import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
-import static com.seleniumfy.test.utils.HttpClientHelper.body;
-import static com.seleniumfy.test.utils.HttpClientHelper.post;
-import static com.seleniumfy.test.utils.HttpClientHelper.put;
-import static java.util.stream.Collectors.toList;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.fail;
-import java.util.stream.IntStream;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.dto.HttpResponse;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.seleniumfy.test.utils.HttpClientHelper;
+import org.apache.http.Header;
+
+import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.utils.TestHelper.*;
+import static com.seleniumfy.test.utils.HttpClientHelper.*;
+import static java.util.stream.Collectors.toList;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class ContainerTestBase extends CoraBaseBrowser {
 
@@ -53,7 +52,7 @@ public class ContainerTestBase extends CoraBaseBrowser {
     protected Containers addContainers (Containers containers) {
         try {
             String url = coraTestUrl + "/cora/api/v1/containers/addEntries";
-            String result = post (url, body (mapper.writeValueAsString (containers.list)), headers);
+            String result = post (url, body (mapper.writeValueAsString (containers.list)));
             return new Containers (
                     mapper.readValue (result, HttpResponse.class).containers.parallelStream ().map (c -> {
                         c.location = coraTestUser;
@@ -69,7 +68,7 @@ public class ContainerTestBase extends CoraBaseBrowser {
             containers.list.parallelStream ().forEach (c -> c.isActive = false);
             String url = coraTestUrl + "/cora/api/v1/containers/updateEntries";
             return new Containers (
-                    mapper.readValue (put (url, body (mapper.writeValueAsString (containers.list)), headers),
+                    mapper.readValue (put (url, body (mapper.writeValueAsString (containers.list) )),
                                       HttpResponse.class).containers);
         } catch (Exception e) {
             throw new RuntimeException (e);

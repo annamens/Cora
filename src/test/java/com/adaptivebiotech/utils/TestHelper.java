@@ -37,7 +37,7 @@ public class TestHelper {
         Container container = new Container ();
         container.id = testdata ().get ("AB018078_id");
         container.containerNumber = testdata ().get ("AB018078_num");
-        container.name = "AB018078 (4C)";
+        container.name = "AB018078 (4C) Left";
         return container;
     }
 

@@ -20,7 +20,7 @@ import com.adaptivebiotech.ui.cora.CoraPage;
 @Test (groups = { "container" })
 public class ContainerDetailTestSuite extends ContainerTestBase {
 
-    private final String error1 = "Only '.pdf,.jpg,.png,.gif' files allowed";
+    private final String error1 = "Only '.pdf,.jpg,.png,.gif,.xlsx' files allowed";
     private final String error2 = "Please select less than 10 files at a time!";
     private CoraPage     main;
     private Containers   containers;

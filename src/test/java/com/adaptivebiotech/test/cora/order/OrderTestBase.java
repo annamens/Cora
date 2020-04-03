@@ -10,6 +10,8 @@ import static com.adaptivebiotech.utils.TestHelper.patientMedicare;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
+
+import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
 import com.adaptivebiotech.common.dto.Orders.Order;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -22,7 +24,7 @@ public class OrderTestBase extends CoraBaseBrowser {
     protected final Physician physicianTRF    = physician2 ();
     protected final Patient   patientMedicare = patientMedicare ();
     protected final String    icdCode         = "A01.02";
-    protected final String    collectionDt    = formatDt1.format ((TemporalAccessor) setDate (-3).getTime ());
+    protected final String    collectionDt    = formatDt1.format (setDate (-3).getTime().toInstant().atZone(ZoneId.systemDefault()));
 
     protected void verifyTrfCopied (Order actual, Order expected) {
         try {

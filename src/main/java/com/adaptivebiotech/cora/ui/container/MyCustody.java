@@ -16,7 +16,7 @@ public class MyCustody extends ContainerList {
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (".navbar"));
         assertTrue (waitUntilVisible (".content"));
-        assertTrue (waitUntilVisible (".active.highlight[ui-sref='main.containers.custody']"));
+        assertTrue (waitUntilVisible (".active.highlight[uisref='main.containers.custody']"));
         assertTrue (waitUntilVisible ("#container-scan-input"));
     }
 

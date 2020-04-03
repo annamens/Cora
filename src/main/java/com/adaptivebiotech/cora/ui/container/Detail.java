@@ -25,7 +25,7 @@ public class Detail extends CoraPage {
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (".navbar"));
         assertTrue (waitUntilVisible ("[role='tablist']"));
-        assertTrue (isTextInElement ("[role='tablist'] .active", "Details"));
+        assertTrue (isTextInElement ("[role='tablist'] .active", "DETAILS"));
         assertTrue (waitUntilVisible (".container-details"));
         assertTrue (waitUntilVisible (top));
         pageLoading ();

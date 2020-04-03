@@ -31,7 +31,7 @@ public class AddContainer extends CoraPage {
         assertTrue (isTextInElement (popupTitle, "New Container Confirmation"));
         clickPopupOK ();
         closeNotification ("Container(s) saved");
-        assertTrue (waitUntilVisible ("[data-ng-click='ctrl.generateLabels()']"));
+        assertTrue (waitUntilVisible ("[ng-click='ctrl.generateLabels()']"));
     }
 
     public void isFailedValidation (String error) {

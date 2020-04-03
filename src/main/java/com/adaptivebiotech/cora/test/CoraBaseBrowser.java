@@ -11,8 +11,11 @@ import static com.seleniumfy.test.utils.HttpClientHelper.formPost;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.seleniumfy.test.utils.HttpClientHelper;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeMethod;
@@ -50,12 +53,13 @@ public class CoraBaseBrowser extends BaseBrowser {
         forms.put ("userName", coraTestUser);
         forms.put ("password", coraTestPass);
         formPost (coraTestUrl + "/cora/login", forms);
+        HttpClientHelper.headers.addAll(Arrays.asList(headers));
     }
 
     protected HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
-            return mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic)), headers),
+            return mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                      HttpResponse.class);
         } catch (Exception e) {
             throw new RuntimeException (e);
