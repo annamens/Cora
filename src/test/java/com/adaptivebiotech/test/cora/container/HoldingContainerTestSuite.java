@@ -106,7 +106,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 case TubeBox10x10:
                 default:
                     assertEquals (child.location,
-                                  String.join (" : ", coraTestUser, child.root.containerNumber, "Position 1"));
+                                  String.join (" : ", coraTestUser, child.root.containerNumber, "Position A:1"));
                     break;
                 }
 
@@ -148,15 +148,17 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         main.gotoContainerDetail (child);
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
-        child.depleted = false; // no successful move, depletion is not set
+        //TODO verify since there is new matrix rack should work
+//        child.depleted = false; // no successful move, depletion is not set
         verifyDetails (actual, child);
 
         // test: go to child history page to verify comment
         detail.gotoHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
-        assertEquals (histories.size (), 1);
-        verifyTookCustody (histories.get (0));
+        assertEquals (histories.size (), 2);
+        verifyMovedTo (histories.get (0), child);
+        verifyTookCustody (histories.get (1));
     }
 
     /**

@@ -30,8 +30,6 @@ public class Accession extends CoraPage {
         assertTrue (click ("[data-ng-click*='intake-complete']"));
         assertTrue (isTextInElement (popupTitle, "Intake Complete Confirmation"));
         clickPopupOK ();
-        closeNotification ("Accession saved");
-        closeNotification ("Intake complete saved!");
     }
 
     public void manualPass (DiscrepancyType type) {

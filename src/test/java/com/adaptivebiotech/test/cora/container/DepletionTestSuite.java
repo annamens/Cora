@@ -144,9 +144,13 @@ public class DepletionTestSuite extends ContainerTestBase {
         detail.gotoHistory ();
         history.isCorrectPage ();
         histories = history.getHistories ();
+        //TODO verify this
+        actual.comment = comment;
         assertEquals (histories.size (), 3);
         verifyMovedTo (histories.get (0), actual);
         actual.location = String.join (" : ", coraTestUser, child.root.containerNumber, "Position A:1");
+        //TODO verify this
+        actual.comment = null;
         verifyMovedTo (histories.get (1), actual);
         verifyTookCustody (histories.get (2));
     }

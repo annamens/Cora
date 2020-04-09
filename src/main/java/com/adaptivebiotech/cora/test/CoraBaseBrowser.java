@@ -27,6 +27,7 @@ import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.PatientResponse;
 import com.adaptivebiotech.ui.cora.CoraPage;
 import com.seleniumfy.test.utils.BaseBrowser;
+import org.testng.annotations.BeforeTest;
 
 public class CoraBaseBrowser extends BaseBrowser {
 
@@ -43,6 +44,7 @@ public class CoraBaseBrowser extends BaseBrowser {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method method) throws Exception {
+        doCoraLogin ();
         info ("running: " + getClass ().getSimpleName () + "." + method.getName () + "()");
         openBrowser (coraTestUrl);
         new CoraPage ().doLogin ();

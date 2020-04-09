@@ -10,6 +10,10 @@ import org.openqa.selenium.Keys;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.ui.cora.CoraPage;
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+
+import java.util.List;
 
 /**
  * @author Harry Soehalim
@@ -34,16 +38,18 @@ public class ContainerList extends CoraPage {
     }
 
     public Containers getContainers () {
-        return new Containers (waitForElements (".containers-list tr.ng-scope").stream ().map (el -> {
+        return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
+            List<WebElement> columns = el.findElements(locateBy("td"));
             Container c = new Container ();
-            c.id = getConId (getAttribute (el, "[ng-bind*='containerNumber']", "href"));
-            c.containerNumber = getText (el, "[ng-bind*='containerNumber']");
-            c.containerType = getContainerType (getText (el, "[ng-bind*='containerTypeDisplayName']"));
-            c.contents = getText (el, "[ng-bind*='containerContentSummary']");
-            c.location = getText (el, "[ng-bind*='container.location']");
-            c.name = getText (el, "[ng-bind*='container.displayName']");
-            c.arrivalDate = getText (el, "[ng-bind*='arrivalDate']");
-            c.orderId = getText (el, "[ng-bind*='shipmentDetail.recordType.name']");
+            c.id = getConId (getAttribute (columns.get(0), "a", "href"));
+            c.containerNumber = getText (columns.get(0));
+            String containerType = getText (columns.get(1));
+            c.containerType = containerType != null && !containerType.equals("Unsupported") ? getContainerType (getText (columns.get(1))) : null;
+            c.contents = getText (columns.get(2));
+            c.location = getText (columns.get(3));
+            c.name = getText (columns.get(4));
+            c.arrivalDate = getText (columns.get(5));
+            c.orderId = getText (columns.get(6));
             return c;
         }).collect (toList ()));
     }
@@ -267,5 +273,12 @@ public class ContainerList extends CoraPage {
             assertTrue (noSuchElementPresent ("[containers='[ctrl.containerDetail]'] " + depleted));
         } else if (container.depleted != null)
             assertTrue (clickAndSelectValue (depleted, "boolean:" + container.depleted));
+    }
+
+    @Override
+    public void clickFilter() {
+        WebElement row = waitForElements (".filters > li ").get(6);
+        WebElement button = row.findElement(locateBy(".btn"));
+        Assert.assertTrue(this.click(button));
     }
 }

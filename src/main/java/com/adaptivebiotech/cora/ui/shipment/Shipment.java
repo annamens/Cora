@@ -106,7 +106,9 @@ public class Shipment extends CoraPage {
                     c.barcode = getText (el1, "[data-ng-bind*='specimen.barcode']");
                     c.specimenId = getText (el1, "[data-ng-bind*='specimen.specimen.specimenNumber']");
                     c.specimenName = getText (el1, "[data-ng-bind*='specimen.specimen.name']");
-                    c.containerType = getContainerType (c.specimenName);
+                    if (c.specimenName != null) {
+                        c.containerType = getContainerType (c.specimenName.split("-")[0]);
+                    }
                     c.root = container;
                     c.location = String.join (" : ", coraTestUser, container.containerNumber);
                     return c;
@@ -114,7 +116,11 @@ public class Shipment extends CoraPage {
                 css = "[data-ng-bind*='specimen.location']";
                 List <String> locs = el.findElements (locateBy (css)).stream ().map (el1 -> {
                     String loc = getText (el1);
-                    return loc.length () > 0 ? " : Position " + loc : loc;
+                    if (loc != null) {
+                        return loc.length () > 0 ? " : Position " + loc : loc;
+                    } else {
+                        return "";
+                    }
                 }).collect (toList ());
                 for (int i = 0; i < children.size (); ++i)
                     children.get (i).location += locs.get (i);

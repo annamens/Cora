@@ -5,6 +5,8 @@ import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -38,6 +40,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         history = new History ();
 
         containers = new Containers ();
+        containers.list = new ArrayList<>();
     }
 
     @AfterMethod
@@ -64,7 +67,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 break;
             case Slide:
             case SlideWithCoverslip:
-                freezer = freezerAB018082;
+                freezer = freezerAB039003;
                 break;
             default:
                 freezer = freezerAB018078;
@@ -94,7 +97,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         }
 
         // test: go to containers list for the given freezer and verify
-        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB018082 }) {
+        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
             main.showFreezerContents (freezer);
             Containers listContainers = list.getContainers ();
             for (Container primary : containers.list) {
@@ -137,7 +140,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 break;
             case Slide:
             case SlideWithCoverslip:
-                freezer = freezerAB018082;
+                freezer = freezerAB039003;
                 break;
             default:
                 freezer = freezerAB018078;
@@ -151,8 +154,11 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 break;
             case TubeBox5x5:
             case TubeBox5x10:
+            case TubeBox9x9:
+            case TubeBox10x10:
             case VacutainerBox7x7:
             case MatrixRack:
+            case MatrixRack4x6:
                 location = String.join (" : ", coraTestUser, child.root.containerNumber, "Position A:1");
                 break;
             case SlideBox5:
@@ -215,7 +221,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         }
 
         // test: go to containers list for the given freezer and verify
-        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB018082 }) {
+        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
             main.showFreezerContents (freezer);
             Containers listContainers = list.getContainers ();
             for (Container c : containers.list) {

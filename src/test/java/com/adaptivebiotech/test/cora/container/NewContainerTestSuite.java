@@ -17,10 +17,13 @@ import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 @Test (groups = { "container" })
 public class NewContainerTestSuite extends ContainerTestBase {
 
-    private final String testFreezer1 = "Old Farm Freezer 72 (-80C)";
+    private final String testFreezer1 = "[Destroyed – xAMPL]";
     private final String error1       = "Please select a container type.";
     private final String error2       = "Quantity must be between 1 and 50.";
     private final String error3       = "Unable to find a location in %s. Choose another storage location.";
@@ -72,6 +75,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         // test: verify we have 2 containers in my custody
         main.gotoMyCustody ();
         Containers myContainers = new Containers ();
+        myContainers.list = new ArrayList<>();
         for (Container c : my.getContainers ().list)
             if (containers.findContainerByNumber (c) != null)
                 myContainers.list.add (c);
@@ -95,6 +99,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         // test: verify we have 1 containers in my custody (duplicate names & incompatible freezer)
         main.gotoMyCustody ();
         myContainers = new Containers ();
+        myContainers.list = new ArrayList<>();
         for (Container c : my.getContainers ().list)
             if (containers.findContainerByNumber (c) != null)
                 myContainers.list.add (c);
@@ -139,16 +144,18 @@ public class NewContainerTestSuite extends ContainerTestBase {
         list.setCurrentLocationFilter (freezerAB018055.name);
         list.clickFilter ();
 
-        containers = list.getContainers ();
-        assertEquals (containers.list.size (), 1);
-        assertEquals (containers.list.get (0).containerNumber, c1.containerNumber);
-        assertEquals (containers.list.get (0).location, c1.location);
-        deactivateContainers (containers);
+        Containers myContainers = new Containers ();
+        myContainers.list = list.getContainers().list.stream().filter(container -> container.containerNumber.equals(c1.containerNumber)).collect(Collectors.toList());
+        assertEquals (myContainers.list.size (), 1);
+        assertEquals (myContainers.list.get (0).containerNumber, c1.containerNumber);
+        assertEquals (myContainers.list.get (0).location, c1.location);
+        deactivateContainers (myContainers);
 
         // test: verify we have 1 containers in my custody
 
         main.gotoMyCustody ();
-        Containers myContainers = new Containers ();
+        myContainers = new Containers ();
+        myContainers.list = new ArrayList<>();
         myContainers.list.add (my.getContainers ().findContainerByNumber (c2));
         assertEquals (myContainers.list.size (), 1);
         assertEquals (myContainers.list.get (0).containerType, SlideBox5);
