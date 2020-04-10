@@ -53,6 +53,9 @@
                             <test.env>harissa</test.env>
                             <test.webdriver.wait>30</test.webdriver.wait>
                             <path.to.config>config/cora/test.properties</path.to.config>
+                            <sauce.user>automated.user3</sauce.user>
+                            <sauce.key>e1a7d2b0-cdd5-4606-bfe9-9621da401859</sauce.key>
+                            <sauce.tunnel>cora</sauce.tunnel>
                         </systemPropertyVariables>
                         <properties>
                             <surefire.testng.verbose>${testng.verbose}</surefire.testng.verbose>
