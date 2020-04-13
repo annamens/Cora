@@ -50,7 +50,7 @@
                         <redirectTestOutputToFile>${output.to.file}</redirectTestOutputToFile>
                         <systemPropertyVariables>
                             <project.version>${git.branch}</project.version>
-                            <test.env>harissa</test.env>
+                            <test.env>iparsley</test.env>
                             <test.webdriver.wait>30</test.webdriver.wait>
                             <path.to.config>config/cora/test.properties</path.to.config>
                             <sauce.user>automated.user3</sauce.user>
