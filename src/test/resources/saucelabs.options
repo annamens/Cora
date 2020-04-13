@@ -1,4 +1,5 @@
 browserName=chrome
+browserVersion=latest
 platform=Windows 10
 screenResolution=1920x1200
 maxDuration=10800
