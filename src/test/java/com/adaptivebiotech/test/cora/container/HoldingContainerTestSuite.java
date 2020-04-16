@@ -148,8 +148,6 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         main.gotoContainerDetail (child);
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
-        //TODO verify since there is new matrix rack should work
-//        child.depleted = false; // no successful move, depletion is not set
         verifyDetails (actual, child);
 
         // test: go to child history page to verify comment

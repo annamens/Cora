@@ -59,8 +59,6 @@ public class ContainerTestBase extends CoraBaseBrowser {
     protected Containers addContainers (Containers containers) {
         try {
             String url = coraTestUrl + "/cora/api/v1/containers/addEntries";
-            //TODO move this in to HttpClientHelper
-//            Header[] combinedHeaders = Stream.concat(Arrays.stream(HttpClientHelper.cookies), Arrays.stream(headers)).toArray(Header[]::new);
             String result = post (url, body (mapper.writeValueAsString (containers.list)));
             return new Containers (
                     mapper.readValue (result, HttpResponse.class).containers.parallelStream ().map (c -> {
@@ -83,8 +81,6 @@ public class ContainerTestBase extends CoraBaseBrowser {
                 }
             });
             String url = coraTestUrl + "/cora/api/v1/containers/updateEntries";
-            //TODO move this in to HttpClientHelper
-//            Header[] combinedHeaders = Stream.concat(Arrays.stream(HttpClientHelper.cookies), Arrays.stream(headers)).toArray(Header[]::new);
             return new Containers (
                     mapper.readValue (put (url, body (mapper.writeValueAsString (containers.list))),
                                       HttpResponse.class).containers);
