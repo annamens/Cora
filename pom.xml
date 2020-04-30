@@ -16,6 +16,11 @@
             <id>adaptivebiotech-libs-snapshot-local</id>
             <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-snapshot-local/</url>
         </repository>
+<!--        <repository>-->
+<!--            <id>project.local</id>-->
+<!--            <name>project</name>-->
+<!--            <url>file:${project.basedir}/testing-common</url>-->
+<!--        </repository>-->
     </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -139,7 +144,7 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.16-SNAPSHOT</version>
+            <version>1.1.16-LOCAL</version>
         </dependency>
         <dependency>
             <groupId>com.hierynomus</groupId>
@@ -165,6 +170,11 @@
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
             <version>2.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>4.1.2</version>
         </dependency>
     </dependencies>
 </project>
