@@ -5,19 +5,14 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
 import com.adaptivebiotech.test.cora.order.OrderTestBase;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 import org.junit.Assert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
-import static com.seleniumfy.test.utils.Environment.webdriverWait;
-import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 import static org.testng.Assert.assertTrue;
 
 @Test (groups = { "regression" })
@@ -41,16 +36,14 @@ public class DoubleClickSaveTest extends OrderTestBase {
         shipment.enterOrderNumber (orderNum);
         shipment.enterDiagnosticSpecimenContainerType (Tube);
 
-        By saveButtonBy = By.cssSelector("[data-ng-click*='shipment-save']");
-        WebElement saveButton = shipment.waitForElementVisible(saveButtonBy);
+        WebElement saveButton = shipment.getElement("[data-ng-click*='shipment-save']");
         saveButton.click();
         saveButton.click();
+        shipment.pageLoading();
         ShipmentList shipmentList = new ShipmentList();
         shipmentList.goToShipments();
-        Set<String> orders = new HashSet<>();
-        shipmentList.getAllShipments().forEach(s -> {
-            Assert.assertFalse(orders.contains(s.link));
-            orders.add(s.link);
-        });
+        List<com.adaptivebiotech.cora.dto.Shipment> shipmentWithOrderNum = shipmentList.getAllShipments().stream()
+                .filter(s -> s.link != null && s.link.equals(orderNum)).collect(Collectors.toList());
+        Assert.assertEquals(1, shipmentWithOrderNum.size());
     }
 }
