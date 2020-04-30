@@ -60,6 +60,6 @@ public class Specimen extends Diagnostic {
     }
 
     public void enterCollectionDate (String date) {
-        assertTrue (setText ("[name='collectionDate']", date));
+        assertTrue (sendKeys ("[name='collectionDate']", date));
     }
 }

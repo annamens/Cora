@@ -22,6 +22,14 @@ import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
+//import org.apache.poi.EncryptedDocumentException;
+//import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+//import org.apache.poi.ss.usermodel.Cell;
+//import org.apache.poi.ss.usermodel.Row;
+//import org.apache.poi.ss.usermodel.Sheet;
+//import org.apache.poi.ss.usermodel.Workbook;
+//import org.apache.poi.ss.usermodel.WorkbookFactory;
+
 @Test (groups = { "container" })
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
@@ -110,6 +118,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     /**
      * @sdlc_requirements 126.MoveMetadata
      */
+    //TODO figure out a way to reset barcodes
     public void moveChildToFreezer () {
 
         // setup for holding containers with children
@@ -122,6 +131,10 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         Accession accession = new Accession ();
         accession.isCorrectPage ();
+//        FileInputStream inputStream = new FileInputStream(new File(excelFilePath));
+//        Workbook workbook = WorkbookFactory.create(inputStream);
+//
+//        Sheet sheet = workbook.getSheetAt(0);
         accession.uploadIntakeManifest ("intakemanifest_holding_w_child.xlsx");
         accession.clickIntakeComplete ();
         accession.gotoShipment ();

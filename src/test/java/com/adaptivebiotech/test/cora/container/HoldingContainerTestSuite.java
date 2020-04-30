@@ -248,6 +248,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     /**
      * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
+    //TODO add conical box
     public void conical () {
         child = addContainers (Conical, null, null, 1).list.get (0);
         child.depleted = true;
@@ -262,15 +263,15 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         main.gotoContainerDetail (child);
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
-        child.depleted = false; // no successful move, depletion is not set
         verifyDetails (actual, child);
 
         // test: go to child history page to verify comment
         detail.gotoHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
-        assertEquals (histories.size (), 1);
-        verifyTookCustody (histories.get (0));
+        assertEquals (histories.size (), 2);
+        verifyMovedTo (histories.get (0), child);
+        verifyTookCustody (histories.get (1));
     }
 
     /**

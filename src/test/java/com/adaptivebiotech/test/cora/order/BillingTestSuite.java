@@ -18,6 +18,9 @@ import static com.adaptivebiotech.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.utils.TestHelper.newMedicarePatient;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.common.dto.Patient;
