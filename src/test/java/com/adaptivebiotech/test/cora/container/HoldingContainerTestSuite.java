@@ -248,7 +248,6 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     /**
      * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
-    //TODO add conical box
     public void conical () {
         child = addContainers (Conical, null, null, 1).list.get (0);
         child.depleted = true;

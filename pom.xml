@@ -16,11 +16,6 @@
             <id>adaptivebiotech-libs-snapshot-local</id>
             <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-snapshot-local/</url>
         </repository>
-<!--        <repository>-->
-<!--            <id>project.local</id>-->
-<!--            <name>project</name>-->
-<!--            <url>file:${project.basedir}/testing-common</url>-->
-<!--        </repository>-->
     </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -174,6 +169,11 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
             <version>4.1.2</version>
         </dependency>
     </dependencies>

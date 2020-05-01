@@ -3,11 +3,24 @@ package com.adaptivebiotech.test.cora.container;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
+import static java.lang.ClassLoader.getSystemResource;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -118,7 +131,6 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     /**
      * @sdlc_requirements 126.MoveMetadata
      */
-    //TODO figure out a way to reset barcodes
     public void moveChildToFreezer () {
 
         // setup for holding containers with children
@@ -131,10 +143,31 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         Accession accession = new Accession ();
         accession.isCorrectPage ();
-//        FileInputStream inputStream = new FileInputStream(new File(excelFilePath));
-//        Workbook workbook = WorkbookFactory.create(inputStream);
-//
-//        Sheet sheet = workbook.getSheetAt(0);
+
+
+        String excelFilePath = getSystemResource ("intakemanifest_holding_w_child_template.xlsx").getPath();
+        String excelFilePath2 = getSystemResource ("intakemanifest_holding_w_child.xlsx").getPath();
+
+        try {
+            FileInputStream inputStream = new FileInputStream(new File(excelFilePath));
+            Workbook workbook = WorkbookFactory.create(inputStream);
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            sheet.getRow(38).getCell(9).setCellValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyddhhmmSS")));
+            sheet.getRow(39).getCell(9).setCellValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyddhhmmSS")));
+
+            inputStream.close();
+
+            FileOutputStream outputStream = new FileOutputStream(excelFilePath2);
+            workbook.write(outputStream);
+            workbook.close();
+            outputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         accession.uploadIntakeManifest ("intakemanifest_holding_w_child.xlsx");
         accession.clickIntakeComplete ();
         accession.gotoShipment ();
