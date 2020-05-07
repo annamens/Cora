@@ -2,7 +2,7 @@ package com.adaptivebiotech.test.cora.smoke;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import com.adaptivebiotech.test.cora.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
 public class SmokeTestBase extends CoraBaseBrowser {

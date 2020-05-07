@@ -13,10 +13,10 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.ui.cora.CoraPage;
-import com.adaptivebiotech.ui.cora.container.ContainerList;
-import com.adaptivebiotech.ui.cora.container.MyCustody;
-import com.adaptivebiotech.ui.cora.shipment.Accession;
-import com.adaptivebiotech.ui.cora.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.MyCustody;
+import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
 @Test (groups = { "container" })
 public class ScanTestSuite extends ContainerTestBase {

@@ -35,9 +35,9 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.ui.cora.CoraPage;
 import com.adaptivebiotech.ui.cora.order.Billing;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
-import com.adaptivebiotech.ui.cora.order.Specimen;
-import com.adaptivebiotech.ui.cora.shipment.Accession;
-import com.adaptivebiotech.ui.cora.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.order.Specimen;
+import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
 @Test (groups = { "regression" })
 public class AdaptiveAssistsTestSuite extends OrderTestBase {

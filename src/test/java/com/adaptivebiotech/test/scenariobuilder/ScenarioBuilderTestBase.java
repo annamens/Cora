@@ -4,6 +4,7 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.PageHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSeq2_WorkflowNanny;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderCategory.Diagnostic;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
@@ -11,6 +12,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.TestSkus.RUOID;
 import static com.adaptivebiotech.test.utils.PageHelper.TestSkus.RUOMRD;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static com.adaptivebiotech.test.utils.TestHelper.setDate;
@@ -56,7 +58,7 @@ import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.Sample;
 import com.adaptivebiotech.cora.dto.SpecimenResponse;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
-import com.adaptivebiotech.test.cora.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
@@ -83,7 +85,8 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
         specimen.sampleType = Blood;
         specimen.collectionDate = dateToIntArr (setDate (-10));
         specimen.reconciliationDate = dateToIntArr (setDate (0));
-        specimen.properties = new Specimen.SpecimenProperties (formatDt2.format ((TemporalAccessor) setDate (12).getTime ()));
+        specimen.properties = new Specimen.SpecimenProperties (
+                formatDt2.format ((TemporalAccessor) setDate (12).getTime ()));
         diagnostic.specimen = specimen;
 
         Shipment shipment = new Shipment ();
@@ -131,8 +134,8 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
         task.name = "Clonoseq Report Scenario Test Helper";
         task.description = "Moves ClonoSeq workflows through the correct stages for tests.";
         task.status = Active;
-        task.stageName = "ClonoSeq2_WorkflowNanny";
-        task.stageStatus = "Ready";
+        task.stageName = ClonoSeq2_WorkflowNanny;
+        task.stageStatus = Ready;
         task.configId = "04d48793-c0c7-4b76-ab2d-53e2ef65891e";
         task.configName = "ReportScenarioTestHelper";
         return task;

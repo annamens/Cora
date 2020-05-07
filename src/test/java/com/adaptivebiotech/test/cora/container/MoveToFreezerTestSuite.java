@@ -14,11 +14,11 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.ui.cora.CoraPage;
-import com.adaptivebiotech.ui.cora.container.ContainerList;
-import com.adaptivebiotech.ui.cora.container.Detail;
-import com.adaptivebiotech.ui.cora.container.History;
-import com.adaptivebiotech.ui.cora.shipment.Accession;
-import com.adaptivebiotech.ui.cora.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.Detail;
+import com.adaptivebiotech.cora.ui.container.History;
+import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
 @Test (groups = { "container" })
 public class MoveToFreezerTestSuite extends ContainerTestBase {

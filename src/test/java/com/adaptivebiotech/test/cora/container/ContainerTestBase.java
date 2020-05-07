@@ -19,8 +19,8 @@ import java.util.stream.IntStream;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.dto.HttpResponse;
-import com.adaptivebiotech.test.cora.CoraBaseBrowser;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 public class ContainerTestBase extends CoraBaseBrowser {

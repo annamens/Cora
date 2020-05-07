@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.common.dto.Orders.Order;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
-import com.adaptivebiotech.ui.cora.order.OrderList;
+import com.adaptivebiotech.cora.ui.order.OrderList;
 
 @Test (groups = { "regression" })
 public class TransferTrfTestSuite extends OrderTestBase {

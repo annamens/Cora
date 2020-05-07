@@ -13,9 +13,9 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.ui.cora.CoraPage;
-import com.adaptivebiotech.ui.cora.container.AddContainer;
-import com.adaptivebiotech.ui.cora.container.ContainerList;
-import com.adaptivebiotech.ui.cora.container.MyCustody;
+import com.adaptivebiotech.cora.ui.container.AddContainer;
+import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.MyCustody;
 
 @Test (groups = { "container" })
 public class NewContainerTestSuite extends ContainerTestBase {

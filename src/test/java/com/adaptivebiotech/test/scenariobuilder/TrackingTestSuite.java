@@ -19,7 +19,7 @@ import com.adaptivebiotech.common.dto.Patient;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
-import com.adaptivebiotech.ui.cora.order.OrderList;
+import com.adaptivebiotech.cora.ui.order.OrderList;
 import com.adaptivebiotech.ui.cora.workflow.History;
 
 @Test (groups = { "regression" })
