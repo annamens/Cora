@@ -50,14 +50,20 @@ public class AddContainer extends CoraPage {
         assertTrue (setText ("#containerQty", String.valueOf (num)));
     }
 
+    public void clearQuantity () {
+        assertTrue (clear(getDriver ().findElement (locateBy  ("#containerQty"))));
+    }
+
     public void addContainer (ContainerType type, int num) {
         pickContainerType (type);
+        clearQuantity();
         enterQuantity (num);
         assertTrue (pressKey (Keys.ENTER));
     }
 
     public void setContainerName (int idx, String name) {
         String row = ".research-container-entry:nth-child(" + (idx + 2) + ") [data-ng-model='container.barcode']";
+        assertTrue (clear(getDriver ().findElement (locateBy (row))));
         assertTrue (setText (row, name));
     }
 

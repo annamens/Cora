@@ -206,7 +206,9 @@ public class ContainerList extends CoraPage {
     }
 
     public void chooseHoldingContainer (String containerNumber) {
-        assertTrue (setText (".modal-body [ng-model='ctrl.containerNumber']", containerNumber));
+        String target = ".modal-body [ng-model='ctrl.containerNumber']";
+        assertTrue (clear (getDriver ().findElement (locateBy (target))));
+        assertTrue (setText (target, containerNumber));
         assertTrue (pressKey (Keys.ENTER));
     }
 
@@ -232,6 +234,7 @@ public class ContainerList extends CoraPage {
     public void scanToVerify (Container parent, Container child) {
         scan (parent);
         moveModal ();
+        assertTrue (clear (getDriver ().findElement (locateBy (comments))));
         assertTrue (setText (comments, "verifying - " + child.containerNumber));
         scanToVerify (child);
         isVerified (child);
@@ -243,6 +246,7 @@ public class ContainerList extends CoraPage {
     }
 
     public void scanToVerify (String containerNumber) {
+        assertTrue (clear(getDriver ().findElement (locateBy ("#scan_input"))));
         assertTrue (setText ("#scan_input", containerNumber));
         assertTrue (pressKey (Keys.ENTER));
     }

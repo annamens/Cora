@@ -55,16 +55,19 @@ public class NewContainerTestSuite extends ContainerTestBase {
 
         // test: negative quantity
         add.enterQuantity (-1);
+        add.clearQuantity();
         add.clickAdd ();
         add.isFailedValidation (error2);
 
         // test: >50 quantity
         add.enterQuantity (51);
+        add.clearQuantity();
         add.clickAdd ();
         add.isFailedValidation (error2);
 
         // test: duplicate name
         add.addContainer (SlideBox5, 2);
+        add.clearQuantity();
         add.setContainerName (1, "foo");
         add.setContainerName (2, "foo");
         add.clickSave ();
