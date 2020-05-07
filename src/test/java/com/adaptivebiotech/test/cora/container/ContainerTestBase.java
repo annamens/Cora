@@ -1,33 +1,22 @@
 package com.adaptivebiotech.test.cora.container;
 
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.Logging.error;
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static com.adaptivebiotech.utils.TestHelper.freezerAB018055;
-import static com.adaptivebiotech.utils.TestHelper.freezerAB018078;
-import static com.adaptivebiotech.utils.TestHelper.freezerAB039003;
-import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
-import static com.seleniumfy.test.utils.HttpClientHelper.body;
-import static com.seleniumfy.test.utils.HttpClientHelper.post;
-import static com.seleniumfy.test.utils.HttpClientHelper.put;
-import static java.util.stream.Collectors.toList;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.fail;
-
-import java.util.Arrays;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.dto.HttpResponse;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.seleniumfy.test.utils.HttpClientHelper;
-import org.apache.http.Header;
+
+import java.util.stream.IntStream;
+
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.utils.TestHelper.*;
+import static com.seleniumfy.test.utils.HttpClientHelper.*;
+import static java.util.stream.Collectors.toList;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class ContainerTestBase extends CoraBaseBrowser {
 
@@ -74,6 +63,7 @@ public class ContainerTestBase extends CoraBaseBrowser {
         try {
             containers.list.parallelStream ().forEach (c -> {
                 c.isActive = false;
+                //TODO this is causing shipments to be in weird states
                 if (c.children != null) {
                     c.children.forEach(child -> {
                         child.root = null;

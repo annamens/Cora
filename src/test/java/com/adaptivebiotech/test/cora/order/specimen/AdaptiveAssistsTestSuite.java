@@ -66,6 +66,7 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
         addDiagnosticShipment_and_Activate ();
     }
 
+    //TODO need to automate discrepancies
     public void specimenType_Blood_Citrate () {
         specimen.enterSpecimenType (Blood);
         specimen.enterAntiCoagulant (Other);
@@ -328,13 +329,15 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
         accession.clickIntakeComplete ();
         if (doManualPass)
             accession.manualPass (Specimen);
+        accession.labelingComplete ();
+        accession.labelVerificationComplete ();
         accession.clickPass ();
-        accession.verifyLabels ();
         accession.gotoOrderDetail ();
 
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
         diagnostic.clickAssayTest (ID_BCell2_CLIA);
+        diagnostic.clickSave();
         diagnostic.clickActivateOrder ();
         diagnostic.clickCancel ();
         diagnostic.clickCancelOrder ();

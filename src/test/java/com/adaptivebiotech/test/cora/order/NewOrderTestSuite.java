@@ -1,6 +1,14 @@
 package com.adaptivebiotech.test.cora.order;
 
-import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
+import com.adaptivebiotech.common.dto.Patient;
+import com.adaptivebiotech.cora.ui.order.Specimen;
+import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.ui.cora.order.Billing;
+import com.adaptivebiotech.ui.cora.order.Diagnostic;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.MRD_BCell2_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
@@ -9,17 +17,9 @@ import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShi
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.Outpatient;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
-import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.BoneMarrowAspirateSlide;
 import static com.adaptivebiotech.test.utils.TestHelper.insurance1;
 import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import com.adaptivebiotech.common.dto.Patient;
-import com.adaptivebiotech.ui.cora.order.Billing;
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
-import com.adaptivebiotech.cora.ui.order.Specimen;
-import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
 @Test (groups = { "regression" })
 public class NewOrderTestSuite extends OrderTestBase {
@@ -69,8 +69,7 @@ public class NewOrderTestSuite extends OrderTestBase {
         Specimen specimen = new Specimen ();
         specimen.enterSpecimenDelivery (CustomerShipment);
         specimen.clickEnterSpecimenDetails ();
-        specimen.enterSpecimenType (Blood);
-        specimen.enterAntiCoagulant (EDTA);
+        specimen.enterSpecimenType (BoneMarrowAspirateSlide);
         specimen.enterCollectionDate (collectionDt);
         specimen.clickSave ();
 
@@ -92,8 +91,9 @@ public class NewOrderTestSuite extends OrderTestBase {
         Accession accession = new Accession ();
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
+        accession.labelingComplete ();
+        accession.labelVerificationComplete ();
         accession.clickPass ();
-        accession.verifyLabels ();
         accession.gotoOrderDetail ();
     }
 }

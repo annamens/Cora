@@ -1,37 +1,30 @@
 package com.adaptivebiotech.test.cora.container;
 
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Conical;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Freezer;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.MatrixTube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.MatrixTube5ml;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.OtherTube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideWithCoverslip;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Vacutainer;
-import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-import static org.testng.Assert.assertEquals;
-import java.util.EnumSet;
-import java.util.List;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.ui.cora.CoraPage;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.ui.cora.CoraPage;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-@Test (groups = { "container" })
+import java.util.EnumSet;
+import java.util.List;
+
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.*;
+import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.testng.Assert.assertEquals;
+
+@Test (groups = { "container", "regression" })
 public class HoldingContainerTestSuite extends ContainerTestBase {
 
     private CoraPage     main;

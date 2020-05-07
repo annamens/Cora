@@ -1,39 +1,37 @@
 package com.adaptivebiotech.test.cora.container;
 
+import com.adaptivebiotech.cora.dto.ContainerHistory;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.Detail;
+import com.adaptivebiotech.cora.ui.container.History;
+import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.ui.cora.CoraPage;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.ClassLoader.getSystemResource;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.dto.ContainerHistory;
-import com.adaptivebiotech.cora.dto.Containers;
-import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.ui.cora.CoraPage;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
-import com.adaptivebiotech.cora.ui.container.Detail;
-import com.adaptivebiotech.cora.ui.container.History;
-import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
 //import org.apache.poi.EncryptedDocumentException;
 //import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -43,7 +41,7 @@ import com.adaptivebiotech.cora.ui.shipment.Shipment;
 //import org.apache.poi.ss.usermodel.Workbook;
 //import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-@Test (groups = { "container" })
+@Test (groups = { "container", "regression" })
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
     private CoraPage      main;
@@ -127,6 +125,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             }
         }
     }
+
 
     /**
      * @sdlc_requirements 126.MoveMetadata

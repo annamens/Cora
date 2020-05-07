@@ -5,6 +5,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import org.openqa.selenium.Keys;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -59,6 +60,7 @@ public class ContainerList extends CoraPage {
     }
 
     public void scan (String containerNumber) {
+        assertTrue (clear(getDriver ().findElement (locateBy ("#container-scan-input"))));
         assertTrue (setText ("#container-scan-input", containerNumber));
         assertTrue (pressKey (Keys.ENTER));
     }

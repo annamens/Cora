@@ -47,13 +47,25 @@ public class Accession extends CoraPage {
     }
 
     public void verifyLabels () {
-        assertTrue (click ("[data-ng-click='ctrl.verifyLabels()']"));
-        assertTrue (isTextInElement (popupTitle, "Labels Verified Confirmation"));
+        assertTrue (click ("[ng-click='ctrl.setLabelingComplete(container)']"));
+        assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
+        clickPopupOK ();
+    }
+
+    public void labelingComplete () {
+        assertTrue (click ("[ng-click='ctrl.setLabelingComplete(container)']"));
+        assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
+        clickPopupOK ();
+    }
+
+    public void labelVerificationComplete () {
+        assertTrue (click ("[ng-click='ctrl.setLabelVerificationComplete(container)']"));
+        assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
         clickPopupOK ();
     }
 
     public void gotoOrderDetail () {
-        assertTrue (click ("[ng-bind='ctrl.order.orderNumber']"));
+        assertTrue (click ("[data-ng-bind='ctrl.entry.order.orderNumber']"));
         pageLoading ();
     }
 

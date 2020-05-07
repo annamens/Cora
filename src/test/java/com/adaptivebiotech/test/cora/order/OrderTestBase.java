@@ -41,7 +41,6 @@ public class OrderTestBase extends CoraBaseBrowser {
             assertEquals (actual.patient.gender, expected.patient.gender);
             assertEquals (actual.patient.patientCode, expected.patient.patientCode);
             assertEquals (actual.patient.mrn, expected.patient.mrn);
-            assertEquals (actual.patient.notes, expected.patient.notes);
             assertEquals (actual.icdcodes, expected.icdcodes);
             assertEquals (actual.properties.SpecimenDeliveryType, expected.properties.SpecimenDeliveryType);
             assertNull (actual.specimenNumber);

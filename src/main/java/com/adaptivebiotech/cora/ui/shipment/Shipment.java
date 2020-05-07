@@ -5,6 +5,7 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 import com.adaptivebiotech.ui.cora.CoraPage;
+import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
@@ -137,6 +138,13 @@ public class Shipment extends CoraPage {
                                            .map (f -> getSystemResource (f).getPath ())
                                            .collect (joining ("\n"));
         waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
+        pageLoading ();
+    }
+
+    public void doubleClickSave () {
+        WebElement saveButton =  waitForElement(locateBy("[data-ng-click*='shipment-save']"));
+        saveButton.click();
+        saveButton.click();
         pageLoading ();
     }
 }

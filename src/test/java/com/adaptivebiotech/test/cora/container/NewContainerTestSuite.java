@@ -1,26 +1,25 @@
 package com.adaptivebiotech.test.cora.container;
 
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox100;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox10x10;
-import static com.adaptivebiotech.test.utils.TestHelper.randomString;
-import static java.lang.String.format;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.ui.cora.CoraPage;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
+import com.adaptivebiotech.ui.cora.CoraPage;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-@Test (groups = { "container" })
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.*;
+import static com.adaptivebiotech.test.utils.TestHelper.randomString;
+import static java.lang.String.format;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+@Test (groups = { "container", "regression" })
 public class NewContainerTestSuite extends ContainerTestBase {
 
     private final String testFreezer1 = "[Destroyed – xAMPL]";

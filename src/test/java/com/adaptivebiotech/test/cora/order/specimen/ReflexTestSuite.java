@@ -82,8 +82,9 @@ public class ReflexTestSuite extends OrderTestBase {
         Accession accession = new Accession ();
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
+        accession.labelingComplete ();
+        accession.labelVerificationComplete ();
         accession.clickPass ();
-        accession.verifyLabels ();
         accession.gotoOrderDetail ();
 
         Diagnostic diagnostic = new Diagnostic ();

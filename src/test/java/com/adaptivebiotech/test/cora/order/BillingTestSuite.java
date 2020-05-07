@@ -1,12 +1,17 @@
 package com.adaptivebiotech.test.cora.order;
 
+import com.adaptivebiotech.common.dto.Patient;
+import com.adaptivebiotech.cora.ui.order.Specimen;
+import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.ui.cora.order.Billing;
+import com.adaptivebiotech.ui.cora.order.Diagnostic;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.InternalPharmaBilling;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.PatientSelfPay;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.TrialProtocol;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.*;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
@@ -18,17 +23,6 @@ import static com.adaptivebiotech.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.utils.TestHelper.newMedicarePatient;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import com.adaptivebiotech.common.dto.Patient;
-import com.adaptivebiotech.ui.cora.order.Billing;
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
-import com.adaptivebiotech.cora.ui.order.Specimen;
-import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
 @Test (groups = { "regression" })
 public class BillingTestSuite extends OrderTestBase {
@@ -221,8 +215,7 @@ public class BillingTestSuite extends OrderTestBase {
 
     private void activate_and_cancel () {
         diagnostic.clickAssayTest (ID_BCell2_CLIA);
-        diagnostic.clickActivateOrder ();
-        diagnostic.clickCancel ();
+        diagnostic.activateOrder ();
         diagnostic.clickCancelOrder ();
     }
 
@@ -251,8 +244,9 @@ public class BillingTestSuite extends OrderTestBase {
         Accession accession = new Accession ();
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
+        accession.labelingComplete ();
+        accession.labelVerificationComplete ();
         accession.clickPass ();
-        accession.verifyLabels ();
         accession.gotoOrderDetail ();
 
         // test: add a test, confirm we're able to Activate and then cancel it

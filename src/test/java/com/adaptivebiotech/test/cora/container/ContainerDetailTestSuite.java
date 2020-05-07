@@ -1,14 +1,5 @@
 package com.adaptivebiotech.test.cora.container;
 
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5CS;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertTrue;
-import java.util.List;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
@@ -16,8 +7,17 @@ import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.ui.cora.CoraPage;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
-@Test (groups = { "container" })
+import java.util.List;
+
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5CS;
+import static org.testng.Assert.*;
+
+@Test (groups = { "container", "regression" })
 public class ContainerDetailTestSuite extends ContainerTestBase {
 
     private final String error1 = "Only '.pdf,.jpg,.png,.gif,.xlsx' files allowed";
