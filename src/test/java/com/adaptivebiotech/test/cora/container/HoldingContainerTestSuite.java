@@ -51,11 +51,6 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         history = new History ();
     }
 
-    @AfterTest
-    public void afterTest () {
-        doCoraLogin ();
-        deactivateContainers (containers);
-    }
 
     /**
      * @sdlc_requirements 126.MoveMetadata
@@ -72,7 +67,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         // test: holding containers don't have Holding Container btn and no depleted dropdown
         main.gotoMyCustody ();
         topContainers.list.stream ().forEach (c -> my.isHoldingContainer (c));
-        deactivateContainers (topContainers);
+//        deactivateContainers (topContainers);
     }
 
     /**

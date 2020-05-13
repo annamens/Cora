@@ -110,7 +110,6 @@ public class NewContainerTestSuite extends ContainerTestBase {
         Container actual = myContainers.list.get (0);
         assertEquals (actual.containerType, SlideBox100);
         assertEquals (actual.location, coraTestUser);
-        deactivateContainers (myContainers);
     }
 
     /**
@@ -163,6 +162,5 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertEquals (myContainers.list.get (0).containerType, SlideBox5);
         assertEquals (myContainers.list.get (0).name, name33.substring (0, 32));
         assertEquals (myContainers.list.get (0).location, coraTestUser);
-        deactivateContainers (myContainers);
     }
 }
