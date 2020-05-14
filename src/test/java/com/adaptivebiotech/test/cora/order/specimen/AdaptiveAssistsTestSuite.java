@@ -327,10 +327,10 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
         Accession accession = new Accession ();
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
         if (doManualPass)
             accession.manualPass (Specimen);
+        accession.labelingComplete ();
+        accession.labelVerificationComplete ();
         accession.clickPass ();
         accession.gotoOrderDetail ();
 
@@ -338,5 +338,8 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
         diagnostic.isCorrectPage ();
         diagnostic.clickAssayTest (ID_BCell2_CLIA);
         diagnostic.clickSave();
+        diagnostic.clickActivateOrder ();
+        diagnostic.clickCancel ();
+        diagnostic.clickCancelOrder ();
     }
 }

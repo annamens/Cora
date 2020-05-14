@@ -62,6 +62,12 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         containers.list = new ArrayList<>();
     }
 
+    @AfterMethod
+    public void afterMethod () {
+        if (containers.list != null && !containers.list.isEmpty ())
+            deactivateContainers (containers);
+    }
+
     /**
      * @sdlc_requirements 126.MoveMetadata
      */

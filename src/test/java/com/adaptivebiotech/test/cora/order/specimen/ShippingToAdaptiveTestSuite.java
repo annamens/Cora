@@ -4,7 +4,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.Other;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.DiscrepancyType.Specimen;
@@ -64,14 +63,13 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         addDiagnosticShipment_and_Activate ();
     }
 
-    //TODO need a discrepeancy to intake complete
-//    public void specimenType_Blood_Citrate () {
-//        specimen.enterSpecimenType (Blood);
-//        specimen.enterAntiCoagulant (Other);
-//        specimen.enterAntiCoagulantOther ("Citrate");
-//        specimen.enterCollectionDate (collectionDt);
-//        addDiagnosticShipment_and_Activate (true);
-//    }
+    public void specimenType_Blood_Citrate () {
+        specimen.enterSpecimenType (Blood);
+        specimen.enterAntiCoagulant (Other);
+        specimen.enterAntiCoagulantOther ("Citrate");
+        specimen.enterCollectionDate (collectionDt);
+        addDiagnosticShipment_and_Activate (true);
+    }
 
     public void specimenType_BoneMarrowAspirateSlide () {
         specimen.enterSpecimenType (BoneMarrowAspirateSlide);
@@ -295,7 +293,7 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
 
     private void addDiagnosticShipment_and_Activate (boolean doManualPass) {
         Billing billing = new Billing ();
-        billing.selectBilling (NoCharge);
+        billing.selectBilling (Client);
         billing.clickSave ();
         String orderNum = billing.getOrderNum ();
 
@@ -311,8 +309,6 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         Accession accession = new Accession ();
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
         if (doManualPass)
             accession.manualPass (Specimen);
         accession.clickPass ();
@@ -321,5 +317,8 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
         diagnostic.clickAssayTest (ID_BCell2_CLIA);
+        diagnostic.clickActivateOrder ();
+        diagnostic.clickCancel ();
+        diagnostic.clickCancelOrder ();
     }
 }

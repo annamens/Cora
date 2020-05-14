@@ -61,11 +61,19 @@ public class ContainerTestBase extends CoraBaseBrowser {
 
     protected Containers deactivateContainers (Containers containers) {
         try {
-            containers.list.parallelStream ().forEach (c -> c.isActive = false);
+            containers.list.parallelStream ().forEach (c -> {
+                c.isActive = false;
+                //TODO this is causing shipments to be in weird states
+                if (c.children != null) {
+                    c.children.forEach(child -> {
+                        child.root = null;
+                    });
+                }
+            });
             String url = coraTestUrl + "/cora/api/v1/containers/updateEntries";
             return new Containers (
-                    mapper.readValue (put (url, body (mapper.writeValueAsString (containers.list) )),
-                            HttpResponse.class).containers);
+                    mapper.readValue (put (url, body (mapper.writeValueAsString (containers.list))),
+                                      HttpResponse.class).containers);
         } catch (Exception e) {
             throw new RuntimeException (e);
         }

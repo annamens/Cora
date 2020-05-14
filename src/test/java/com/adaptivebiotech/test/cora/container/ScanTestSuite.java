@@ -68,6 +68,16 @@ public class ScanTestSuite extends ContainerTestBase {
         my = new MyCustody ();
     }
 
+    @AfterTest
+    public void afterTest () {
+        containers1.list.add (child1);
+        containers1.list.add (child2);
+        containers1.list.add (holding);
+        deactivateContainers (containers1);
+        // if (containers2 != null)
+        // deactivateContainers (containers2);
+    }
+
     /**
      * @sdlc_requirements 126.ContainersListValidScan
      */

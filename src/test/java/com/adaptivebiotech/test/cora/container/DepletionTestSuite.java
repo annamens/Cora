@@ -45,6 +45,11 @@ public class DepletionTestSuite extends ContainerTestBase {
         my.isCorrectPage ();
     }
 
+    @AfterMethod
+    public void afterMethod () {
+        deactivateContainers (new Containers (asList (child, holding)));
+    }
+
     /**
      * @sdlc_requirements 126.MoveMetadata
      */
