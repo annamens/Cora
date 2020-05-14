@@ -49,7 +49,6 @@ public class CoraBaseBrowser extends BaseBrowser {
         Map <String, String> forms = new HashMap <> ();
         forms.put ("userName", coraTestUser);
         forms.put ("password", coraTestPass);
-        System.out.println(coraTestUser);
         formPost (coraTestUrl + "/cora/login", forms);
         HttpClientHelper.headers.addAll(Arrays.asList(headers));
     }
