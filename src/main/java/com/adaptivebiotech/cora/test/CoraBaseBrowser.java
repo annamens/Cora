@@ -37,6 +37,11 @@ public class CoraBaseBrowser extends BaseBrowser {
         initialization ();
     }
 
+    @BeforeSuite (alwaysRun = true)
+    public void beforeSuite () {
+        doCoraLogin ();
+    }
+
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method method) throws Exception {
         doCoraLogin ();
