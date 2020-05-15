@@ -33,14 +33,6 @@ import static java.lang.ClassLoader.getSystemResource;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-//import org.apache.poi.EncryptedDocumentException;
-//import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-//import org.apache.poi.ss.usermodel.Cell;
-//import org.apache.poi.ss.usermodel.Row;
-//import org.apache.poi.ss.usermodel.Sheet;
-//import org.apache.poi.ss.usermodel.Workbook;
-//import org.apache.poi.ss.usermodel.WorkbookFactory;
-
 @Test (groups = { "container", "regression" })
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
@@ -60,12 +52,6 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         containers = new Containers ();
         containers.list = new ArrayList<>();
-    }
-
-    @AfterMethod
-    public void afterMethod () {
-        if (containers.list != null && !containers.list.isEmpty ())
-            deactivateContainers (containers);
     }
 
     /**

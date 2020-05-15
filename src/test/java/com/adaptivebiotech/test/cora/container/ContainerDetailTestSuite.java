@@ -38,11 +38,6 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         detail = new Detail ();
     }
 
-    @AfterMethod
-    public void afterMethod () {
-        deactivateContainers (containers);
-    }
-
     /**
      * @sdlc_requirements 126.ContainerDetailsPage
      */

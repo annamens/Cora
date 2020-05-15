@@ -51,12 +51,6 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         history = new History ();
     }
 
-    @AfterTest
-    public void afterTest () {
-        doCoraLogin ();
-        deactivateContainers (containers);
-    }
-
     /**
      * @sdlc_requirements 126.MoveMetadata
      */
