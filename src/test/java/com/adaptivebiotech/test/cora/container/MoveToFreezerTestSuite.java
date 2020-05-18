@@ -17,10 +17,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,7 +30,7 @@ import static java.lang.ClassLoader.getSystemResource;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-@Test (groups = { "container", "regression" })
+@Test (groups = { "test", "container", "regression" })
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
     private CoraPage      main;
@@ -57,60 +54,60 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     /**
      * @sdlc_requirements 126.MoveMetadata
      */
-    public void movePrimaryToFreezer () {
-        for (ContainerType type : ContainerType.values ())
-            if (!type.isHolding)
-                containers.list.add (container (type));
-        containers = addContainers (containers);
-        String comment = randomWords (10);
-
-        main.gotoContainersList ();
-        for (Container primary : containers.list) {
-            switch (primary.containerType) {
-            case MatrixTube:
-                freezer = freezerAB018055;
-                break;
-            case Slide:
-            case SlideWithCoverslip:
-                freezer = freezerAB039003;
-                break;
-            default:
-                freezer = freezerAB018078;
-                break;
-            }
-            primary.depleted = true;
-            primary.comment = comment;
-            list.moveToFreezer (primary, freezer);
-
-            // test: go to detail page to verify location
-            main.gotoContainerDetail (primary);
-            detail.isCorrectPage ();
-            Container actual = detail.parsePrimaryDetail ();
-            actual.comment = comment;
-            assertTrue (primary.location.startsWith (freezer.name));
-            verifyDetails (actual, primary);
-
-            // test: go to history page to verify location
-            detail.gotoHistory ();
-            history.isCorrectPage ();
-            List <ContainerHistory> histories = history.getHistories ();
-            assertEquals (histories.size (), 2);
-            verifyMovedTo (histories.get (0), actual);
-            verifyTookCustody (histories.get (1));
-
-            main.gotoContainersList ();
-        }
-
-        // test: go to containers list for the given freezer and verify
-        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
-            main.showFreezerContents (freezer);
-            Containers listContainers = list.getContainers ();
-            for (Container primary : containers.list) {
-                if (primary.location.startsWith (freezer.name))
-                    assertEquals (listContainers.findContainerByNumber (primary).location, primary.location);
-            }
-        }
-    }
+//    public void movePrimaryToFreezer () {
+//        for (ContainerType type : ContainerType.values ())
+//            if (!type.isHolding)
+//                containers.list.add (container (type));
+//        containers = addContainers (containers);
+//        String comment = randomWords (10);
+//
+//        main.gotoContainersList ();
+//        for (Container primary : containers.list) {
+//            switch (primary.containerType) {
+//            case MatrixTube:
+//                freezer = freezerAB018055;
+//                break;
+//            case Slide:
+//            case SlideWithCoverslip:
+//                freezer = freezerAB039003;
+//                break;
+//            default:
+//                freezer = freezerAB018078;
+//                break;
+//            }
+//            primary.depleted = true;
+//            primary.comment = comment;
+//            list.moveToFreezer (primary, freezer);
+//
+//            // test: go to detail page to verify location
+//            main.gotoContainerDetail (primary);
+//            detail.isCorrectPage ();
+//            Container actual = detail.parsePrimaryDetail ();
+//            actual.comment = comment;
+//            assertTrue (primary.location.startsWith (freezer.name));
+//            verifyDetails (actual, primary);
+//
+//            // test: go to history page to verify location
+//            detail.gotoHistory ();
+//            history.isCorrectPage ();
+//            List <ContainerHistory> histories = history.getHistories ();
+//            assertEquals (histories.size (), 2);
+//            verifyMovedTo (histories.get (0), actual);
+//            verifyTookCustody (histories.get (1));
+//
+//            main.gotoContainersList ();
+//        }
+//
+//        // test: go to containers list for the given freezer and verify
+//        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
+//            main.showFreezerContents (freezer);
+//            Containers listContainers = list.getContainers ();
+//            for (Container primary : containers.list) {
+//                if (primary.location.startsWith (freezer.name))
+//                    assertEquals (listContainers.findContainerByNumber (primary).location, primary.location);
+//            }
+//        }
+//    }
 
 
     /**
@@ -129,12 +126,13 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         Accession accession = new Accession ();
         accession.isCorrectPage ();
 
-
-        String excelFilePath = getSystemResource ("intakemanifest_holding_w_child_template.xlsx").getPath();
-        String excelFilePath2 = getSystemResource ("intakemanifest_holding_w_child.xlsx").getPath();
+        String manifestName = "intakemanifest_holding_w_child";
+        String manifestFileName = manifestName + ".xlsx";
+        String manifestTemplatePath = getSystemResource (manifestName + "_template.xlsx").getPath();
+        String manifestPath = getSystemResource (manifestFileName).getPath();
 
         try {
-            FileInputStream inputStream = new FileInputStream(new File(excelFilePath));
+            FileInputStream inputStream = new FileInputStream(new File(manifestTemplatePath));
             Workbook workbook = WorkbookFactory.create(inputStream);
 
             Sheet sheet = workbook.getSheetAt(0);
@@ -144,7 +142,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
             inputStream.close();
 
-            FileOutputStream outputStream = new FileOutputStream(excelFilePath2);
+            FileOutputStream outputStream = new FileOutputStream(manifestPath);
             workbook.write(outputStream);
             workbook.close();
             outputStream.close();
@@ -153,7 +151,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             e.printStackTrace();
         }
 
-        accession.uploadIntakeManifest ("intakemanifest_holding_w_child.xlsx");
+        accession.uploadIntakeManifest (manifestFileName);
         accession.clickIntakeComplete ();
         accession.gotoShipment ();
         containers = shipment.getBatchContainers ();
