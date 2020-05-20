@@ -30,7 +30,7 @@ import static java.lang.ClassLoader.getSystemResource;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-@Test (groups = { "test", "container", "regression" })
+@Test (groups = {"container", "regression" })
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
     private CoraPage      main;
@@ -54,60 +54,60 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     /**
      * @sdlc_requirements 126.MoveMetadata
      */
-//    public void movePrimaryToFreezer () {
-//        for (ContainerType type : ContainerType.values ())
-//            if (!type.isHolding)
-//                containers.list.add (container (type));
-//        containers = addContainers (containers);
-//        String comment = randomWords (10);
-//
-//        main.gotoContainersList ();
-//        for (Container primary : containers.list) {
-//            switch (primary.containerType) {
-//            case MatrixTube:
-//                freezer = freezerAB018055;
-//                break;
-//            case Slide:
-//            case SlideWithCoverslip:
-//                freezer = freezerAB039003;
-//                break;
-//            default:
-//                freezer = freezerAB018078;
-//                break;
-//            }
-//            primary.depleted = true;
-//            primary.comment = comment;
-//            list.moveToFreezer (primary, freezer);
-//
-//            // test: go to detail page to verify location
-//            main.gotoContainerDetail (primary);
-//            detail.isCorrectPage ();
-//            Container actual = detail.parsePrimaryDetail ();
-//            actual.comment = comment;
-//            assertTrue (primary.location.startsWith (freezer.name));
-//            verifyDetails (actual, primary);
-//
-//            // test: go to history page to verify location
-//            detail.gotoHistory ();
-//            history.isCorrectPage ();
-//            List <ContainerHistory> histories = history.getHistories ();
-//            assertEquals (histories.size (), 2);
-//            verifyMovedTo (histories.get (0), actual);
-//            verifyTookCustody (histories.get (1));
-//
-//            main.gotoContainersList ();
-//        }
-//
-//        // test: go to containers list for the given freezer and verify
-//        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
-//            main.showFreezerContents (freezer);
-//            Containers listContainers = list.getContainers ();
-//            for (Container primary : containers.list) {
-//                if (primary.location.startsWith (freezer.name))
-//                    assertEquals (listContainers.findContainerByNumber (primary).location, primary.location);
-//            }
-//        }
-//    }
+    public void movePrimaryToFreezer () {
+        for (ContainerType type : ContainerType.values ())
+            if (!type.isHolding)
+                containers.list.add (container (type));
+        containers = addContainers (containers);
+        String comment = randomWords (10);
+
+        main.gotoContainersList ();
+        for (Container primary : containers.list) {
+            switch (primary.containerType) {
+            case MatrixTube:
+                freezer = freezerAB018055;
+                break;
+            case Slide:
+            case SlideWithCoverslip:
+                freezer = freezerAB039003;
+                break;
+            default:
+                freezer = freezerAB018078;
+                break;
+            }
+            primary.depleted = true;
+            primary.comment = comment;
+            list.moveToFreezer (primary, freezer);
+
+            // test: go to detail page to verify location
+            main.gotoContainerDetail (primary);
+            detail.isCorrectPage ();
+            Container actual = detail.parsePrimaryDetail ();
+            actual.comment = comment;
+            assertTrue (primary.location.startsWith (freezer.name));
+            verifyDetails (actual, primary);
+
+            // test: go to history page to verify location
+            detail.gotoHistory ();
+            history.isCorrectPage ();
+            List <ContainerHistory> histories = history.getHistories ();
+            assertEquals (histories.size (), 2);
+            verifyMovedTo (histories.get (0), actual);
+            verifyTookCustody (histories.get (1));
+
+            main.gotoContainersList ();
+        }
+
+        // test: go to containers list for the given freezer and verify
+        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
+            main.showFreezerContents (freezer);
+            Containers listContainers = list.getContainers ();
+            for (Container primary : containers.list) {
+                if (primary.location.startsWith (freezer.name))
+                    assertEquals (listContainers.findContainerByNumber (primary).location, primary.location);
+            }
+        }
+    }
 
 
     /**
@@ -137,8 +137,10 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
             Sheet sheet = workbook.getSheetAt(0);
 
-            sheet.getRow(38).getCell(9).setCellValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyddhhmmSS")));
-            sheet.getRow(39).getCell(9).setCellValue(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyddhhmmSS")));
+            LocalDateTime now = LocalDateTime.now();
+
+            sheet.getRow(38).getCell(9).setCellValue(now.format(DateTimeFormatter.ofPattern("yyddhhmmss")));
+            sheet.getRow(39).getCell(9).setCellValue(now.plusSeconds(1L).format(DateTimeFormatter.ofPattern("yyddhhmmss")));
 
             inputStream.close();
 
@@ -251,7 +253,8 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         // test: go to containers list for the given freezer and verify
         for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
-            main.showFreezerContents (freezer);
+            //TODO uncomment this
+//            main.showTodayFreezerContents (freezer);
             Containers listContainers = list.getContainers ();
             for (Container c : containers.list) {
                 Container child = c.containerType.equals (ContainerType.Plate) ? c : c.children.get (0);
