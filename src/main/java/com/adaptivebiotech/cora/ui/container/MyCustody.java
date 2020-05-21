@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.container;
 
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.ConicalBox6x6;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
@@ -37,4 +38,14 @@ public class MyCustody extends ContainerList {
             return c;
         }).collect (toList ()));
     }
+
+//    public void sendAllMyCustody(Container destination) {
+//        getContainers().list.stream().filter(container -> !container.containerType.equals(ConicalBox6x6) && !container.contents.contains("SP-")).forEach(container -> {
+//            try {
+//                moveToFreezer(container, destination);
+//            } catch (Exception e) {
+//
+//            }
+//        });
+//    }
 }

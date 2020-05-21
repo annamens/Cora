@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -30,7 +31,7 @@ import static java.lang.ClassLoader.getSystemResource;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-@Test (groups = {"container", "regression" })
+@Test (groups = { "regression" })
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
     private CoraPage      main;
@@ -100,7 +101,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         // test: go to containers list for the given freezer and verify
         for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
-            main.showFreezerContents (freezer);
+            main.showTodayFreezerContents (freezer);
             Containers listContainers = list.getContainers ();
             for (Container primary : containers.list) {
                 if (primary.location.startsWith (freezer.name))
@@ -253,8 +254,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         // test: go to containers list for the given freezer and verify
         for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
-            //TODO uncomment this
-//            main.showTodayFreezerContents (freezer);
+            main.showTodayFreezerContents (freezer);
             Containers listContainers = list.getContainers ();
             for (Container c : containers.list) {
                 Container child = c.containerType.equals (ContainerType.Plate) ? c : c.children.get (0);

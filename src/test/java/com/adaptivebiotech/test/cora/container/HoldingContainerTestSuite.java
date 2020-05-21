@@ -24,7 +24,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 
-@Test (groups = { "container", "regression" })
+@Test (groups = { "regression" })
 public class HoldingContainerTestSuite extends ContainerTestBase {
 
     private CoraPage     main;

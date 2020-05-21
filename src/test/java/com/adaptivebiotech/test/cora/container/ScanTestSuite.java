@@ -7,12 +7,14 @@ import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.ui.cora.CoraPage;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.*;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.utils.TestHelper.freezerDestroyed;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
@@ -67,6 +69,13 @@ public class ScanTestSuite extends ContainerTestBase {
 
         my = new MyCustody ();
     }
+
+    //TODO remove containers from my custody
+//    @AfterMethod
+//    public void afterTest() {
+//        main.gotoMyCustody ();
+//        my.sendAllMyCustody(freezerDestroyed());
+//    }
 
     /**
      * @sdlc_requirements 126.ContainersListValidScan
