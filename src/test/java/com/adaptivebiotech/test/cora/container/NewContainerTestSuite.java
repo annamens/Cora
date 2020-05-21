@@ -115,6 +115,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     /**
      * @sdlc_requirements 126.AddNewContainer
      */
+    @Test(enabled=false)
     public void addRemoveContainers () {
         String name32 = randomString (32);
         String name33 = randomString (33);
