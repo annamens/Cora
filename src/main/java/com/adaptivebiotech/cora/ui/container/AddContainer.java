@@ -30,7 +30,6 @@ public class AddContainer extends CoraPage {
         assertTrue (click ("[data-ng-click='ctrl.save()']"));
         assertTrue (isTextInElement (popupTitle, "New Container Confirmation"));
         clickPopupOK ();
-        closeNotification ("Container(s) saved");
         assertTrue (waitUntilVisible ("[ng-click='ctrl.generateLabels()']"));
     }
 
@@ -84,9 +83,7 @@ public class AddContainer extends CoraPage {
     }
 
     public void removeContainers () {
-        waitForElements (lines).forEach (el -> assertTrue (click (el, "[data-ng-click*='ctrl.removeContainer']")));
         assertTrue (click ("[data-ng-click='ctrl.save()']"));
-        closeNotification ("Container(s) updated");
     }
 
     public Containers getContainers () {

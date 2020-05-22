@@ -1,14 +1,14 @@
 package com.adaptivebiotech.cora.ui.container;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.ConicalBox6x6;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
-import static java.util.stream.Collectors.toList;
-import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
+
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
+import static java.util.stream.Collectors.toList;
+import static org.testng.Assert.assertTrue;
 
 /**
  * @author Harry Soehalim
@@ -39,13 +39,13 @@ public class MyCustody extends ContainerList {
         }).collect (toList ()));
     }
 
-//    public void sendAllMyCustody(Container destination) {
-//        getContainers().list.stream().filter(container -> !container.containerType.equals(ConicalBox6x6) && !container.contents.contains("SP-")).forEach(container -> {
-//            try {
-//                moveToFreezer(container, destination);
-//            } catch (Exception e) {
-//
-//            }
-//        });
-//    }
+    public void sendAllMyCustody(Container destination) {
+        getContainers().list.stream().filter(container -> (container.contents == null || !container.contents.contains("SP-"))).forEach(container -> {
+            try {
+                moveToFreezer(container, destination);
+            } catch (Exception e) {
+
+            }
+        });
+    }
 }

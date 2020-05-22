@@ -5,7 +5,10 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.ui.cora.CoraPage;
+import org.testng.annotations.AfterSuite;
 
 import java.util.stream.IntStream;
 
@@ -98,5 +101,15 @@ public class ContainerTestBase extends CoraBaseBrowser {
 
     protected void verifyTookCustody (ContainerHistory history) {
         verifyTookCustody (history, null);
+    }
+
+    @AfterSuite
+    public void afterSuite() {
+        openBrowser ();
+        CoraPage main = new CoraPage();
+        main.doLogin ();
+        MyCustody my = new MyCustody();
+        main.gotoMyCustody ();
+        my.sendAllMyCustody(freezerDestroyed());
     }
 }
