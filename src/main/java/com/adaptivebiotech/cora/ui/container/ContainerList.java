@@ -5,16 +5,14 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import java.util.List;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.ui.cora.CoraPage;
-import org.openqa.selenium.WebElement;
-import org.testng.Assert;
-
-import java.util.List;
 
 /**
  * @author Harry Soehalim
@@ -40,17 +38,17 @@ public class ContainerList extends CoraPage {
 
     public Containers getContainers () {
         return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
-            List<WebElement> columns = el.findElements(locateBy("td"));
+            List <WebElement> columns = el.findElements (locateBy ("td"));
             Container c = new Container ();
-            c.id = getConId (getAttribute (columns.get(0), "a", "href"));
-            c.containerNumber = getText (columns.get(0));
-            String containerType = getText (columns.get(1));
-            c.containerType = containerType != null && !containerType.equals("Unsupported") ? getContainerType (getText (columns.get(1))) : null;
-            c.contents = getText (columns.get(2));
-            c.location = getText (columns.get(3));
-            c.name = getText (columns.get(4));
-            c.arrivalDate = getText (columns.get(5));
-            c.orderId = getText (columns.get(6));
+            c.id = getConId (getAttribute (columns.get (0), "a", "href"));
+            c.containerNumber = getText (columns.get (0));
+            String containerType = getText (columns.get (1));
+            c.containerType = containerType != null && !containerType.equals ("Unsupported") ? getContainerType (getText (columns.get (1))) : null;
+            c.contents = getText (columns.get (2));
+            c.location = getText (columns.get (3));
+            c.name = getText (columns.get (4));
+            c.arrivalDate = getText (columns.get (5));
+            c.orderId = getText (columns.get (6));
             return c;
         }).collect (toList ()));
     }
@@ -60,7 +58,7 @@ public class ContainerList extends CoraPage {
     }
 
     public void scan (String containerNumber) {
-        assertTrue (clear(getDriver ().findElement (locateBy ("#container-scan-input"))));
+        assertTrue (clear (getDriver ().findElement (locateBy ("#container-scan-input"))));
         assertTrue (setText ("#container-scan-input", containerNumber));
         assertTrue (pressKey (Keys.ENTER));
     }
@@ -246,7 +244,7 @@ public class ContainerList extends CoraPage {
     }
 
     public void scanToVerify (String containerNumber) {
-        assertTrue (clear(getDriver ().findElement (locateBy ("#scan_input"))));
+        assertTrue (clear (waitForElement ("#scan_input")));
         assertTrue (setText ("#scan_input", containerNumber));
         assertTrue (pressKey (Keys.ENTER));
     }
@@ -282,9 +280,9 @@ public class ContainerList extends CoraPage {
     }
 
     @Override
-    public void clickFilter() {
-        WebElement row = waitForElements (".filters > li ").get(6);
-        WebElement button = row.findElement(locateBy(".btn"));
-        Assert.assertTrue(this.click(button));
+    public void clickFilter () {
+        WebElement row = waitForElements (".filters > li ").get (6);
+        WebElement button = row.findElement (locateBy (".btn"));
+        Assert.assertTrue (this.click (button));
     }
 }
