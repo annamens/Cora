@@ -37,7 +37,7 @@ import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
-@Test (groups = { "regression" })
+@Test (groups = { "order", "regression" })
 public class ShippingToAdaptiveTestSuite extends OrderTestBase {
 
     private Specimen specimen;
@@ -64,6 +64,7 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         addDiagnosticShipment_and_Activate ();
     }
 
+    @Test(enabled=false)
     public void specimenType_Blood_Citrate () {
         specimen.enterSpecimenType (Blood);
         specimen.enterAntiCoagulant (Other);
@@ -215,6 +216,7 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         addDiagnosticShipment_and_Activate ();
     }
 
+    @Test(enabled=false)
     public void specimenType_FreshBoneMarrow_Oxalate () {
         specimen.enterSpecimenType (FreshBoneMarrow);
         specimen.enterAntiCoagulant (Other);
@@ -281,6 +283,7 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         addDiagnosticShipment_and_Activate ();
     }
 
+    @Test(enabled=false)
     public void specimenType_Saliva () {
         specimen.enterSpecimenType (SpecimenType.Other);
         specimen.enterSpecimenTypeOther ("Saliva");

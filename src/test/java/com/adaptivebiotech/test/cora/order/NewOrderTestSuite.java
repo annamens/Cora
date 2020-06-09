@@ -21,7 +21,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.BoneMarrowA
 import static com.adaptivebiotech.test.utils.TestHelper.insurance1;
 import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
 
-@Test (groups = { "regression" })
+@Test (groups = { "order", "regression" })
 public class NewOrderTestSuite extends OrderTestBase {
 
     private Diagnostic diagnostic;
@@ -31,6 +31,7 @@ public class NewOrderTestSuite extends OrderTestBase {
         diagnostic = new Diagnostic ();
     }
 
+    @Test(enabled=false)
     public void clonality_eos_ivd () {
         Patient patient = newPatient ();
         patient.billingType = Client;
@@ -43,6 +44,7 @@ public class NewOrderTestSuite extends OrderTestBase {
         diagnostic.activateOrder ();
     }
 
+    @Test(enabled=false)
     public void tracking_eos_ivd () {
         Patient patient = newPatient ();
         patient.billingType = Client;

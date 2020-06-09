@@ -24,7 +24,7 @@ import static com.adaptivebiotech.utils.TestHelper.newMedicarePatient;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 
-@Test (groups = { "regression" })
+@Test (groups = { "order", "regression" })
 public class BillingTestSuite extends OrderTestBase {
 
     private Diagnostic diagnostic;
@@ -40,6 +40,7 @@ public class BillingTestSuite extends OrderTestBase {
         billing = new Billing ();
     }
 
+    @Test(enabled=false)
     public void insurance () {
         Patient patient = newInsurancePatient ();
 
@@ -61,6 +62,7 @@ public class BillingTestSuite extends OrderTestBase {
     /**
      * @sdlc_requirements 173.Medicare.required
      */
+    @Test(enabled=false)
     public void medicare () {
         Patient patient = newMedicarePatient ();
 
@@ -79,6 +81,7 @@ public class BillingTestSuite extends OrderTestBase {
         activate_and_cancel ();
     }
 
+    @Test(enabled=false)
     public void patientSelfPayNonHospital () {
         Patient patient = newPatient ();
         patient.billingType = PatientSelfPay;
@@ -99,6 +102,7 @@ public class BillingTestSuite extends OrderTestBase {
         activate_and_cancel ();
     }
 
+    @Test(enabled=false)
     public void patientSelfPayInpatient () {
         Patient patient = newPatient ();
         patient.billingType = PatientSelfPay;
@@ -119,6 +123,7 @@ public class BillingTestSuite extends OrderTestBase {
         activate_and_cancel ();
     }
 
+    @Test(enabled=false)
     public void billClientNonHospital () {
         Patient patient = newPatient ();
         patient.billingType = Client;
@@ -139,6 +144,7 @@ public class BillingTestSuite extends OrderTestBase {
         activate_and_cancel ();
     }
 
+    @Test(enabled=false)
     public void billClientInpatient () {
         Patient patient = newPatient ();
         patient.billingType = Client;
@@ -159,6 +165,7 @@ public class BillingTestSuite extends OrderTestBase {
         activate_and_cancel ();
     }
 
+    @Test(enabled=false)
     public void billPerStudyProtocol () {
         Patient patient = newPatient ();
         patient.billingType = TrialProtocol;
@@ -177,6 +184,7 @@ public class BillingTestSuite extends OrderTestBase {
         activate_and_cancel ();
     }
 
+    @Test(enabled=false)
     public void noCharge () {
         Patient patient = newPatient ();
         patient.billingType = NoCharge;
@@ -195,6 +203,7 @@ public class BillingTestSuite extends OrderTestBase {
         activate_and_cancel ();
     }
 
+    @Test(enabled=false)
     public void internalPharmaBilling () {
         Patient patient = newPatient ();
         patient.billingType = InternalPharmaBilling;

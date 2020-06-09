@@ -13,7 +13,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.junit.Assert.assertEquals;
 
-@Test (groups = { "regression" })
+@Test (groups = { "order", "regression" })
 public class DoubleClickSaveTest extends OrderTestBase {
 
     private Diagnostic diagnostic;
