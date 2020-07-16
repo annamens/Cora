@@ -204,7 +204,7 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
     protected HttpResponse newResearchOrder (Research research) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
-            return mapper.readValue (post (url, body (mapper.writeValueAsString (research)), headers),
+            return mapper.readValue (post (url, body (mapper.writeValueAsString (research))),
                                      HttpResponse.class);
         } catch (Exception e) {
             throw new RuntimeException (e);
@@ -261,7 +261,7 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
             MoveContainer move = new MoveContainer ();
             move.container = new Container ();
             String url = coraTestUrl + "/cora/api/v1/containers/" + container.id + "/storeInFreezer/" + freezerDestroyed.id;
-            return mapper.readValue (put (url, body (mapper.writeValueAsString (move)), headers), MoveContainer.class);
+            return mapper.readValue (put (url, body (mapper.writeValueAsString (move))), MoveContainer.class);
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
@@ -273,7 +273,7 @@ public class ScenarioBuilderTestBase extends CoraBaseBrowser {
             Map <String, String> body = new HashMap <> ();
             body.put ("comments", "api take custody");
             String url = coraTestUrl + "/cora/api/v1/containers/" + container.id + "/takeCustody";
-            return mapper.readValue (put (url, body (mapper.writeValueAsString (body)), headers), MoveContainer.class);
+            return mapper.readValue (put (url, body (mapper.writeValueAsString (body))), MoveContainer.class);
         } catch (Exception e) {
             throw new RuntimeException (e);
         }

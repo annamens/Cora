@@ -30,8 +30,7 @@ public class AddContainer extends CoraPage {
         assertTrue (click ("[data-ng-click='ctrl.save()']"));
         assertTrue (isTextInElement (popupTitle, "New Container Confirmation"));
         clickPopupOK ();
-        closeNotification ("Container(s) saved");
-        assertTrue (waitUntilVisible ("[data-ng-click='ctrl.generateLabels()']"));
+        assertTrue (waitUntilVisible ("[ng-click='ctrl.generateLabels()']"));
     }
 
     public void isFailedValidation (String error) {
@@ -50,14 +49,20 @@ public class AddContainer extends CoraPage {
         assertTrue (setText ("#containerQty", String.valueOf (num)));
     }
 
+    public void clearQuantity () {
+        assertTrue (clear(getDriver ().findElement (locateBy  ("#containerQty"))));
+    }
+
     public void addContainer (ContainerType type, int num) {
         pickContainerType (type);
+        clearQuantity();
         enterQuantity (num);
         assertTrue (pressKey (Keys.ENTER));
     }
 
     public void setContainerName (int idx, String name) {
         String row = ".research-container-entry:nth-child(" + (idx + 2) + ") [data-ng-model='container.barcode']";
+        assertTrue (clear(getDriver ().findElement (locateBy (row))));
         assertTrue (setText (row, name));
     }
 
@@ -78,9 +83,7 @@ public class AddContainer extends CoraPage {
     }
 
     public void removeContainers () {
-        waitForElements (lines).forEach (el -> assertTrue (click (el, "[data-ng-click*='ctrl.removeContainer']")));
         assertTrue (click ("[data-ng-click='ctrl.save()']"));
-        closeNotification ("Container(s) updated");
     }
 
     public Containers getContainers () {

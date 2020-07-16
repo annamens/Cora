@@ -4,6 +4,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.Other;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.DiscrepancyType.Specimen;
@@ -36,7 +37,7 @@ import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
-@Test (groups = { "regression" })
+@Test (groups = { "order", "regression" })
 public class ShippingToAdaptiveTestSuite extends OrderTestBase {
 
     private Specimen specimen;
@@ -63,6 +64,7 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         addDiagnosticShipment_and_Activate ();
     }
 
+    @Test(enabled=false)
     public void specimenType_Blood_Citrate () {
         specimen.enterSpecimenType (Blood);
         specimen.enterAntiCoagulant (Other);
@@ -214,6 +216,7 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         addDiagnosticShipment_and_Activate ();
     }
 
+    @Test(enabled=false)
     public void specimenType_FreshBoneMarrow_Oxalate () {
         specimen.enterSpecimenType (FreshBoneMarrow);
         specimen.enterAntiCoagulant (Other);
@@ -280,6 +283,7 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         addDiagnosticShipment_and_Activate ();
     }
 
+    @Test(enabled=false)
     public void specimenType_Saliva () {
         specimen.enterSpecimenType (SpecimenType.Other);
         specimen.enterSpecimenTypeOther ("Saliva");
@@ -293,7 +297,7 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
 
     private void addDiagnosticShipment_and_Activate (boolean doManualPass) {
         Billing billing = new Billing ();
-        billing.selectBilling (Client);
+        billing.selectBilling (NoCharge);
         billing.clickSave ();
         String orderNum = billing.getOrderNum ();
 
@@ -309,6 +313,8 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         Accession accession = new Accession ();
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
+        accession.labelingComplete ();
+        accession.labelVerificationComplete ();
         if (doManualPass)
             accession.manualPass (Specimen);
         accession.clickPass ();
@@ -317,8 +323,5 @@ public class ShippingToAdaptiveTestSuite extends OrderTestBase {
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
         diagnostic.clickAssayTest (ID_BCell2_CLIA);
-        diagnostic.clickActivateOrder ();
-        diagnostic.clickCancel ();
-        diagnostic.clickCancelOrder ();
     }
 }

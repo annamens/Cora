@@ -16,7 +16,7 @@ public class History extends CoraPage {
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (".navbar"));
         assertTrue (waitUntilVisible ("[role='tablist']"));
-        assertTrue (isTextInElement ("[role='tablist'] .active", "History"));
+        assertTrue (isTextInElement ("[role='tablist'] .active", "HISTORY"));
     }
 
     public List <ContainerHistory> getHistories () {

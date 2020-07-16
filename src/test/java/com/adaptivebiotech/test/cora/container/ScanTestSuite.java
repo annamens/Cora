@@ -1,24 +1,22 @@
 package com.adaptivebiotech.test.cora.container;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
-import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static org.testng.Assert.assertEquals;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.ui.cora.CoraPage;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.ui.cora.CoraPage;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-@Test (groups = { "container" })
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.*;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static org.testng.Assert.assertEquals;
+
+@Test (groups = {"container", "regression" })
 public class ScanTestSuite extends ContainerTestBase {
 
     private final String error1   = "Cannot find container %s";
@@ -67,16 +65,6 @@ public class ScanTestSuite extends ContainerTestBase {
         closeBrowser ();
 
         my = new MyCustody ();
-    }
-
-    @AfterTest
-    public void afterTest () {
-        containers1.list.add (child1);
-        containers1.list.add (child2);
-        containers1.list.add (holding);
-        deactivateContainers (containers1);
-        // if (containers2 != null)
-        // deactivateContainers (containers2);
     }
 
     /**

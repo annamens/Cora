@@ -12,7 +12,8 @@ import com.adaptivebiotech.common.dto.Orders.Order;
 import com.adaptivebiotech.ui.cora.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrderList;
 
-@Test (groups = { "regression" })
+//@Test (groups = { "regression" })
+//TODO This test can mess with other peoples orders
 public class TransferTrfTestSuite extends OrderTestBase {
 
     private OrderList  list;

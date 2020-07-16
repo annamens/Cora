@@ -1,26 +1,38 @@
 package com.adaptivebiotech.test.cora.container;
 
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
-import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-import java.util.List;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.ui.cora.CoraPage;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.ui.cora.CoraPage;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
-@Test (groups = { "container" })
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
+import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
+import static java.lang.ClassLoader.getSystemResource;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+@Test (groups = { "regression" })
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
     private CoraPage      main;
@@ -38,12 +50,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         history = new History ();
 
         containers = new Containers ();
-    }
-
-    @AfterMethod
-    public void afterMethod () {
-        if (containers.list != null && !containers.list.isEmpty ())
-            deactivateContainers (containers);
+        containers.list = new ArrayList<>();
     }
 
     /**
@@ -64,7 +71,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 break;
             case Slide:
             case SlideWithCoverslip:
-                freezer = freezerAB018082;
+                freezer = freezerAB039003;
                 break;
             default:
                 freezer = freezerAB018078;
@@ -94,8 +101,8 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         }
 
         // test: go to containers list for the given freezer and verify
-        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB018082 }) {
-            main.showFreezerContents (freezer);
+        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
+            main.showTodayFreezerContents (freezer);
             Containers listContainers = list.getContainers ();
             for (Container primary : containers.list) {
                 if (primary.location.startsWith (freezer.name))
@@ -103,6 +110,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             }
         }
     }
+
 
     /**
      * @sdlc_requirements 126.MoveMetadata
@@ -119,7 +127,35 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         Accession accession = new Accession ();
         accession.isCorrectPage ();
-        accession.uploadIntakeManifest ("intakemanifest_holding_w_child.xlsx");
+
+        String manifestName = "intakemanifest_holding_w_child";
+        String manifestFileName = manifestName + ".xlsx";
+        String manifestTemplatePath = getSystemResource (manifestName + "_template.xlsx").getPath();
+        String manifestPath = getSystemResource (manifestFileName).getPath();
+
+        try {
+            FileInputStream inputStream = new FileInputStream(new File(manifestTemplatePath));
+            Workbook workbook = WorkbookFactory.create(inputStream);
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            LocalDateTime now = LocalDateTime.now();
+
+            sheet.getRow(38).getCell(9).setCellValue(now.format(DateTimeFormatter.ofPattern("yyddhhmmss")));
+            sheet.getRow(39).getCell(9).setCellValue(now.plusSeconds(1L).format(DateTimeFormatter.ofPattern("yyddhhmmss")));
+
+            inputStream.close();
+
+            FileOutputStream outputStream = new FileOutputStream(manifestPath);
+            workbook.write(outputStream);
+            workbook.close();
+            outputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        accession.uploadIntakeManifest (manifestFileName);
         accession.clickIntakeComplete ();
         accession.gotoShipment ();
         containers = shipment.getBatchContainers ();
@@ -137,7 +173,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 break;
             case Slide:
             case SlideWithCoverslip:
-                freezer = freezerAB018082;
+                freezer = freezerAB039003;
                 break;
             default:
                 freezer = freezerAB018078;
@@ -151,8 +187,11 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 break;
             case TubeBox5x5:
             case TubeBox5x10:
+            case TubeBox9x9:
+            case TubeBox10x10:
             case VacutainerBox7x7:
             case MatrixRack:
+            case MatrixRack4x6:
                 location = String.join (" : ", coraTestUser, child.root.containerNumber, "Position A:1");
                 break;
             case SlideBox5:
@@ -215,8 +254,8 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         }
 
         // test: go to containers list for the given freezer and verify
-        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB018082 }) {
-            main.showFreezerContents (freezer);
+        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
+            main.showTodayFreezerContents (freezer);
             Containers listContainers = list.getContainers ();
             for (Container c : containers.list) {
                 Container child = c.containerType.equals (ContainerType.Plate) ? c : c.children.get (0);

@@ -1,5 +1,17 @@
 package com.adaptivebiotech.test.cora.container;
 
+import com.adaptivebiotech.cora.dto.ContainerHistory;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.ui.container.Detail;
+import com.adaptivebiotech.cora.ui.container.History;
+import com.adaptivebiotech.cora.ui.container.MyCustody;
+import com.adaptivebiotech.ui.cora.CoraPage;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import java.util.List;
+
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox5x5;
@@ -7,19 +19,8 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.util.List;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.dto.ContainerHistory;
-import com.adaptivebiotech.cora.dto.Containers;
-import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.ui.cora.CoraPage;
-import com.adaptivebiotech.cora.ui.container.Detail;
-import com.adaptivebiotech.cora.ui.container.History;
-import com.adaptivebiotech.cora.ui.container.MyCustody;
 
-@Test (groups = { "container" })
+@Test (groups = { "container", "regression" })
 public class DepletionTestSuite extends ContainerTestBase {
 
     private CoraPage  main;
@@ -41,11 +42,6 @@ public class DepletionTestSuite extends ContainerTestBase {
         history = new History ();
         main.gotoMyCustody ();
         my.isCorrectPage ();
-    }
-
-    @AfterMethod
-    public void afterMethod () {
-        deactivateContainers (new Containers (asList (child, holding)));
     }
 
     /**
@@ -144,9 +140,11 @@ public class DepletionTestSuite extends ContainerTestBase {
         detail.gotoHistory ();
         history.isCorrectPage ();
         histories = history.getHistories ();
+        actual.comment = comment;
         assertEquals (histories.size (), 3);
         verifyMovedTo (histories.get (0), actual);
         actual.location = String.join (" : ", coraTestUser, child.root.containerNumber, "Position A:1");
+        actual.comment = null;
         verifyMovedTo (histories.get (1), actual);
         verifyTookCustody (histories.get (2));
     }

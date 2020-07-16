@@ -1,6 +1,11 @@
 package com.adaptivebiotech.test.cora.smoke;
 
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
+
+import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.common.dto.Physician;

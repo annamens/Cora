@@ -1,5 +1,14 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
+import com.adaptivebiotech.ui.cora.CoraPage;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
+
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.lang.ClassLoader.getSystemResource;
@@ -7,12 +16,6 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
-import java.util.List;
-import com.adaptivebiotech.cora.dto.Containers;
-import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
-import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
  * @author Harry Soehalim
@@ -38,7 +41,6 @@ public class Shipment extends CoraPage {
     public void clickSave () {
         assertTrue (click ("[data-ng-click*='shipment-save']"));
         pageLoading ();
-        closeNotification ("Shipment saved");
     }
 
     public void enterShippingCondition (ShippingCondition condition) {
@@ -106,7 +108,9 @@ public class Shipment extends CoraPage {
                     c.barcode = getText (el1, "[data-ng-bind*='specimen.barcode']");
                     c.specimenId = getText (el1, "[data-ng-bind*='specimen.specimen.specimenNumber']");
                     c.specimenName = getText (el1, "[data-ng-bind*='specimen.specimen.name']");
-                    c.containerType = getContainerType (c.specimenName);
+                    if (c.specimenName != null) {
+                        c.containerType = getContainerType (c.specimenName.split("-")[0]);
+                    }
                     c.root = container;
                     c.location = String.join (" : ", coraTestUser, container.containerNumber);
                     return c;
@@ -114,7 +118,11 @@ public class Shipment extends CoraPage {
                 css = "[data-ng-bind*='specimen.location']";
                 List <String> locs = el.findElements (locateBy (css)).stream ().map (el1 -> {
                     String loc = getText (el1);
-                    return loc.length () > 0 ? " : Position " + loc : loc;
+                    if (loc != null) {
+                        return loc.length () > 0 ? " : Position " + loc : loc;
+                    } else {
+                        return "";
+                    }
                 }).collect (toList ());
                 for (int i = 0; i < children.size (); ++i)
                     children.get (i).location += locs.get (i);
@@ -129,6 +137,13 @@ public class Shipment extends CoraPage {
                                            .map (f -> getSystemResource (f).getPath ())
                                            .collect (joining ("\n"));
         waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
+        pageLoading ();
+    }
+
+    public void doubleClickSave () {
+        WebElement saveButton =  waitForElement(locateBy("[data-ng-click*='shipment-save']"));
+        saveButton.click();
+        saveButton.click();
         pageLoading ();
     }
 }
