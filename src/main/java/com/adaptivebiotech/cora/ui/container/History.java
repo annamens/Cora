@@ -2,6 +2,7 @@ package com.adaptivebiotech.cora.ui.container;
 
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.ui.cora.CoraPage;
@@ -14,8 +15,6 @@ public class History extends CoraPage {
 
     @Override
     public void isCorrectPage () {
-        assertTrue (waitUntilVisible (".navbar"));
-        assertTrue (waitUntilVisible ("[role='tablist']"));
         assertTrue (isTextInElement ("[role='tablist'] .active", "HISTORY"));
     }
 
@@ -32,7 +31,16 @@ public class History extends CoraPage {
         }).collect (toList ());
     }
 
-    public List <String> getDetailHistory () {
-        return getTextList (".container-details .ab-panel:nth-child(2) li");
+    public List <ContainerHistory> getActivities () {
+        List <ContainerHistory> activities = new ArrayList <> ();
+        waitForElements (".container-details .ab-panel tbody tr").forEach (tr -> {
+            ContainerHistory ch = new ContainerHistory ();
+            ch.activityDate = getText (tr, "td:nth-child(1)");
+            ch.activity = getText (tr, "td:nth-child(2)");
+            ch.location = getText (tr, "td:nth-child(3)");
+            ch.activityBy = getText (tr, "td:nth-child(4)");
+            activities.add (ch);
+        });
+        return activities;
     }
 }

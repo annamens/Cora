@@ -20,20 +20,27 @@ import com.adaptivebiotech.ui.cora.CoraPage;
  */
 public class ContainerList extends CoraPage {
 
-    private final String depleted   = ".select-depletion";
-    private final String comments   = "[ng-model='ctrl.comments']";
-    private final String pass       = ".alert-success";
-    private final String fail       = ".alert-danger";
-    private final String holdingBtn = "[ng-click*='holdingContainer']";
-    private final String moveBtn    = "[ng-click='ctrl.moveHere()']";
+    private final String   depleted   = ".select-depletion";
+    private final String   comments   = "[ng-model='ctrl.comments']";
+    private final String   pass       = ".alert-success";
+    private final String   fail       = ".alert-danger";
+    private final String   holdingBtn = "[ng-click*='holdingContainer']";
+    private final String   moveBtn    = "[ng-click='ctrl.moveHere()']";
+    protected final String scan       = "#container-scan-input";
 
     public ContainerList () {
         staticNavBarHeight = 90;
     }
 
+    @Override
+    public void isCorrectPage () {
+        assertTrue (waitUntilVisible ("[uisref='main.containers.list']"));
+        assertTrue (waitUntilVisible ("[uisref='main.containers.custody']"));
+    }
+
     public void setCurrentLocationFilter (String freezer) {
         assertTrue (click (".filters-sm:nth-child(2) .dropdown-toggle"));
-        assertTrue (click ("//a[text()='" + freezer + "']"));
+        assertTrue (click (format ("//a[text()='%s']", freezer)));
     }
 
     public Containers getContainers () {
@@ -58,8 +65,8 @@ public class ContainerList extends CoraPage {
     }
 
     public void scan (String containerNumber) {
-        assertTrue (clear (getDriver ().findElement (locateBy ("#container-scan-input"))));
-        assertTrue (setText ("#container-scan-input", containerNumber));
+        assertTrue (clear (scan));
+        assertTrue (setText (scan, containerNumber));
         assertTrue (pressKey (Keys.ENTER));
     }
 
@@ -101,7 +108,7 @@ public class ContainerList extends CoraPage {
     }
 
     public void selectFreezer (Container container, Container freezer, String comment) {
-        String success = "Moved container " + container.containerNumber + " to ";
+        String success = format ("Moved container %s to ", container.containerNumber);
         if (comment != null)
             assertTrue (setText (comments, comment));
 
@@ -124,7 +131,7 @@ public class ContainerList extends CoraPage {
     }
 
     public void selectFreezerTest (Container freezer) {
-        assertTrue (click ("//span[text()='" + freezer.name + "']"));
+        assertTrue (click (format ("//span[text()='%s']", freezer.name)));
         clickMove ();
     }
 
@@ -205,7 +212,7 @@ public class ContainerList extends CoraPage {
 
     public void chooseHoldingContainer (String containerNumber) {
         String target = ".modal-body [ng-model='ctrl.containerNumber']";
-        assertTrue (clear (getDriver ().findElement (locateBy (target))));
+        assertTrue (clear (target));
         assertTrue (setText (target, containerNumber));
         assertTrue (pressKey (Keys.ENTER));
     }
@@ -232,8 +239,8 @@ public class ContainerList extends CoraPage {
     public void scanToVerify (Container parent, Container child) {
         scan (parent);
         moveModal ();
-        assertTrue (clear (getDriver ().findElement (locateBy (comments))));
-        assertTrue (setText (comments, "verifying - " + child.containerNumber));
+        assertTrue (clear (comments));
+        assertTrue (setText (comments, format ("verifying - %s", child.containerNumber)));
         scanToVerify (child);
         isVerified (child);
         clickClose ();
@@ -250,7 +257,7 @@ public class ContainerList extends CoraPage {
     }
 
     public void isVerified (Container child) {
-        assertTrue (waitUntilVisible ("#containerNumber_" + child.containerNumber + " .container-verified img"));
+        assertTrue (waitUntilVisible (format ("#containerNumber_%s .container-verified img", child.containerNumber)));
     }
 
     public void setChildDepletion (Container child) {

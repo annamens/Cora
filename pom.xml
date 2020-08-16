@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adaptivebiotech.integration.test</groupId>
     <artifactId>cora</artifactId>
@@ -10,11 +10,15 @@
     <repositories>
         <repository>
             <id>adaptivebiotech-libs-release</id>
-            <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-release/</url>
+            <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-release</url>
         </repository>
         <repository>
             <id>adaptivebiotech-libs-snapshot-local</id>
-            <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-snapshot-local/</url>
+            <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-snapshot-local</url>
+        </repository>
+        <repository>
+            <id>adaptivebiotech-ext-release-local</id>
+            <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/ext-release-local</url>
         </repository>
     </repositories>
     <properties>
@@ -23,6 +27,7 @@
         <threads>1</threads>
         <testng.verbose>1</testng.verbose>
         <output.to.file>true</output.to.file>
+        <test.env>s1</test.env>
     </properties>
     <build>
         <pluginManagement>
@@ -50,41 +55,16 @@
                         <redirectTestOutputToFile>${output.to.file}</redirectTestOutputToFile>
                         <systemPropertyVariables>
                             <project.version>${git.branch}</project.version>
-                            <test.env>juniper</test.env>
+                            <test.env>${test.env}</test.env>
                             <test.webdriver.wait>30</test.webdriver.wait>
-                            <path.to.config>config/cora/test.properties</path.to.config>
+                            <path.to.config>config/${test.env}.properties</path.to.config>
                             <sauce.user>automated.user3</sauce.user>
                             <sauce.key>e1a7d2b0-cdd5-4606-bfe9-9621da401859</sauce.key>
                             <sauce.tunnel>cora</sauce.tunnel>
-<!--                            <browserName>ff</browserName>-->
                         </systemPropertyVariables>
                         <properties>
                             <surefire.testng.verbose>${testng.verbose}</surefire.testng.verbose>
                         </properties>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <artifactId>maven-dependency-plugin</artifactId>
-                                        <versionRange>[3.0.0,)</versionRange>
-                                        <goals>
-                                            <goal>unpack</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute/>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
                     </configuration>
                 </plugin>
             </plugins>
@@ -93,10 +73,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.0</version><!--$NO-MVN-MAN-VER$ -->
+                <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>unpack</id>
+                        <?m2e execute onConfiguration?>
                         <phase>compile</phase>
                         <goals>
                             <goal>unpack</goal>
@@ -140,7 +120,7 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.17-SNAPSHOT</version>
+            <version>1.1.18-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.hierynomus</groupId>

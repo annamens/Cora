@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
@@ -22,6 +23,11 @@ public class AddContainer extends CoraPage {
         staticNavBarHeight = 90;
     }
 
+    @Override
+    public void isCorrectPage () {
+        assertTrue (isTextInElement (".container h2", "Add Container(s)"));
+    }
+
     public void clickAdd () {
         assertTrue (click ("[ng-click*='ctrl.addContainer']"));
     }
@@ -31,6 +37,7 @@ public class AddContainer extends CoraPage {
         assertTrue (isTextInElement (popupTitle, "New Container Confirmation"));
         clickPopupOK ();
         assertTrue (waitUntilVisible ("[ng-click='ctrl.generateLabels()']"));
+        closeNotification ("Container(s) updated");
     }
 
     public void isFailedValidation (String error) {
@@ -50,19 +57,19 @@ public class AddContainer extends CoraPage {
     }
 
     public void clearQuantity () {
-        assertTrue (clear(getDriver ().findElement (locateBy  ("#containerQty"))));
+        assertTrue (clear ("#containerQty"));
     }
 
     public void addContainer (ContainerType type, int num) {
         pickContainerType (type);
-        clearQuantity();
+        clearQuantity ();
         enterQuantity (num);
         assertTrue (pressKey (Keys.ENTER));
     }
 
     public void setContainerName (int idx, String name) {
-        String row = ".research-container-entry:nth-child(" + (idx + 2) + ") [data-ng-model='container.barcode']";
-        assertTrue (clear(getDriver ().findElement (locateBy (row))));
+        String row = format (".research-container-entry:nth-child(%s) [data-ng-model='container.barcode']", idx + 2);
+        assertTrue (clear (row));
         assertTrue (setText (row, name));
     }
 

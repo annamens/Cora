@@ -23,8 +23,6 @@ public class Detail extends CoraPage {
 
     @Override
     public void isCorrectPage () {
-        assertTrue (waitUntilVisible (".navbar"));
-        assertTrue (waitUntilVisible ("[role='tablist']"));
         assertTrue (isTextInElement ("[role='tablist'] .active", "DETAILS"));
         assertTrue (waitUntilVisible (".container-details"));
         assertTrue (waitUntilVisible (top));
@@ -85,7 +83,6 @@ public class Detail extends CoraPage {
         String attachments = asList (files).parallelStream ()
                                            .map (f -> getSystemResource (f).getPath ())
                                            .collect (joining ("\n"));
-        assertTrue (click ("[attachment-upload='ctrl.containerDetail.container.attachments'] button"));
         waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
         pageLoading ();
     }

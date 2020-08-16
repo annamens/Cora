@@ -1,26 +1,11 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
-import com.adaptivebiotech.common.dto.Orders;
-import com.adaptivebiotech.common.dto.Orders.Order;
-import com.adaptivebiotech.common.dto.Orders.OrderTest;
-import com.adaptivebiotech.common.dto.Patient;
-import com.adaptivebiotech.cora.dto.Shipment;
-import com.adaptivebiotech.cora.dto.Workflow;
-import com.adaptivebiotech.test.utils.PageHelper.DateRange;
-import com.adaptivebiotech.test.utils.PageHelper.OrderCategory;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
-import com.adaptivebiotech.ui.cora.CoraPage;
-import com.seleniumfy.test.utils.Timeout;
-
-import java.util.List;
-
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.getAssay;
-import static com.adaptivebiotech.test.utils.PageHelper.DateRange.Last30;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderCategory.Diagnostic;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import java.util.List;
+import com.adaptivebiotech.cora.dto.Shipment;
+import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
  * @author Harry Soehalim
@@ -28,22 +13,28 @@ import static org.testng.Assert.fail;
  */
 public class ShipmentList extends CoraPage {
 
-    public ShipmentList() {
+    public ShipmentList () {
         staticNavBarHeight = 90;
     }
 
-    public List<Shipment> getAllShipments () {
+    @Override
+    public void isCorrectPage () {
+        assertTrue (waitUntilVisible (".active[title='Shipments']"));
+        pageLoading ();
+    }
+
+    public List <Shipment> getAllShipments () {
         pageLoading ();
         return getShipments ();
     }
 
-    public List<Shipment> getShipments () {
+    public List <Shipment> getShipments () {
         return waitForElements ("[ng-repeat='shipmentSummary in ctrl.shipments']").stream ().map (el -> {
             Shipment s = new Shipment ();
             s.shipmentNumber = getText (el, "[ng-bind='::shipmentSummary.shipment.shipmentNumber']");
             s.link = getText (el, "[ng-bind='::shipmentSummary.orderNumber']");
             return s;
-        }).collect(toList());
+        }).collect (toList ());
     }
 
     public void goToShipments () {

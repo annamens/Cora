@@ -2,7 +2,7 @@ package com.adaptivebiotech.cora.ui.shipment;
 
 import static java.lang.ClassLoader.getSystemResource;
 import static org.testng.Assert.assertTrue;
-import com.adaptivebiotech.test.utils.PageHelper.DiscrepancyType;
+import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
@@ -13,8 +13,6 @@ public class Accession extends CoraPage {
 
     @Override
     public void isCorrectPage () {
-        assertTrue (waitUntilVisible (".navbar"));
-        assertTrue (waitUntilVisible ("[role='tablist']"));
         assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(2)", "ACCESSION"));
         pageLoading ();
     }

@@ -1,21 +1,22 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
-import com.adaptivebiotech.cora.dto.Containers;
-import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
-import com.adaptivebiotech.ui.cora.CoraPage;
-import org.openqa.selenium.WebElement;
-
-import java.util.List;
-
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.lang.ClassLoader.getSystemResource;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
+import java.util.List;
+import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.utils.PageHelper.LinkShipment;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
+import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
  * @author Harry Soehalim
@@ -27,11 +28,17 @@ public class Shipment extends CoraPage {
         staticNavBarHeight = 195;
     }
 
-    @Override
-    public void isCorrectPage () {
-        assertTrue (waitUntilVisible (".navbar"));
-        assertTrue (waitUntilVisible ("[role='tablist']"));
+    public void isDiagnostic () {
         assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(1)", "SHIPMENT"));
+        assertTrue (waitUntilVisible ("#orderNumber"));
+        assertTrue (waitUntilVisible ("#boxId"));
+        assertTrue (waitUntilVisible ("#containerType"));
+    }
+
+    public void isBatchOrGeneral () {
+        assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(1)", "SHIPMENT"));
+        assertTrue (waitUntilVisible ("#expectedRecordType"));
+        assertTrue (waitUntilVisible ("#expectedRecordType"));
     }
 
     public void gotoAccession () {
@@ -41,6 +48,7 @@ public class Shipment extends CoraPage {
     public void clickSave () {
         assertTrue (click ("[data-ng-click*='shipment-save']"));
         pageLoading ();
+        closeNotification ("Shipment saved");
     }
 
     public void enterShippingCondition (ShippingCondition condition) {
@@ -51,13 +59,13 @@ public class Shipment extends CoraPage {
         assertTrue (setText ("#orderNumber", orderNum));
     }
 
-    public void enterDiagnosticSpecimenContainerType (ContainerType type) {
+    public void selectDiagnosticSpecimenContainerType (ContainerType type) {
         assertTrue (clickAndSelectValue ("#containerType", "string:" + type.name ()));
     }
 
-    public void enterBatchSpecimenContainerType (ContainerType type) {
+    public void selectBatchSpecimenContainerType (ContainerType type) {
         assertTrue (click (".add-container-dropdown button"));
-        assertTrue (click ("[data-ng-bind*='\\'" + type + "\\'']"));
+        assertTrue (click (format ("//*[contains(@class,'add-container-dropdown')]//*[text()='%s']", type.label)));
     }
 
     public void clickAddContainer () {
@@ -70,6 +78,14 @@ public class Shipment extends CoraPage {
 
     public void setContainerName (int idx, String containerName) {
         assertTrue (setText ("[name='trackingNumber" + (idx - 1) + "']", containerName));
+    }
+
+    public String getHeaderShipmentNum () {
+        return getText (".shipment").replace ("\n", " ");
+    }
+
+    public String getShipmentNum () {
+        return getText ("[ng-bind='ctrl.entry.shipment.shipmentNumber']");
     }
 
     public Containers getPrimaryContainers (ContainerType type) {
@@ -109,7 +125,7 @@ public class Shipment extends CoraPage {
                     c.specimenId = getText (el1, "[data-ng-bind*='specimen.specimen.specimenNumber']");
                     c.specimenName = getText (el1, "[data-ng-bind*='specimen.specimen.name']");
                     if (c.specimenName != null) {
-                        c.containerType = getContainerType (c.specimenName.split("-")[0]);
+                        c.containerType = getContainerType (c.specimenName.split ("-")[0]);
                     }
                     c.root = container;
                     c.location = String.join (" : ", coraTestUser, container.containerNumber);
@@ -132,6 +148,28 @@ public class Shipment extends CoraPage {
         }).collect (toList ()));
     }
 
+    public void linkShipmentTo (LinkShipment link, String value, int idx) {
+        assertTrue (clickAndSelectValue ("#expectedRecordType", link.name ()));
+        String css = null;
+        switch (link) {
+        case Account:
+            css = "[data-ng-model='ctrl.entry.account']";
+            break;
+        case SalesforceOrder:
+            css = "[data-ng-model='ctrl.entry.sfdcOrder']";
+            break;
+        case Project:
+            css = "[data-ng-model='ctrl.entry.project']";
+            break;
+        }
+        assertTrue (waitUntilVisible (css));
+        assertTrue (setText (css + " input", value));
+        assertTrue (pressKey (ENTER));
+
+        assertTrue (click (format (css + " ul li:nth-child(%s) a", idx + 1)));
+        assertTrue (waitUntilVisible (format (".expected-record-summary[data-ng-show*='%s']", link)));
+    }
+
     public void uploadAttachments (String... files) {
         String attachments = asList (files).parallelStream ()
                                            .map (f -> getSystemResource (f).getPath ())
@@ -141,9 +179,9 @@ public class Shipment extends CoraPage {
     }
 
     public void doubleClickSave () {
-        WebElement saveButton =  waitForElement(locateBy("[data-ng-click*='shipment-save']"));
-        saveButton.click();
-        saveButton.click();
+        WebElement saveButton = waitForElement (locateBy ("[data-ng-click*='shipment-save']"));
+        saveButton.click ();
+        saveButton.click ();
         pageLoading ();
     }
 }
