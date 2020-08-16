@@ -50,7 +50,7 @@ public class ContainerList extends CoraPage {
             c.id = getConId (getAttribute (columns.get (0), "a", "href"));
             c.containerNumber = getText (columns.get (0));
             String containerType = getText (columns.get (1));
-            c.containerType = containerType != null && !containerType.equals ("Unsupported") ? getContainerType (getText (columns.get (1))) : null;
+            c.containerType = containerType != null && !containerType.equals ("Unsupported") ? getContainerType (containerType) : null;
             c.contents = getText (columns.get (2));
             c.location = getText (columns.get (3));
             c.name = getText (columns.get (4));

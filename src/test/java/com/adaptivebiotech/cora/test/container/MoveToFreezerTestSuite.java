@@ -105,12 +105,12 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         // test: go to containers list for the given freezer and verify
         for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
-            oList.showTodayFreezerContents (freezer);
+            // have to use this approach, Arrival Date is null
+            oList.showFreezerContents (freezer, coraTestUser);
             Containers listContainers = cList.getContainers ();
-            for (Container primary : containers.list) {
+            for (Container primary : containers.list)
                 if (primary.location.startsWith (freezer.name))
                     assertEquals (listContainers.findContainerByNumber (primary).location, primary.location);
-            }
         }
     }
 

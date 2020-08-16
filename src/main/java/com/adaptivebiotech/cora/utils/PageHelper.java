@@ -13,4 +13,8 @@ public class PageHelper {
     public enum LinkShipment {
         Account, SalesforceOrder, Project
     }
+
+    public enum MiraPanel {
+        Aloha, Belmont, Cherry, Denny, Eastlake, Lakeview, Minor, Pike
+    }
 }

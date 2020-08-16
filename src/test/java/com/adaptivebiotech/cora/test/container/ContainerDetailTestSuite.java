@@ -61,15 +61,18 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
     }
 
     /**
+     * Note: disabling this test until we figure out how to run it in SauceLabs
+     * 
      * @sdlc_requirements 126.ContainerDetailsPage
      */
+    @Test (enabled = false)
     public void maxFilesCheck () {
         oList.gotoContainerDetail (containers.list.get (0));
 
         // test: >10 files at a time
         String[] files = new String[] {
-                "attachment.jpg", "test1.png", "test2.png", "test3.png", "test4.png", "test5.png", "test6.png",
-                "test7.png", "test8.png", "test9.png", "test10.png"
+                "test1.png", "test2.png", "test3.png", "test4.png", "test5.png", "test6.png", "test7.png", "test8.png",
+                "test9.png", "test10.png", "attachment.jpg"
         };
         detail.uploadAttachments (files);
         assertEquals (detail.getMaxFileErr (), error2);
@@ -136,9 +139,5 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         history.isCorrectPage ();
         acivities = history.getActivities ();
         assertEquals (acivities, asList (activity2, activity1));
-
-        // cleanup
-        history.gotoMyCustody ();
-        my.takeCustody (testContainer);
     }
 }

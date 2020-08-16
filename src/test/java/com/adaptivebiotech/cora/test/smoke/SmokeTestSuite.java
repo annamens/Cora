@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.test.smoke;
 
 import static com.adaptivebiotech.cora.utils.PageHelper.LinkShipment.SalesforceOrder;
+import static com.adaptivebiotech.cora.utils.PageHelper.MiraPanel.Aloha;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
@@ -50,8 +51,10 @@ public class SmokeTestSuite extends CoraBaseBrowser {
     private Task         task;
     private Shipment     shipment;
     private Batch        batch;
+    private Mira         mira;
     private OrdersList   oList;
     private PatientsList pList;
+    private MirasList    mList;
 
     @BeforeMethod
     public void beforeMethod () {
@@ -61,8 +64,10 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         task = new Task ();
         shipment = new Shipment ();
         batch = new Batch ();
+        mira = new Mira ();
         oList = new OrdersList ();
         pList = new PatientsList ();
+        mList = new MirasList ();
     }
 
     /**
@@ -154,7 +159,6 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog ("add new container page was displayed");
 
         addContainer.selectNewMira ();
-        Mira mira = new Mira ();
         mira.isCorrectPage ();
         testLog ("add new MIRA page was displayed");
 
@@ -197,7 +201,6 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog ("'Tasks' header nav element was highlighted");
 
         tList.clickMiras ();
-        MirasList mList = new MirasList ();
         mList.isCorrectPage ();
         testLog ("MIRAs List page was displayed");
         assertTrue (mList.isHeaderNavHighlighted ("MIRAs"));
@@ -294,7 +297,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         shipment.linkShipmentTo (SalesforceOrder, sforder, 1);
         shipment.selectBatchSpecimenContainerType (Tube);
         shipment.clickSave ();
-        testLog (format ("batch shipment saved successfully"));
+        testLog ("batch shipment saved successfully");
 
         String sh = shipment.getShipmentNum ();
         testLog (format ("%s displayed", sh));
@@ -302,6 +305,35 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         oList.selectNewBatchOrder ();
         batch.isCorrectPage ();
         batch.searchOrder (sforder);
+    }
+
+    /**
+     * Note: SR-T2443
+     */
+    public void new_general_shipment_and_mira () {
+        login.doLogin ();
+        oList.isCorrectPage ();
+        oList.selectNewGeneralShipment ();
+        shipment.isBatchOrGeneral ();
+        shipment.enterShippingCondition (Ambient);
+        shipment.selectBatchSpecimenContainerType (Tube);
+        shipment.clickSave ();
+        testLog ("general shipment saved successfully");
+
+        String sh = shipment.getShipmentNum ();
+        testLog (format ("%s displayed", sh));
+
+        shipment.selectNewMira ();
+        mira.isCorrectPage ();
+        mira.selectPanel (Aloha);
+        testLog (format ("%s displayed below the Panel(s) dropdown", Aloha));
+
+        mira.clickMiras ();
+        mira.ignoredUnsavedChanges ();
+        mList.isCorrectPage ();
+        mList.searchMira ("M-10");
+        mList.getMiras ().list.forEach (m -> assertTrue (m.miraId.startsWith ("M-10"), m.miraId));
+        testLog ("search results were MIRA IDs that start with 'M-10'");
     }
 
     /**
