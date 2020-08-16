@@ -48,7 +48,6 @@ public class Shipment extends CoraPage {
     public void clickSave () {
         assertTrue (click ("[data-ng-click*='shipment-save']"));
         pageLoading ();
-        closeNotification ("Shipment saved");
     }
 
     public void enterShippingCondition (ShippingCondition condition) {
