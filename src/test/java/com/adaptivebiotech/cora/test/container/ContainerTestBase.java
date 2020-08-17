@@ -32,13 +32,15 @@ public class ContainerTestBase extends CoraBaseBrowser {
     protected final Container freezerAB018078  = freezerAB018078 ();
     protected final Container freezerAB039003  = freezerAB039003 ();
 
-    @AfterSuite
+    @AfterSuite (alwaysRun = true)
     public void containerAfterSuite () {
         new Login ().doLogin ();
         OrdersList oList = new OrdersList ();
         oList.isCorrectPage ();
         oList.gotoMyCustody ();
-        new MyCustody ().sendAllMyCustody (freezerDestroyed ());
+        MyCustody my = new MyCustody ();
+        my.isCorrectPage ();
+        my.sendAllMyCustody (freezerDestroyed ());
     }
 
     protected Container container (ContainerType type) {

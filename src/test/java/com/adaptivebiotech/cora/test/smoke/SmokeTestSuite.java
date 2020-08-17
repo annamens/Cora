@@ -7,6 +7,8 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox5x5;
+import static com.adaptivebiotech.test.utils.PageHelper.DateRange.All;
 import static com.adaptivebiotech.test.utils.PageHelper.LinkType.Project;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
@@ -17,11 +19,15 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.common.dto.Patient;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
@@ -46,15 +52,17 @@ import com.adaptivebiotech.ui.cora.task.TaskStatus;
 @Test (groups = "smoke")
 public class SmokeTestSuite extends CoraBaseBrowser {
 
-    private Login        login;
-    private Diagnostic   diagnostic;
-    private Task         task;
-    private Shipment     shipment;
-    private Batch        batch;
-    private Mira         mira;
-    private OrdersList   oList;
-    private PatientsList pList;
-    private MirasList    mList;
+    private Login         login;
+    private Diagnostic    diagnostic;
+    private Task          task;
+    private Shipment      shipment;
+    private Batch         batch;
+    private Mira          mira;
+    private AddContainer  addContainer;
+    private OrdersList    oList;
+    private PatientsList  pList;
+    private MirasList     mList;
+    private ContainerList cList;
 
     @BeforeMethod
     public void beforeMethod () {
@@ -65,9 +73,11 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         shipment = new Shipment ();
         batch = new Batch ();
         mira = new Mira ();
+        addContainer = new AddContainer ();
         oList = new OrdersList ();
         pList = new PatientsList ();
         mList = new MirasList ();
+        cList = new ContainerList ();
     }
 
     /**
@@ -154,7 +164,6 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog ("shipment page was displayed with 'General Shipment' in the header");
 
         shipment.selectNewContainer ();
-        AddContainer addContainer = new AddContainer ();
         addContainer.isCorrectPage ();
         testLog ("add new container page was displayed");
 
@@ -187,7 +196,6 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog ("'Shipments' header nav element was highlighted");
 
         sList.clickContainers ();
-        ContainerList cList = new ContainerList ();
         cList.isCorrectPage ();
         testLog ("Container List page was displayed");
         assertTrue (cList.isHeaderNavHighlighted ("Containers"));
@@ -362,5 +370,63 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         status.isCorrectPage ();
         status.waitFor (MrdBatchReport, Ready);
         testLog ("task status was " + Ready);
+    }
+
+    /**
+     * Note: SR-T1879
+     */
+    public void container () {
+        String freezer = "AB018115 (Ambient)";
+
+        login.doLogin ();
+        oList.isCorrectPage ();
+        oList.selectNewContainer ();
+        addContainer.isCorrectPage ();
+        testLog ("add new container page was displayed");
+
+        System.out.println (addContainer.isAddContainersVisible ());
+
+        addContainer.pickContainerType (TubeBox5x5);
+        addContainer.enterQuantity (1);
+        addContainer.clickAdd ();
+        Containers containers = addContainer.getContainers ();
+        assertEquals (containers.list.size (), 1);
+        assertEquals (containers.list.get (0).containerType, TubeBox5x5);
+        assertNull (containers.list.get (0).containerNumber);
+        testLog (TubeBox5x5.label + " displayed below the Add Container(s) section");
+
+        addContainer.setContainerLocation (1, freezer);
+        addContainer.clickSave ();
+        assertFalse (addContainer.isAddContainersVisible ());
+        testLog ("Add Container(s) section did not displayed");
+
+        assertTrue (addContainer.isGenerateContainerLabelsVisible ());
+        testLog ("Generate Container Labels button was displayed");
+
+        containers = addContainer.getContainers ();
+        Container test = containers.list.get (0);
+        assertTrue (test.containerNumber.matches ("CO-\\d{6}"), test.containerNumber);
+        testLog (TubeBox5x5.label + " table displayed a " + test.containerNumber);
+
+        addContainer.clickContainers ();
+        cList.isCorrectPage ();
+        cList.setCurrentLocationFilter (freezer);
+        cList.setContainerType (TubeBox5x5);
+        cList.setArrivalDate (All);
+        cList.setCreatedBy (coraTestUser);
+        cList.clickFilter ();
+        containers = cList.getContainers ();
+        assertEquals (containers.list.stream ().filter (c -> {
+            return test.containerNumber.equals (c.containerNumber);
+        }).count (), 1);
+        testLog (test.containerNumber + " displayed in the filter results");
+
+        int CUSTODYBEGIN = cList.getMyCustodySize ();
+        cList.takeCustody (test);
+        testLog (format ("message displayed indicating %s is in my custody", test.containerNumber));
+
+        int CUSTODYEND = cList.getMyCustodySize ();
+        assertEquals (CUSTODYEND - CUSTODYBEGIN, 1);
+        testLog ("the delta between before and after scan for My Custody size is 1");
     }
 }

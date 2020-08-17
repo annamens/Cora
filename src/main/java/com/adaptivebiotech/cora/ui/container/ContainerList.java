@@ -9,9 +9,10 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.testng.Assert;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.test.utils.PageHelper.DateRange;
 import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
@@ -38,9 +39,28 @@ public class ContainerList extends CoraPage {
         assertTrue (waitUntilVisible ("[uisref='main.containers.custody']"));
     }
 
+    public int getMyCustodySize () {
+        return Integer.valueOf (getText ("[uisref='main.containers.custody'] span"));
+    }
+
     public void setCurrentLocationFilter (String freezer) {
         assertTrue (click (".filters-sm:nth-child(2) .dropdown-toggle"));
-        assertTrue (click (format ("//a[text()='%s']", freezer)));
+        assertTrue (click (format ("//*[contains (p,'Current Location')]//a[text()='%s']", freezer)));
+    }
+
+    public void setContainerType (ContainerType type) {
+        assertTrue (click (".filters-sm:nth-child(3) .dropdown-toggle"));
+        assertTrue (click (format ("//*[contains (p,'Container Type')]//a[text()='%s']", type.label)));
+    }
+
+    public void setArrivalDate (DateRange range) {
+        assertTrue (click (".filters-sm:nth-child(4) .dropdown-toggle"));
+        assertTrue (click (format ("//*[contains (p,'Arrival Date')]//a[text()='%s']", range.label)));
+    }
+
+    public void setCreatedBy (String user) {
+        assertTrue (click (".filters-sm:nth-child(5) .dropdown-toggle"));
+        assertTrue (click (format ("//*[contains (p,'Created By')]//a[text()='%s']", user)));
     }
 
     public Containers getContainers () {
@@ -288,8 +308,7 @@ public class ContainerList extends CoraPage {
 
     @Override
     public void clickFilter () {
-        WebElement row = waitForElements (".filters > li ").get (6);
-        WebElement button = row.findElement (locateBy (".btn"));
-        Assert.assertTrue (this.click (button));
+        assertTrue (click (".filters-sm:nth-child(7) button"));
+        doWait (1000); // work around for StaleElementReferenceException
     }
 }

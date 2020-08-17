@@ -20,10 +20,6 @@ public class MyCustody extends ContainerList {
         assertTrue (waitUntilVisible (scan));
     }
 
-    public int getMyCustodySize () {
-        return Integer.valueOf (getText ("[uisref='main.containers.custody'] span"));
-    }
-
     public Containers getContainers () {
         return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
             List <WebElement> columns = el.findElements (locateBy ("td"));

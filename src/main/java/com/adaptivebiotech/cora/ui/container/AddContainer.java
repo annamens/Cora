@@ -28,6 +28,17 @@ public class AddContainer extends CoraPage {
         assertTrue (isTextInElement (".container h2", "Add Container(s)"));
     }
 
+    public boolean isGenerateContainerLabelsVisible () {
+        return isElementPresent ("[ng-click='ctrl.generateLabels()']");
+    }
+
+    public boolean isAddContainersVisible () {
+        boolean visible = isElementVisible (".container h2");
+        visible &= isElementVisible ("[ng-model='selectedContainerId']");
+        visible &= isElementVisible ("[ng-click*='ctrl.addContainer']");
+        return visible;
+    }
+
     public void clickAdd () {
         assertTrue (click ("[ng-click*='ctrl.addContainer']"));
     }
@@ -96,7 +107,8 @@ public class AddContainer extends CoraPage {
     public Containers getContainers () {
         return new Containers (waitForElements (lines).stream ().map (el -> {
             Container c = new Container ();
-            c.id = getConId (getAttribute (el, "[data-ng-bind*='containerNumber']", "href"));
+            String href = getAttribute (el, "[data-ng-bind*='containerNumber']", "href");
+            c.id = href != null ? getConId (href) : null;
             c.containerNumber = getText (el, "td:nth-child(1)");
             c.containerType = getContainerType (getText (el, ".container-type"));
             c.name = readInput (el, "[data-ng-model='container.barcode']");
