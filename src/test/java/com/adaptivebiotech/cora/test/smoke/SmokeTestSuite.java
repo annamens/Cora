@@ -302,7 +302,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         oList.selectNewBatchShipment ();
         shipment.isBatchOrGeneral ();
         shipment.enterShippingCondition (Ambient);
-        shipment.linkShipmentTo (SalesforceOrder, sforder, 1);
+        shipment.linkShipmentTo (SalesforceOrder, sforder);
         shipment.selectBatchSpecimenContainerType (Tube);
         shipment.clickSave ();
         testLog ("batch shipment saved successfully");
@@ -313,6 +313,8 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         oList.selectNewBatchOrder ();
         batch.isCorrectPage ();
         batch.searchOrder (sforder);
+        assertEquals (batch.getShipments ().stream ().filter (s -> sh.equals (s.shipmentNumber)).count (), 1);
+        testLog (format ("%s displayed", sh));
     }
 
     /**

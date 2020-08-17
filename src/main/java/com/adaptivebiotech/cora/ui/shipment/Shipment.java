@@ -147,7 +147,7 @@ public class Shipment extends CoraPage {
         }).collect (toList ()));
     }
 
-    public void linkShipmentTo (LinkShipment link, String value, int idx) {
+    public void linkShipmentTo (LinkShipment link, String value) {
         assertTrue (clickAndSelectValue ("#expectedRecordType", link.name ()));
         String css = null;
         switch (link) {
@@ -165,7 +165,11 @@ public class Shipment extends CoraPage {
         assertTrue (setText (css + " input", value));
         assertTrue (pressKey (ENTER));
 
-        assertTrue (click (format (css + " ul li:nth-child(%s) a", idx + 1)));
+        assertTrue (waitUntilVisible (css + " .matches"));
+        waitForElements (css + " li a div:nth-child(1)").forEach (el -> {
+            if (value.equals (getText (el)))
+                assertTrue (click (el));
+        });
         assertTrue (waitUntilVisible (format (".expected-record-summary[data-ng-show*='%s']", link)));
     }
 

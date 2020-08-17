@@ -1,7 +1,10 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
+import java.util.List;
+import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
@@ -25,5 +28,13 @@ public class Batch extends CoraPage {
         assertTrue (setText ("[ng-model='ctrl.salesforceId']", ordernum));
         assertTrue (pressKey (ENTER));
         pageLoading ();
+    }
+
+    public List <Shipment> getShipments () {
+        return waitForElements ("[batch-shipment='shipmentEntry']").stream ().map (el -> {
+            Shipment s = new Shipment ();
+            s.shipmentNumber = getText (el, "[ng-bind='ctrl.entry.shipment.shipmentNumber']");
+            return s;
+        }).collect (toList ());
     }
 }
