@@ -1,6 +1,5 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
-import static java.lang.ClassLoader.getSystemResource;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 import com.adaptivebiotech.ui.cora.CoraPage;
@@ -18,7 +17,7 @@ public class Accession extends CoraPage {
     }
 
     public void uploadIntakeManifest (String file) {
-        waitForElement ("input[data-ng-model='ctrl.intakeManifestFiles']").sendKeys (getSystemResource (file).getPath ());
+        waitForElement ("input[data-ng-model='ctrl.intakeManifestFiles']").sendKeys (file);
         moduleLoading ();
         assertTrue (click ("[data-ng-click='ctrl.proceedToFullAccessionScreen()']"));
         pageLoading ();

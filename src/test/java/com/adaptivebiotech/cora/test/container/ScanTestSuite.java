@@ -4,6 +4,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
@@ -144,7 +145,7 @@ public class ScanTestSuite extends ContainerTestBase {
 
         Accession accession = new Accession ();
         accession.isCorrectPage ();
-        accession.uploadIntakeManifest ("intakemanifest_full_slidebox.xlsx");
+        accession.uploadIntakeManifest (getSystemResource ("intakemanifest_full_slidebox.xlsx").getPath ());
         accession.clickIntakeComplete ();
         accession.gotoShipment ();
         containers2 = shipment.getBatchContainers ();

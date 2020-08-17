@@ -14,6 +14,7 @@ import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,10 @@ public class CoraBaseBrowser extends BaseBrowser {
     @BeforeMethod (alwaysRun = true)
     public void baseBeforeMethod (Method method) throws Exception {
         info (format ("running: %s.%s()", getClass ().getSimpleName (), method.getName ()));
+    }
+
+    protected String artifacts (String... paths) {
+        return join ("/", "target/logs", join ("/", paths));
     }
 
     protected void doCoraLogin () {

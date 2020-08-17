@@ -4,13 +4,16 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.ClassLoader.getSystemResource;
+import static java.lang.String.join;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static org.apache.commons.io.FileUtils.openOutputStream;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.Method;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,7 @@ import com.adaptivebiotech.ui.cora.Login;
 @Test (groups = "regression")
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
+    private String        downloadDir;
     private Login         login;
     private OrdersList    oList;
     private ContainerList cList;
@@ -43,7 +47,8 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     private Containers    containers;
 
     @BeforeMethod
-    public void beforeMethod () {
+    public void beforeMethod (Method test) {
+        downloadDir = artifacts (this.getClass ().getName (), test.getName ());
         doCoraLogin ();
         login = new Login ();
         login.doLogin ();
@@ -131,14 +136,13 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         accession.isCorrectPage ();
 
         String manifestName = "intakemanifest_holding_w_child";
-        String manifestFileName = manifestName + ".xlsx";
+        String manifestFileName = join ("/", downloadDir, manifestName + ".xlsx");
         String manifestTemplatePath = getSystemResource (manifestName + "_template.xlsx").getPath ();
-        String manifestPath = getSystemResource (manifestFileName).getPath ();
         DateTimeFormatter fmt = ofPattern ("yyddhhmmss");
 
         try (FileInputStream inputStream = new FileInputStream (new File (manifestTemplatePath));
                 Workbook workbook = WorkbookFactory.create (inputStream);
-                FileOutputStream outputStream = new FileOutputStream (manifestPath)) {
+                FileOutputStream outputStream = openOutputStream (new File (manifestFileName))) {
             Sheet sheet = workbook.getSheetAt (0);
             sheet.getRow (38).getCell (9).setCellValue (now ().format (fmt));
             sheet.getRow (39).getCell (9).setCellValue (now ().plusSeconds (1L).format (fmt));
@@ -147,7 +151,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             throw new RuntimeException (e);
         }
 
-        accession.uploadIntakeManifest (manifestFileName);
+        accession.uploadIntakeManifest (new File (manifestFileName).getAbsolutePath ());
         accession.clickIntakeComplete ();
         accession.gotoShipment ();
         containers = shipment.getBatchContainers ();
