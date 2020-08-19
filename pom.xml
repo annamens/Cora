@@ -24,10 +24,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <parallel>methods</parallel>
-        <threads>1</threads>
+        <test.threads>1</test.threads>
         <testng.verbose>1</testng.verbose>
         <output.to.file>true</output.to.file>
-        <test.env>s1</test.env>
+        <test.env>test</test.env>
     </properties>
     <build>
         <pluginManagement>
@@ -47,7 +47,7 @@
                     <version>2.21.0</version>
                     <configuration>
                         <parallel>${parallel}</parallel>
-                        <threadCount>${threads}</threadCount>
+                        <threadCount>${test.threads}</threadCount>
                         <argLine>-Xmx1024m</argLine>
                         <includes>
                             <include>**/*TestSuite.java</include>
