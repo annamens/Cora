@@ -25,9 +25,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <parallel>methods</parallel>
         <test.threads>1</test.threads>
+        <test.env>test</test.env>
         <testng.verbose>1</testng.verbose>
         <output.to.file>true</output.to.file>
-        <test.env>test</test.env>
     </properties>
     <build>
         <pluginManagement>
@@ -48,7 +48,7 @@
                     <configuration>
                         <parallel>${parallel}</parallel>
                         <threadCount>${test.threads}</threadCount>
-                        <argLine>-Xmx1024m</argLine>
+                        <argLine>-Xmx1g</argLine>
                         <includes>
                             <include>**/*TestSuite.java</include>
                         </includes>
@@ -120,7 +120,7 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.18-SNAPSHOT</version>
+            <version>1.1.18</version>
         </dependency>
         <dependency>
             <groupId>com.hierynomus</groupId>
