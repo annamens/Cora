@@ -15,7 +15,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
-import java.util.EnumSet;
+import static java.util.EnumSet.allOf;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
@@ -47,8 +47,8 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     public void beforeTest () {
         doCoraLogin ();
         containers = addContainers (new Containers (
-                EnumSet.allOf (ContainerType.class).parallelStream ().filter (ct -> !ct.equals (Freezer))
-                       .map (ct -> container (ct)).collect (toList ())));
+                allOf (ContainerType.class).parallelStream ().filter (ct -> !ct.equals (Freezer))
+                                           .map (ct -> container (ct)).collect (toList ())));
     }
 
     @BeforeMethod
@@ -70,9 +70,8 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     public void holding_containers () {
         Containers topContainers = addContainers (new Containers (asList (container (Plate))));
         oList.selectNewContainer ();
-        EnumSet.allOf (ContainerType.class).stream ()
-               .filter (ct -> ct.isHolding && !Freezer.equals (ct) && !Plate.equals (ct))
-               .forEach (ct -> add.addContainer (ct, 1));
+        allOf (ContainerType.class).stream ().filter (ct -> ct.isHolding && !Freezer.equals (ct) && !Plate.equals (ct))
+                                   .forEach (ct -> add.addContainer (ct, 1));
         add.clickSave ();
         topContainers = add.getContainers ();
 
