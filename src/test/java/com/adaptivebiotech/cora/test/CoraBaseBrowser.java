@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.http.message.BasicHeader;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import com.adaptivebiotech.common.dto.Patient;
 import com.adaptivebiotech.cora.dto.AssayResponse;
@@ -32,6 +33,11 @@ public class CoraBaseBrowser extends BaseBrowser {
     static {
         initialization ();
         testLog ("Current branch: " + version);
+    }
+
+    @BeforeClass (alwaysRun = true)
+    public void baseBeforeClass () {
+        info (format ("running: %s", getClass ()));
     }
 
     @BeforeMethod (alwaysRun = true)
