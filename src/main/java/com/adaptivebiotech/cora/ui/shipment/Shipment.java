@@ -13,10 +13,10 @@ import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.LinkShipment;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
-import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
  * @author Harry Soehalim

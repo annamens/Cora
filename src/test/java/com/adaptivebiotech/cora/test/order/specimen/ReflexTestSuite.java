@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.test.order.specimen;
 
+import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
@@ -8,18 +9,17 @@ import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShi
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.Reflex;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
-import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.order.OrderTestBase;
+import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
+import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
-import com.adaptivebiotech.ui.cora.Login;
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
-import com.adaptivebiotech.ui.cora.workflow.History;
+import com.adaptivebiotech.cora.ui.workflow.History;
 
 /**
  * Note:

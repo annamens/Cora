@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.dto;
 
 import java.util.List;
-import com.adaptivebiotech.common.dto.Patient;
 import com.adaptivebiotech.cora.dto.HttpResponse.Meta;
 
 /**

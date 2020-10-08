@@ -2,13 +2,12 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static org.testng.Assert.assertTrue;
-import com.adaptivebiotech.common.dto.Patient;
-import com.adaptivebiotech.common.dto.Patient.Address;
+import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
 import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
 /**
  * @author Harry Soehalim

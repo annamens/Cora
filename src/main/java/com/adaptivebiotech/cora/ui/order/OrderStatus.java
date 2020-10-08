@@ -1,7 +1,5 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
-
 public class OrderStatus extends Diagnostic {
 
     public String getOrderNum () {

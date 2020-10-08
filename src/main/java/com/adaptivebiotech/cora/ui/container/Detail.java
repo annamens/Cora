@@ -10,7 +10,7 @@ import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.ui.cora.CoraPage;
+import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
  * @author Harry Soehalim

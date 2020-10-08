@@ -1,19 +1,19 @@
 package com.adaptivebiotech.cora.test.order;
 
 import static com.adaptivebiotech.cora.utils.TestHelper.patientMedicare;
+import static com.adaptivebiotech.cora.utils.TestHelper.physician1;
+import static com.adaptivebiotech.cora.utils.TestHelper.physician2;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.PageHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static com.adaptivebiotech.test.utils.TestHelper.physician1;
-import static com.adaptivebiotech.test.utils.TestHelper.physician2;
 import static com.adaptivebiotech.test.utils.TestHelper.setDate;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.time.ZoneId;
-import com.adaptivebiotech.common.dto.Orders.Order;
-import com.adaptivebiotech.common.dto.Patient;
-import com.adaptivebiotech.common.dto.Physician;
+import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 
 public class OrderTestBase extends CoraBaseBrowser {

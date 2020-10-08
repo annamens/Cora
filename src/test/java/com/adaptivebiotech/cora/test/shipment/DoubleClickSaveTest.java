@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.order.OrderTestBase;
+import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
-import com.adaptivebiotech.ui.cora.Login;
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
 @Test (groups = "regression")
 public class DoubleClickSaveTest extends OrderTestBase {

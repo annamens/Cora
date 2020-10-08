@@ -2,8 +2,8 @@ package com.adaptivebiotech.cora.ui.mira;
 
 import static org.testng.Assert.assertTrue;
 import org.openqa.selenium.support.ui.Select;
+import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
-import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
  * @author Harry Soehalim

@@ -4,8 +4,8 @@ import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
-import com.adaptivebiotech.common.dto.Patient;
-import com.adaptivebiotech.ui.cora.CoraPage;
+import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
  * @author Harry Soehalim

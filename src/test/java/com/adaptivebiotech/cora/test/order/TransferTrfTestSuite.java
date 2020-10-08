@@ -8,9 +8,9 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.common.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
 //TODO This test can mess with other peoples orders
 @Test (groups = "regression", enabled = false)

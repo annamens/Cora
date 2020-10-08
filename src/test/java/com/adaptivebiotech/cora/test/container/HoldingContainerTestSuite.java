@@ -13,9 +13,9 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Vacutainer;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.util.Arrays.asList;
+import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
-import static java.util.EnumSet.allOf;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
@@ -23,13 +23,13 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.ui.cora.Login;
 
 @Test (groups = "regression")
 public class HoldingContainerTestSuite extends ContainerTestBase {

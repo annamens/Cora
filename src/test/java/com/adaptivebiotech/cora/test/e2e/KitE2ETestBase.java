@@ -32,19 +32,19 @@ import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.KitOrder;
 import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
-import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
+import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.workflow.Debug;
 import com.adaptivebiotech.test.utils.PageHelper.ReportType;
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
 public class KitE2ETestBase extends CoraBaseBrowser {
     protected Diagnostic diagnostic;
     protected String     url                        = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
     protected String     SR_T1772ClonalityJFilePath = "SR-T1772_Clonality.json";
     protected String     SR_T1772TrackingJFilePath  = "SR-T1772_TrackingAboveLOQ1.json";
-    protected KitOrder  clonalityOrder;
-    protected KitOrder  trackingOrder;
+    protected KitOrder   clonalityOrder;
+    protected KitOrder   trackingOrder;
 
     protected HttpResponse submitNewOrderRequest (String jsonString) {
 
@@ -107,7 +107,7 @@ public class KitE2ETestBase extends CoraBaseBrowser {
     // Change element values as below in Clonality Json file :
     // 1. externalSubjecteId
     // 2. samples.name
-    //@SuppressWarnings ("unchecked")
+    // @SuppressWarnings ("unchecked")
     protected String changeClonalityOrTrackingJsonFile (String jFileName, ReportType type) {
 
         try {
@@ -120,21 +120,21 @@ public class KitE2ETestBase extends CoraBaseBrowser {
                 trackingOrder.sampleName = "TSBUNIQUE1-MRD1" + strVar;
                 trackingOrder.externalSubjectId = clonalityOrder.externalSubjectId;
             }
-            
+
             Research research;
-            research = mapper.readValue (new File(jFileName), Research.class);
+            research = mapper.readValue (new File (jFileName), Research.class);
             research.project.accountId = projectAccountID;
             research.project.id = projectID;
             research.project.name = projectName;
-            
+
             String collectionDate = research.techTransfer.specimens.get (0).collectionDate.toString ();
-            collectionDate = collectionDate.substring (0, collectionDate .indexOf ("T"));
-                      
+            collectionDate = collectionDate.substring (0, collectionDate.indexOf ("T"));
+
             if (type == clonality) {
                 research.techTransfer.specimens.get (0).samples.get (0).name = clonalityOrder.sampleName;
                 clonalityOrder.collectionDate = collectionDate;
-                clonalityOrder.sampleType =    research.techTransfer.specimens.get (0).sampleType.label;
-                clonalityOrder.sampleSource =  research.techTransfer.specimens.get (0).sampleSource.label;
+                clonalityOrder.sampleType = research.techTransfer.specimens.get (0).sampleType.label;
+                clonalityOrder.sampleSource = research.techTransfer.specimens.get (0).sampleSource.label;
                 research.techTransfer.specimens.get (0).externalSubjectId = clonalityOrder.externalSubjectId;
             } else {
                 research.techTransfer.specimens.get (0).samples.get (0).name = trackingOrder.sampleName;
@@ -143,9 +143,9 @@ public class KitE2ETestBase extends CoraBaseBrowser {
                 trackingOrder.sampleSource = research.techTransfer.specimens.get (0).sampleSource.label;
                 research.techTransfer.specimens.get (0).externalSubjectId = trackingOrder.externalSubjectId;
             }
-     
+
             return mapper.writeValueAsString (research);
-            
+
         } catch (Exception e) {
             throw new RuntimeException (e);
         }

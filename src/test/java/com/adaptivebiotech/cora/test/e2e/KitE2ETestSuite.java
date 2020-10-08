@@ -11,27 +11,26 @@ import static java.lang.ClassLoader.getSystemResource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
+import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.workflow.Debug;
+import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.PDFVerificationHelper;
 import com.adaptivebiotech.cora.utils.SftpServerHelper;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.ReportType;
-import com.adaptivebiotech.ui.cora.workflow.History;
-
 
 @Test (groups = { "E2E" })
 public class KitE2ETestSuite extends KitE2ETestBase {
-    
+
     // SR-T1772
     public void VerifyCEKitClonoSEQ () {
 
         // pre-condition to create clonality and tracking orders.
 
         Logging.info ("Pre-condition: Create Clonality and Trackingnew  Order.");
-        preCondition (getSystemResource(SR_T1772ClonalityJFilePath).getPath (), 
-                      getSystemResource(SR_T1772TrackingJFilePath).getPath ());
+        preCondition (getSystemResource (SR_T1772ClonalityJFilePath).getPath (),
+                      getSystemResource (SR_T1772TrackingJFilePath).getPath ());
 
         // Step1
         // Verify Clonality order name is "B-cell 2.0 Kit Clonality(IVD)" .
@@ -159,10 +158,11 @@ public class KitE2ETestSuite extends KitE2ETestBase {
                                          clonalityOrder.orderNum,
                                          clonalityOrder.orderDate,
                                          clonalityOrder.reportFileName.substring (15));
-        PDFVerificationHelper pdfHelper = new PDFVerificationHelper();
-        pdfHelper.verifyCorrectDataInReportTrackingPDF (helper, filePath,
-                                                     ReportType.clonality,
-                                                     clonalityOrder);
+        PDFVerificationHelper pdfHelper = new PDFVerificationHelper ();
+        pdfHelper.verifyCorrectDataInReportTrackingPDF (helper,
+                                                        filePath,
+                                                        ReportType.clonality,
+                                                        clonalityOrder);
         testLog ("Clonality order data is displayed in pdf report file correctly");
 
         // Step 8
@@ -173,9 +173,10 @@ public class KitE2ETestSuite extends KitE2ETestBase {
                                   trackingOrder.orderNum,
                                   trackingOrder.orderDate,
                                   trackingOrder.reportFileName.substring (15));
-        pdfHelper.verifyCorrectDataInReportTrackingPDF (helper, filePath,
-                                                     ReportType.tracking,
-                                                     trackingOrder);
+        pdfHelper.verifyCorrectDataInReportTrackingPDF (helper,
+                                                        filePath,
+                                                        ReportType.tracking,
+                                                        trackingOrder);
         testLog ("Tracking order data is displayed in pdf report file correctly");
 
         helper.disconnectsftpChannel ();

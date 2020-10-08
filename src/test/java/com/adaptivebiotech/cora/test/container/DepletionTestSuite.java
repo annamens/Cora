@@ -13,11 +13,11 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.ui.cora.Login;
 
 @Test (groups = "regression")
 public class DepletionTestSuite extends ContainerTestBase {

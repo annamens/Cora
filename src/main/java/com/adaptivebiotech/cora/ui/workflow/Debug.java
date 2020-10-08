@@ -6,7 +6,6 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.openqa.selenium.WebElement;
-import com.adaptivebiotech.ui.cora.workflow.History;
 import com.seleniumfy.test.utils.Timeout;
 
 public class Debug extends History {

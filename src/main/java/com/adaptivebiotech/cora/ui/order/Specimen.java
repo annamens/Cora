@@ -6,7 +6,6 @@ import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
 /**
  * @author Harry Soehalim

@@ -11,9 +11,9 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.DateRange;
-import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
  * @author Harry Soehalim

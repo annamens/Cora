@@ -13,12 +13,12 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
-import com.adaptivebiotech.ui.cora.Login;
 
 @Test (groups = "regression")
 public class ScanTestSuite extends ContainerTestBase {

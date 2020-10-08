@@ -20,10 +20,10 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.ui.cora.Login;
 
 public class ContainerTestBase extends CoraBaseBrowser {
 

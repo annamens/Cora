@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.test.order.specimen;
 
+import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.CfdRoche;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.Other;
@@ -22,17 +23,16 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FFPESlides;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FreshBoneMarrow;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
-import static com.adaptivebiotech.test.utils.TestHelper.newPatient;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.order.OrderTestBase;
+import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
+import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.adaptivebiotech.ui.cora.Login;
-import com.adaptivebiotech.ui.cora.order.Diagnostic;
 
 @Test (groups = "regression")
 public class AdaptiveAssistsTestSuite extends OrderTestBase {

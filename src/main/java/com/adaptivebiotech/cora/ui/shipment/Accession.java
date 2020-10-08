@@ -1,8 +1,8 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static org.testng.Assert.assertTrue;
+import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
-import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
  * @author Harry Soehalim

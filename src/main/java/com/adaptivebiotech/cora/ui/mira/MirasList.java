@@ -7,9 +7,9 @@ import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Miras;
 import com.adaptivebiotech.cora.dto.Miras.Mira;
+import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
-import com.adaptivebiotech.ui.cora.CoraPage;
 
 /**
  * @author Harry Soehalim

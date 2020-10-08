@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
-import com.adaptivebiotech.ui.cora.CoraPage;
+import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
  * @author Harry Soehalim

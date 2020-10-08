@@ -3,9 +3,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.adaptivebiotech.integration.test</groupId>
+    <groupId>com.adaptivebiotech.test.integration</groupId>
     <artifactId>cora</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Adaptive Biotechnologies Selenium Tests for Cora</name>
     <repositories>
         <repository>
@@ -114,13 +114,31 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
+                <configuration>
+                    <retryFailedDeploymentCount>3</retryFailedDeploymentCount>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>adaptivebiotech-libs-release-local</id>
+            <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>adaptivebiotech-libs-snapshot-local</id>
+            <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
     <dependencies>
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.18</version>
+            <version>1.1.19-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.hierynomus</groupId>

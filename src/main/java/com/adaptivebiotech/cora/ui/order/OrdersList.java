@@ -9,15 +9,15 @@ import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.List;
-import com.adaptivebiotech.common.dto.Orders;
-import com.adaptivebiotech.common.dto.Orders.Order;
-import com.adaptivebiotech.common.dto.Orders.OrderTest;
-import com.adaptivebiotech.common.dto.Patient;
+import com.adaptivebiotech.cora.dto.Orders;
+import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Orders.OrderTest;
+import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Workflow;
+import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.DateRange;
 import com.adaptivebiotech.test.utils.PageHelper.OrderCategory;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
-import com.adaptivebiotech.ui.cora.CoraPage;
 import com.seleniumfy.test.utils.Timeout;
 
 /**

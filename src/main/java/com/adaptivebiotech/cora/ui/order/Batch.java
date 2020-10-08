@@ -5,7 +5,7 @@ import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Shipment;
-import com.adaptivebiotech.ui.cora.CoraPage;
+import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
  * @author Harry Soehalim

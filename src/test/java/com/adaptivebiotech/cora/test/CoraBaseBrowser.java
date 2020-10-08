@@ -21,10 +21,10 @@ import java.util.Map;
 import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import com.adaptivebiotech.common.dto.Patient;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.HttpResponse;
+import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.PatientResponse;
 import com.seleniumfy.test.utils.BaseBrowser;
 
