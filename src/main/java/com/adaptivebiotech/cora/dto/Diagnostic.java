@@ -29,6 +29,7 @@ public final class Diagnostic {
     public Shipment         shipment;
     public Task             task;
     public Stage            fastForwardStatus;
+    public Boolean          contaminated;
 
     public OrderTest findOrderTest (Assay assay) {
         return orderTests.parallelStream ()
@@ -49,7 +50,7 @@ public final class Diagnostic {
     public static final class Account {
 
         public String        id;
-        public int           version;
+        public Integer       version;
         @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime created;
         @JsonFormat (shape = JsonFormat.Shape.STRING)
@@ -70,7 +71,7 @@ public final class Diagnostic {
         public String        billingEmail;
         public String        billingContact;
         public String        billingName;
-        public boolean       clinicalTrial;
+        public Boolean       clinicalTrial;
         public String        key;
 
         public Account () {}

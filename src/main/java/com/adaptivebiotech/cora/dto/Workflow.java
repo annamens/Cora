@@ -11,9 +11,20 @@ import com.fasterxml.jackson.annotation.JsonAlias;
  */
 public final class Workflow {
 
-    public String sampleName;
-    public String workflowId;
-    public int    sampleCount;
+    public String  sampleName;
+    public String  workflowId;
+    public Integer sampleCount;
+    public String  flowcell;
+    public String  workspaceName;
+    public String  lastAcceptedTsvPath;
+
+    public Workflow () {}
+
+    public Workflow (String flowcell, String workspaceName, String sampleName) {
+        this.flowcell = flowcell;
+        this.workspaceName = workspaceName;
+        this.sampleName = sampleName;
+    }
 
     @Override
     public String toString () {
@@ -36,11 +47,11 @@ public final class Workflow {
         public String      drilldownUrl;
         public String      timestamp;
         public String      actor;
-        public boolean     hasFinished;
-        public boolean     isCurrent;
-        public boolean     hasProblems;
-        public int         requeueCount;
-        public boolean     current;
+        public Boolean     hasFinished;
+        public Boolean     isCurrent;
+        public Boolean     hasProblems;
+        public Integer     requeueCount;
+        public Boolean     current;
 
         @Override
         public String toString () {

@@ -1,10 +1,10 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import static com.adaptivebiotech.test.utils.PageHelper.formatDt1;
-import static com.adaptivebiotech.test.utils.PageHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
+import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -193,12 +193,12 @@ public class Diagnostic extends CoraPage {
         order.patient.abnStatusType = Medicare.equals (chargeType) ? getAbnStatus (state) : null;
         order.icdcodes = getPatientICD_Codes (state);
         order.properties = new OrderProperties (chargeType, getSpecimenDelivery (state));
-        order.specimen = new Specimen ();
-        order.specimen.specimenNumber = getSpecimenId (state);
-        order.specimen.sampleType = getSpecimenType (state);
-        order.specimen.collectionDate = getCollectionDt (state);
-        order.specimen.reconciliationDate = getReconciliationDt ();
-        order.expected_test_type = getExpectedTest ();
+        order.specimenDto = new Specimen ();
+        order.specimenDto.specimenNumber = getSpecimenId (state);
+        order.specimenDto.sampleType = getSpecimenType (state);
+        order.specimenDto.collectionDate = getCollectionDt (state);
+        order.specimenDto.reconciliationDate = getReconciliationDt ();
+        order.expectedTestType = getExpectedTest ();
         order.tests = allOf (Assay.class).stream ().map (a -> getTestState (state, a)).collect (toList ())
                                          .parallelStream ().filter (t -> t.selected).collect (toList ());
         order.orderAttachments = getCoraAttachments ();

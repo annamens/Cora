@@ -18,7 +18,7 @@ public final class Shipment {
     public String            link;
     public OrderCategory     category;
     public String            status;
-    public int[]             arrivalDate;
+    public Object            arrivalDate;
     public ShippingCondition condition;
     public String            carrier;
     public String            trackingNumber;

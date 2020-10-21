@@ -6,6 +6,10 @@ package com.adaptivebiotech.cora.utils;
  */
 public class PageHelper {
 
+    public enum OrderType {
+        CDx, TDx
+    }
+
     public enum DiscrepancyType {
         Documentation, Specimen, General
     }

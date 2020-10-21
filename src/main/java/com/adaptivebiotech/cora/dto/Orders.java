@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
@@ -60,9 +61,9 @@ public final class Orders {
         public String           category_id;
         public String           name;
         public OrderStatus      status;
-        public String           salesforce_order_id;
-        public String           salesforce_order_number;
-        public String           mrn;
+        public String           salesforceOrderId;
+        public String           salesforceOrderNumber;
+        public Object           mrn;
         public OrderProperties  properties;
         public String           version;
         public String           patient_snapshot;
@@ -79,9 +80,9 @@ public final class Orders {
         public Physician        physician;
         public Patient          patient;
         public List <String>    icdcodes;
-        public Specimen         specimen;
+        public Specimen         specimenDto;
         public String           reportDate;
-        public String           expected_test_type;
+        public String           expectedTestType;
         public List <OrderTest> tests = new ArrayList <> ();
         public List <String>    doraAttachments;
         public List <String>    orderAttachments;
@@ -89,6 +90,10 @@ public final class Orders {
         public String           notes;
         public Alert            alert;
         public Workflow         workflow;
+        public OrderType        orderType;
+        public Boolean          postToImmunoSEQ;
+        public ChargeType       billingType;
+        public DeliveryType     specimenDeliveryType;
 
         @Override
         public String toString () {
@@ -148,6 +153,7 @@ public final class Orders {
         public String         finished;
         public List <Stage>   stages;
         public Specimen       specimen;
+        public Workflow       workflowProperties;
 
         public Assay findAssay () {
             return assay == null ? name == null ? null : getAssay (name) : assay;

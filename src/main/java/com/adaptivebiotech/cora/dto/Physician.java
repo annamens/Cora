@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public final class Physician {
 
     public String        id;
-    public int           version;
+    public Integer       version;
     @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime created;
     @JsonFormat (shape = JsonFormat.Shape.STRING)
@@ -41,9 +41,9 @@ public final class Physician {
     public String        portal_emails;
     public String        email;
     public String        psychePhysicianCode;
-    public boolean       allowInternalOrderUpload;
-    public boolean       medicareEnrolled;
-    public boolean       needsCLEPApproval;
+    public Boolean       allowInternalOrderUpload;
+    public Boolean       medicareEnrolled;
+    public Boolean       needsCLEPApproval;
     public String        password;
     public String        key;
 

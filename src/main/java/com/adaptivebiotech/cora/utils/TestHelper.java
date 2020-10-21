@@ -1,6 +1,5 @@
 package com.adaptivebiotech.cora.utils;
 
-import static com.adaptivebiotech.test.utils.PageHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.CommercialInsurance;
@@ -9,6 +8,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Chil
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Other;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Spouse;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.Inpatient;
+import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.String.format;

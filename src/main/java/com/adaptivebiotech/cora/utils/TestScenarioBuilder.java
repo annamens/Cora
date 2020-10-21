@@ -1,5 +1,7 @@
 package com.adaptivebiotech.cora.utils;
 
+import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.CDx;
+import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderCategory.Diagnostic;
@@ -36,6 +38,7 @@ import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.SpecimenProperties;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
@@ -47,15 +50,28 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class TestScenarioBuilder {
 
-    public static AssayResponse coraTests = getTests ();
+    public static AssayResponse coraCDxTests = getTests (CDx);
+    public static AssayResponse coraTDxTests = getTests (TDx);
 
-    public synchronized static OrderTest getTest (Assay assay) {
-        return coraTests.get (assay);
+    public synchronized static OrderTest getCDxTest (Assay assay) {
+        return coraCDxTests.get (assay);
     }
 
-    public synchronized static AssayResponse getTests () {
+    public synchronized static OrderTest getTDxTest (Assay assay) {
+        return coraTDxTests.get (assay);
+    }
+
+    public synchronized static AssayResponse getTests (OrderType type) {
         try {
-            String url = coraTestUrl + "/cora/api/v1/tests?categoryId=63780203-caeb-483d-930c-8392afb5d927";
+            String url = null;
+            switch (type) {
+            case CDx:
+                url = coraTestUrl + "/cora/api/v1/tests?categoryId=63780203-caeb-483d-930c-8392afb5d927";
+                break;
+            case TDx:
+                url = coraTestUrl + "/cora/api/v1/tests?categoryId=f0ac48ed-7527-4e1b-9a45-afb4c58e680d";
+                break;
+            }
             return mapper.readValue (get (url), AssayResponse.class);
         } catch (Exception e) {
             throw new RuntimeException (e);
@@ -121,6 +137,19 @@ public class TestScenarioBuilder {
         }
     }
 
+    public synchronized static HttpResponse newCovidOrder (Diagnostic diagnostic) {
+        try {
+            String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
+            HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
+                                                      HttpResponse.class);
+            url = coraTestUrl + "/cora/api/v1/specimens/" + response.specimenId;
+            diagnostic.orderTests = asList (getOrderTest (mapper.readValue (get (url), Specimen.class).specimenNumber));
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
     public synchronized static HttpResponse newResearchOrder (Research research) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
@@ -142,6 +171,9 @@ public class TestScenarioBuilder {
         Stage stage = new Stage ();
         stage.stageName = name;
         stage.stageStatus = status;
+        stage.subStatusCode = "";
+        stage.subStatusMessage = "";
+        stage.drilldownUrl = "";
         stage.actor = "selenium test";
         return stage;
     }
@@ -161,6 +193,7 @@ public class TestScenarioBuilder {
         shipment.status = "IntakeComplete";
         shipment.arrivalDate = new int[] { 2019, 4, 15, 11, 11, 59, 639 };
         shipment.carrier = "UPS";
+        shipment.trackingNumber = "";
         shipment.condition = Ambient;
         shipment.expectedRecordType = "Order";
 

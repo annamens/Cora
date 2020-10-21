@@ -20,6 +20,8 @@ public final class Patient {
     public String     gender;
     public String     dateOfBirth;
     public String     mrn;
+    public String     race;
+    public String     ethnicity;
     public Insurance  insurance1 = new Insurance ();
     public Insurance  insurance2 = new Insurance ();
     public Insurance  insurance3 = new Insurance ();
