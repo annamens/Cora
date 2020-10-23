@@ -43,6 +43,26 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <testDoctitle>${project.name} ${project.version}</testDoctitle>
+                        <includeDependencySources>true</includeDependencySources>
+                        <sourceFileExcludes>
+                            <sourceFileExclude>**/*TestBase.java</sourceFileExclude>
+                            <sourceFileExclude>**/*BaseBrowser.java</sourceFileExclude>
+                        </sourceFileExcludes>
+                        <tags>
+                            <tag>
+                                <name>sdlc.requirements</name>
+                                <placement>a</placement>
+                                <head>SDLC Requirements:</head>
+                            </tag>
+                        </tags>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.21.0</version>
                     <configuration>
