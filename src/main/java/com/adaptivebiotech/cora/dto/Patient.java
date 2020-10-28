@@ -30,6 +30,7 @@ public final class Patient {
     public String     notes;
     public ChargeType billingType;
     public AbnStatus  abnStatusType;
+    public String     physician;
 
     @Override
     public String toString () {
