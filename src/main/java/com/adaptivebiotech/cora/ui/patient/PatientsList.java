@@ -32,7 +32,7 @@ public class PatientsList extends CoraPage {
         return waitForElements (".list-section tbody tr").stream ().map (tr -> {
             String[] tmp = getText (tr, "td:nth-child(2)").split (" ");
             Patient p = new Patient ();
-            p.patientCode = getText (tr, "td:nth-child(1)");
+            p.patientCode = Integer.valueOf (getText (tr, "td:nth-child(1)"));
             p.firstName = tmp[0];
             p.lastName = tmp[1];
             p.dateOfBirth = getText (tr, "td:nth-child(3)");

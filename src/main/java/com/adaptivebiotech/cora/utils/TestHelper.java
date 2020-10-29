@@ -148,7 +148,7 @@ public class TestHelper {
         patient.fullname = String.join (" ", patient.firstName, patient.lastName);
         patient.dateOfBirth = "07/27/1984";
         patient.gender = "Male";
-        patient.patientCode = "1";
+        patient.patientCode = 1;
         patient.mrn = "mrn-000001";
         patient.insurance1 = insurance1 ();
         patient.insurance1.groupNumber = null;

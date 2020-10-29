@@ -185,7 +185,7 @@ public class Diagnostic extends CoraPage {
         order.patient.fullname = getPatientName ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = getPatientCode (state);
+        order.patient.patientCode = Integer.valueOf (getPatientCode (state));
         order.patient.mrn = getPatientMRN (state);
         order.patient.notes = getPatientNotes (state);
         ChargeType chargeType = getBillingType (state);
