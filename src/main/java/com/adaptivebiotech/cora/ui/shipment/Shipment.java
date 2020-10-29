@@ -11,6 +11,7 @@ import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Carrier;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -109,7 +110,7 @@ public class Shipment extends CoraPage {
             Container container = new Container ();
             container.id = getConId (getAttribute (el, "[data-ng-bind='container.containerNumber']", "href"));
             container.containerNumber = getText (el, "[data-ng-bind='container.containerNumber']");
-            container.containerType = getContainerType (getText (el, ".container-type-header"));
+            container.containerType = ContainerType.getContainerType (getText (el, ".container-type-header"));
             container.name = getText (el, "[data-ng-bind='container.displayName']");
             container.shipmentNumber = shipmentNum;
 
@@ -124,7 +125,7 @@ public class Shipment extends CoraPage {
                     c.specimenId = getText (el1, "[data-ng-bind*='specimen.specimen.specimenNumber']");
                     c.specimenName = getText (el1, "[data-ng-bind*='specimen.specimen.name']");
                     if (c.specimenName != null) {
-                        c.containerType = getContainerType (c.specimenName.split ("-")[0]);
+                        c.containerType = ContainerType.getContainerType (c.specimenName.split ("-")[0]);
                     }
                     c.root = container;
                     c.location = String.join (" : ", coraTestUser, container.containerNumber);
@@ -187,4 +188,94 @@ public class Shipment extends CoraPage {
         saveButton.click ();
         pageLoading ();
     }
+    
+    public void enterCarrier (Carrier coraCarrier) {
+        String cssCarrier = "#carrierType";
+        assertTrue (clickAndSelectValue (cssCarrier, "string:" + coraCarrier.text));
+    }
+
+    public String getCarrier () {
+        String cssCarrier = "#carrierType";
+        return getFirstSelectedText (cssCarrier);
+    }
+
+    public void enterTrackingNumber (String trackingNumber) {
+        String cssTrackingNumber = "#trackingNumber";
+        assertTrue (setText (cssTrackingNumber, trackingNumber));
+    }
+
+    public String getTrackingNumber () {
+        String cssTrackingNumber = "#trackingNumber";
+
+        return readInput (cssTrackingNumber);
+    }
+
+    public void clickAddShipmentDiscrepancy () {
+        String cssShipmentDiscrepancy = "[title='Add Shipment Discrepancy']";
+        assertTrue (click (cssShipmentDiscrepancy));
+    }
+
+    public void enterNotes (String notes) {
+        String cssNotes = "#shipment-notes";
+        assertTrue (setText (cssNotes, notes));
+    }
+
+    public String getNotes () {
+        String cssNotes = "#shipment-notes";
+        return readInput (cssNotes);
+    }
+
+    public void enterInitialStorageLocation (String freezerName) {
+        String cssInitialStorageLocation = "[ng-model='ctrl.storageLocation']";
+        assertTrue (isElementVisible (cssInitialStorageLocation));
+        assertTrue (clickAndSelectText (cssInitialStorageLocation, freezerName));
+    }
+
+    public void discrepancyResolutionsTabVisible () {
+        String cssDRT = "#shipment-discrepancy-tab-link";
+        assertTrue (isElementVisible (cssDRT));
+    }
+
+    public String getShippingCondition () {
+        String css = "[ng-model='ctrl.entry.shipment.condition']";
+        return getFirstSelectedText (css);
+    }
+
+    public String getOrderNumber () {
+        return readInput ("#orderNumber");
+    }
+
+     public String getContainerType() {
+     return getFirstSelectedText("#containerType");
+     }
+
+    public String getInitialStorageLocation () {
+        String cssInitialStorageLocation = "[ng-model='ctrl.storageLocation']";
+        return getFirstSelectedText (cssInitialStorageLocation);
+    }
+
+    public String getAttachmentName () {
+        return getText ("[ng-bind='attachment.name']");
+    }
+
+    public void clickGenerateContainerLabels () {
+        String css = "[ng-click='ctrl.generateLabels()']";
+        assertTrue (click (css));
+        waitForAjaxCalls ();
+        pageLoading ();
+        doWait (5000);
+
+    }
+
+    public String getShipmentStatus () {
+        String css = "[ng-bind=\"ctrl.entry | shipmentEntryStatus\"]";
+        String status = getText (css);
+        return status;
+    }
+
+    public void gotoDiscrepancyResolutions () {
+        String css = "#shipment-discrepancy-tab-link";
+        assertTrue (click (css));
+    }
+
 }

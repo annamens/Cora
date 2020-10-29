@@ -14,6 +14,16 @@ import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 public class Billing extends Diagnostic {
+    
+    private String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
+
+    public void waitForBillingMismatchWarningVisible() {
+        waitForElementVisible (billingMismatchWarning);
+    }
+    
+    public String getBillingMismatchWarningText() {
+        return getText(billingMismatchWarning);
+    }
 
     public void selectBilling (ChargeType type) {
         assertTrue (clickAndSelectValue ("[name='billingType']", "string:" + type));

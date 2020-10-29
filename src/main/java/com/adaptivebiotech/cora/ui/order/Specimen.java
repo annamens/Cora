@@ -4,6 +4,7 @@ import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
+import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
@@ -60,5 +61,15 @@ public class Specimen extends Diagnostic {
 
     public void enterCollectionDate (String date) {
         assertTrue (setText ("[name='collectionDate']", date));
+    }
+    
+    public void enterRetrievalDate (String date) {
+        String cssRetrievalDate = "#specimen-entry-retrieval-date";
+        assertTrue (setText (cssRetrievalDate, date));
+    }
+
+    public String getRetrievalDate (OrderStatus orderStatus) {
+        String css = "[ng-" + (OrderStatus.Pending.equals (orderStatus) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.retrievalDate']";
+        return isElementVisible (css) ? OrderStatus.Pending.equals (orderStatus) ? readInput (css) : getText (css) : null;
     }
 }

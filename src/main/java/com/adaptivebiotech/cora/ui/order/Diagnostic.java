@@ -1,5 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
@@ -12,10 +14,12 @@ import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
+import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
@@ -57,6 +61,258 @@ public class Diagnostic extends CoraPage {
         pageLoading ();
     }
 
+    
+    // pushed up from e2e
+    
+    public void clickReportNotesIcon() {
+        String css = "img[src=\"/assets/images/ReportNotes.png\"]";
+        assertTrue(click(css));
+        waitForAjaxCalls ();
+    }
+    
+    public String getTooltipText() {
+        String css = ".selectable-tooltip-content";
+        return getText(css);
+    }
+    
+    public void clickAdditionalCommentsIcon() {
+        String additionalCommentsButton = "img[src=\"/assets/images/ReportPDFAdditionalComments.png\"]";
+        assertTrue(click(additionalCommentsButton));
+        waitForAjaxCalls ();
+    }
+    
+    public void releaseReportWithSignatureRequired() {
+        String releaseReport = "[ng-click=\"ctrl.releaseReport()\"]";
+        String usernameField = "#userName";
+        String passwordField = "#userPassword";
+        String button = "[ng-click=\"ctrl.ok();\"]";
+        // click release report, wait for popup, enter username and pw, then click release 
+        // button in popup
+        assertTrue(click(releaseReport));
+        waitForAjaxCalls ();
+        assertTrue(setText(usernameField, coraTestUser));
+        assertTrue(setText(passwordField, coraTestPass));
+        assertTrue(click(button));
+        pageLoading ();
+          
+    }
+    
+    public void closeReportPreview() {
+        // body > modal-container > div > div > media-viewer > div.modal-header > button
+         String css = ".modal-header button.close";
+         assertTrue(click(css));
+         waitForAjaxCalls ();
+     }
+     
+     public void clickReportPreviewLink() {
+         String css = "img[src=\"/assets/images/ReportPDF.png\"]";
+         assertTrue(click(css));
+         waitForElementVisible(".modal-header");
+     }
+     
+     public void clickPatientOrderHistory() {
+         String css = ".pt-order-details-link";
+         assertTrue(click(css));
+         pageLoading();
+         pageLoading();
+     }
+     
+     public void clickOrderDetailsTab() {
+         String css = "[ng-click=\"ctrl.tab='detail';\"]";
+         assertTrue(click(css));
+         pageLoading ();
+     }
+     
+     public void clickSaveAndUpdate() {
+         String css = "[ng-click=\"isClinicalConsultant ? ctrl.update() : ctrl.updateNotes()\"]";
+         assertTrue(click(css));
+         pageLoading ();
+         pageLoading ();
+     }
+
+     public String getAdditionalComments() {
+         String commentsField = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
+         return readInput(commentsField);
+     }
+     
+     public void enterAdditionalComments(String comments) {
+//         String button = "[ng-click=\"ctrl.toggleComments()\"]";
+         // can't find this button by css?
+         String button = "/html/body/div[4]/div/div/div/div/div[3]/div/report-edit/div/div[2]/div[3]/div/div[1]/button";
+         String commentsField = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
+         assertTrue(click(button));
+         waitForElementVisible(commentsField);
+         assertTrue(setText(commentsField, comments));
+                 
+     }
+     
+     public String getReportNotes() {
+         String css = "[ng-model=\"ctrl.reportEntry.notes\"]";
+         return readInput (css);
+     }
+     
+     public void enterReportNotes(String notes) {
+         String css = "[ng-model=\"ctrl.reportEntry.notes\"]";
+         assertTrue(setText (css,  notes));
+     }
+     
+     public void gotoOrderAlreadyLoggedIn(String orderNum) {
+         gotoOrderEntry (orderNum);
+     }
+     
+     // aka sample name
+     public String getWorkflowId() {
+         return getText("[ng-bind=\"::orderTest.workflowName\"]");
+     }
+  
+     public boolean isWorkflowHistoryPresent(String stage, String status, String subStatus) {
+         String css = ".table.table-bordered.history tbody tr";
+         List<WebElement> workflowHistories = waitForElementsVisible(css);
+         for(WebElement row : workflowHistories) {
+             String rowStage = getText(row, "td:nth-child(1)");
+             String rowStatus = getText(row, "td:nth-child(2)");
+             String rowSubStatus = getText(row, "td:nth-child(3)");
+             if(stage.equals (rowStage) && 
+                status.equals (rowStatus) && 
+                subStatus.equals (rowSubStatus)) {
+                 return true;
+             }
+         }
+         return false;
+     }
+     
+     public void expandWorkflowHistory() {
+         String css = ".ordertest-list-stage.Clarity";
+         assertTrue(click(css));
+         pageLoading();
+         waitForElementVisible(".table.table-bordered.history");
+     }
+     
+     public String getCurrentWorkflowStage() {
+         String css = ".is-current";
+         WebElement webElement = waitForElementVisible(css);
+         return webElement.getAttribute ("title");
+     }
+     
+     public int getClarityStageRequeueCount() {
+         String css = ".ordertest-list-stage.Clarity .requeue-count";
+         return Integer.valueOf (getText(css));
+     }
+     
+     public String getSubStatusCodeText() {
+//         String css = "[ng-if=\"orderTest.subStatusCode]\"]";
+         String css = "span.ng-binding.ng-scope";
+         return getText(css);
+     }
+     
+     public void clickOrderStatusTab() {
+         String css = "[ng-click=\"ctrl.tab='status';\"]";
+         assertTrue(click(css));
+         pageLoading ();
+     }
+     
+     
+     public void selectQCStatus(QC qc) {
+         String css = "#qcStatus";
+         assertTrue(clickAndSelectValue(css, qc.name ()));
+     }
+     
+     public void enterPredefinedComment(String textToEnter) {
+         String css = "[ng-enter=\"ctrl.onKeyEnter()\"]";
+         String xpath = "/html/body/div[4]/div/div/div/div/div[3]/div/report-edit/div/div[2]/report-edit-qc/div/div/div[2]/div[1]/div[4]/div/div/div[2]/div/ul/li[1]/a/div/strong";
+         assertTrue(setText (css, textToEnter));
+         // now a dropdown appears and you have to select the same text
+         assertTrue(click(waitForElementClickable (xpath)));
+         waitForElementVisible("[ng-bind=\"ctrl.reportEntry.qcInfo.comments\"]");
+     }
+     
+     public void clickQCComplete() {
+         String css = "[data-ng-click='ctrl.qcComplete()']";
+         assertTrue(click(css));
+         pageLoading();
+     }
+     
+     public void clickPatientNotesIcon() {
+         String css = "[ng-click=\"ctrl.showPatientNotesDialog()\"]";
+         assertTrue(click(css));
+         waitForElementVisible(".patient-notes-modal");
+     }
+     
+     public void deselectAllTests() {
+         String tCellCheckbox = "#order-test-type-t-cell";
+         String bCellCheckbox = "#order-test-type-b-cell";
+         String trackingCheckbox = "#order-test-type-tracking";
+         String[] checkboxes = { tCellCheckbox, bCellCheckbox, trackingCheckbox };
+         for(String checkbox : checkboxes) {
+             if(waitForElementVisible(checkbox).isSelected ()) {
+                 assertTrue(click(checkbox));
+                 waitForAjaxCalls ();
+             }
+         }
+         String testSelection = "[ng-bind=\"ctrl.getTestSelectionSummary()\"]";
+         String testSelectionText = waitForElementVisible(testSelection).getText ();
+         assertEquals(testSelectionText, "No tests selected");
+         waitForAjaxCalls ();
+     }
+     
+     
+     public void clickTCellClonalityTestType() {
+         String css = "#order-test-type-t-cell";
+         assertTrue(click(css));
+     }
+     
+     public void clickBackToShipment() {
+         String cssBackToShipment = "[ng-click='ctrl.goToShipment()']";
+         assertTrue(click(cssBackToShipment));
+     }
+     
+     public void addPatientICDCode(String icdCode) {
+         this.enterPatientICD_Codes (icdCode);
+         assertTrue(click("[data-ng-click='ctrl.ok();']"));
+     }
+     
+     public void clickEditPatient() {
+         pageLoading ();
+         String editPatientLink = "a[ui-sref^='main.patient.details']";
+         assertTrue(click(editPatientLink));
+//         waitForElementVisible("[uisref=\"main.patient.details\"]");
+         pageLoading();
+         waitForElementVisible(".patient-details-tab");
+     }
+   
+     public String getSpecimenSource (OrderStatus state) {
+         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.sourceType']";
+         String text = isElementVisible (css) ? (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
+         return text;
+     }
+     
+     public List<OrderTest> getTests(OrderStatus state) {
+         return allOf (Assay.class).stream ().map (a -> getTestState (state, a)).collect (toList ())
+         .parallelStream ().filter (t -> t.selected).collect (toList ());
+     }
+     
+     public void verifyTests(OrderStatus orderStatus, List<Assay> assays) {
+         List<OrderTest> orderTests = this.getTests (orderStatus);
+         assertEquals(orderTests.size (), assays.size ());
+         for(OrderTest test : orderTests) {
+             assertTrue(assays.contains (test.assay));
+         }
+     }
+     
+     public boolean isAbnStatusNotRequired () {
+         String css = "div[ng-if^='ctrl.orderEntry.order.abnStatusType']";
+         
+         return(isTextInElement(css, "Not Required"));
+     }
+     
+     public void clickCompareAndSelectBilling() {
+         String css = "[ng-click=\"ctrl.showCompareBillingModal()\"";
+         assertTrue(click(css));
+     }
+     
+     
+    // pushed up from e2e ^^
+    
     public void isOrderStatusPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER STATUS"));
         pageLoading ();
@@ -266,7 +522,7 @@ public class Diagnostic extends CoraPage {
         assertTrue (setText ("[ng-model='ctrl.orderEntry.order.dateSigned']", date));
     }
 
-    private String getDateSigned (OrderStatus state) {
+    public String getDateSigned (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.order.dateSigned']";
         return isElementVisible (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
     }
@@ -383,7 +639,7 @@ public class Diagnostic extends CoraPage {
         assertTrue (isTextInElement (popupTitle, "Pick Patient"));
     }
 
-    private void searchPatient (Patient patient) {
+    public void searchPatient (Patient patient) {
         assertTrue (setText ("[name='firstName']", patient.firstName));
         assertTrue (setText ("[name='lastName']", patient.lastName));
 
@@ -414,7 +670,7 @@ public class Diagnostic extends CoraPage {
         return getText ("[ng-bind$='patientFullName']");
     }
 
-    private String getPatientDOB () {
+    public String getPatientDOB () {
         return getText ("[ng-bind^='ctrl.orderEntry.order.patient.dateOfBirth']");
     }
 
@@ -451,7 +707,7 @@ public class Diagnostic extends CoraPage {
         assertTrue (setText ("[ng-model='ctrl.orderEntry.order.patient.notes']", notes));
     }
 
-    private String getPatientNotes (OrderStatus state) {
+    public String getPatientNotes (OrderStatus state) {
         String css = "[" + (Pending.equals (state) ? "ng-model" : "notes") + "='ctrl.orderEntry.order.patient.notes']";
         return Pending.equals (state) ? readInput (css) : getText (css);
     }
@@ -465,7 +721,7 @@ public class Diagnostic extends CoraPage {
         assertTrue (click ("//*[contains(text(),'" + codes + "')]"));
     }
 
-    private List <String> getPatientICD_Codes (OrderStatus state) {
+    public List <String> getPatientICD_Codes (OrderStatus state) {
         String searchBox = "[ng-show='ctrl.searchBoxVisible'] input";
         String css = "[ng-" + (Pending.equals (state) ? "model" : "repeat") + "*='ctrl.orderEntry.icdCodes']";
         if (Pending.equals (state))
@@ -487,7 +743,7 @@ public class Diagnostic extends CoraPage {
         return isElementVisible (css) ? getText (css) : null;
     }
 
-    private SpecimenType getSpecimenType (OrderStatus state) {
+    public SpecimenType getSpecimenType (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.sampleType']";
         return isElementVisible (css) ? SpecimenType.getSpecimenType (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
     }
@@ -632,7 +888,7 @@ public class Diagnostic extends CoraPage {
         assertTrue (click (format (assayEl, assay.test)));
     }
 
-    private List <String> getCoraAttachments () {
+    public List <String> getCoraAttachments () {
         String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isOrderAttachment']";
         return isElementPresent (files + " .attachments-table-row") ? getTextList (files + " a [ng-bind='attachment.name']") : null;
     }
@@ -667,7 +923,7 @@ public class Diagnostic extends CoraPage {
         assertTrue (setText ("[ng-model='ctrl.orderEntry.order.notes']", notes));
     }
 
-    private String getOrderNotes (OrderStatus state) {
+    public String getOrderNotes (OrderStatus state) {
         String css = "[" + (Pending.equals (state) ? "ng-model" : "notes") + "='ctrl.orderEntry.order.notes']";
         return Pending.equals (state) ? readInput (css) : getText (css);
     }

@@ -18,4 +18,11 @@ public class TaskList extends CoraPage {
         assertTrue (waitUntilVisible (".active[title='Tasks']"));
         pageLoading ();
     }
+    
+    public void searchAndClickTask (String text) {
+        this.doTaskSearch (text);
+        String css = ".data-value-link.ng-binding";
+        assertTrue (click (css));
+        pageLoading ();
+    }
 }
