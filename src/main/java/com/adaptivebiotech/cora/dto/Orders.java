@@ -128,6 +128,8 @@ public final class Orders {
         public String         key;
         public String         orderId;
         public String         orderName;
+        public String         orderNumber;
+        public String         displayOrderNumber;
         public String         testCode;
         public String         testName;
         public String         testId;
@@ -147,13 +149,17 @@ public final class Orders {
         public String         dueDate;
         public String         drilldownUrl;
         public String         specimenNumber;
-        public String         patientCode;
+        public String         patient_code;
         public String         regulationLevel;
         public String         lastActivity;
         public String         finished;
         public List <Stage>   stages;
         public Specimen       specimen;
         public Workflow       workflowProperties;
+        public OrderType      diagnosticOrderType;
+        public Integer        numTests;
+        public Integer        percentComplete;
+        public String         salesforceOrderNumber;
 
         public Assay findAssay () {
             return assay == null ? name == null ? null : getAssay (name) : assay;
