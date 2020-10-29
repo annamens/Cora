@@ -2,9 +2,9 @@ package com.adaptivebiotech.cora.ui.shipment;
 
 import static org.testng.Assert.assertTrue;
 
-import com.adaptivebiotech.cora.dto.Discrepancy;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.cora.dto.DiscrepancyAssignee;
+import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
+import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee;
 
 public class DiscrepancyPage extends CoraPage {
 
