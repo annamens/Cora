@@ -17,6 +17,7 @@ public final class Workflow {
     public String  flowcell;
     public String  workspaceName;
     public String  lastAcceptedTsvPath;
+    public String  lastFlowcellId;
 
     public Workflow () {}
 
