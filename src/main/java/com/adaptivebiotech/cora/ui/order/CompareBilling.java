@@ -22,10 +22,9 @@ public class CompareBilling  extends CoraPage {
     
     public void clickCancel() {
         String css = ".modal-footer .btn.btn-link"; // ick
-        System.out.println("found " + waitForElements (css).size () + " cancel buttons");
         assertTrue(click(css));
         waitForAjaxCalls ();
-        moduleLoading ();
+//        moduleLoading ();
     }
 
 }

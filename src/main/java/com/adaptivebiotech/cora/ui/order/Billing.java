@@ -18,7 +18,7 @@ public class Billing extends Diagnostic {
     private String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
 
     public void waitForBillingMismatchWarningVisible() {
-        waitForElementVisible (billingMismatchWarning);
+        assertTrue (waitUntilVisible (billingMismatchWarning));
     }
     
     public String getBillingMismatchWarningText() {
@@ -166,5 +166,10 @@ public class Billing extends Diagnostic {
             enterInsurance1Hospital (patient.insurance1.billingInstitution);
             enterInsurance1Discharge (patient.insurance1.dischargeDate);
         }
+    }
+    
+    public void clickCompareAndSelectBilling () {
+        String css = "[ng-click=\"ctrl.showCompareBillingModal()\"";
+        assertTrue (click (css));
     }
 }

@@ -69,7 +69,17 @@ public class Specimen extends Diagnostic {
     }
 
     public String getRetrievalDate (OrderStatus orderStatus) {
+
         String css = "[ng-" + (OrderStatus.Pending.equals (orderStatus) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.retrievalDate']";
-        return isElementVisible (css) ? OrderStatus.Pending.equals (orderStatus) ? readInput (css) : getText (css) : null;
+
+        if (isElementVisible (css)) {
+            if (OrderStatus.Pending.equals (orderStatus)) {
+                return readInput (css);
+            } else {
+                return getText (css);
+            }
+        }
+        return null;
+
     }
 }

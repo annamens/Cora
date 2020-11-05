@@ -83,6 +83,14 @@ public class Accession extends CoraPage {
         assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('MrnMatch', 'Pass')\"]"));
         assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('UniqueSpecimenIdMatch', 'Pass')\"]"));
     }
+    
+    public void clickPassSpecimenType () {
+        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('SpecimenTypeMatch', 'Pass')\"]"));
+    }
+
+    public void clickPassShippingConditions () {
+        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('ShippingCondition', 'Pass')\"]"));
+    }
 
     public void clickFailSpecimenType () {
         assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('SpecimenTypeMatch', 'Fail')\"]"));
@@ -111,14 +119,12 @@ public class Accession extends CoraPage {
         assertTrue (click (css));
     }
 
-    public void specimenApprovalPassFailDisabled () {
-        assertFalse (waitForElementVisible (specimenApprovalPass).isEnabled ());
-        assertFalse (waitForElementVisible (specimenApprovalFail).isEnabled ());
+    public boolean specimenApprovalPassEnabled () {
+        return waitForElementVisible (specimenApprovalPass).isEnabled ();
     }
 
-    public void specimenApprovalPassFailEnabled () {
-        assertTrue (waitForElementVisible (specimenApprovalPass).isEnabled ());
-        assertTrue (waitForElementVisible (specimenApprovalFail).isEnabled ());
+    public boolean specimenApprovalFailEnabled () {
+        return waitForElementVisible (specimenApprovalFail).isEnabled ();
     }
 
 }

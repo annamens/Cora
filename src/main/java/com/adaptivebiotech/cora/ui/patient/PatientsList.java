@@ -40,7 +40,7 @@ public class PatientsList extends CoraPage {
         }).collect (toList ());
     }
     
-    public void clickPatient (String name) {
+    public void clickFirstPatient () {
         // ick
         String css = "patient-list > div > table > tbody > tr > td:nth-child(1) > a";
         assertTrue (click (css));

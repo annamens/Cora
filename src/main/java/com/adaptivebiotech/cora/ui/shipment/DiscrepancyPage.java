@@ -13,9 +13,12 @@ public class DiscrepancyPage extends CoraPage {
         String cssAdd = "#dropdownDiscrepancy";
         assertTrue (click (cssAdd));
 
-        String cssMenuItem = "//*[contains(text(), '" + discrepancy.text + "')]";
+//        String cssMenuItem = "//*[contains(text(), '" + discrepancy.text + "')]";
 
-        assertTrue (click (cssMenuItem));
+        String menuItemFmtString = "//[@class='discrepancies-options']//[text()='%s']";
+        String menuItem = String.format (menuItemFmtString, discrepancy.text);
+        
+        assertTrue (click (menuItem));
         String cssTextArea = "[ng-repeat='discrepancy in ctrl.discrepancies'] textarea";
         assertTrue (setText (cssTextArea, notes));
         String cssAssignee = "[ng-repeat='discrepancy in ctrl.discrepancies'] select";

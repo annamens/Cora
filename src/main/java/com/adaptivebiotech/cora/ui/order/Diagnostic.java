@@ -49,6 +49,9 @@ public class Diagnostic extends CoraPage {
     private final String   oEntry         = ".order-entry";
     private final String   oDetail        = ".detail-sections";
     private final String   assayEl        = "//span[@ng-bind='test.name' and text()='%s']";
+    private final String   reportNotes        = "[ng-model=\"ctrl.reportEntry.notes\"]";
+    private final String   additionalComments = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
+  
     protected final String specimenNumber = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
 
     public Diagnostic () {
@@ -78,6 +81,7 @@ public class Diagnostic extends CoraPage {
         waitForAjaxCalls ();
     }
 
+    // TODO - check title of popup module
     public void releaseReportWithSignatureRequired () {
         String releaseReport = "[ng-click=\"ctrl.releaseReport()\"]";
         String usernameField = "#userName";
@@ -95,12 +99,12 @@ public class Diagnostic extends CoraPage {
     }
 
     public void closeReportPreview () {
-        // body > modal-container > div > div > media-viewer > div.modal-header > button
         String css = ".modal-header button.close";
         assertTrue (click (css));
         waitForAjaxCalls ();
     }
 
+    // TODO - check title of popup
     public void clickReportPreviewLink () {
         String css = "img[src=\"/assets/images/ReportPDF.png\"]";
         assertTrue (click (css));
@@ -128,76 +132,26 @@ public class Diagnostic extends CoraPage {
     }
 
     public String getAdditionalComments () {
-        String commentsField = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
-        return readInput (commentsField);
+        return readInput (additionalComments);
     }
 
     public void enterAdditionalComments (String comments) {
-        // String button = "[ng-click=\"ctrl.toggleComments()\"]";
-        // can't find this button by css?
-        String button = "/html/body/div[4]/div/div/div/div/div[3]/div/report-edit/div/div[2]/div[3]/div/div[1]/button";
-        String commentsField = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
+        String button = "[ng-click=\"ctrl.toggleComments()\"]";
         assertTrue (click (button));
-        waitForElementVisible (commentsField);
-        assertTrue (setText (commentsField, comments));
-
+        assertTrue (setText (additionalComments, comments));
     }
 
     public String getReportNotes () {
-        String css = "[ng-model=\"ctrl.reportEntry.notes\"]";
-        return readInput (css);
+        return readInput (reportNotes);
     }
 
     public void enterReportNotes (String notes) {
-        String css = "[ng-model=\"ctrl.reportEntry.notes\"]";
-        assertTrue (setText (css, notes));
-    }
-
-    public void gotoOrderAlreadyLoggedIn (String orderNum) {
-        gotoOrderEntry (orderNum);
+        assertTrue (setText (reportNotes, notes));
     }
 
     // aka sample name
     public String getWorkflowId () {
         return getText ("[ng-bind=\"::orderTest.workflowName\"]");
-    }
-
-    public boolean isWorkflowHistoryPresent (String stage, String status, String subStatus) {
-        String css = ".table.table-bordered.history tbody tr";
-        List <WebElement> workflowHistories = waitForElementsVisible (css);
-        for (WebElement row : workflowHistories) {
-            String rowStage = getText (row, "td:nth-child(1)");
-            String rowStatus = getText (row, "td:nth-child(2)");
-            String rowSubStatus = getText (row, "td:nth-child(3)");
-            if (stage.equals (rowStage) && status.equals (rowStatus) && subStatus.equals (rowSubStatus)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void expandWorkflowHistory () {
-        String css = ".ordertest-list-stage.Clarity";
-        assertTrue (click (css));
-        pageLoading ();
-        waitForElementVisible (".table.table-bordered.history");
-    }
-
-    public String getCurrentWorkflowStage () {
-        String css = ".is-current";
-        WebElement webElement = waitForElementVisible (css);
-        return webElement.getAttribute ("title");
-    }
-
-    public int getClarityStageRequeueCount () {
-        String css = ".ordertest-list-stage.Clarity .requeue-count";
-        return Integer.valueOf (getText (css));
-    }
-
-    public String getSubStatusCodeText () {
-        // String css = "[ng-if=\"orderTest.subStatusCode]\"]";
-        String css = "span.ng-binding.ng-scope";
-        return getText (css);
     }
 
     public void clickOrderStatusTab () {
@@ -212,11 +166,11 @@ public class Diagnostic extends CoraPage {
     }
 
     public void enterPredefinedComment (String textToEnter) {
-        String css = "[ng-enter=\"ctrl.onKeyEnter()\"]";
-        String xpath = "/html/body/div[4]/div/div/div/div/div[3]/div/report-edit/div/div[2]/report-edit-qc/div/div/div[2]/div[1]/div[4]/div/div/div[2]/div/ul/li[1]/a/div/strong";
-        assertTrue (setText (css, textToEnter));
+        String textField = "[ng-enter=\"ctrl.onKeyEnter()\"]";
+        String firstElementInDropdown = "div.qc-status-form > div.comments-entry > div > div > div.ng-scope > div > ul > li:nth-child(1) > a > div > strong";
+        assertTrue (setText (textField, textToEnter));
         // now a dropdown appears and you have to select the same text
-        assertTrue (click (waitForElementClickable (xpath)));
+        assertTrue (click (waitForElementClickable (firstElementInDropdown)));
         waitForElementVisible ("[ng-bind=\"ctrl.reportEntry.qcInfo.comments\"]");
     }
 
@@ -224,12 +178,6 @@ public class Diagnostic extends CoraPage {
         String css = "[data-ng-click='ctrl.qcComplete()']";
         assertTrue (click (css));
         pageLoading ();
-    }
-
-    public void clickPatientNotesIcon () {
-        String css = "[ng-click=\"ctrl.showPatientNotesDialog()\"]";
-        assertTrue (click (css));
-        waitForElementVisible (".patient-notes-modal");
     }
 
     public void deselectAllTests () {
@@ -249,18 +197,16 @@ public class Diagnostic extends CoraPage {
         waitForAjaxCalls ();
     }
 
-    public void clickTCellClonalityTestType () {
-        String css = "#order-test-type-t-cell";
-        assertTrue (click (css));
-    }
-
     public void clickBackToShipment () {
         String cssBackToShipment = "[ng-click='ctrl.goToShipment()']";
         assertTrue (click (cssBackToShipment));
     }
 
     public void addPatientICDCode (String icdCode) {
+        String expectedModalTitle = "Test Selection Warning";
         this.enterPatientICD_Codes (icdCode);
+        String actualText = waitForElementVisible ("[ng-bind-html=\"ctrl.dialogOptions.headerText\"]").getText ();
+        assertEquals(actualText, expectedModalTitle);
         assertTrue (click ("[data-ng-click='ctrl.ok();']"));
     }
 
@@ -270,7 +216,6 @@ public class Diagnostic extends CoraPage {
         assertTrue (click (editPatientLink));
         // waitForElementVisible("[uisref=\"main.patient.details\"]");
         pageLoading ();
-        waitForElementVisible (".patient-details-tab");
     }
 
     public String getSpecimenSource (OrderStatus state) {
@@ -279,13 +224,13 @@ public class Diagnostic extends CoraPage {
         return text;
     }
 
-    public List <OrderTest> getTests (OrderStatus state) {
+    public List <OrderTest> getSelectedTests (OrderStatus state) {
         return allOf (Assay.class).stream ().map (a -> getTestState (state, a)).collect (toList ())
                                   .parallelStream ().filter (t -> t.selected).collect (toList ());
     }
 
     public void verifyTests (OrderStatus orderStatus, List <Assay> assays) {
-        List <OrderTest> orderTests = this.getTests (orderStatus);
+        List <OrderTest> orderTests = this.getSelectedTests (orderStatus);
         assertEquals (orderTests.size (), assays.size ());
         for (OrderTest test : orderTests) {
             assertTrue (assays.contains (test.assay));
@@ -296,11 +241,6 @@ public class Diagnostic extends CoraPage {
         String css = "div[ng-if^='ctrl.orderEntry.order.abnStatusType']";
 
         return (isTextInElement (css, "Not Required"));
-    }
-
-    public void clickCompareAndSelectBilling () {
-        String css = "[ng-click=\"ctrl.showCompareBillingModal()\"";
-        assertTrue (click (css));
     }
 
     public void isOrderStatusPage () {
@@ -754,10 +694,16 @@ public class Diagnostic extends CoraPage {
 
     private OrderTest getTestState (OrderStatus state, Assay assay) {
         boolean selected;
-        if (Pending.equals (state))
-            selected = waitForElement (format (assayEl, assay.test) + "/../input").isSelected ();
-        else
+        if (Pending.equals (state)) {
+            String labelPath = String.format (assayEl, assay.test);
+            if(isElementPresent(labelPath)) {
+                selected = waitForElement (labelPath + "/../input").isSelected ();
+            } else {
+                selected = false;
+            }
+        } else {
             selected = isElementPresent ("//*[@ng-bind='orderTest.test.name' and text()='" + assay.test + "']");
+        }
         return new OrderTest (null, assay, selected);
     }
 
