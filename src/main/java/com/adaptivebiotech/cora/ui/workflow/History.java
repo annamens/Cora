@@ -68,8 +68,9 @@ public class History extends CoraPage {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
         while (!timer.Timedout () && ! (found = isElementPresent (format (xpath, stage, status, substatus, message)))) {
-            refresh ();
+            doForceClaim ();
             timer.Wait ();
+            refresh ();
         }
         if (!found)
             fail (format (fail, stage, status, substatus, message));
@@ -80,8 +81,9 @@ public class History extends CoraPage {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status, substatus))) {
-            refresh ();
+            doForceClaim ();
             timer.Wait ();
+            refresh ();
         }
         if (!found)
             fail (format (fail, stage, status, substatus));
@@ -92,8 +94,9 @@ public class History extends CoraPage {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status))) {
-            refresh ();
+            doForceClaim ();
             timer.Wait ();
+            refresh ();
         }
         if (!found)
             fail (format (fail, stage, status));
@@ -112,12 +115,15 @@ public class History extends CoraPage {
     public void doForceClaim () {
         String lastClaimed = "//a[text()='Last Claimed']", claim = "#claimDiv";
         assertTrue (click (lastClaimed));
-        if (!waitUntilVisible (claim)) {
-            assertTrue (refresh ());
+
+        // sometimes the click failed
+        if (isElementVisible (claim))
+            assertTrue (click (claim + " [name='submit']"));
+        else {
             assertTrue (click (lastClaimed));
-            assertTrue (waitUntilVisible (claim));
+            if (isElementVisible (claim))
+                assertTrue (click (claim + " [name='submit']"));
         }
-        assertTrue (click (claim + " [name='submit']"));
     }
 
     public void clickOrderTest () {

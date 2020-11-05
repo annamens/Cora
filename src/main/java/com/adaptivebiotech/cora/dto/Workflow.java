@@ -18,6 +18,8 @@ public final class Workflow {
     public String  workspaceName;
     public String  lastAcceptedTsvPath;
     public String  lastFlowcellId;
+    public Boolean disableHiFreqSave;
+    public Boolean disableHiFreqSharing;
 
     public Workflow () {}
 
