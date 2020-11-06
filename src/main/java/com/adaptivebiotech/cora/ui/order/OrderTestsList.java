@@ -48,7 +48,6 @@ public class OrderTestsList extends CoraPage {
         assertTrue (click (confirmRequeueButton));
         waitForElementVisible (".confirm-requeue-modal-dialog");
         assertTrue (click ("[ng-click=\"ctrl.ok()\"]"));
-        waitForAjaxCalls ();
         pageLoading ();
     }
 }

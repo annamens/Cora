@@ -8,23 +8,22 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 
 public class CompareBilling  extends CoraPage {
 
-    public void isCorrectPage() {
+    public void isCorrectPage () {
         String css = ".modal-title";
-        waitForElementVisible(css);
-        assertEquals(getText(css), "Compare and Select Billing");
+        waitForElementVisible (css);
+        assertEquals (getText (css), "Compare and Select Billing");
     }
-    
-    public int countNumDifferentFields() {
+
+    public int countNumDifferentFields () {
         String css = ".compare-value.different";
-        List<WebElement> differentFields = waitForElementsVisible(css);
+        List <WebElement> differentFields = waitForElementsVisible (css);
         return differentFields.size ();
     }
-    
-    public void clickCancel() {
+
+    public void clickCancel () {
         String css = ".modal-footer .btn.btn-link"; // ick
-        assertTrue(click(css));
+        assertTrue (click (css));
         waitForAjaxCalls ();
-//        moduleLoading ();
     }
 
 }
