@@ -1,6 +1,5 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
@@ -115,7 +114,7 @@ public class Accession extends CoraPage {
     }
 
     public void clickAddContainerSpecimenDiscrepancy () {
-        String css = "[ng-click=\"ctrl.addDiscrepancies()\"]";
+        String css = "button[title=\"Add Container/Specimen Discrepancy\"]";
         assertTrue (click (css));
     }
 

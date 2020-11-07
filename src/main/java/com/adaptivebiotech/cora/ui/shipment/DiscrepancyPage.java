@@ -15,7 +15,7 @@ public class DiscrepancyPage extends CoraPage {
 
 //        String cssMenuItem = "//*[contains(text(), '" + discrepancy.text + "')]";
 
-        String menuItemFmtString = "//[@class='discrepancies-options']//[text()='%s']";
+        String menuItemFmtString = "//*[@class='discrepancies-options']/ul/li[text()='%s']";
         String menuItem = String.format (menuItemFmtString, discrepancy.text);
         
         assertTrue (click (menuItem));

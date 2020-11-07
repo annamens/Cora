@@ -19,7 +19,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
@@ -216,7 +215,6 @@ public class Diagnostic extends CoraPage {
         pageLoading ();
         String editPatientLink = "a[ui-sref^='main.patient.details']";
         assertTrue (click (editPatientLink));
-        // waitForElementVisible("[uisref=\"main.patient.details\"]");
         pageLoading ();
     }
 

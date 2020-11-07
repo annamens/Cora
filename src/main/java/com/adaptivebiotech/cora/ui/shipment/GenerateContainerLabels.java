@@ -8,9 +8,7 @@ public class GenerateContainerLabels extends CoraPage {
     public void selectPrinter (String printer) {
         String css = "[ng-change='ctrl.printerChange()']";
         waitForElementVisible (css);
-        doWait (5000); // something funny here
         assertTrue (clickAndSelectText (css, printer));
-
     }
 
     public void clickPrint () {

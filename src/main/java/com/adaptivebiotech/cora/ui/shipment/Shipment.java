@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -9,6 +8,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -24,6 +24,13 @@ import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 public class Shipment extends CoraPage {
+    
+    
+    private final String cssCarrier        = "#carrierType";
+    private final String cssTrackingNumber = "#trackingNumber";
+    private final String cssNotes          = "#shipment-notes";
+
+
 
     public Shipment () {
         staticNavBarHeight = 195;
@@ -190,50 +197,47 @@ public class Shipment extends CoraPage {
     }
     
     public void enterCarrier (Carrier coraCarrier) {
-        String cssCarrier = "#carrierType";
         assertTrue (clickAndSelectValue (cssCarrier, "string:" + coraCarrier.text));
     }
 
-    public String getCarrier () {
-        String cssCarrier = "#carrierType";
-        return getFirstSelectedText (cssCarrier);
+    public Carrier getCarrier () {
+        String carrierText = getFirstSelectedText (cssCarrier);
+        return Carrier.valueOf (carrierText);
     }
 
     public void enterTrackingNumber (String trackingNumber) {
-        String cssTrackingNumber = "#trackingNumber";
         assertTrue (setText (cssTrackingNumber, trackingNumber));
     }
 
     public String getTrackingNumber () {
-        String cssTrackingNumber = "#trackingNumber";
-
         return readInput (cssTrackingNumber);
     }
 
     public void clickAddShipmentDiscrepancy () {
         String cssShipmentDiscrepancy = "[title='Add Shipment Discrepancy']";
         assertTrue (click (cssShipmentDiscrepancy));
+        pageLoading ();
+        String expectedTitle = "Discrepancy";
+        String title = waitForElementVisible (".modal-title").getText ();
+        assertEquals(title, expectedTitle);
     }
 
     public void enterNotes (String notes) {
-        String cssNotes = "#shipment-notes";
         assertTrue (setText (cssNotes, notes));
     }
 
     public String getNotes () {
-        String cssNotes = "#shipment-notes";
         return readInput (cssNotes);
     }
 
     public void enterInitialStorageLocation (String freezerName) {
         String cssInitialStorageLocation = "[ng-model='ctrl.storageLocation']";
-        assertTrue (isElementVisible (cssInitialStorageLocation));
         assertTrue (clickAndSelectText (cssInitialStorageLocation, freezerName));
     }
 
-    public void discrepancyResolutionsTabVisible () {
+    public boolean discrepancyResolutionsTabVisible () {
         String cssDRT = "#shipment-discrepancy-tab-link";
-        assertTrue (isElementVisible (cssDRT));
+        return isElementVisible (cssDRT);
     }
 
     public String getShippingCondition () {
@@ -245,8 +249,9 @@ public class Shipment extends CoraPage {
         return readInput ("#orderNumber");
     }
 
-     public String getContainerType() {
-     return getFirstSelectedText("#containerType");
+     public ContainerType getContainerType () {
+         String text = getFirstSelectedText("#containerType");
+         return ContainerType.getContainerType (text);
      }
 
     public String getInitialStorageLocation () {
@@ -254,8 +259,8 @@ public class Shipment extends CoraPage {
         return getFirstSelectedText (cssInitialStorageLocation);
     }
 
-    public String getAttachmentName () {
-        return getText ("[ng-bind='attachment.name']");
+    public List<String> getAttachmentNames () {
+        return getTextList ("[ng-bind='attachment.name']");
     }
 
     public void clickGenerateContainerLabels () {
@@ -263,8 +268,6 @@ public class Shipment extends CoraPage {
         assertTrue (click (css));
         waitForAjaxCalls ();
         pageLoading ();
-        doWait (5000);
-
     }
 
     public String getShipmentStatus () {

@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.patient;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
@@ -28,16 +29,21 @@ public class PatientDetail extends CoraPage {
 
     public void clickEditPatientDemographics() {
         String xpathForEditButton = "//patient-details-tab/div/patient-demographics/div/div/div/div/div[2]/div/div[2]/button";
-        
         assertTrue(click(xpathForEditButton));
-        pageLoading();
+        String expectedTitle = "Edit Patient Demographics";
+        String title = waitForElementVisible(".modal-title").getText ();
+        assertEquals(title, expectedTitle);
     
     }
     
     public void clickEditPatientInsurance() {
         String xpath = "//patient-details-tab/div/patient-billing/div/div/div/div[2]/div[2]/div[2]/button";
         assertTrue(click(xpath));
-        waitForElementVisible ("edit-patient-insurance-details");
+        String expectedTitle = "Edit Patient Insurance";
+        String title = waitForElementVisible (".modal-title").getText ();
+        assertEquals(title, expectedTitle);
+        
+//        waitForElementVisible ("edit-patient-insurance-details");
     }
  
     public void enterPatientNotes (String notes) {
