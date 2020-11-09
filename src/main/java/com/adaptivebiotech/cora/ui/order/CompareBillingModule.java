@@ -6,7 +6,7 @@ import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
-public class CompareBilling  extends CoraPage {
+public class CompareBillingModule  extends CoraPage {
 
     public void isCorrectPage () {
         String css = ".modal-title";

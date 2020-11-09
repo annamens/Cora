@@ -1,7 +1,10 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
+import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -114,8 +117,14 @@ public class Accession extends CoraPage {
     }
 
     public void clickAddContainerSpecimenDiscrepancy () {
-        String css = "button[title=\"Add Container/Specimen Discrepancy\"]";
-        assertTrue (click (css));
+        // /html/body/div[4]/div/div/div/div/form/ng-transclude/div/div[2]/div/div[7]/div/div[9]/div[2]/button[2]
+//        String button = "div.intake-container.ng-scope > div.pull-right.mar-bottom-10 > button.btn.ng-binding.ng-scope.ng-isolate-scope.btn-secondary";
+        String button = "button[title=\"Add Container/Specimen Discrepancy\"]"; // doesn't work
+        assertTrue (click (button));
+        pageLoading();
+        String title = ".modal-title";
+        String expectedTitle = "Discrepancy";
+        assertEquals (waitForElementVisible(title).getText (), expectedTitle);
     }
 
     public boolean specimenApprovalPassEnabled () {
@@ -124,6 +133,30 @@ public class Accession extends CoraPage {
 
     public boolean specimenApprovalFailEnabled () {
         return waitForElementVisible (specimenApprovalFail).isEnabled ();
+    }
+    
+    // discrepancy pop up methods
+    
+    public void addDiscrepancy (Discrepancy discrepancy, String notes,
+                                DiscrepancyAssignee assignee) {
+        String cssAdd = "#dropdownDiscrepancy";
+        assertTrue (click (cssAdd));
+
+//        String cssMenuItem = "//*[contains(text(), '" + discrepancy.text + "')]";
+
+        String menuItemFmtString = "//*[@class='discrepancies-options']/ul/li[text()='%s']";
+        String menuItem = String.format (menuItemFmtString, discrepancy.text);
+        
+        assertTrue (click (menuItem));
+        String cssTextArea = "[ng-repeat='discrepancy in ctrl.discrepancies'] textarea";
+        assertTrue (setText (cssTextArea, notes));
+        String cssAssignee = "[ng-repeat='discrepancy in ctrl.discrepancies'] select";
+        assertTrue (clickAndSelectText (cssAssignee, assignee.text));
+    }
+
+    public void clickSave () {
+        String cssSave = "[ng-click='ctrl.save()'";
+        assertTrue (click (cssSave));
     }
 
 }

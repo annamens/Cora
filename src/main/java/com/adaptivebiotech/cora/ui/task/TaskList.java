@@ -19,10 +19,10 @@ public class TaskList extends CoraPage {
         pageLoading ();
     }
     
-    public void searchAndClickTask (String text) {
+    public void searchAndClickFirstTask (String text) {
         this.doTaskSearch (text);
-        String css = ".data-value-link.ng-binding";
-        assertTrue (click (css));
+        String firstTaskName = "table > tbody > tr:nth-child(1) > td.task-name-description > a > span";
+        assertTrue (click (firstTaskName));
         pageLoading ();
     }
 }

@@ -3,7 +3,7 @@ package com.adaptivebiotech.cora.ui.patient;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
-public class EditPatientDemographics extends CoraPage {
+public class EditPatientDemographicsModule extends CoraPage {
 
     @Override
     public void isCorrectPage () {

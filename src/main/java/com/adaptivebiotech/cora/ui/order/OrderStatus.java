@@ -34,6 +34,14 @@ public class OrderStatus extends Diagnostic {
         waitForElementVisible (".patient-notes-modal");
         assertTrue (getText (".modal-title").contains ("Patient Note for Patient "));
     }
+    
+    
+    // patient notes popup
+    public String getPatientNotes () {
+        String css = "[ng-bind=\"ctrl.patient.notes\"]";
+        String text = readInput (css);
+        return text;
+    }
 
     public int getClarityStageRequeueCount () {
         String css = ".ordertest-list-stage.Clarity .requeue-count";

@@ -266,7 +266,6 @@ public class Shipment extends CoraPage {
     public void clickGenerateContainerLabels () {
         String css = "[ng-click='ctrl.generateLabels()']";
         assertTrue (click (css));
-        waitForAjaxCalls ();
         pageLoading ();
     }
 
