@@ -167,7 +167,7 @@ public class Diagnostic extends CoraPage {
 
     public void enterPredefinedComment (String textToEnter) {
         String textField = "[ng-enter=\"ctrl.onKeyEnter()\"]";
-        String firstElementInDropdown = "div.qc-status-form > div.comments-entry > div > div > div.ng-scope > div > ul > li:nth-child(1) > a > div > strong";
+        String firstElementInDropdown = "[ng-show='ctrl.hasResults'] li:nth-child(1) a";
         assertTrue (setText (textField, textToEnter));
         // now a dropdown appears and you have to select the same text
         assertTrue (click (waitForElementClickable (firstElementInDropdown)));

@@ -31,15 +31,15 @@ public class PatientDetail extends CoraPage {
         String xpathForEditButton = "//*[@class='demographics-details']/..//button";
         assertTrue(click(xpathForEditButton));
         String expectedTitle = "Edit Patient Demographics";
-        String title = waitForElementVisible(".modal-title").getText ();
+        String title = getText (".modal-title");
         assertEquals(title, expectedTitle);
     }
     
     public void clickEditPatientInsurance() {
-        String xpath = "//*[label='Billing Type']/../../../..//button";
+        String xpath =  "//*[label='Billing Type']//ancestor::div[@class='editable-section']//button";
         assertTrue(click(xpath));
         String expectedTitle = "Edit Patient Insurance";
-        String title = waitForElementVisible (".modal-title").getText ();
+        String title = getText (".modal-title");
         assertEquals(title, expectedTitle);
     }
  
@@ -62,27 +62,27 @@ public class PatientDetail extends CoraPage {
     
     public String getPrimaryInsuranceProvider () {
         String css = "[label=\"Insurance Provider\"] > div > div:nth-child(2)";
-        return getText (waitForElementVisible (css));
+        return getText (css);
     }
 
     public String getPrimaryInsuranceGroupNumber() {
         String css = "[label=\"Group Number\"] > div > div:nth-child(2)";
-        return getText(waitForElementVisible(css));
+        return getText (css);
     }
     
     public String getPrimaryInsurancePolicyNumber() {
         String css = "[label=\"Policy Number\"] > div > div:nth-child(2)";
-        return getText(waitForElementVisible(css));
+        return getText (css);
     }
     
     public String getPrimaryInsurancePatientRelationship() {
         String css = "[label=\"Patient Relationship to Policyholder\"] > div > div:nth-child(2)";
-        return getText(waitForElementVisible(css));
+        return getText (css);
     }
     
     public String getPrimaryInsurancePolicyholderName() {
         String css = "[label=\"Policyholder name\"] > div > div:nth-child(2)";
-        return getText(waitForElementVisible(css));
+        return getText (css);
     }
     
     
