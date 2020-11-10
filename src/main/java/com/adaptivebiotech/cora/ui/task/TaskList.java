@@ -21,7 +21,7 @@ public class TaskList extends CoraPage {
     
     public void searchAndClickFirstTask (String text) {
         this.doTaskSearch (text);
-        String firstTaskName = "table > tbody > tr:nth-child(1) > td.task-name-description > a > span";
+        String firstTaskName = "tr[ng-repeat-start='task in ctrl.tasks']:nth-child(1) a[ui-sref*='main.task'] span";
         assertTrue (click (firstTaskName));
         pageLoading ();
     }

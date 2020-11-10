@@ -28,22 +28,19 @@ public class PatientDetail extends CoraPage {
     }
 
     public void clickEditPatientDemographics() {
-        String xpathForEditButton = "//patient-details-tab/div/patient-demographics/div/div/div/div/div[2]/div/div[2]/button";
+        String xpathForEditButton = "//*[@class='demographics-details']/..//button";
         assertTrue(click(xpathForEditButton));
         String expectedTitle = "Edit Patient Demographics";
         String title = waitForElementVisible(".modal-title").getText ();
         assertEquals(title, expectedTitle);
-    
     }
     
     public void clickEditPatientInsurance() {
-        String xpath = "//patient-details-tab/div/patient-billing/div/div/div/div[2]/div[2]/div[2]/button";
+        String xpath = "//*[label='Billing Type']/../../../..//button";
         assertTrue(click(xpath));
         String expectedTitle = "Edit Patient Insurance";
         String title = waitForElementVisible (".modal-title").getText ();
         assertEquals(title, expectedTitle);
-        
-//        waitForElementVisible ("edit-patient-insurance-details");
     }
  
     public void enterPatientNotes (String notes) {
@@ -54,18 +51,14 @@ public class PatientDetail extends CoraPage {
     public void clickSave () {
         String cssForSaveButton = ".patient-notes-section .btn-primary";
         assertTrue (click (cssForSaveButton));
-        waitForAjaxCalls ();
         pageLoading ();
     }
 
     public void clickClose () {
         String cssForCloseButton = "go-back";
         assertTrue (click (cssForCloseButton));
-        waitForAjaxCalls ();
         moduleLoading ();
     }
-
-    // TODO - one method that gets an Insurance object instead from the fields
     
     public String getPrimaryInsuranceProvider () {
         String css = "[label=\"Insurance Provider\"] > div > div:nth-child(2)";
@@ -73,23 +66,62 @@ public class PatientDetail extends CoraPage {
     }
 
     public String getPrimaryInsuranceGroupNumber() {
-        String xpath = "//patient-details-tab/div/patient-billing/div/div/div/div[2]/div[3]/div/div[1]/patient-insurance-details/div/labeled-value[2]/div/div[2]";
-        return getText(waitForElementVisible(xpath));
+        String css = "[label=\"Group Number\"] > div > div:nth-child(2)";
+        return getText(waitForElementVisible(css));
     }
     
     public String getPrimaryInsurancePolicyNumber() {
-        String xpath = "//patient-details-tab/div/patient-billing/div/div/div/div[2]/div[3]/div/div[1]/patient-insurance-details/div/labeled-value[3]/div/div[2]";
-        return getText(waitForElementVisible(xpath));
+        String css = "[label=\"Policy Number\"] > div > div:nth-child(2)";
+        return getText(waitForElementVisible(css));
     }
     
     public String getPrimaryInsurancePatientRelationship() {
-        String xpath = "//patient-details-tab/div/patient-billing/div/div/div/div[2]/div[3]/div/div[1]/patient-insurance-details/div/labeled-value[4]/div/div[2]";
-        return getText(waitForElementVisible(xpath));
+        String css = "[label=\"Patient Relationship to Policyholder\"] > div > div:nth-child(2)";
+        return getText(waitForElementVisible(css));
     }
     
     public String getPrimaryInsurancePolicyholderName() {
-        String xpath = "//patient-details-tab/div/patient-billing/div/div/div/div[2]/div[3]/div/div[1]/patient-insurance-details/div/labeled-value[5]/div/div[2]";
-        return getText(waitForElementVisible(xpath));
+        String css = "[label=\"Policyholder name\"] > div > div:nth-child(2)";
+        return getText(waitForElementVisible(css));
     }
+    
+    
+    // edit patient insurance popup
+
+    
+    public void setBillingType (String billingType) {
+        String css = "#billingType";
+        assertTrue (clickAndSelectText (css, billingType));
+    }
+
+    public void enterInsuranceProvider (String insuranceProvider) {
+        assertTrue (setText ("#primaryInsuranceProvider", insuranceProvider));
+    }
+
+    public void enterGroupNumber (String groupNumber) {
+        String css = "#primaryGroupNumber";
+        assertTrue (setText (css, groupNumber));
+    }
+
+    public void enterPolicyNumber (String policyNumber) {
+        String css = "#primaryPolicyNumber";
+        assertTrue (setText (css, policyNumber));
+    }
+
+    public void setPrimaryInsuredRelationship (String relationship) {
+        String css = "#primaryInsuredRelationship";
+        assertTrue (clickAndSelectText (css, relationship));
+    }
+
+    public void enterPolicyholderName (String name) {
+        String css = "#primaryPolicyholder";
+        assertTrue (setText (css, name));
+    }
+
+    public void clickSavePatientInsurance () {
+        assertTrue (click ("[type='submit']"));
+        moduleLoading ();
+    }
+    
 
 }

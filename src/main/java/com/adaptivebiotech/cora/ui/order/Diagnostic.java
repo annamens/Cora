@@ -104,7 +104,6 @@ public class Diagnostic extends CoraPage {
         waitForAjaxCalls ();
     }
 
-    // TODO - check title of popup
     public void clickReportPreviewLink () {
         String css = "img[src=\"/assets/images/ReportPDF.png\"]";
         assertTrue (click (css));
@@ -116,7 +115,7 @@ public class Diagnostic extends CoraPage {
         String css = ".pt-order-details-link";
         assertTrue (click (css));
         pageLoading ();
-        pageLoading ();
+        assertEquals (waitForElementVisible ("[uisref=\"main.patient.orders\"]").getText (), "PATIENT ORDER HISTORY");
     }
 
     public void clickOrderDetailsTab () {

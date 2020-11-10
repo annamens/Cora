@@ -117,8 +117,6 @@ public class Accession extends CoraPage {
     }
 
     public void clickAddContainerSpecimenDiscrepancy () {
-        // /html/body/div[4]/div/div/div/div/form/ng-transclude/div/div[2]/div/div[7]/div/div[9]/div[2]/button[2]
-//        String button = "div.intake-container.ng-scope > div.pull-right.mar-bottom-10 > button.btn.ng-binding.ng-scope.ng-isolate-scope.btn-secondary";
         String button = "button[title=\"Add Container/Specimen Discrepancy\"]"; // doesn't work
         assertTrue (click (button));
         pageLoading();
@@ -141,8 +139,6 @@ public class Accession extends CoraPage {
                                 DiscrepancyAssignee assignee) {
         String cssAdd = "#dropdownDiscrepancy";
         assertTrue (click (cssAdd));
-
-//        String cssMenuItem = "//*[contains(text(), '" + discrepancy.text + "')]";
 
         String menuItemFmtString = "//*[@class='discrepancies-options']/ul/li[text()='%s']";
         String menuItem = String.format (menuItemFmtString, discrepancy.text);
