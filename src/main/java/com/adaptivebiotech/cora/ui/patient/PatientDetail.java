@@ -61,28 +61,28 @@ public class PatientDetail extends CoraPage {
     }
     
     public String getPrimaryInsuranceProvider () {
-        String css = "[label=\"Insurance Provider\"] > div > div:nth-child(2)";
-        return getText (css);
+        String xpath = "//*[label=\"Insurance Provider\"]/following-sibling::div";
+        return getText (xpath);
     }
 
     public String getPrimaryInsuranceGroupNumber() {
-        String css = "[label=\"Group Number\"] > div > div:nth-child(2)";
-        return getText (css);
+        String xpath = "//*[label=\"Group Number\"]/following-sibling::div";
+        return getText (xpath);
     }
     
     public String getPrimaryInsurancePolicyNumber() {
-        String css = "[label=\"Policy Number\"] > div > div:nth-child(2)";
-        return getText (css);
+        String xpath = "//*[label=\"Policy Number\"]/following-sibling::div";
+        return getText (xpath);
     }
     
     public String getPrimaryInsurancePatientRelationship() {
-        String css = "[label=\"Patient Relationship to Policyholder\"] > div > div:nth-child(2)";
-        return getText (css);
+        String xpath = "//*[label='Patient Relationship to Policyholder']/following-sibling::div";
+        return getText (xpath);
     }
     
     public String getPrimaryInsurancePolicyholderName() {
-        String css = "[label=\"Policyholder name\"] > div > div:nth-child(2)";
-        return getText (css);
+        String xpath = "//*[label=\"Policyholder name\"]/following-sibling::div";
+        return getText (xpath);
     }
     
     
