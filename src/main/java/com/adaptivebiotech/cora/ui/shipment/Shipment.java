@@ -237,7 +237,9 @@ public class Shipment extends CoraPage {
 
     public boolean discrepancyResolutionsTabVisible () {
         String cssDRT = "#shipment-discrepancy-tab-link";
-        return isElementVisible (cssDRT);
+        String expectedText = "DISCREPANCY RESOLUTIONS";
+        String text = waitForElementVisible (cssDRT).getText ();
+        return expectedText.equals (text);
     }
 
     public String getShippingCondition () {
