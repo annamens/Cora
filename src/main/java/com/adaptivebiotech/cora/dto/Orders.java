@@ -208,6 +208,7 @@ public final class Orders {
         public Specimen         specimen;
         public List <OrderTest> tests = new ArrayList <> ();
         public String           alertTypeId;
+        public String           alertTypeName;
         public String           referencedEntityId;
         public List <String>    recipients;
 
