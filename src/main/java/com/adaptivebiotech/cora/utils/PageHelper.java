@@ -54,6 +54,39 @@ public class PageHelper {
             this.text = name;
         }
     }
+
+    public enum Ethnicity {
+
+        HISPANIC ("Hispanic or Latino"),
+        NON_HISPANIC ("Non Hispanic or Latino"),
+        UNKNOWN ("Unknown"),
+        ASKED ("Asked, but unknown");
+
+        public final String text;
+
+        private Ethnicity (String text) {
+            this.text = text;
+        }
+    }
+
+    public enum Race {
+
+        AMERICAN_INDIAN ("American Indian or Alaska Native"),
+        ASIAN ("Asian"),
+        BLACK ("Black or African American"),
+        NATIVE_HAWAIIAN ("Native Hawaiian or Other Pacific Islander"),
+        WHITE ("White"),
+        UNKNOWN ("Unknown"),
+        ASKED ("Asked, but unknown");
+
+        public final String text;
+
+        private Race (String text) {
+            this.text = text;
+        }
+
+    }
+
     
     
 }
