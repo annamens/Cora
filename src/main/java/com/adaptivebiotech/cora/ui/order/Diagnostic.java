@@ -259,7 +259,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickSave () {
-        assertTrue (click ("[ng-click='ctrl.save()']"));
+        assertTrue (click ("#order-entry-save"));
         pageLoading ();
     }
 
