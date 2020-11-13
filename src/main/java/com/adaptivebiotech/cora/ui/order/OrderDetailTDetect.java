@@ -37,13 +37,13 @@ public class OrderDetailTDetect extends Diagnostic {
 
     @Override
     public void activateOrder () {
-        clickSaveAndActivate ();
+        clickActivateOrder ();
         waitUntilActivated ();
     }
 
-    public void clickSaveAndActivate () {
-        String css = "#order-entry-save-and-activate";
-        assertTrue (click (css));
+    @Override
+    public void clickActivateOrder () {
+        clickSaveAndActivate ();
         moduleLoading ();
         pageLoading ();
     }
