@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
-import org.openqa.selenium.TimeoutException;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
@@ -34,12 +33,6 @@ public class Specimen extends Diagnostic {
 
     public void enterSpecimenType (SpecimenType type) {
         assertTrue (clickAndSelectValue ("[ng-model='ctrl.orderEntry.specimen.sampleType']", "string:" + type));
-        // if a test is selected there is a popup here
-        try {
-            clickPopupOK ();
-        } catch (TimeoutException te) {
-            // do nothing
-        }
     }
 
     public void enterSpecimenTypeOther (String type) {
