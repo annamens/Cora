@@ -259,7 +259,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickSave () {
-        assertTrue (click ("[ng-click='ctrl.save()']"));
+        assertTrue (click ("#order-entry-save"));
         pageLoading ();
     }
 
@@ -281,8 +281,13 @@ public class Diagnostic extends CoraPage {
         waitUntilActivated ();
     }
 
+    void clickSaveAndActivate () {
+        String css = "#order-entry-save-and-activate";
+        assertTrue (click (css));
+    }
+
     public void clickActivateOrder () {
-        assertTrue (click ("[ng-click='ctrl.activateOrder()']"));
+        clickSaveAndActivate ();
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
     }
 
