@@ -36,7 +36,6 @@ public class Specimen extends Diagnostic {
         assertTrue (clickAndSelectValue ("[ng-model='ctrl.orderEntry.specimen.sampleType']", "string:" + type));
         // if a test is selected there is a popup here
         try {
-            waitForElementVisible (".modal-footer");
             clickPopupOK ();
         } catch (TimeoutException te) {
             // do nothing
