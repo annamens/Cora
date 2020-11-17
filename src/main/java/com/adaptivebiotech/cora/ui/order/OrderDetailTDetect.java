@@ -80,7 +80,6 @@ public class OrderDetailTDetect extends Diagnostic {
 
     @Override
     public void addPatientICDCode (String code) {
-        // String addButton = "//label[text()='ICD Codes']/../button";
         String addButton = "//button[text()='Add Code']";
         String icdInput = "//label[text()='ICD Codes']/../input";
         String topmostListItem = "//label[text()='ICD Codes']/../ul/li[2]/a";
