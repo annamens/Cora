@@ -3,6 +3,8 @@ package com.adaptivebiotech.cora.ui.order;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
+import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
+import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.seleniumfy.test.utils.Timeout;
 
 public class OrderDetailTDetect extends Diagnostic {
@@ -109,6 +111,18 @@ public class OrderDetailTDetect extends Diagnostic {
     public String getCollectionDate () {
         String css = "[formcontrolname=\"collectionDate\"]";
         return readInput (css);
+    }
+    
+    public Race getPatientRace () {
+        String xpath = "//label[text()='Race']/../div[1]";
+        String raceText = getText (xpath);
+        return Race.getRace (raceText);
+    }
+
+    public Ethnicity getPatientEthnicity () {
+        String xpath = "//label[text()='Ethnicity']/../div[1]";
+        String ethnicityText = getText (xpath);
+        return Ethnicity.getEthnicity (ethnicityText);
     }
 
 }
