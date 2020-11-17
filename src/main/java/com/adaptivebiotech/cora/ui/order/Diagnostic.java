@@ -80,12 +80,12 @@ public class Diagnostic extends CoraPage {
         waitForAjaxCalls ();
     }
 
-    // TODO - check title of popup module
     public void releaseReportWithSignatureRequired () {
         String releaseReport = "[ng-click=\"ctrl.releaseReport()\"]";
         String usernameField = "#userName";
         String passwordField = "#userPassword";
         String button = "[ng-click=\"ctrl.ok();\"]";
+        String reportDeliveryStatus = "[ng-bind='::reportEntry.deliveryStatus']";
         // click release report, wait for popup, enter username and pw, then click release
         // button in popup
         assertTrue (click (releaseReport));
@@ -96,6 +96,10 @@ public class Diagnostic extends CoraPage {
         assertTrue (click (button));
         pageLoading ();
 
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        while (!timer.Timedout () && ! (isTextInElement (reportDeliveryStatus, "Finished"))) {
+            timer.Wait ();
+        }
     }
 
     public void closeReportPreview () {
@@ -867,4 +871,5 @@ public class Diagnostic extends CoraPage {
         String css = "[" + (Pending.equals (state) ? "ng-model" : "notes") + "='ctrl.orderEntry.order.notes']";
         return Pending.equals (state) ? readInput (css) : getText (css);
     }
+
 }

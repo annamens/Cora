@@ -24,8 +24,7 @@ public class OrderDetailTDetect extends Diagnostic {
     }
 
     public void clickEditPatientDemographic () {
-        // https://sdlc.dna.corp.adaptivebiotech.com:8443/browse/SR-5743
-        String xpath = "//button[text()='Edit Patient Demographic']";
+        String xpath = "//button[text()='Edit Patient Demographics']";
         assertTrue (click (xpath));
         String expectedTitle = "Edit Patient Demographics";
         assertTrue (isTextInElement (popupTitle, expectedTitle));
