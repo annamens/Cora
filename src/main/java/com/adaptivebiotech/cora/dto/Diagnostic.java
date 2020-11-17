@@ -30,6 +30,7 @@ public final class Diagnostic {
     public Task             task;
     public Stage            fastForwardStatus;
     public Boolean          contaminated;
+    public Boolean          waitForResults;
 
     public OrderTest findOrderTest (Assay assay) {
         return orderTests.parallelStream ()

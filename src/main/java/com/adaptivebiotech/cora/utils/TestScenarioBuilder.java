@@ -129,8 +129,8 @@ public class TestScenarioBuilder {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
             HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                                       HttpResponse.class);
-            url = coraTestUrl + "/cora/api/v1/specimens/" + response.specimenId;
-            diagnostic.orderTests = asList (getOrderTest (mapper.readValue (get (url), Specimen.class).specimenNumber));
+            url = coraTestUrl + "/cora/api/v1/orderTests/order/" + response.orderId;
+            diagnostic.orderTests = asList (mapper.readValue (get (url), OrderTest[].class));
             return response;
         } catch (Exception e) {
             throw new RuntimeException (e);
@@ -142,8 +142,8 @@ public class TestScenarioBuilder {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
             HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                                       HttpResponse.class);
-            url = coraTestUrl + "/cora/api/v1/specimens/" + response.specimenId;
-            diagnostic.orderTests = asList (getOrderTest (mapper.readValue (get (url), Specimen.class).specimenNumber));
+            url = coraTestUrl + "/cora/api/v1/orderTests/order/" + response.orderId;
+            diagnostic.orderTests = asList (mapper.readValue (get (url), OrderTest[].class));
             return response;
         } catch (Exception e) {
             throw new RuntimeException (e);
