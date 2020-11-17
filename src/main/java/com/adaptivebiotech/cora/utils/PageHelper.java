@@ -1,5 +1,7 @@
 package com.adaptivebiotech.cora.utils;
 
+import static java.util.EnumSet.allOf;
+
 /**
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
@@ -64,6 +66,10 @@ public class PageHelper {
 
         public final String text;
 
+        public static Ethnicity getEthnicity (String text) {
+            return allOf (Ethnicity.class).parallelStream ().filter (e -> e.text.equals (text)).findAny ().get ();
+        }
+
         private Ethnicity (String text) {
             this.text = text;
         }
@@ -81,10 +87,15 @@ public class PageHelper {
 
         public final String text;
 
+        public static Race getRace (String text) {
+            return allOf (Race.class).parallelStream ().filter (r -> r.text.equals (text)).findAny ().get ();
+        }
+
         private Race (String text) {
             this.text = text;
         }
 
+        
     }
 
     
