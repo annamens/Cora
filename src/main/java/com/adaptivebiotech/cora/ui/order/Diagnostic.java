@@ -80,7 +80,6 @@ public class Diagnostic extends CoraPage {
         waitForAjaxCalls ();
     }
 
-    // TODO - check title of popup module
     public void releaseReportWithSignatureRequired () {
         String releaseReport = "[ng-click=\"ctrl.releaseReport()\"]";
         String usernameField = "#userName";
@@ -867,4 +866,5 @@ public class Diagnostic extends CoraPage {
         String css = "[" + (Pending.equals (state) ? "ng-model" : "notes") + "='ctrl.orderEntry.order.notes']";
         return Pending.equals (state) ? readInput (css) : getText (css);
     }
+
 }

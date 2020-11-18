@@ -75,5 +75,10 @@ public class OrderStatus extends Diagnostic {
         }
         return false;
     }
+    
+    public String getOrderStatusText () {
+        String status = "[ng-bind='ctrl.orderEntry.order.status']";
+        return getText (status);
+    }
 
 }
