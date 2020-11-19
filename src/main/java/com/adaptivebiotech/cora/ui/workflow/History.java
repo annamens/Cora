@@ -44,8 +44,7 @@ public class History extends CoraPage {
     }
 
     public String getWorkflowId () {
-        String regexp = "([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})(.*)";
-        return getText ("//th[text()='Workflow ID:']/../td").replaceAll (regexp, "$1");
+        return readInput ("#claimDiv [name='workflowId']");
     }
 
     public String getFileLocation (String filename) {

@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static java.time.ZonedDateTime.parse;
 import static java.util.Comparator.comparing;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,8 +33,8 @@ public final class Diagnostic {
 
     public OrderTest findOrderTest (Assay assay) {
         return orderTests.parallelStream ()
-                         .filter (ot -> ot.testName.equals (assay.test))
-                         .sorted (comparing ( (OrderTest ot) -> parse (ot.lastActivity)).reversed ())
+                         .filter (ot -> assay.test.equals (ot.test.name))
+                         .sorted (comparing ( (OrderTest ot) -> ot.modified).reversed ())
                          .findFirst ().get ();
     }
 

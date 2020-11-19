@@ -11,23 +11,9 @@ import com.fasterxml.jackson.annotation.JsonAlias;
  */
 public final class Workflow {
 
-    public String  sampleName;
-    public String  workflowId;
-    public Integer sampleCount;
-    public String  flowcell;
-    public String  workspaceName;
-    public String  lastAcceptedTsvPath;
-    public String  lastFlowcellId;
-    public Boolean disableHiFreqSave;
-    public Boolean disableHiFreqSharing;
-
-    public Workflow () {}
-
-    public Workflow (String flowcell, String workspaceName, String sampleName) {
-        this.flowcell = flowcell;
-        this.workspaceName = workspaceName;
-        this.sampleName = sampleName;
-    }
+    public String             id;
+    public String             name;
+    public WorkflowProperties workflowProperties;
 
     @Override
     public String toString () {
@@ -36,6 +22,19 @@ public final class Workflow {
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
+    }
+
+    public static final class WorkflowProperties {
+
+        public String  flowcell;
+        public String  sampleName;
+        public String  workspaceName;
+        public String  lastAcceptedTsvPath;
+        public String  lastFlowcellId;
+        public String  tsvOverridePath;
+        public Boolean disableHiFreqSave;
+        public Boolean disableHiFreqSharing;
+        public Boolean skipNorthQCToContam;
     }
 
     public static final class Stage {

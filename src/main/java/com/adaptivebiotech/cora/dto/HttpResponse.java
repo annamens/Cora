@@ -19,7 +19,7 @@ public final class HttpResponse {
     public boolean          received;
     public Errors           errors;
     public List <Container> containers;
-    public List <Container> testIds;
+    public List <String>    testIds;
 
     @Override
     public String toString () {
