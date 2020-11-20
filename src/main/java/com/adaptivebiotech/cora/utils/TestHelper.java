@@ -1,6 +1,5 @@
 package com.adaptivebiotech.cora.utils;
 
-import static com.adaptivebiotech.test.utils.PageHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.CommercialInsurance;
@@ -9,6 +8,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Chil
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Other;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Spouse;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.Inpatient;
+import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.String.format;
@@ -148,7 +148,7 @@ public class TestHelper {
         patient.fullname = String.join (" ", patient.firstName, patient.lastName);
         patient.dateOfBirth = "07/27/1984";
         patient.gender = "Male";
-        patient.patientCode = "1";
+        patient.patientCode = 1;
         patient.mrn = "mrn-000001";
         patient.insurance1 = insurance1 ();
         patient.insurance1.groupNumber = null;

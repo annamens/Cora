@@ -11,9 +11,9 @@ import com.fasterxml.jackson.annotation.JsonAlias;
  */
 public final class Workflow {
 
-    public String sampleName;
-    public String workflowId;
-    public int    sampleCount;
+    public String             id;
+    public String             name;
+    public WorkflowProperties workflowProperties;
 
     @Override
     public String toString () {
@@ -22,6 +22,19 @@ public final class Workflow {
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
+    }
+
+    public static final class WorkflowProperties {
+
+        public String  flowcell;
+        public String  sampleName;
+        public String  workspaceName;
+        public String  lastAcceptedTsvPath;
+        public String  lastFlowcellId;
+        public String  tsvOverridePath;
+        public Boolean disableHiFreqSave;
+        public Boolean disableHiFreqSharing;
+        public Boolean skipNorthQCToContam;
     }
 
     public static final class Stage {
@@ -36,11 +49,11 @@ public final class Workflow {
         public String      drilldownUrl;
         public String      timestamp;
         public String      actor;
-        public boolean     hasFinished;
-        public boolean     isCurrent;
-        public boolean     hasProblems;
-        public int         requeueCount;
-        public boolean     current;
+        public Boolean     hasFinished;
+        public Boolean     isCurrent;
+        public Boolean     hasProblems;
+        public Integer     requeueCount;
+        public Boolean     current;
 
         @Override
         public String toString () {

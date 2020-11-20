@@ -14,6 +14,16 @@ import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 public class Billing extends Diagnostic {
+    
+    private String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
+
+    public void waitForBillingMismatchWarningVisible() {
+        assertTrue (waitUntilVisible (billingMismatchWarning));
+    }
+    
+    public String getBillingMismatchWarningText() {
+        return getText(billingMismatchWarning);
+    }
 
     public void selectBilling (ChargeType type) {
         assertTrue (clickAndSelectValue ("[name='billingType']", "string:" + type));
@@ -156,5 +166,10 @@ public class Billing extends Diagnostic {
             enterInsurance1Hospital (patient.insurance1.billingInstitution);
             enterInsurance1Discharge (patient.insurance1.dischargeDate);
         }
+    }
+    
+    public void clickCompareAndSelectBilling () {
+        String css = "[ng-click=\"ctrl.showCompareBillingModal()\"";
+        assertTrue (click (css));
     }
 }

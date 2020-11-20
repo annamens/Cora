@@ -1,5 +1,7 @@
 package com.adaptivebiotech.cora.utils;
 
+import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.CDx;
+import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderCategory.Diagnostic;
@@ -20,6 +22,7 @@ import static java.util.Collections.addAll;
 import static org.testng.Assert.fail;
 import com.adaptivebiotech.cora.dto.AccountsResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse;
+import com.adaptivebiotech.cora.dto.AssayResponse.Test;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
@@ -36,6 +39,7 @@ import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.SpecimenProperties;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
@@ -47,16 +51,31 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class TestScenarioBuilder {
 
-    public static AssayResponse coraTests = getTests ();
+    private static final long   millisRetry  = 3000000l;      // 50mins
+    private static final long   waitRetry    = 5000l;         // 5sec
+    public static AssayResponse coraCDxTests = getTests (CDx);
+    public static AssayResponse coraTDxTests = getTests (TDx);
 
-    public synchronized static OrderTest getTest (Assay assay) {
-        return coraTests.get (assay);
+    public synchronized static Test getCDxTest (Assay assay) {
+        return coraCDxTests.get (assay);
     }
 
-    public synchronized static AssayResponse getTests () {
+    public synchronized static Test getTDxTest (Assay assay) {
+        return coraTDxTests.get (assay);
+    }
+
+    public synchronized static AssayResponse getTests (OrderType type) {
         try {
-            String url = coraTestUrl + "/cora/api/v1/tests?categoryId=63780203-caeb-483d-930c-8392afb5d927";
-            return mapper.readValue (get (url), AssayResponse.class);
+            String id = null;
+            switch (type) {
+            case CDx:
+                id = "63780203-caeb-483d-930c-8392afb5d927";
+                break;
+            case TDx:
+                id = "f0ac48ed-7527-4e1b-9a45-afb4c58e680d";
+                break;
+            }
+            return mapper.readValue (get (coraTestUrl + "/cora/api/v1/tests?categoryId=" + id), AssayResponse.class);
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
@@ -79,8 +98,6 @@ public class TestScenarioBuilder {
 
     public synchronized static OrderTest[] getOrderTest (String term) {
         try {
-            long millisRetry = 3000000l; // 50mins
-            long waitRetry = 5000l; // 5sec
             String url = coraTestUrl + "/cora/api/v1/orderTests/search?search=" + term + "&sort=DueDate&limit=500";
             OrderTest[] tests = mapper.readValue (get (url), OrderTest[].class);
             Timeout timer = new Timeout (millisRetry, waitRetry);
@@ -108,13 +125,50 @@ public class TestScenarioBuilder {
         }
     }
 
+    private synchronized static OrderTest[] waitForOrderReady (String orderId) {
+        try {
+            String url = coraTestUrl + "/cora/api/v1/orderTests/order/" + orderId;
+            OrderTest[] tests = mapper.readValue (get (url), OrderTest[].class);
+            Timeout timer = new Timeout (millisRetry, waitRetry);
+            while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.sampleName == null))) {
+                timer.Wait ();
+                tests = mapper.readValue (get (url), OrderTest[].class);
+            }
+            if (tests.length == 0)
+                fail ("unable to create order");
+            if (stream (tests).anyMatch (ot -> ot.sampleName == null))
+                fail ("sampleName is null");
+            for (OrderTest test : tests)
+                if (test.specimen.subjectCode == null) {
+                    url = coraTestUrl + "/cora/api/v1/orderTests/patientOrSubjectCode/" + test.id;
+                    test.specimen.subjectCode = mapper.readValue (get (url), Integer.class);
+                }
+
+            return tests;
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
     public synchronized static HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
             HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                                       HttpResponse.class);
-            url = coraTestUrl + "/cora/api/v1/specimens/" + response.specimenId;
-            diagnostic.orderTests = asList (getOrderTest (mapper.readValue (get (url), Specimen.class).specimenNumber));
+            diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    public synchronized static HttpResponse newCovidOrder (Diagnostic diagnostic) {
+        try {
+            String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
+            HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
+                                                      HttpResponse.class);
+            url = coraTestUrl + "/cora/api/v1/orderTests/order/" + response.orderId;
+            diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
             return response;
         } catch (Exception e) {
             throw new RuntimeException (e);
@@ -142,6 +196,9 @@ public class TestScenarioBuilder {
         Stage stage = new Stage ();
         stage.stageName = name;
         stage.stageStatus = status;
+        stage.subStatusCode = "";
+        stage.subStatusMessage = "";
+        stage.drilldownUrl = "";
         stage.actor = "selenium test";
         return stage;
     }
@@ -161,6 +218,7 @@ public class TestScenarioBuilder {
         shipment.status = "IntakeComplete";
         shipment.arrivalDate = new int[] { 2019, 4, 15, 11, 11, 59, 639 };
         shipment.carrier = "UPS";
+        shipment.trackingNumber = "";
         shipment.condition = Ambient;
         shipment.expectedRecordType = "Order";
 
@@ -196,6 +254,7 @@ public class TestScenarioBuilder {
         diagnostic.specimen = specimen;
         diagnostic.shipment = shipment;
         diagnostic.task = workflowNanny ();
+        diagnostic.waitForResults = true;
         return diagnostic;
     }
 

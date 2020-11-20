@@ -3,9 +3,13 @@ package com.adaptivebiotech.cora.dto;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.getAssay;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.util.stream.Collectors.toList;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.adaptivebiotech.cora.dto.AssayResponse.Test;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
+import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
@@ -14,6 +18,7 @@ import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author Harry Soehalim
@@ -60,9 +65,9 @@ public final class Orders {
         public String           category_id;
         public String           name;
         public OrderStatus      status;
-        public String           salesforce_order_id;
-        public String           salesforce_order_number;
-        public String           mrn;
+        public String           salesforceOrderId;
+        public String           salesforceOrderNumber;
+        public Object           mrn;
         public OrderProperties  properties;
         public String           version;
         public String           patient_snapshot;
@@ -79,9 +84,9 @@ public final class Orders {
         public Physician        physician;
         public Patient          patient;
         public List <String>    icdcodes;
-        public Specimen         specimen;
+        public Specimen         specimenDto;
         public String           reportDate;
-        public String           expected_test_type;
+        public String           expectedTestType;
         public List <OrderTest> tests = new ArrayList <> ();
         public List <String>    doraAttachments;
         public List <String>    orderAttachments;
@@ -89,6 +94,10 @@ public final class Orders {
         public String           notes;
         public Alert            alert;
         public Workflow         workflow;
+        public OrderType        orderType;
+        public Boolean          postToImmunoSEQ;
+        public ChargeType       billingType;
+        public DeliveryType     specimenDeliveryType;
 
         @Override
         public String toString () {
@@ -119,35 +128,84 @@ public final class Orders {
             this.testId = testId;
         }
 
-        public String         id;
-        public String         key;
-        public String         orderId;
-        public String         orderName;
-        public String         testCode;
-        public String         testName;
-        public String         testId;
-        public String         tsvPath;
-        public Assay          assay;
-        public Boolean        selected;
-        public String         name;
-        public String         workflowName;
-        public String         workflowId;
-        public OrderCategory  category;
-        public String         customerName;
-        public OrderStatus    status;
-        public StageName      stage;
-        public StageStatus    stageStatus;
-        public StageSubstatus subStatusCode;
-        public String         subStatusMessage;
-        public String         dueDate;
-        public String         drilldownUrl;
-        public String         specimenNumber;
-        public String         patientCode;
-        public String         regulationLevel;
-        public String         lastActivity;
-        public String         finished;
-        public List <Stage>   stages;
-        public Specimen       specimen;
+        public String             id;
+        public Integer            version;
+        @JsonFormat (shape = JsonFormat.Shape.STRING)
+        public LocalDateTime      created;
+        @JsonFormat (shape = JsonFormat.Shape.STRING)
+        public LocalDateTime      modified;
+        public String             createdBy;
+        public String             modifiedBy;
+        public OrderProperties    properties;
+        public Test               test;
+        public Specimen           specimen;
+        public String             sampleName;
+        public OrderStatus        status;
+        public String             dueDate;
+        public String             qcType;
+        public String             tags;
+        public String             sampleWellLocation;
+        public String             currentQueueDate;
+        public String             boxId;
+        public String             boxLocation;
+        public String             isRegulated;
+        public String             doNotDilute;
+        public String             flag;
+        public String             preUniquifiedSampleName;
+        public String             originalQcType;
+        public String             directives;
+        public String             isManualSelection;
+        public String             preManifestExternalContainerId;
+        public String             plateId;
+        public Double             desiredDnaConcentration;
+        public String             percentTCell;
+        public String             gdnaConcentration;
+        public String             gdnaRatio;
+        public String             cdnaConcentration;
+        public String             cdnaRatio;
+        public String             cellCount;
+        public String             cellSort;
+        public String             actualResolution;
+        public String             assayMapItem;
+        public String             pipelineConfigOverride;
+        public String             sampleSourceForManifest;
+        public String             currentQueue;
+        public String             containerType;
+        public String             notes;
+        public Boolean            tdx;
+        public String             key;
+        public String             categoryType;
+        public String             orderName;
+        public String             orderId;
+        public String             orderNumber;
+        public String             displayOrderNumber;
+        public String             testCode;
+        public String             testName;
+        public String             testId;
+        public String             tsvPath;
+        public Assay              assay;
+        public Boolean            selected;
+        public String             name;
+        public String             workflowName;
+        public String             workflowId;
+        public OrderCategory      category;
+        public String             customerName;
+        public StageName          stage;
+        public StageStatus        stageStatus;
+        public StageSubstatus     subStatusCode;
+        public String             subStatusMessage;
+        public String             drilldownUrl;
+        public String             specimenNumber;
+        public String             patient_code;
+        public String             regulationLevel;
+        public String             lastActivity;
+        public String             finished;
+        public List <Stage>       stages;
+        public WorkflowProperties workflowProperties;
+        public OrderType          diagnosticOrderType;
+        public Integer            numTests;
+        public Integer            percentComplete;
+        public String             salesforceOrderNumber;
 
         public Assay findAssay () {
             return assay == null ? name == null ? null : getAssay (name) : assay;
@@ -196,6 +254,7 @@ public final class Orders {
         public Specimen         specimen;
         public List <OrderTest> tests = new ArrayList <> ();
         public String           alertTypeId;
+        public String           alertTypeName;
         public String           referencedEntityId;
         public List <String>    recipients;
 

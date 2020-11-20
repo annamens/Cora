@@ -1,8 +1,6 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static java.lang.Boolean.FALSE;
-import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
@@ -47,7 +45,7 @@ public final class Containers {
         public String           orderId;
         public Boolean          isActive;
         public Boolean          contentsLocked;
-        public Boolean          depleted = FALSE;
+        public Boolean          depleted;
         public Boolean          usesBarcodeAsId;
         public String           barcode;
         public String           specimenId;
@@ -57,7 +55,7 @@ public final class Containers {
         public Container        root;
         public Integer          capacity;
         public String           shipmentNumber;
-        public List <Container> children = new ArrayList <> ();
+        public List <Container> children;
 
         @Override
         public String toString () {

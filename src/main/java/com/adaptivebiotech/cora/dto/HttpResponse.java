@@ -10,6 +10,7 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
  */
 public final class HttpResponse {
 
+    public String           orderId;
     public String           accountId;
     public String           patientId;
     public String           specimenId;
@@ -18,6 +19,7 @@ public final class HttpResponse {
     public boolean          received;
     public Errors           errors;
     public List <Container> containers;
+    public List <String>    testIds;
 
     @Override
     public String toString () {

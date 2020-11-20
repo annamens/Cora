@@ -42,4 +42,9 @@ public class ShipmentList extends CoraPage {
         assertTrue (navigateTo (coraTestUrl + url));
         pageLoading ();
     }
+    
+    public void clickShipment (String shipmentId) {
+        assertTrue (click ("//table//*[text()='" + shipmentId + "']"));
+        pageLoading ();
+    }
 }

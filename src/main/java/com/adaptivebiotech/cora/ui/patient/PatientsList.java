@@ -32,11 +32,18 @@ public class PatientsList extends CoraPage {
         return waitForElements (".list-section tbody tr").stream ().map (tr -> {
             String[] tmp = getText (tr, "td:nth-child(2)").split (" ");
             Patient p = new Patient ();
-            p.patientCode = getText (tr, "td:nth-child(1)");
+            p.patientCode = Integer.valueOf (getText (tr, "td:nth-child(1)"));
             p.firstName = tmp[0];
             p.lastName = tmp[1];
             p.dateOfBirth = getText (tr, "td:nth-child(3)");
             return p;
         }).collect (toList ());
+    }
+    
+    public void clickFirstPatient () {
+        // ick
+        String css = "patient-list > div > table > tbody > tr > td:nth-child(1) > a";
+        assertTrue (click (css));
+        pageLoading ();
     }
 }

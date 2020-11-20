@@ -4,6 +4,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.lang.String.format;
 import java.time.LocalDateTime;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
+import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public final class Physician {
 
     public String        id;
-    public int           version;
+    public Integer       version;
     @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime created;
     @JsonFormat (shape = JsonFormat.Shape.STRING)
@@ -39,11 +40,12 @@ public final class Physician {
     public String        manageAccessEmails;
     public String        shipmentEmails;
     public String        portal_emails;
+    public OrderType     productFamilies;
     public String        email;
     public String        psychePhysicianCode;
-    public boolean       allowInternalOrderUpload;
-    public boolean       medicareEnrolled;
-    public boolean       needsCLEPApproval;
+    public Boolean       allowInternalOrderUpload;
+    public Boolean       medicareEnrolled;
+    public Boolean       needsCLEPApproval;
     public String        password;
     public String        key;
 

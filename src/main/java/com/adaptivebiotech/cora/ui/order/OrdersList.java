@@ -101,8 +101,8 @@ public class OrdersList extends CoraPage {
             pageLoading ();
             timer.Wait ();
             orders = tryGettingOrderTests ();
-        } while (!timer.Timedout () && orders.list.parallelStream ().anyMatch (o -> o.workflow.sampleName == null));
-        if (orders.list.parallelStream ().anyMatch (o -> o.workflow.sampleName == null))
+        } while (!timer.Timedout () && orders.list.parallelStream ().anyMatch (o -> o.workflow.name == null));
+        if (orders.list.parallelStream ().anyMatch (o -> o.workflow.name == null))
             fail ("orderTest workflowName is null");
 
         return orders;
@@ -126,11 +126,11 @@ public class OrdersList extends CoraPage {
             o.tests.add (new OrderTest (null, getAssay (getText (el, "[ng-bind='::orderTest.testName']")), true));
 
             Patient patient = new Patient ();
-            patient.patientCode = getText (el, "[ng-bind='::orderTest.patientCode']");
+            patient.patientCode = Integer.valueOf (getText (el, "[ng-bind='::orderTest.patientCode']"));
             o.patient = patient;
 
             Workflow workflow = new Workflow ();
-            workflow.sampleName = getText (el, "[ng-bind='::orderTest.workflowName']");
+            workflow.name = getText (el, "[ng-bind='::orderTest.workflowName']");
             o.workflow = workflow;
             o.order_number = o.name.replaceFirst (".*-D-", "D-");
             return o;
