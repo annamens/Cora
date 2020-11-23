@@ -18,17 +18,16 @@ import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
-import static java.util.Collections.addAll;
 import static org.testng.Assert.fail;
 import com.adaptivebiotech.cora.dto.AccountsResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse;
-import com.adaptivebiotech.cora.dto.AssayResponse.Test;
+import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
+import com.adaptivebiotech.cora.dto.Diagnostic.Order;
 import com.adaptivebiotech.cora.dto.Diagnostic.Task;
 import com.adaptivebiotech.cora.dto.HttpResponse;
-import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -56,11 +55,11 @@ public class TestScenarioBuilder {
     public static AssayResponse coraCDxTests = getTests (CDx);
     public static AssayResponse coraTDxTests = getTests (TDx);
 
-    public synchronized static Test getCDxTest (Assay assay) {
+    public synchronized static CoraTest getCDxTest (Assay assay) {
         return coraCDxTests.get (assay);
     }
 
-    public synchronized static Test getTDxTest (Assay assay) {
+    public synchronized static CoraTest getTDxTest (Assay assay) {
         return coraTDxTests.get (assay);
     }
 
@@ -113,6 +112,8 @@ public class TestScenarioBuilder {
             for (OrderTest test : tests) {
                 url = coraTestUrl + "/cora/api/v1/specimens/specimenNumber/" + test.specimenNumber;
                 test.specimen = mapper.readValue (get (url), Specimen.class);
+                test.test = new CoraTest ();
+                test.test.name = test.testName;
                 if (test.specimen.subjectCode == null) {
                     url = coraTestUrl + "/cora/api/v1/orderTests/patientOrSubjectCode/" + test.id;
                     test.specimen.subjectCode = mapper.readValue (get (url), Integer.class);
@@ -162,6 +163,19 @@ public class TestScenarioBuilder {
         }
     }
 
+    public synchronized static HttpResponse createPortalJob (Diagnostic diagnostic) {
+        try {
+            String url = coraTestUrl + "/cora/api/v1/test/scenarios/createPortalJob";
+            HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
+                                                      HttpResponse.class);
+            url = coraTestUrl + "/cora/api/v1/specimens/" + response.specimenId;
+            diagnostic.orderTests = asList (getOrderTest (mapper.readValue (get (url), Specimen.class).specimenNumber));
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
     public synchronized static HttpResponse newCovidOrder (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
@@ -184,11 +198,11 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static Order order (OrderProperties properties, OrderTest... tests) {
+    public synchronized static Order order (OrderProperties properties, CoraTest... tests) {
         Order order = new Order ();
         order.name = "Selenium Test Order";
         order.properties = properties;
-        addAll (order.tests, tests);
+        order.tests = asList (tests);
         return order;
     }
 

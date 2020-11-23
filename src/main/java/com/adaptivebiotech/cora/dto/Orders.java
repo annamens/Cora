@@ -1,14 +1,12 @@
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.getAssay;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.util.stream.Collectors.toList;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import com.adaptivebiotech.cora.dto.AssayResponse.Test;
+import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
-import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
@@ -99,6 +97,23 @@ public final class Orders {
         public ChargeType       billingType;
         public DeliveryType     specimenDeliveryType;
 
+        // for /cora/api/v1/orders/search
+        public OrderCategory    category;
+        public String           customerName;
+        public String           displayOrderNumber;
+        public String           orderNumber;
+        @JsonFormat (shape = JsonFormat.Shape.STRING)
+        public LocalDateTime    created;
+        public String           createdBy;
+        public Integer          numTests;
+        public Double           percentComplete;
+        public OrderType        diagnosticOrderType;
+        @JsonFormat (shape = JsonFormat.Shape.STRING)
+        public LocalDateTime    lastActivity;
+        public List <Stage>     stages;
+        public String           patient_code;
+        public String           key;
+
         @Override
         public String toString () {
             try {
@@ -109,106 +124,90 @@ public final class Orders {
         }
     }
 
+    /*
+     * Note: based on api: /cora/api/v1/orderTests/order/:orderId
+     */
     public static final class OrderTest {
+
+        public String          id;
+        public Integer         version;
+        @JsonFormat (shape = JsonFormat.Shape.STRING)
+        public LocalDateTime   created;
+        @JsonFormat (shape = JsonFormat.Shape.STRING)
+        public LocalDateTime   modified;
+        public String          createdBy;
+        public String          modifiedBy;
+        public OrderProperties properties;
+        public CoraTest        test;
+        public Specimen        specimen;
+        public String          sampleName;
+        public OrderStatus     status;
+        public String          dueDate;
+        public String          qcType;
+        public String          tags;
+        public String          sampleWellLocation;
+        public String          currentQueueDate;
+        public String          boxId;
+        public String          boxLocation;
+        public String          isRegulated;
+        public String          doNotDilute;
+        public String          flag;
+        public String          preUniquifiedSampleName;
+        public String          originalQcType;
+        public String          directives;
+        public String          isManualSelection;
+        public String          preManifestExternalContainerId;
+        public String          plateId;
+        public Double          desiredDnaConcentration;
+        public String          percentTCell;
+        public String          gdnaConcentration;
+        public String          gdnaRatio;
+        public String          cdnaConcentration;
+        public String          cdnaRatio;
+        public String          cellCount;
+        public String          cellSort;
+        public String          actualResolution;
+        public String          assayMapItem;
+        public String          pipelineConfigOverride;
+        public String          sampleSourceForManifest;
+        public String          currentQueue;
+        public String          containerType;
+        public String          notes;
+        public Boolean         tdx;
+        public String          key;
+        public String          categoryType;
+        public String          orderName;
+
+        // for /cora/api/v1/orderTests/search
+        public String          orderId;
+        public String          testCode;
+        public String          testName;
+        public String          workflowName;
+        public String          workflowId;
+        public OrderCategory   category;
+        public String          customerName;
+        public StageName       stage;
+        public StageStatus     stageStatus;
+        public StageSubstatus  subStatusCode;
+        public String          subStatusMessage;
+        public String          drilldownUrl;
+        public String          specimenNumber;
+        public String          patientCode;
+        public String          regulationLevel;
+        public String          lastActivity;
+        public String          finished;
+        public List <Stage>    stages;
+
+        // for UI
+        public Assay           assay;
+        public Boolean         selected;
 
         public OrderTest () {}
 
-        public OrderTest (String testId, Assay assay, boolean selected) {
-            this.testId = testId;
-            this.assay = assay;
+        public OrderTest (Assay assay, boolean selected) {
+            this.test = new CoraTest ();
+            this.test.name = assay.test;
             this.selected = selected;
-        }
-
-        public OrderTest (String testId, String tsvPath) {
-            this.testId = testId;
-            this.tsvPath = tsvPath;
-        }
-
-        public OrderTest (String testId) {
-            this.testId = testId;
-        }
-
-        public String             id;
-        public Integer            version;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
-        public LocalDateTime      created;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
-        public LocalDateTime      modified;
-        public String             createdBy;
-        public String             modifiedBy;
-        public OrderProperties    properties;
-        public Test               test;
-        public Specimen           specimen;
-        public String             sampleName;
-        public OrderStatus        status;
-        public String             dueDate;
-        public String             qcType;
-        public String             tags;
-        public String             sampleWellLocation;
-        public String             currentQueueDate;
-        public String             boxId;
-        public String             boxLocation;
-        public String             isRegulated;
-        public String             doNotDilute;
-        public String             flag;
-        public String             preUniquifiedSampleName;
-        public String             originalQcType;
-        public String             directives;
-        public String             isManualSelection;
-        public String             preManifestExternalContainerId;
-        public String             plateId;
-        public Double             desiredDnaConcentration;
-        public String             percentTCell;
-        public String             gdnaConcentration;
-        public String             gdnaRatio;
-        public String             cdnaConcentration;
-        public String             cdnaRatio;
-        public String             cellCount;
-        public String             cellSort;
-        public String             actualResolution;
-        public String             assayMapItem;
-        public String             pipelineConfigOverride;
-        public String             sampleSourceForManifest;
-        public String             currentQueue;
-        public String             containerType;
-        public String             notes;
-        public Boolean            tdx;
-        public String             key;
-        public String             categoryType;
-        public String             orderName;
-        public String             orderId;
-        public String             orderNumber;
-        public String             displayOrderNumber;
-        public String             testCode;
-        public String             testName;
-        public String             testId;
-        public String             tsvPath;
-        public Assay              assay;
-        public Boolean            selected;
-        public String             name;
-        public String             workflowName;
-        public String             workflowId;
-        public OrderCategory      category;
-        public String             customerName;
-        public StageName          stage;
-        public StageStatus        stageStatus;
-        public StageSubstatus     subStatusCode;
-        public String             subStatusMessage;
-        public String             drilldownUrl;
-        public String             specimenNumber;
-        public String             patient_code;
-        public String             regulationLevel;
-        public String             lastActivity;
-        public String             finished;
-        public List <Stage>       stages;
-        public WorkflowProperties workflowProperties;
-        public OrderType          diagnosticOrderType;
-        public Integer            numTests;
-        public Integer            percentComplete;
-        public String             salesforceOrderNumber;
-
-        public Assay findAssay () {
-            return assay == null ? name == null ? null : getAssay (name) : assay;
         }
 
         @Override

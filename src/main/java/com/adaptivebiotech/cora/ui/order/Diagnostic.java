@@ -45,13 +45,13 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class Diagnostic extends CoraPage {
 
-    private final String   oEntry         = ".order-entry";
-    private final String   oDetail        = ".detail-sections";
-    private final String   assayEl        = "//span[@ng-bind='test.name' and text()='%s']";
+    private final String   oEntry             = ".order-entry";
+    private final String   oDetail            = ".detail-sections";
+    private final String   assayEl            = "//span[@ng-bind='test.name' and text()='%s']";
     private final String   reportNotes        = "[ng-model=\"ctrl.reportEntry.notes\"]";
     private final String   additionalComments = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
-  
-    protected final String specimenNumber = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
+
+    protected final String specimenNumber     = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
 
     public Diagnostic () {
         staticNavBarHeight = 200;
@@ -205,7 +205,7 @@ public class Diagnostic extends CoraPage {
         String expectedModalTitle = "Test Selection Warning";
         this.enterPatientICD_Codes (icdCode);
         String actualText = waitForElementVisible ("[ng-bind-html=\"ctrl.dialogOptions.headerText\"]").getText ();
-        assertEquals(actualText, expectedModalTitle);
+        assertEquals (actualText, expectedModalTitle);
         assertTrue (click ("[data-ng-click='ctrl.ok();']"));
     }
 
@@ -253,6 +253,7 @@ public class Diagnostic extends CoraPage {
 
     public void clickReportTab (Assay assay) {
         assertTrue (click ("//a[text()='Report | " + assay.test + "']"));
+        pageLoading ();
         assertTrue (waitForElementInvisible ("[ng-show='ctrl.isLoadingPDF']"));
         assertTrue (waitUntilVisible (".order-test-report"));
     }
@@ -328,6 +329,13 @@ public class Diagnostic extends CoraPage {
     public void releaseReport (Assay assay, QC qc) {
         isOrderStatusPage ();
         clickReportTab (assay);
+
+        // for TCell
+        if (isElementVisible (".report-blocked-msg")) {
+            assertTrue (click ("[ng-click='ctrl.generateReport()']"));
+            pageLoading ();
+        }
+
         setQCstatus (qc);
         releaseReport ();
     }
@@ -699,7 +707,7 @@ public class Diagnostic extends CoraPage {
         boolean selected;
         if (Pending.equals (state)) {
             String labelPath = String.format (assayEl, assay.test);
-            if(isElementPresent(labelPath)) {
+            if (isElementPresent (labelPath)) {
                 selected = waitForElement (labelPath + "/../input").isSelected ();
             } else {
                 selected = false;
@@ -707,7 +715,7 @@ public class Diagnostic extends CoraPage {
         } else {
             selected = isElementPresent ("//*[@ng-bind='orderTest.test.name' and text()='" + assay.test + "']");
         }
-        return new OrderTest (null, assay, selected);
+        return new OrderTest (assay, selected);
     }
 
     public String getSampleName () {
