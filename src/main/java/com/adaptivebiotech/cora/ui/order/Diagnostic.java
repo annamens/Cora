@@ -17,6 +17,7 @@ import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
 import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Insurance;
@@ -331,7 +332,7 @@ public class Diagnostic extends CoraPage {
         clickReportTab (assay);
 
         // for TCell
-        if (isElementVisible (".report-blocked-msg")) {
+        if (!COVID19_DX_IVD.equals (assay) && isElementVisible (".report-blocked-msg")) {
             assertTrue (click ("[ng-click='ctrl.generateReport()']"));
             pageLoading ();
         }
