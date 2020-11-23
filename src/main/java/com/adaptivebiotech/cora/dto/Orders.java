@@ -231,6 +231,7 @@ public final class Orders {
         public OrderProperties (ChargeType BillingType, DeliveryType SpecimenDeliveryType) {
             this.BillingType = BillingType;
             this.SpecimenDeliveryType = SpecimenDeliveryType;
+            this.Icd10Codes = "C91.00";
         }
 
         @Override

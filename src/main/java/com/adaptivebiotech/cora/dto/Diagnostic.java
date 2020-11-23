@@ -100,7 +100,7 @@ public final class Diagnostic {
         public OrderStatus     status;
         public String          salesforceOrderId;
         public String          salesforceOrderNumber;
-        public Object          mrn;
+        public String          mrn;
         public Boolean         postToImmunoSEQ;
         public OrderProperties properties;
         public List <CoraTest> tests;

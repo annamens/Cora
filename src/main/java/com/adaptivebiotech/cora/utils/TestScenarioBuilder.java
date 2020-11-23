@@ -11,14 +11,19 @@ import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambien
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSeq2_WorkflowNanny;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
+import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.HttpClientHelper.body;
 import static com.seleniumfy.test.utils.HttpClientHelper.encodeUrl;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static org.testng.Assert.fail;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import com.adaptivebiotech.cora.dto.AccountsResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -50,10 +55,13 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class TestScenarioBuilder {
 
-    private static final long   millisRetry  = 3000000l;      // 50mins
-    private static final long   waitRetry    = 5000l;         // 5sec
-    public static AssayResponse coraCDxTests = getTests (CDx);
-    public static AssayResponse coraTDxTests = getTests (TDx);
+    private static final long         millisRetry        = 3000000l;             // 50mins
+    private static final long         waitRetry          = 5000l;                // 5sec
+    public static final LocalDateTime collectionDate     = now ().minusDays (10);
+    public static final LocalDateTime reconciliationDate = now ().minusDays (10);
+    public static final LocalDateTime arrivalDate        = now ().minusDays (15);
+    public static AssayResponse       coraCDxTests       = getTests (CDx);
+    public static AssayResponse       coraTDxTests       = getTests (TDx);
 
     public synchronized static CoraTest getCDxTest (Assay assay) {
         return coraCDxTests.get (assay);
@@ -220,9 +228,9 @@ public class TestScenarioBuilder {
     public synchronized static Specimen specimen () {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
-        specimen.collectionDate = new int[] { 2019, 4, 1, 18, 6, 59, 639 };
-        specimen.reconciliationDate = new int[] { 2019, 5, 10, 18, 6, 59, 639 };
-        specimen.properties = new SpecimenProperties ("2019-03-20");
+        specimen.collectionDate = dateToArrInt (collectionDate);
+        specimen.reconciliationDate = dateToArrInt (reconciliationDate);
+        specimen.properties = new SpecimenProperties (formatDt2.format (arrivalDate));
         return specimen;
     }
 
@@ -230,7 +238,7 @@ public class TestScenarioBuilder {
         Shipment shipment = new Shipment ();
         shipment.category = Diagnostic;
         shipment.status = "IntakeComplete";
-        shipment.arrivalDate = new int[] { 2019, 4, 15, 11, 11, 59, 639 };
+        shipment.arrivalDate = dateToArrInt (arrivalDate);
         shipment.carrier = "UPS";
         shipment.trackingNumber = "";
         shipment.condition = Ambient;
@@ -278,5 +286,10 @@ public class TestScenarioBuilder {
         techTransfer.flowcellId = "selenium-staging";
         techTransfer.specimens = asList (specimens);
         return new Research (techTransfer);
+    }
+
+    public synchronized static Integer[] dateToArrInt (LocalDateTime dateTime) {
+        DateTimeFormatter fmt = ofPattern ("uuuu-MM-dd-HH-mm-ss-SSS");
+        return asList (dateTime.format (fmt).split ("-")).stream ().map (Integer::valueOf).toArray (Integer[]::new);
     }
 }
