@@ -191,8 +191,8 @@ public class TestHelper {
         patient.gender = "Female";
         patient.mrn = "sel-123456";
         patient.dateOfBirth = "1999-01-01";
-        patient.race = AMERICAN_INDIAN.text;
-        patient.ethnicity = ASKED.text;
+        patient.race = AMERICAN_INDIAN;
+        patient.ethnicity = ASKED;
         patient.billingType = Client;
         patient.insurance1 = null;
         patient.insurance2 = null;
