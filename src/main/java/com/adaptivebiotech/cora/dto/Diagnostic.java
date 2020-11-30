@@ -4,10 +4,14 @@ import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.util.Comparator.comparing;
 import java.time.LocalDateTime;
 import java.util.List;
-import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
+import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
+import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
+import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
@@ -23,13 +27,13 @@ public final class Diagnostic {
     public Patient          patient;
     public Physician        provider;
     public Order            order;
-    public List <OrderTest> orderTests;
     public Specimen         specimen;
     public Shipment         shipment;
     public Task             task;
     public Stage            fastForwardStatus;
     public Boolean          contaminated;
     public Boolean          waitForResults;
+    public List <OrderTest> orderTests;
 
     public OrderTest findOrderTest (Assay assay) {
         return orderTests.parallelStream ()
@@ -90,6 +94,23 @@ public final class Diagnostic {
         }
     }
 
+    public static final class Order {
+
+        public String          name;
+        public OrderStatus     status;
+        public String          salesforceOrderId;
+        public String          salesforceOrderNumber;
+        public String          mrn;
+        public Boolean         postToImmunoSEQ;
+        public OrderProperties properties;
+        public List <CoraTest> tests;
+        public OrderType       orderType;
+        public ChargeType      billingType;
+        public DeliveryType    specimenDeliveryType;
+        public Specimen        specimenDto;
+        public String          expectedTestType;
+    }
+
     public static final class Task {
 
         public String      name;
@@ -99,14 +120,5 @@ public final class Diagnostic {
         public StageStatus stageStatus;
         public String      configId;
         public String      configName;
-
-        @Override
-        public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
-        }
     }
 }

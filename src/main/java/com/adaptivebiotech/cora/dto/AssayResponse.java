@@ -4,6 +4,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.HttpResponse.Meta;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -13,10 +14,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public final class AssayResponse {
 
-    public Meta        meta;
-    public List <Test> objects;
+    public Meta            meta;
+    public List <CoraTest> objects;
 
-    public Test get (Assay assay) {
+    public CoraTest get (Assay assay) {
         return objects.parallelStream ().filter (o -> assay.test.equals (o.name)).findAny ().get ();
     }
 
@@ -29,47 +30,53 @@ public final class AssayResponse {
         }
     }
 
-    public static final class Test {
+    public static final class CoraTest {
 
-        public String         id;
-        public Integer        version;
+        public String             id;
+        public Integer            version;
         @JsonFormat (shape = JsonFormat.Shape.STRING)
-        public LocalDateTime  created;
+        public LocalDateTime      created;
         @JsonFormat (shape = JsonFormat.Shape.STRING)
-        public LocalDateTime  modified;
-        public String         createdBy;
-        public String         modifiedBy;
-        public TestProperties properties;
-        public String         name;
-        public String         testFamily;
-        public String         testVersion;
-        public String         productCode;
-        public String         receptorFamily;
-        public String         dxType;
-        public String         pipelineConfigOverride;
-        public String         portalDisplayName;
-        public Boolean        miraEnabled;
-        public String         measure;
-        public Boolean        clonoSeqV1;
-        public Boolean        deprecated;
-        public String         minProcessingLevel;
-        public Boolean        allowMrdCoProcessing;
-        public Boolean        lineClearance;
-        public String         extractionFamily;
-        public String         patientReport;
-        public Boolean        checkExtractionBatch;
-        public Boolean        checkCloneShareContamination;
-        public String         moltagThreshold;
-        public Boolean        isIUO;
-        public Boolean        iuo;
-        public String         locus;
-        public String         regulationLevel;
-        public Boolean        qc;
-        public String         analyzerLocus;
-        public String         analyzerResolution;
-        public String         species;
-        public String         resolution;
-        public String         key;
+        public LocalDateTime      modified;
+        public String             createdBy;
+        public String             modifiedBy;
+        public TestProperties     properties;
+        public String             name;
+        public String             testFamily;
+        public String             testVersion;
+        public String             productCode;
+        public String             receptorFamily;
+        public String             dxType;
+        public String             pipelineConfigOverride;
+        public String             portalDisplayName;
+        public Boolean            miraEnabled;
+        public String             measure;
+        public Boolean            clonoSeqV1;
+        public Boolean            deprecated;
+        public String             minProcessingLevel;
+        public Boolean            allowMrdCoProcessing;
+        public Boolean            lineClearance;
+        public String             extractionFamily;
+        public String             patientReport;
+        public Boolean            checkExtractionBatch;
+        public Boolean            checkCloneShareContamination;
+        public String             moltagThreshold;
+        public Boolean            isIUO;
+        public Boolean            iuo;
+        public String             locus;
+        public String             regulationLevel;
+        public Boolean            qc;
+        public String             analyzerLocus;
+        public String             analyzerResolution;
+        public String             species;
+        public String             resolution;
+        public String             key;
+
+        // for TestingScenarioController
+        public String             testId;
+        public String             tsvPath;
+        public String             flowcell;
+        public WorkflowProperties workflowProperties;
     }
 
     public static final class TestProperties {

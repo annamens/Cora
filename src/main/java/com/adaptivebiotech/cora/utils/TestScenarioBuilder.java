@@ -11,24 +11,28 @@ import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambien
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSeq2_WorkflowNanny;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
+import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.HttpClientHelper.body;
 import static com.seleniumfy.test.utils.HttpClientHelper.encodeUrl;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
-import static java.util.Collections.addAll;
 import static org.testng.Assert.fail;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import com.adaptivebiotech.cora.dto.AccountsResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse;
-import com.adaptivebiotech.cora.dto.AssayResponse.Test;
+import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
+import com.adaptivebiotech.cora.dto.Diagnostic.Order;
 import com.adaptivebiotech.cora.dto.Diagnostic.Task;
 import com.adaptivebiotech.cora.dto.HttpResponse;
-import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -51,16 +55,19 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class TestScenarioBuilder {
 
-    private static final long   millisRetry  = 3000000l;      // 50mins
-    private static final long   waitRetry    = 5000l;         // 5sec
-    public static AssayResponse coraCDxTests = getTests (CDx);
-    public static AssayResponse coraTDxTests = getTests (TDx);
+    private static final long         millisRetry        = 3000000l;             // 50mins
+    private static final long         waitRetry          = 5000l;                // 5sec
+    public static final LocalDateTime collectionDate     = now ().minusDays (10);
+    public static final LocalDateTime reconciliationDate = now ().minusDays (10);
+    public static final LocalDateTime arrivalDate        = now ().minusDays (15);
+    public static AssayResponse       coraCDxTests       = getTests (CDx);
+    public static AssayResponse       coraTDxTests       = getTests (TDx);
 
-    public synchronized static Test getCDxTest (Assay assay) {
+    public synchronized static CoraTest getCDxTest (Assay assay) {
         return coraCDxTests.get (assay);
     }
 
-    public synchronized static Test getTDxTest (Assay assay) {
+    public synchronized static CoraTest getTDxTest (Assay assay) {
         return coraTDxTests.get (assay);
     }
 
@@ -113,6 +120,8 @@ public class TestScenarioBuilder {
             for (OrderTest test : tests) {
                 url = coraTestUrl + "/cora/api/v1/specimens/specimenNumber/" + test.specimenNumber;
                 test.specimen = mapper.readValue (get (url), Specimen.class);
+                test.test = new CoraTest ();
+                test.test.name = test.testName;
                 if (test.specimen.subjectCode == null) {
                     url = coraTestUrl + "/cora/api/v1/orderTests/patientOrSubjectCode/" + test.id;
                     test.specimen.subjectCode = mapper.readValue (get (url), Integer.class);
@@ -162,6 +171,19 @@ public class TestScenarioBuilder {
         }
     }
 
+    public synchronized static HttpResponse createPortalJob (Diagnostic diagnostic) {
+        try {
+            String url = coraTestUrl + "/cora/api/v1/test/scenarios/createPortalJob";
+            HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
+                                                      HttpResponse.class);
+            url = coraTestUrl + "/cora/api/v1/specimens/" + response.specimenId;
+            diagnostic.orderTests = asList (getOrderTest (mapper.readValue (get (url), Specimen.class).specimenNumber));
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
     public synchronized static HttpResponse newCovidOrder (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
@@ -184,11 +206,11 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static Order order (OrderProperties properties, OrderTest... tests) {
+    public synchronized static Order order (OrderProperties properties, CoraTest... tests) {
         Order order = new Order ();
         order.name = "Selenium Test Order";
         order.properties = properties;
-        addAll (order.tests, tests);
+        order.tests = asList (tests);
         return order;
     }
 
@@ -206,9 +228,9 @@ public class TestScenarioBuilder {
     public synchronized static Specimen specimen () {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
-        specimen.collectionDate = new int[] { 2019, 4, 1, 18, 6, 59, 639 };
-        specimen.reconciliationDate = new int[] { 2019, 5, 10, 18, 6, 59, 639 };
-        specimen.properties = new SpecimenProperties ("2019-03-20");
+        specimen.collectionDate = dateToArrInt (collectionDate);
+        specimen.reconciliationDate = dateToArrInt (reconciliationDate);
+        specimen.properties = new SpecimenProperties (formatDt2.format (arrivalDate));
         return specimen;
     }
 
@@ -216,7 +238,7 @@ public class TestScenarioBuilder {
         Shipment shipment = new Shipment ();
         shipment.category = Diagnostic;
         shipment.status = "IntakeComplete";
-        shipment.arrivalDate = new int[] { 2019, 4, 15, 11, 11, 59, 639 };
+        shipment.arrivalDate = dateToArrInt (arrivalDate);
         shipment.carrier = "UPS";
         shipment.trackingNumber = "";
         shipment.condition = Ambient;
@@ -264,5 +286,10 @@ public class TestScenarioBuilder {
         techTransfer.flowcellId = "selenium-staging";
         techTransfer.specimens = asList (specimens);
         return new Research (techTransfer);
+    }
+
+    public synchronized static Integer[] dateToArrInt (LocalDateTime dateTime) {
+        DateTimeFormatter fmt = ofPattern ("uuuu-MM-dd-HH-mm-ss-SSS");
+        return asList (dateTime.format (fmt).split ("-")).stream ().map (Integer::valueOf).toArray (Integer[]::new);
     }
 }

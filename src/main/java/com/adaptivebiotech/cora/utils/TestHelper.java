@@ -1,5 +1,7 @@
 package com.adaptivebiotech.cora.utils;
 
+import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
+import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
 import static com.adaptivebiotech.test.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.CommercialInsurance;
@@ -187,8 +189,10 @@ public class TestHelper {
         patient.lastName = "ClonoSeq";
         patient.fullname = String.join (" ", patient.firstName, patient.middleName, patient.lastName);
         patient.gender = "Female";
-        patient.mrn = "123456";
+        patient.mrn = "sel-123456";
         patient.dateOfBirth = "1999-01-01";
+        patient.race = AMERICAN_INDIAN;
+        patient.ethnicity = ASKED;
         patient.billingType = Client;
         patient.insurance1 = null;
         patient.insurance2 = null;
