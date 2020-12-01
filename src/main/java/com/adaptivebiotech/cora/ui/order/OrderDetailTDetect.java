@@ -151,14 +151,19 @@ public class OrderDetailTDetect extends Diagnostic {
     private String getTopmostICDMenuItem () {
         String topmostListItemCode = "//label[text()='ICD Codes']/../ul/li[2]/a/span[1]";
 
-        try {
-            String text = getText (topmostListItemCode);
-            return text;
-        } catch (StaleElementReferenceException sere) {
-            doWait (10000);
-            String text = getText (topmostListItemCode);
-            return text;
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        while (!timer.Timedout ()) {
+            try {
+                String text = getText (topmostListItemCode);
+                return text;
+            } catch (StaleElementReferenceException sere) {
+                timer.Wait ();
+            }
         }
+
+        fail ("can't get topmost ICD menu item");
+        return null;
+
     }
 
     private void verifyICDCodeAdded (String code) {
