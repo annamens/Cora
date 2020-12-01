@@ -1,6 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import static org.junit.Assert.fail;
+import static org.testng.Assert.fail;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
