@@ -113,11 +113,7 @@ public class OrderDetailTDetect extends Diagnostic {
             try {
                 rv = getTextList (xpath);
                 return rv;
-            } catch (Exception e) {
-                // sometimes there is a stale reference here b/c the page is somehow not finished
-                // loading
-                // so try again
-                e.printStackTrace ();
+            } catch (StaleElementReferenceException e) {
                 timer.Wait ();
             }
         }
