@@ -133,6 +133,11 @@ public class Accession extends CoraPage {
         return waitForElementVisible (specimenApprovalFail).isEnabled ();
     }
     
+    public void waitForStatus (String expectedStatus) {
+        String status = "[ng-bind='ctrl.entry | shipmentEntryStatus']";
+        waitForAttrContains (waitForElement (status), "textContent", expectedStatus);
+    }
+    
     // discrepancy pop up methods
     
     public void addDiscrepancy (Discrepancy discrepancy, String notes,

@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
@@ -81,5 +82,12 @@ public class Specimen extends Diagnostic {
         }
         return null;
 
+    }
+    
+    public void closeTestSelectionWarningModal () {
+        String expectedModalTitle = "Test Selection Warning";
+        String actualText = waitForElementVisible ("[ng-bind-html=\"ctrl.dialogOptions.headerText\"]").getText ();
+        assertEquals (actualText, expectedModalTitle);
+        clickPopupOK ();
     }
 }

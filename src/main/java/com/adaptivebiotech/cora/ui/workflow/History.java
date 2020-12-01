@@ -132,12 +132,18 @@ public class History extends CoraPage {
     }
 
     public void setWorkflowProperty (WorkflowProperty property, String value) {
+
         String propXpath = "//th[text()='%s:']/../td[contains(text(),'%s')]";
-        assertTrue (setText ("[name='propertyName']", property.name ()));
-        assertTrue (setText ("[name='propertyValue']", value));
-        assertTrue (click ("form[action*='forceWorkflowProperty'] input[type='submit']"));
+
+        enterWorkflowPropertyName (property);
+        enterWorkflowPropertyValue (value);
+        clickForceWorkflowProperty ();
+
         assertTrue (hasPageLoaded ());
         assertTrue (waitUntilVisible (format (propXpath, property.name (), value)));
+
+        refresh (); // need to do this otherwise if you do a setWorkflowProperty next it doesn't
+                    // enter the text
     }
 
     public void setWorkflowProperties (Map <WorkflowProperty, String> properties) {
@@ -146,12 +152,35 @@ public class History extends CoraPage {
         });
     }
 
-    public void forceStatusUpdate (StageName stageName, StageStatus stageStatus) {
-        if (stageName != null)
-            assertTrue (clickAndSelectValue ("select[name='stageName']", stageName.name ()));
-        assertTrue (clickAndSelectValue ("select[name='stageStatus']", stageStatus.name ()));
-        assertTrue (click ("form[action*='forceWorkflowStatus'] input[type='submit']"));
+    public void setWorkflowPropertyWhichDisplaysAsLink (WorkflowProperty property, String value) {
+
+        String propXpath = "//th[text()='%s:']/../td/a[contains(text(),'%s')]";
+
+        enterWorkflowPropertyName (property);
+        enterWorkflowPropertyValue (value);
+        clickForceWorkflowProperty ();
+
         assertTrue (hasPageLoaded ());
+        assertTrue (waitUntilVisible (format (propXpath, property.name (), value)));
+
+        refresh ();
+    }
+
+    public void forceStatusUpdate (StageName stageName, StageStatus stageStatus) {
+        String stageNameSelect = "select[name='stageName']";
+        String stageStatusSelect = "select[name='stageStatus']";
+
+        if (stageName != null) {
+            assertTrue (clickAndSelectValue (stageNameSelect, stageName.name ()));
+        }
+        waitForAttrContains (waitForElementVisible (stageNameSelect), "value", stageName.name ());
+        assertTrue (clickAndSelectValue (stageStatusSelect, stageStatus.name ()));
+        waitForAttrContains (waitForElementVisible (stageStatusSelect), "value", stageStatus.name ());
+        assertTrue (click ("form[action*='forceWorkflowStatus'] input[type='submit']"));
+        pageLoading ();
+        assertTrue (hasPageLoaded ());
+
+        waitFor (stageName, stageStatus);
     }
 
     public Map <String, String> getWorkflowProperties () {
@@ -160,5 +189,21 @@ public class History extends CoraPage {
             props.put (getText (tr, "th").replace (":", ""), getText (tr, "td"));
         });
         return props;
+    }
+    
+    private void enterWorkflowPropertyName (WorkflowProperty property) {
+        String propertyNameInput = "[name='propertyName']";
+        assertTrue (setText (propertyNameInput, property.name ()));
+        assertTrue (waitForAttrContains (waitForElementVisible (propertyNameInput), "value", property.name ()));
+    }
+
+    private void enterWorkflowPropertyValue (String value) {
+        String propertyValueInput = "[name='propertyValue']";
+        assertTrue (setText (propertyValueInput, value));
+        assertTrue (waitForAttrContains (waitForElementVisible (propertyValueInput), "value", value));
+    }
+
+    private void clickForceWorkflowProperty () {
+        assertTrue (click ("form[action*='forceWorkflowProperty'] input[type='submit']"));
     }
 }

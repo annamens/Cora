@@ -1,8 +1,10 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static org.junit.Assert.fail;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
+import org.openqa.selenium.StaleElementReferenceException;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.seleniumfy.test.utils.Timeout;
@@ -90,20 +92,38 @@ public class OrderDetailTDetect extends Diagnostic {
         pageLoading ();
         waitForElementVisible (topmostListItemCode);
         waitForAjaxCalls (); // wait for the menu to finish shuffling
-        String text = getText (topmostListItemCode);
-
+        String text = getTopmostICDMenuItem ();
         Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout () && ! (text.equals (code))) {
+        while (!timer.Timedout () && ! (text.contains (code))) {
             timer.Wait ();
-            text = getText (topmostListItemCode);
+            text = getTopmostICDMenuItem ();
         }
+
         assertTrue (click (topmostListItem));
+
+        verifyICDCodeAdded (code);
     }
 
     public List <String> getPatientICDCodes () {
         String xpath = "//label[text()='ICD Codes']/../div";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
 
-        return getTextList (xpath);
+        while (!timer.Timedout ()) {
+            List <String> rv = null;
+            try {
+                rv = getTextList (xpath);
+                return rv;
+            } catch (Exception e) {
+                // sometimes there is a stale reference here b/c the page is somehow not finished
+                // loading
+                // so try again
+                e.printStackTrace ();
+                timer.Wait ();
+            }
+        }
+
+        fail ("can't get Patient ICD Codes");
+        return null;
     }
 
     public String getCollectionDate () {
@@ -121,6 +141,41 @@ public class OrderDetailTDetect extends Diagnostic {
         String xpath = "//label[text()='Ethnicity']/../div[1]";
         String ethnicityText = getText (xpath);
         return Ethnicity.getEthnicity (ethnicityText);
+    }
+    
+    public String getToastText () {
+        String css = ".toast-message";
+        return getText (css);
+    }
+    
+    private String getTopmostICDMenuItem () {
+        String topmostListItemCode = "//label[text()='ICD Codes']/../ul/li[2]/a/span[1]";
+
+        try {
+            String text = getText (topmostListItemCode);
+            return text;
+        } catch (StaleElementReferenceException sere) {
+            doWait (10000);
+            String text = getText (topmostListItemCode);
+            return text;
+        }
+    }
+
+    private void verifyICDCodeAdded (String code) {
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+
+        while (!timer.Timedout ()) {
+            List <String> icdCodes = getPatientICDCodes ();
+
+            for (String icdText : icdCodes) {
+                if (icdText.contains (code)) { // code is just the code # not the full text
+                    return;
+                }
+            }
+            timer.Wait ();
+        }
+
+        fail ("can't find icd code " + code);
     }
 
 }
