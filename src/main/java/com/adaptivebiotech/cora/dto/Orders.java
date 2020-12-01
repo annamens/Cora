@@ -207,6 +207,7 @@ public final class Orders {
         public OrderTest (Assay assay, boolean selected) {
             this.test = new CoraTest ();
             this.test.name = assay.test;
+            this.assay = assay;
             this.selected = selected;
         }
 
