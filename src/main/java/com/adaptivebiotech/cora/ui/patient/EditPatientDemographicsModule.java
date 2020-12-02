@@ -1,14 +1,13 @@
 package com.adaptivebiotech.cora.ui.patient;
 
 import static org.testng.Assert.assertTrue;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
+import com.adaptivebiotech.test.utils.TestHelper;
 
 
 public class EditPatientDemographicsModule extends CoraPage {
@@ -59,15 +58,11 @@ public class EditPatientDemographicsModule extends CoraPage {
     // in the fields
     public void waitForDataFieldsToLoad (Patient patient) {
 
-        DateFormat inputFormat = new SimpleDateFormat ("MM/dd/yyyy");
-        DateFormat outputFormat = new SimpleDateFormat ("yyyy-MM-dd");
-        String expectedDateOfBirth = "";
-        try {
-            Date dateOfBirthDate = inputFormat.parse (patient.dateOfBirth);
-            expectedDateOfBirth = outputFormat.format (dateOfBirthDate);
-        } catch (ParseException e) {
-            e.printStackTrace ();
-        }
+        DateTimeFormatter inputFormatter = TestHelper.formatDt1;
+        DateTimeFormatter outputFormatter = TestHelper.formatDt2;
+
+        LocalDate dateOfBirthDate = LocalDate.parse (patient.dateOfBirth, inputFormatter);
+        String expectedDateOfBirth = dateOfBirthDate.format (outputFormatter);
 
         waitForAttrContains (waitForElement (firstName), "value", patient.firstName);
         waitForAttrContains (waitForElement (lastName), "value", patient.lastName);

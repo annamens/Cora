@@ -87,20 +87,12 @@ public class OrderDetailTDetect extends Diagnostic {
         String topmostListItemCode = "//label[text()='ICD Codes']/../ul/li[2]/a/span[1]";
 
         assertTrue (click (addButton));
-        waitForElementVisible (icdInput);
         assertTrue (setText (icdInput, code));
         pageLoading ();
         waitForElementVisible (topmostListItemCode);
         waitForAjaxCalls (); // wait for the menu to finish shuffling
-        String text = getTopmostICDMenuItem ();
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout () && ! (text.contains (code))) {
-            timer.Wait ();
-            text = getTopmostICDMenuItem ();
-        }
-
+        assertTrue (isTextInElement (topmostListItemCode, code));
         assertTrue (click (topmostListItem));
-
         verifyICDCodeAdded (code);
     }
 
@@ -126,7 +118,7 @@ public class OrderDetailTDetect extends Diagnostic {
         String css = "[formcontrolname=\"collectionDate\"]";
         return readInput (css);
     }
-    
+
     public Race getPatientRace () {
         String xpath = "//label[text()='Race']/../div[1]";
         String raceText = getText (xpath);
@@ -138,28 +130,10 @@ public class OrderDetailTDetect extends Diagnostic {
         String ethnicityText = getText (xpath);
         return Ethnicity.getEthnicity (ethnicityText);
     }
-    
+
     public String getToastText () {
         String css = ".toast-message";
         return getText (css);
-    }
-    
-    private String getTopmostICDMenuItem () {
-        String topmostListItemCode = "//label[text()='ICD Codes']/../ul/li[2]/a/span[1]";
-
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout ()) {
-            try {
-                String text = getText (topmostListItemCode);
-                return text;
-            } catch (StaleElementReferenceException sere) {
-                timer.Wait ();
-            }
-        }
-
-        fail ("can't get topmost ICD menu item");
-        return null;
-
     }
 
     private void verifyICDCodeAdded (String code) {

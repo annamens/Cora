@@ -135,7 +135,7 @@ public class Accession extends CoraPage {
     
     public void waitForStatus (String expectedStatus) {
         String status = "[ng-bind='ctrl.entry | shipmentEntryStatus']";
-        waitForAttrContains (waitForElement (status), "textContent", expectedStatus);
+        assertTrue (isTextInElement (status, expectedStatus));
     }
     
     // discrepancy pop up methods

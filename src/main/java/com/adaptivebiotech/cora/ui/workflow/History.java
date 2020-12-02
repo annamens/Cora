@@ -133,7 +133,7 @@ public class History extends CoraPage {
 
     public void setWorkflowProperty (WorkflowProperty property, String value) {
 
-        String propXpath = "//th[text()='%s:']/../td[contains(text(),'%s')]";
+        String propXpath = "//th[text()='%s:']/../td[contains(.,'%s')]";
 
         enterWorkflowPropertyName (property);
         enterWorkflowPropertyValue (value);
@@ -152,20 +152,6 @@ public class History extends CoraPage {
         });
     }
 
-    public void setWorkflowPropertyWhichDisplaysAsLink (WorkflowProperty property, String value) {
-
-        String propXpath = "//th[text()='%s:']/../td/a[contains(text(),'%s')]";
-
-        enterWorkflowPropertyName (property);
-        enterWorkflowPropertyValue (value);
-        clickForceWorkflowProperty ();
-
-        assertTrue (hasPageLoaded ());
-        assertTrue (waitUntilVisible (format (propXpath, property.name (), value)));
-
-        refresh ();
-    }
-
     public void forceStatusUpdate (StageName stageName, StageStatus stageStatus) {
         String stageNameSelect = "select[name='stageName']";
         String stageStatusSelect = "select[name='stageStatus']";
@@ -173,11 +159,8 @@ public class History extends CoraPage {
         if (stageName != null) {
             assertTrue (clickAndSelectValue (stageNameSelect, stageName.name ()));
         }
-        waitForAttrContains (waitForElementVisible (stageNameSelect), "value", stageName.name ());
         assertTrue (clickAndSelectValue (stageStatusSelect, stageStatus.name ()));
-        waitForAttrContains (waitForElementVisible (stageStatusSelect), "value", stageStatus.name ());
         assertTrue (click ("form[action*='forceWorkflowStatus'] input[type='submit']"));
-        pageLoading ();
         assertTrue (hasPageLoaded ());
 
         waitFor (stageName, stageStatus);
@@ -190,17 +173,15 @@ public class History extends CoraPage {
         });
         return props;
     }
-    
+
     private void enterWorkflowPropertyName (WorkflowProperty property) {
         String propertyNameInput = "[name='propertyName']";
         assertTrue (setText (propertyNameInput, property.name ()));
-        assertTrue (waitForAttrContains (waitForElementVisible (propertyNameInput), "value", property.name ()));
     }
 
     private void enterWorkflowPropertyValue (String value) {
         String propertyValueInput = "[name='propertyValue']";
         assertTrue (setText (propertyValueInput, value));
-        assertTrue (waitForAttrContains (waitForElementVisible (propertyValueInput), "value", value));
     }
 
     private void clickForceWorkflowProperty () {
