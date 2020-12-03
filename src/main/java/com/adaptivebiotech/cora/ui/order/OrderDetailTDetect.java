@@ -137,20 +137,8 @@ public class OrderDetailTDetect extends Diagnostic {
     }
 
     private void verifyICDCodeAdded (String code) {
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-
-        while (!timer.Timedout ()) {
-            List <String> icdCodes = getPatientICDCodes ();
-
-            for (String icdText : icdCodes) {
-                if (icdText.contains (code)) { // code is just the code # not the full text
-                    return;
-                }
-            }
-            timer.Wait ();
-        }
-
-        fail ("can't find icd code " + code);
+        String xpath = "//label[text()='ICD Codes']/..";
+        assertTrue (isTextInElement (xpath, code));
     }
 
 }
