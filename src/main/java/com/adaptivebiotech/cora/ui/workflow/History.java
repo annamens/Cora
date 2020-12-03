@@ -139,7 +139,6 @@ public class History extends CoraPage {
         enterWorkflowPropertyValue (value);
         clickForceWorkflowProperty ();
 
-        assertTrue (hasPageLoaded ());
         assertTrue (waitUntilVisible (format (propXpath, property.name (), value)));
 
         refresh (); // need to do this otherwise if you do a setWorkflowProperty next it doesn't
