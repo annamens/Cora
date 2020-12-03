@@ -1,8 +1,10 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static org.testng.Assert.fail;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
+import org.openqa.selenium.StaleElementReferenceException;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.seleniumfy.test.utils.Timeout;
@@ -85,32 +87,38 @@ public class OrderDetailTDetect extends Diagnostic {
         String topmostListItemCode = "//label[text()='ICD Codes']/../ul/li[2]/a/span[1]";
 
         assertTrue (click (addButton));
-        waitForElementVisible (icdInput);
         assertTrue (setText (icdInput, code));
         pageLoading ();
         waitForElementVisible (topmostListItemCode);
         waitForAjaxCalls (); // wait for the menu to finish shuffling
-        String text = getText (topmostListItemCode);
-
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout () && ! (text.equals (code))) {
-            timer.Wait ();
-            text = getText (topmostListItemCode);
-        }
+        assertTrue (isTextInElement (topmostListItemCode, code));
         assertTrue (click (topmostListItem));
+        verifyICDCodeAdded (code);
     }
 
     public List <String> getPatientICDCodes () {
         String xpath = "//label[text()='ICD Codes']/../div";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
 
-        return getTextList (xpath);
+        while (!timer.Timedout ()) {
+            List <String> rv = null;
+            try {
+                rv = getTextList (xpath);
+                return rv;
+            } catch (StaleElementReferenceException e) {
+                timer.Wait ();
+            }
+        }
+
+        fail ("can't get Patient ICD Codes");
+        return null;
     }
 
     public String getCollectionDate () {
         String css = "[formcontrolname=\"collectionDate\"]";
         return readInput (css);
     }
-    
+
     public Race getPatientRace () {
         String xpath = "//label[text()='Race']/../div[1]";
         String raceText = getText (xpath);
@@ -121,6 +129,16 @@ public class OrderDetailTDetect extends Diagnostic {
         String xpath = "//label[text()='Ethnicity']/../div[1]";
         String ethnicityText = getText (xpath);
         return Ethnicity.getEthnicity (ethnicityText);
+    }
+
+    public String getToastText () {
+        String css = ".toast-message";
+        return getText (css);
+    }
+
+    private void verifyICDCodeAdded (String code) {
+        String xpath = "//label[text()='ICD Codes']/..";
+        assertTrue (isTextInElement (xpath, code));
     }
 
 }

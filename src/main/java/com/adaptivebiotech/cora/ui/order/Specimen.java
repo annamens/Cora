@@ -82,4 +82,11 @@ public class Specimen extends Diagnostic {
         return null;
 
     }
+
+    public void closeTestSelectionWarningModal () {
+        String expectedModalTitle = "Test Selection Warning";
+        String modalHeader = "[ng-bind-html=\"ctrl.dialogOptions.headerText\"]";
+        assertTrue (isTextInElement (modalHeader, expectedModalTitle));
+        clickPopupOK ();
+    }
 }
