@@ -173,6 +173,14 @@ public class History extends CoraPage {
         return props;
     }
 
+    public Map <String, String> getWorkflowFiles () {
+        Map <String, String> files = new HashMap <> ();
+        waitForElements ("//h3[text()='Files']/following-sibling::ul[1]//a").forEach (a -> {
+            files.put (getText (a), getAttribute (a, "href"));
+        });
+        return files;
+    }
+
     private void enterWorkflowPropertyName (WorkflowProperty property) {
         String propertyNameInput = "[name='propertyName']";
         assertTrue (setText (propertyNameInput, property.name ()));

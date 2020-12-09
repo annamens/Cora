@@ -9,6 +9,7 @@ import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
+import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
@@ -34,6 +35,7 @@ public final class Diagnostic {
     public Boolean          contaminated;
     public Boolean          waitForResults;
     public List <OrderTest> orderTests;
+    public ClassifierOutput dxResults;
 
     public OrderTest findOrderTest (Assay assay) {
         return orderTests.parallelStream ()
