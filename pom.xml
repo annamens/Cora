@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adaptivebiotech.test.functional</groupId>
     <artifactId>cora</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4-SNAPSHOT</version>
     <name>Adaptive Biotechnologies Selenium Tests for Cora</name>
     <repositories>
         <repository>
@@ -27,7 +27,6 @@
         <test.threads>1</test.threads>
         <test.env>test</test.env>
         <testng.verbose>1</testng.verbose>
-        <output.to.file>true</output.to.file>
     </properties>
     <build>
         <pluginManagement>
@@ -71,7 +70,6 @@
                         <includes>
                             <include>**/*TestSuite.java</include>
                         </includes>
-                        <redirectTestOutputToFile>${output.to.file}</redirectTestOutputToFile>
                         <systemPropertyVariables>
                             <project.version>${git.branch}</project.version>
                             <test.env>${test.env}</test.env>

@@ -98,7 +98,6 @@ public class TestHelper {
         physician.state = "WA";
         physician.zip = "98111";
         physician.phone = "(206) 555-1212";
-        physician.secureFax = "(206) 260-7187";
         physician.allowInternalOrderUpload = false;
         physician.email = "selenium.test1@1secmail.com";
         physician.notificationEmails = "selenium.test1@1secmail.com";
@@ -120,7 +119,6 @@ public class TestHelper {
         physician.state = "WA";
         physician.zip = "98111";
         physician.phone = "(206) 555-1212";
-        physician.secureFax = "(206) 260-7187";
         physician.allowInternalOrderUpload = true;
         physician.email = "automated.test@adaptivebiotech.com";
         physician.notificationEmails = "automated.test@adaptivebiotech.com";
@@ -152,11 +150,17 @@ public class TestHelper {
         patient.gender = "Male";
         patient.patientCode = 1;
         patient.mrn = "mrn-000001";
+        patient.billingType = Medicare;
         patient.insurance1 = insurance1 ();
         patient.insurance1.groupNumber = null;
         patient.insurance2 = insurance2 ();
-        patient.address = address ();
-        patient.billingType = Medicare;
+
+        Address address = address ();
+        patient.address = address.line1;
+        patient.phone = address.phone;
+        patient.locality = address.city;
+        patient.region = address.state;
+        patient.postCode = address.postalCode;
         return patient;
     }
 

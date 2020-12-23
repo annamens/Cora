@@ -2,6 +2,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
@@ -17,7 +18,6 @@ import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
 import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Insurance;
@@ -25,7 +25,6 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -416,15 +415,11 @@ public class Diagnostic extends CoraPage {
         order.patient.insurance2.policyNumber = getInsurance2Policy (state);
         order.patient.insurance2.insuredRelationship = getInsurance2Relationship (state);
         order.patient.insurance2.policyholder = getInsurance2PolicyHolder (state);
-
-        Address address = new Address ();
-        address.line1 = getPatientAddress1 (state);
-        address.phone = getPatientPhone (state);
-        address.city = getPatientCity (state);
-        address.state = getPatientState (state);
-        address.postalCode = getPatientZipcode (state);
-        order.patient.address = address.nullOrElse ();
-
+        order.patient.address = getPatientAddress1 (state);
+        order.patient.phone = getPatientPhone (state);
+        order.patient.locality = getPatientCity (state);
+        order.patient.region = getPatientState (state);
+        order.patient.postCode = getPatientZipcode (state);
         order.notes = getOrderNotes (state);
         return order;
     }

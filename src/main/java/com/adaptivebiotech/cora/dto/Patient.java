@@ -29,7 +29,14 @@ public final class Patient {
     public Insurance     insurance1 = new Insurance ();
     public Insurance     insurance2 = new Insurance ();
     public Insurance     insurance3 = new Insurance ();
-    public Address       address    = new Address ();
+    public String        address;
+    public String        address2;
+    public String        locality;
+    public String        region;
+    public String        postCode;
+    public String        country;
+    public String        phone;
+    public String        email;
     public int           patientCode;
     public int           externalPatientCode;
     public int           calibrationPatientCode;
@@ -66,10 +73,6 @@ public final class Patient {
         public String        state;
         public String        postalCode;
         public String        country;
-
-        public Address nullOrElse () {
-            return line1 == null && phone == null && city == null && state == null && postalCode == null ? null : this;
-        }
 
         @Override
         public String toString () {
