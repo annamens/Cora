@@ -4,7 +4,6 @@ import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.lang.String.format;
 import java.time.LocalDateTime;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
-import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -40,7 +39,7 @@ public final class Physician {
     public String        manageAccessEmails;
     public String        shipmentEmails;
     public String        portal_emails;
-    public OrderType     productFamilies;
+    public Object        productFamilies;
     public String        email;
     public String        psychePhysicianCode;
     public Boolean       allowInternalOrderUpload;
