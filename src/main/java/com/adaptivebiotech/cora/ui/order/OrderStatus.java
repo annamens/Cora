@@ -4,6 +4,8 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
+import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
+import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 
 public class OrderStatus extends Diagnostic {
 
@@ -79,6 +81,30 @@ public class OrderStatus extends Diagnostic {
     public String getOrderStatusText () {
         String status = "[ng-bind='ctrl.orderEntry.order.status']";
         return getText (status);
+    }
+    
+    public StageSubstatus getStageSubstatus () {
+        String css = "span.ng-binding.ng-scope";
+        String subStatusName = getText (css);
+        String trimmedName = subStatusName.substring (1, subStatusName.length () - 1);
+        return StageSubstatus.valueOf (trimmedName);
+    }
+
+    public StageStatus getStageStatus () {
+        String xpath = "//td[@class='stage-status']/div/div[1]";
+        String statusText = getText (xpath);
+        String trimmedStatusText = statusText.split (" ")[0];
+        return StageStatus.valueOf (trimmedStatusText);
+    }
+
+    public boolean isStageSubstatusVisible () {
+        String css = "span.ng-binding.ng-scope";
+        try {
+            waitForElementVisible (css);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }
