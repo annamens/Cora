@@ -877,7 +877,7 @@ public class Diagnostic extends CoraPage {
         String DAG = "//label[@title='Data Analysis Group']/../div/span";
         return getText (DAG);
     }
-    
+
     public void clickCorrectReport () {
         String button = "//button[text()='Correct Report']";
         assertTrue (click (button));
@@ -886,7 +886,7 @@ public class Diagnostic extends CoraPage {
 
     public void enterReasonForCorrection (String text) {
         String reasonTextArea = "[ng-model='ctrl.reportEntry.report.commentInfo.correctionReason']";
-        setText (reasonTextArea, text);
+        assertTrue (setText (reasonTextArea, text));
     }
 
     public void clickCorrectReportSaveAndUpdate () {
@@ -915,7 +915,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public boolean waitForCorrectedReportStatusFinished () {
-        String reportDeliveryStatus = "//table[@class='table released-report-table']/tbody/tr[1]/td[6]";
+        String reportDeliveryStatus = "//table[@class='table released-report-table']/tbody/tr[1]/td[@ng-bind='::reportEntry.deliveryStatus']";
         int count = 0;
 
         String status = getText (reportDeliveryStatus);

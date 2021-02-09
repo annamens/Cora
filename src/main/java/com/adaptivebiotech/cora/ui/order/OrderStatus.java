@@ -29,15 +29,14 @@ public class OrderStatus extends Diagnostic {
     public boolean kitReportDeliveryStageDisplayed () {
         return waitForElement ("[class='ordertest-list-stage KitReportDelivery']").isDisplayed ();
     }
-    
+
     public void clickPatientNotesIcon () {
         String css = "[ng-click=\"ctrl.showPatientNotesDialog()\"]";
         assertTrue (click (css));
         waitForElementVisible (".patient-notes-modal");
         assertTrue (getText (".modal-title").contains ("Patient Note for Patient "));
     }
-    
-    
+
     // patient notes popup
     public String getPatientNotes () {
         String css = "[ng-bind=\"ctrl.patient.notes\"]";
@@ -77,12 +76,12 @@ public class OrderStatus extends Diagnostic {
         }
         return false;
     }
-    
+
     public String getOrderStatusText () {
         String status = "[ng-bind='ctrl.orderEntry.order.status']";
         return getText (status);
     }
-    
+
     public StageSubstatus getStageSubstatus () {
         String css = "span.ng-binding.ng-scope";
         String subStatusName = getText (css);
@@ -99,12 +98,7 @@ public class OrderStatus extends Diagnostic {
 
     public boolean isStageSubstatusVisible () {
         String css = "span.ng-binding.ng-scope";
-        try {
-            waitForElementVisible (css);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return waitUntilVisible (css);
     }
 
 }
