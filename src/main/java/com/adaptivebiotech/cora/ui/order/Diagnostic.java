@@ -920,16 +920,12 @@ public class Diagnostic extends CoraPage {
 
         String status = getText (reportDeliveryStatus);
         while (count < 10 && !status.equals ("Finished")) {
-            System.out.println ("waiting for corrected report delivery");
             doWait (10000);
             refresh ();
             status = getText (reportDeliveryStatus);
             count++;
         }
-        if (status.equals ("Finished")) {
-            return true;
-        }
-        return false;
+        return status.equals ("Finished");
     }
 
 }
