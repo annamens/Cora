@@ -42,7 +42,15 @@ public class PatientDetail extends CoraPage {
         String title = getText (".modal-title");
         assertEquals(title, expectedTitle);
     }
- 
+
+    public void clickEditPatientBillingAddress(){
+        String xpath = "//*[label='Address']//ancestor::div[@class='editable-section']//button";
+        assertTrue (click (xpath));
+        String expectedTitle = "Edit Patient Contact Information";
+        String title = getText (".modal-title");
+        assertEquals(title, expectedTitle);
+    }
+
     public void enterPatientNotes (String notes) {
         String cssForTextField = ".patient-notes-section textarea";
         assertTrue (setText (cssForTextField, notes));
@@ -122,6 +130,42 @@ public class PatientDetail extends CoraPage {
         assertTrue (click ("[type='submit']"));
         moduleLoading ();
     }
-    
+
+    //edit patient contact information
+
+    public void enterAddressLine1 (String address){
+        String css = "#address";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterAddressLine2 (String address){
+        String css = "#address2";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterCity (String address){
+        String css = "#locality";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterState (String address){
+        String css = "#region";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterZip (String address){
+        String css = "#postCode";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterPhone (String address){
+        String css = "#phone";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterEmail (String address){
+        String css = "#email";
+        assertTrue (setText (css, address));
+    }
 
 }
