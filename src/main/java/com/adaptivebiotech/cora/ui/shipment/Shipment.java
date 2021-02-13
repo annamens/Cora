@@ -50,7 +50,8 @@ public class Shipment extends CoraPage {
     }
 
     public void gotoAccession () {
-        assertTrue (click ("[role='presentation'] [data-ng-click*='accession']"));
+        assertTrue (click ("#shipment-accession-tab-link"));
+        pageLoading ();
     }
 
     public void clickSave () {
