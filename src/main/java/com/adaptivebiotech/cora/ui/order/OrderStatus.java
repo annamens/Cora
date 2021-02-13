@@ -98,12 +98,7 @@ public class OrderStatus extends Diagnostic {
 
     public boolean isStageSubstatusVisible () {
         String css = "span.ng-binding.ng-scope";
-        try {
-            waitForElementVisible (css);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return waitUntilVisible (css);
     }
 
 }

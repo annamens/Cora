@@ -20,7 +20,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.Order;
@@ -874,7 +873,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public String getDAGText () {
-        String DAG = "//label[@title='Data Analysis Group']/../div/span";
+        String DAG = "[ng-bind*='dataAnalysisGroup']";
         return getText (DAG);
     }
 
@@ -898,24 +897,18 @@ public class Diagnostic extends CoraPage {
     public int getMessageTableRowCount () {
         String messages = "//h2[text()='Messages']";
         assertTrue (click (messages));
-        String messagesTable = messages + "/../../../div[2]/table";
-        List <WebElement> rows = waitForElementsVisible (messagesTable);
+        String messagesTableRows = "[ng-repeat*='ctrl.orderEntry.orderMessages']";
+        List <WebElement> rows = waitForElementsVisible (messagesTableRows);
         return rows.size ();
-
     }
 
     public boolean isMessagesTableVisible () {
         String messages = "//h2[text()='Messages']";
-        try {
-            waitForElementVisible (messages);
-            return true;
-        } catch (TimeoutException te) {
-            return false;
-        }
+        return waitUntilVisible (messages);
     }
 
     public boolean waitForCorrectedReportStatusFinished () {
-        String reportDeliveryStatus = "//table[@class='table released-report-table']/tbody/tr[1]/td[@ng-bind='::reportEntry.deliveryStatus']";
+        String reportDeliveryStatus = "//tr[contains (@ng-repeat-start, 'releasedReports')][1]/td[contains (@ng-bind, 'deliveryStatus')]";
         int count = 0;
 
         String status = getText (reportDeliveryStatus);
