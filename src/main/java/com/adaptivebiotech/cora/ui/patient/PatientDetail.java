@@ -44,7 +44,7 @@ public class PatientDetail extends CoraPage {
     }
 
     public void clickEditPatientBillingAddress () {
-        String xpath = "//*[label='Address']//ancestor::div[@class='editable-section']//button";
+        String xpath = "//*[div='Patient Billing Address']//ancestor::div[@class='editable-section']//button";
         assertTrue (click (xpath));
         String expectedTitle = "Edit Patient Contact Information";
         String title = getText (".modal-title");
