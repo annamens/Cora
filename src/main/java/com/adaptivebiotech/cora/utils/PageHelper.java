@@ -24,6 +24,42 @@ public class PageHelper {
     public enum MiraPanel {
         Aloha, Belmont, Cherry, Denny, Eastlake, Lakeview, Minor, Pike
     }
+    
+    public enum MiraLab {
+        AntigenMapProduction ("Antigen Map Production"),
+        AntigenMapRD ("Antigen Map R&D"),
+        TCRDiscovery ("TCR Discovery");
+
+        public final String text;
+
+        private MiraLab (String name) {
+            this.text = name;
+        }
+    }
+
+    public enum MiraType {
+        MIRA ("MIRA"), NotAMIRA ("Not a MIRA"), NAMBAM ("NAMBAM");
+
+        public final String text;
+
+        private MiraType (String name) {
+            this.text = name;
+        }
+    }
+
+    public enum MiraExpansionMethod {
+        AntiCD3 ("anti-CD3"),
+        DCExpansionCD4 ("DC Expansion - CD4"),
+        DCExpansionCD8 ("DC Expansion - CD8"),
+        DCExpansionPanT ("DC Expansion - Pan T"),
+        ImmunocultCD3CD28CD2 ("Immunocult CD3/CD28/CD2");
+
+        public final String text;
+
+        private MiraExpansionMethod (String name) {
+            this.text = name;
+        }
+    }
 
     public enum Carrier {
         UPS ("UPS"), FEDEX ("Fedex"), COURIER ("Courier"), OTHER ("Other");
