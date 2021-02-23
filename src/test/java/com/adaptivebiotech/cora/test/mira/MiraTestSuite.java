@@ -1,8 +1,15 @@
 package com.adaptivebiotech.cora.test.mira;
 
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -17,7 +24,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 
 public class MiraTestSuite extends CoraBaseBrowser {
-
+    
     @Test
     public void testCreateAndActivateMIRA () {
 
@@ -67,6 +74,8 @@ public class MiraTestSuite extends CoraBaseBrowser {
          * scroll to Containers, copy the top Container ID, put in the bar code field and click
          * "Verify"
          * a blue checkmark appears in that container row in the table
+         * 
+         * 
          * Copy and edit the "M-xx_Batch Record.xslx" file to replace the existing MIRA ID with the
          * MIRA ID found in MIRA details
          * in the first tab
@@ -89,8 +98,56 @@ public class MiraTestSuite extends CoraBaseBrowser {
         mira.selectPanel (MiraPanel.Minor);
         mira.selectExpansionMethod (MiraExpansionMethod.AntiCD3);
         mira.enterSpecimenAndFind (specimenIds.get (0));
-        // TODO - keep working on this
+        mira.clickSave ();
 
+        String miraId = mira.getMiraId ();
+        testLog ("mira id is: " + miraId);
+
+        List <String> containerIds = mira.getContainerIds ();
+        testLog ("container Ids are: ");
+        for (String id : containerIds) {
+            testLog (id);
+        }
+
+        mira.verifyContainerId (containerIds.get (0));
+        testLog ("verified container id: " + containerIds.get (0));
+        
+        String batchRecord = createNewBatchRecord (miraId);
+        testLog("new batch record is: " + batchRecord);
+
+    }
+    
+        
+    private String createNewBatchRecord (String miraId) {
+        String baseBatchRecord = "MIRA/M-xx_Batch_Record.xlsx";
+        String basePath = ClassLoader.getSystemResource (baseBatchRecord).getPath ();
+        String newBatchRecord = miraId + "_Batch_Record.xlsx";
+        String newPath = "/Users/mgrossman/" + newBatchRecord;
+        
+        testLog("basePath is: " + basePath);
+        testLog("newPath is: " + newPath);
+        
+        try {
+            FileInputStream inputStream = new FileInputStream (new File (basePath));
+            Workbook workbook = WorkbookFactory.create (inputStream);
+            FileOutputStream outputStream = FileUtils.openOutputStream (new File (newPath));
+            Sheet sheet = workbook.getSheetAt (0);
+            Cell cell = sheet.getRow (2).getCell (0);
+            String originalCellValue = cell.getStringCellValue ();
+            testLog("originalCellValue is: " + originalCellValue);
+            cell.setBlank ();
+            cell.setCellValue (miraId);
+            String newCellValue = cell.getStringCellValue ();
+            testLog("newCellValue is: " + newCellValue);
+            workbook.write (outputStream);
+            outputStream.close ();
+            inputStream.close ();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        
+        return newPath;
+        
     }
 
 }

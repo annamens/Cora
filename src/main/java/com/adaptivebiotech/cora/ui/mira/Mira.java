@@ -1,9 +1,12 @@
 package com.adaptivebiotech.cora.ui.mira;
 
+import static com.seleniumfy.test.utils.Logging.info;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.util.List;
 import org.openqa.selenium.support.ui.Select;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
@@ -28,27 +31,33 @@ public class Mira extends CoraPage {
         // after selection, the getFirstSelectedOption() stays at "Select..."
         Select dropdown = new Select (scrollTo (waitForElementClickable (locateBy ("[name='panelType']"))));
         dropdown.selectByVisibleText (panel.name ());
-        assertTrue (waitUntilVisible (".mira-panel-entry"));
+        // wait until the panel is visible below
+        int count = 0;
+        while (count < 10 && !getPanelNamesText ().contains (panel.name ())) {
+            info ("waiting for panel to be added: " + panel.name ());
+            count++;
+            doWait (10000);
+        }
+        assertTrue (getPanelNamesText ().contains (panel.name ()));
     }
 
     public void selectLab (MiraLab lab) {
         String labSelector = "[name='labType']";
-        Select dropdown = new Select (scrollTo (waitForElementClickable (locateBy (labSelector))));
+        CoraSelect dropdown = new CoraSelect (scrollTo (waitForElementClickable (locateBy (labSelector))));
         dropdown.selectByVisibleText (lab.text);
-        pageLoading ();
         assertEquals (dropdown.getFirstSelectedOption ().getText (), lab.text);
     }
 
     public void selectType (MiraType type) {
         String typeSelector = "[name='miraType']";
-        Select dropdown = new Select (scrollTo (waitForElementClickable (locateBy (typeSelector))));
+        CoraSelect dropdown = new CoraSelect (scrollTo (waitForElementClickable (locateBy (typeSelector))));
         dropdown.selectByVisibleText (type.text);
         assertEquals (dropdown.getFirstSelectedOption ().getText (), type.text);
     }
 
     public void selectExpansionMethod (MiraExpansionMethod expansionMethod) {
         String emSelector = "[name='expansionMethod']";
-        Select dropdown = new Select (scrollTo (waitForElementClickable (locateBy (emSelector))));
+        CoraSelect dropdown = new CoraSelect (scrollTo (waitForElementClickable (locateBy (emSelector))));
         dropdown.selectByVisibleText (expansionMethod.text);
         assertEquals (dropdown.getFirstSelectedOption ().getText (), expansionMethod.text);
     }
@@ -60,6 +69,46 @@ public class Mira extends CoraPage {
         assertTrue (setText (specimenInput, specimenId));
         assertTrue (click (findSpecimenButton));
         assertTrue (hasPageLoaded ());
-        assertTrue (isElementVisible (removeSpecimenButton));
+        assertTrue (waitUntilVisible (removeSpecimenButton));
     }
+
+    public void clickSave () {
+        String saveButton = "button[ng-click='ctrl.save()']";
+        assertTrue (click (saveButton));
+        assertTrue (hasPageLoaded ());
+    }
+
+    public String getMiraId () {
+        String idText = "span[data-ng-bind='ctrl.mira.miraId']";
+        String miraId = getText (idText);
+        return miraId;
+    }
+
+    public List <String> getContainerIds () {
+        String containerIdField = "span[data-ng-bind='::containerDetail.container.containerNumber']";
+        List <String> containerIds = getTextList (containerIdField);
+        return containerIds;
+    }
+
+    public List <String> getPanelNamesText () {
+        String panelNamesField = "[data-ng-bind='panel.name']";
+        List <String> panelNamesText = getTextList (panelNamesField);
+        return panelNamesText;
+    }
+
+    public void verifyContainerId (String containerId) {
+        String inputField = "input[ng-model='ctrl.containerNumber']";
+        String verifyButton = "button[ng-click='ctrl.verify()']";
+        String checkmark = "img[data-ng-if='::containerDetail.verified']";
+        assertTrue (setText (inputField, containerId));
+        assertTrue (click (verifyButton));
+        assertTrue (waitUntilVisible (checkmark));
+    }
+    
+    public void uploadBatchRecord (String path) {
+        String uploadButton = "button[data-ng-model='ctrl.poolsFiles']";
+        assertTrue(click(uploadButton));
+        
+    }
+
 }
