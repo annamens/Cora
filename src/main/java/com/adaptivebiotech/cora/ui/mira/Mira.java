@@ -72,10 +72,17 @@ public class Mira extends CoraPage {
         assertTrue (waitUntilVisible (removeSpecimenButton));
     }
 
-    public void clickSave () {
-        String saveButton = "button[ng-click='ctrl.save()']";
+    public void clickSave (boolean isActive) {
+        String saveButton = isActive ? "//button[text()='Save']" : "button[ng-click='ctrl.save()']";
+        String saveNotification = "//span[text()='MIRA Saved']";
         assertTrue (click (saveButton));
-        assertTrue (hasPageLoaded ());
+        info("clicked save button");
+        pageLoading ();
+        info("page loaded");
+        if(isActive) {
+            clickPopupOK();
+            info("clicked popup ok");
+        }
     }
 
     public String getMiraId () {
@@ -104,11 +111,36 @@ public class Mira extends CoraPage {
         assertTrue (click (verifyButton));
         assertTrue (waitUntilVisible (checkmark));
     }
-    
-    public void uploadBatchRecord (String path) {
+
+    // this brings up the browser upload dialog
+    public void clickUpload () {
         String uploadButton = "button[data-ng-model='ctrl.poolsFiles']";
-        assertTrue(click(uploadButton));
-        
+        assertTrue (click (uploadButton));
+
+    }
+
+    public void clickUploadAndSave (String miraId) {
+        String uploadAndSave = "button[ng-click='ctrl.uploadPoolsFile()']";
+        String poolDetail = "span[data-ng-bind='poolDetail.miraId']";
+
+        assertTrue (click (uploadAndSave));
+        moduleLoading ();
+
+        assertTrue (waitUntilVisible (poolDetail));
+        List <String> poolDetailsMiraIds = getTextList (poolDetail);
+        assertEquals (poolDetailsMiraIds.get (0), miraId);
+    }
+
+    public void clickMiraPrepComplete () {
+        String miraPrepComplete = ".btn-activate";
+        assertTrue (click (miraPrepComplete));
+        info("clicked mira prep complete");
+        waitUntilVisible (".modal-title");
+        info("modal visible");
+        clickPopupOK ();
+        info("clicked ok");
+        pageLoading ();
+        info("page loaded");
     }
 
 }

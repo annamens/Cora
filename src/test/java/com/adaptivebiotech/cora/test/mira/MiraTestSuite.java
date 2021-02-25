@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.mira.Mira;
+import com.adaptivebiotech.cora.ui.mira.MirasList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
@@ -24,7 +25,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 
 public class MiraTestSuite extends CoraBaseBrowser {
-    
+
     @Test
     public void testCreateAndActivateMIRA () {
 
@@ -84,6 +85,8 @@ public class MiraTestSuite extends CoraBaseBrowser {
          * Click "Upload & Save"
          * Click "Mira Prep Complete", then "Yes, Save changes" on the modal
          * Click "Yes, MIRA Prep Complete" on the modal
+         * 
+         * 
          * click MIRAs icon, search for Lab : Antigen Map Production and by MIRA ID
          * should return the MIRA
          * select MIRA, go to MIRA status
@@ -98,7 +101,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
         mira.selectPanel (MiraPanel.Minor);
         mira.selectExpansionMethod (MiraExpansionMethod.AntiCD3);
         mira.enterSpecimenAndFind (specimenIds.get (0));
-        mira.clickSave ();
+        mira.clickSave (false);
 
         String miraId = mira.getMiraId ();
         testLog ("mira id is: " + miraId);
@@ -111,43 +114,70 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         mira.verifyContainerId (containerIds.get (0));
         testLog ("verified container id: " + containerIds.get (0));
-        
+
         String batchRecord = createNewBatchRecord (miraId);
-        testLog("new batch record is: " + batchRecord);
+        testLog ("new batch record is: " + batchRecord);
+
+        // b/c this just opens the file upload dialog and there is no input field to put the
+        // filename into
+        // the user should select the file to upload and click ok
+        mira.clickUpload ();
+        testLog ("now select the file to upload: " + batchRecord);
+        doWait (60000);
+        testLog ("driving on...");
+
+        mira.clickUploadAndSave (miraId);
+        testLog ("clicked upload and save");
+        mira.clickSave (true);
+        testLog ("clicked save");
+        mira.clickMiraPrepComplete ();
+//        testLog ("mira prep complete");
+//        mira.refresh ();
+//
+//        testLog ("prep complete for mira " + miraId);
+//
+//        mira.clickMiras ();
+//        MirasList mirasList = new MirasList ();
+//        mirasList.isCorrectPage ();
+//        mirasList.selectLab (MiraLab.AntigenMapProduction);
+//        mirasList.searchAndClickMira (miraId);
 
     }
-    
-        
+
     private String createNewBatchRecord (String miraId) {
         String baseBatchRecord = "MIRA/M-xx_Batch_Record.xlsx";
         String basePath = ClassLoader.getSystemResource (baseBatchRecord).getPath ();
         String newBatchRecord = miraId + "_Batch_Record.xlsx";
         String newPath = "/Users/mgrossman/" + newBatchRecord;
-        
-        testLog("basePath is: " + basePath);
-        testLog("newPath is: " + newPath);
-        
+
+        testLog ("basePath is: " + basePath);
+        testLog ("newPath is: " + newPath);
+
         try {
             FileInputStream inputStream = new FileInputStream (new File (basePath));
             Workbook workbook = WorkbookFactory.create (inputStream);
             FileOutputStream outputStream = FileUtils.openOutputStream (new File (newPath));
-            Sheet sheet = workbook.getSheetAt (0);
+            Sheet sheet = workbook.getSheet ("Experiment Request");
+            sheet.protectSheet (null);
             Cell cell = sheet.getRow (2).getCell (0);
             String originalCellValue = cell.getStringCellValue ();
-            testLog("originalCellValue is: " + originalCellValue);
+            testLog ("originalCellValue is: " + originalCellValue);
             cell.setBlank ();
             cell.setCellValue (miraId);
             String newCellValue = cell.getStringCellValue ();
-            testLog("newCellValue is: " + newCellValue);
+            testLog ("newCellValue is: " + newCellValue);
+
+            workbook.getCreationHelper ().createFormulaEvaluator ().evaluateAll ();
+            testLog ("evaluated formulas");
             workbook.write (outputStream);
             outputStream.close ();
             inputStream.close ();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException (e);
         }
-        
+
         return newPath;
-        
+
     }
 
 }
