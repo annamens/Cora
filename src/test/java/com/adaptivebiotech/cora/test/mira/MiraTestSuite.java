@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.test.mira;
 
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static org.testng.Assert.assertEquals;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -91,6 +92,13 @@ public class MiraTestSuite extends CoraBaseBrowser {
          * should return the MIRA
          * select MIRA, go to MIRA status
          * MIRA should be in PoolExtraction/Ready status
+         * 
+         * complete Pool Extraction
+search for MIRA by ID and lab
+click "Select" button (in upper right side of search results)
+select the MIRA and click "Create Sample Manifest"
+confirm in the modal
+MIRA goes to ImmunoSEQ/Awaiting phase
          */
 
         accession.selectNewMira ();
@@ -131,16 +139,21 @@ public class MiraTestSuite extends CoraBaseBrowser {
         mira.clickSave (true);
         testLog ("clicked save");
         mira.clickMiraPrepComplete ();
-//        testLog ("mira prep complete");
-//        mira.refresh ();
-//
-//        testLog ("prep complete for mira " + miraId);
-//
-//        mira.clickMiras ();
-//        MirasList mirasList = new MirasList ();
-//        mirasList.isCorrectPage ();
-//        mirasList.selectLab (MiraLab.AntigenMapProduction);
-//        mirasList.searchAndClickMira (miraId);
+
+        testLog ("mira prep complete");
+        mira.refresh ();
+
+        testLog ("prep complete for mira " + miraId);
+
+        mira.clickMiras ();
+        MirasList mirasList = new MirasList ();
+        mirasList.isCorrectPage ();
+        mirasList.selectLab (MiraLab.AntigenMapProduction);
+        mirasList.searchAndClickMira (miraId);
+
+        mira.clickStatusTab ();
+        assertEquals (mira.getCurrentStage (), "PoolExtraction");
+        assertEquals (mira.getCurrentStatus (), "Ready");
 
     }
 

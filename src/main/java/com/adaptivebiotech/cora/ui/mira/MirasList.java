@@ -87,7 +87,7 @@ public class MirasList extends CoraPage {
             return m;
         }).collect (toList ()));
     }
-
+    
     private String getMiraGuid (String href) {
         return href.replaceFirst (".*mira/details/", "");
     }

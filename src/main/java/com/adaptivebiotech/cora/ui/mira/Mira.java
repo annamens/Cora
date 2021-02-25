@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.mira;
 
 import static com.seleniumfy.test.utils.Logging.info;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
@@ -74,15 +75,20 @@ public class Mira extends CoraPage {
 
     public void clickSave (boolean isActive) {
         String saveButton = isActive ? "//button[text()='Save']" : "button[ng-click='ctrl.save()']";
-        String saveNotification = "//span[text()='MIRA Saved']";
+        // String saveNotification = "//span[text()='MIRA Saved']";
         assertTrue (click (saveButton));
-        info("clicked save button");
+        info ("clicked save button");
         pageLoading ();
-        info("page loaded");
-        if(isActive) {
-            clickPopupOK();
-            info("clicked popup ok");
+        info ("page loaded");
+        if (isActive) {
+            info ("waiting for modal");
+            clickPopupOK ();
+            info ("clicked popup ok");
+            assertTrue (waitUntilVisible (".loading-overlay"));
+            assertTrue (waitForElementInvisible (".loading-overlay"));
+            // pageLoading(); // not reliable here
         }
+        info ("ok should be done with save now");
     }
 
     public String getMiraId () {
@@ -134,13 +140,39 @@ public class Mira extends CoraPage {
     public void clickMiraPrepComplete () {
         String miraPrepComplete = ".btn-activate";
         assertTrue (click (miraPrepComplete));
-        info("clicked mira prep complete");
+        info ("clicked mira prep complete");
         waitUntilVisible (".modal-title");
-        info("modal visible");
+        info ("modal visible");
         clickPopupOK ();
-        info("clicked ok");
+        info ("clicked ok");
         pageLoading ();
-        info("page loaded");
+        info ("page loaded");
+    }
+
+    public void clickStatusTab () {
+        String statusTab = "a[data-ng-click='ctrl.setTab(\\'status\\')']";
+        assertTrue (click (statusTab));
+        pageLoading ();
+        // need to make sure that the table is loaded
+        String currentStage = getCurrentStage ();
+        int count = 0;
+        while (count < 20 && currentStage == null) {
+            count++;
+            info ("waiting for status table to load");
+            doWait (10000);
+            currentStage = getCurrentStage ();
+        }
+        assertNotNull (currentStage);
+    }
+
+    public String getCurrentStage () {
+        String currentStageCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[1]";
+        return getText (currentStageCell);
+    }
+
+    public String getCurrentStatus () {
+        String currentStatusCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[2]";
+        return getText (currentStatusCell);
     }
 
 }
