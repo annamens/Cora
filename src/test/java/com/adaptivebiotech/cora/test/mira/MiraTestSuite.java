@@ -155,12 +155,14 @@ MIRA goes to ImmunoSEQ/Awaiting phase
         mira.clickMiras ();
         mirasList.isCorrectPage ();
         mirasList.selectLab (MiraLab.AntigenMapProduction);
-        // TODO - ok need to just search for the mira and not click it
-//        mirasList.searchAndClickMira (miraId);
+        mirasList.searchForMira (miraId);
         mirasList.clickSelect ();
         mirasList.selectMiraInList (miraId);
-        mirasList.clickCreateSampleManifest ();
-        mirasList.searchAndClickMira (miraId);
+        
+        String downloadedFileName = mirasList.clickCreateSampleManifest ();
+        testLog("downloaded sample manifest " + downloadedFileName);
+        
+        mirasList.clickMira (miraId);
         
         mira.clickStatusTab ();
         assertEquals(mira.getCurrentStage (), "immunoSEQ");

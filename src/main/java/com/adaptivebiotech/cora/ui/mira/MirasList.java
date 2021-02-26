@@ -2,10 +2,13 @@ package com.adaptivebiotech.cora.ui.mira;
 
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.openqa.selenium.Keys.RETURN;
 import static org.testng.Assert.assertTrue;
 import static com.seleniumfy.test.utils.Logging.info;
-
+import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Miras;
@@ -37,6 +40,11 @@ public class MirasList extends CoraPage {
     }
 
     public void searchAndClickMira (String miraId) {
+        searchForMira (miraId);
+        clickMira (miraId);
+    }
+
+    public void searchForMira (String miraId) {
         String searchField = "input[type='search']";
         String firstResult = "//table[contains(@class, 'mira-table')]/tbody/tr[1]/td[1]/a/span";
 
@@ -54,9 +62,6 @@ public class MirasList extends CoraPage {
             firstElementText = waitForElement (firstResult).getText ();
         }
         assertEquals (waitForElement (firstResult).getText (), miraId);
-        assertTrue (click (firstResult));
-        pageLoading ();
-        assertTrue (waitUntilVisible (".mira-header"));
     }
 
     public void selectLab (MiraLab miraLab) {
@@ -99,13 +104,29 @@ public class MirasList extends CoraPage {
         String miraCheckBox = "//td[contains(@class, 'mira-name-description')]/a/span[text()='%s']/../../../td[1]/input[contains(@type, 'checkbox')]";
         assertTrue (click (String.format (miraCheckBox, miraId)));
     }
-    
-    public void clickCreateSampleManifest() {
+
+    public void clickMira (String miraId) {
+        String miraLink = "//td[contains(@class, 'mira-name-description')]/a/span[text()='%s']";
+        assertTrue (click (String.format (miraLink, miraId)));
+        pageLoading ();
+        assertTrue (waitUntilVisible (".mira-header"));
+    }
+
+    public String clickCreateSampleManifest () {
         String createSampleManifestButton = "//button[text()='Create Sample Manifest']";
-        assertTrue(click(createSampleManifestButton));
-        assertTrue(waitUntilVisible(".mira-manifest-dialog"));
-        assertTrue(click("//button[text()='Yes, Create Sample Manifest']"));
-        pageLoading();
+        assertTrue (click (createSampleManifestButton));
+        assertTrue (waitUntilVisible (".mira-manifest-dialog"));
+        assertTrue (click ("//button[text()='Yes, Create Sample Manifest']"));
+        pageLoading ();
+        // verify file downloaded - seems it is downloaded by the time pageloading finishes
+        File downloadDir = new File(getDownloadsDir());
+        String filenameMatch = "Adaptive-AMPL-P01-\\d+.xlsx";
+        File[] downloadedFiles = downloadDir.listFiles ((File f) -> f.getName ().matches (filenameMatch));
+        Arrays.sort(downloadedFiles, Comparator.comparingLong(File::lastModified).reversed());
+        File latestDownload = downloadedFiles[0];
+        assertNotNull(latestDownload);
+        return latestDownload.getName ();
+        
     }
 
     private String getMiraGuid (String href) {
