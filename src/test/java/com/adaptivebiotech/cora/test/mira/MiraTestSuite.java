@@ -22,6 +22,8 @@ import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 
@@ -61,46 +63,6 @@ public class MiraTestSuite extends CoraBaseBrowser {
             testLog (specimenId);
         }
 
-        /*
-         * create antigen map production lab MIRA and take it through completing MIRA prep
-         * New → MIRA
-         * Lab → Antigen Map Production
-         * Type → MIRA
-         * Panel → Minor
-         * when this is selected it clears the panel selection and appears below
-         * Expansion Method → anti-CD3
-         * Specimen For Expansion → enter the specimen ID from the shipment (above) and click "Find"
-         * there is a yellow message "This specimen is not associated with the selected lab."
-         * click "Save"
-         * get the MIRA ID from the top of the page and save it
-         * scroll to Containers, copy the top Container ID, put in the bar code field and click
-         * "Verify"
-         * a blue checkmark appears in that container row in the table
-         * 
-         * 
-         * Copy and edit the "M-xx_Batch Record.xslx" file to replace the existing MIRA ID with the
-         * MIRA ID found in MIRA details
-         * in the first tab
-         * how to do this in java...?
-         * Click "Upload File" and upload the M-yyyy_Batch Record.xslx that you edited above
-         * Click "Upload & Save"
-         * Click "Mira Prep Complete", then "Yes, Save changes" on the modal
-         * Click "Yes, MIRA Prep Complete" on the modal
-         * 
-         * 
-         * click MIRAs icon, search for Lab : Antigen Map Production and by MIRA ID
-         * should return the MIRA
-         * select MIRA, go to MIRA status
-         * MIRA should be in PoolExtraction/Ready status
-         * 
-         * complete Pool Extraction
-search for MIRA by ID and lab
-click "Select" button (in upper right side of search results)
-select the MIRA and click "Create Sample Manifest"
-confirm in the modal
-MIRA goes to ImmunoSEQ/Awaiting phase
-         */
-
         accession.selectNewMira ();
         Mira mira = new Mira ();
         mira.isCorrectPage ();
@@ -129,7 +91,6 @@ MIRA goes to ImmunoSEQ/Awaiting phase
         testLog("about to upload batch record");
         mira.uploadBatchRecord (batchRecord);
         testLog("uploaded batch record");
-        testLog ("driving on...");
 
         mira.clickUploadAndSave (miraId);
         testLog ("clicked upload and save");
@@ -149,8 +110,8 @@ MIRA goes to ImmunoSEQ/Awaiting phase
         mirasList.searchAndClickMira (miraId);
 
         mira.clickStatusTab ();
-        assertEquals (mira.getCurrentStage (), "PoolExtraction");
-        assertEquals (mira.getCurrentStatus (), "Ready");
+        assertEquals (mira.getCurrentStage (), MiraStage.PoolExtraction);
+        assertEquals (mira.getCurrentStatus (), MiraStatus.Ready);
         
         mira.clickMiras ();
         mirasList.isCorrectPage ();
@@ -165,16 +126,21 @@ MIRA goes to ImmunoSEQ/Awaiting phase
         mirasList.clickMira (miraId);
         
         mira.clickStatusTab ();
-        assertEquals(mira.getCurrentStage (), "immunoSEQ");
-        assertEquals(mira.getCurrentStatus (), "Awaiting");
+        assertEquals(mira.getCurrentStage (), MiraStage.immunoSEQ);
+        assertEquals(mira.getCurrentStatus (), MiraStatus.Awaiting);
+        testLog("mira " + miraId + " now in ImmunoSEQ/Awaiting stage");
+               
+        deleteFile (batchRecord);
+        testLog("deleted batch record " + batchRecord);
 
     }
 
+    // TODO should this be in the Mira class?
     private String createNewBatchRecord (String miraId) {
         String baseBatchRecord = "MIRA/M-xx_Batch_Record.xlsx";
         String basePath = ClassLoader.getSystemResource (baseBatchRecord).getPath ();
         String newBatchRecord = miraId + "_Batch_Record.xlsx";
-        String newPath = "/Users/mgrossman/" + newBatchRecord;
+        String newPath = "/tmp/" + newBatchRecord;
 
         testLog ("basePath is: " + basePath);
         testLog ("newPath is: " + newPath);
@@ -201,9 +167,15 @@ MIRA goes to ImmunoSEQ/Awaiting phase
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
-
+        
         return newPath;
-
+    }
+    
+    private void deleteFile (String filename) {
+        File f = new File (filename);
+        if (f.delete () == false) {
+            testLog ("failed to delete tmp file " + filename);
+        }
     }
 
 }

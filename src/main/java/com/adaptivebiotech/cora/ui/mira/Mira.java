@@ -11,6 +11,8 @@ import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 
 /**
@@ -75,20 +77,14 @@ public class Mira extends CoraPage {
 
     public void clickSave (boolean isActive) {
         String saveButton = isActive ? "//button[text()='Save']" : "button[ng-click='ctrl.save()']";
-        // String saveNotification = "//span[text()='MIRA Saved']";
         assertTrue (click (saveButton));
-        info ("clicked save button");
         pageLoading ();
-        info ("page loaded");
         if (isActive) {
-            info ("waiting for modal");
             clickPopupOK ();
-            info ("clicked popup ok");
+            // pageLoading() does not work here
             assertTrue (waitUntilVisible (".loading-overlay"));
             assertTrue (waitForElementInvisible (".loading-overlay"));
-            // pageLoading(); // not reliable here
         }
-        info ("ok should be done with save now");
     }
 
     public String getMiraId () {
@@ -103,12 +99,6 @@ public class Mira extends CoraPage {
         return containerIds;
     }
 
-    public List <String> getPanelNamesText () {
-        String panelNamesField = "[data-ng-bind='panel.name']";
-        List <String> panelNamesText = getTextList (panelNamesField);
-        return panelNamesText;
-    }
-
     public void verifyContainerId (String containerId) {
         String inputField = "input[ng-model='ctrl.containerNumber']";
         String verifyButton = "button[ng-click='ctrl.verify()']";
@@ -117,9 +107,8 @@ public class Mira extends CoraPage {
         assertTrue (click (verifyButton));
         assertTrue (waitUntilVisible (checkmark));
     }
-    
+
     public void uploadBatchRecord (String batchRecordFile) {
-        // magic
         waitForElement ("input[data-ngf-select*='ctrl.fileHandler']").sendKeys (batchRecordFile);
         pageLoading ();
     }
@@ -139,13 +128,9 @@ public class Mira extends CoraPage {
     public void clickMiraPrepComplete () {
         String miraPrepComplete = ".btn-activate";
         assertTrue (click (miraPrepComplete));
-        info ("clicked mira prep complete");
         waitUntilVisible (".modal-title");
-        info ("modal visible");
         clickPopupOK ();
-        info ("clicked ok");
         pageLoading ();
-        info ("page loaded");
     }
 
     public void clickStatusTab () {
@@ -153,7 +138,7 @@ public class Mira extends CoraPage {
         assertTrue (click (statusTab));
         pageLoading ();
         // need to make sure that the table is loaded
-        String currentStage = getCurrentStage ();
+        MiraStage currentStage = getCurrentStage ();
         int count = 0;
         while (count < 20 && currentStage == null) {
             count++;
@@ -164,14 +149,22 @@ public class Mira extends CoraPage {
         assertNotNull (currentStage);
     }
 
-    public String getCurrentStage () {
+    public MiraStage getCurrentStage () {
         String currentStageCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[1]";
-        return getText (currentStageCell);
+        String currentStageCellText = getText (currentStageCell);
+        return currentStageCellText == null ? null : MiraStage.valueOf (currentStageCellText);
     }
 
-    public String getCurrentStatus () {
+    public MiraStatus getCurrentStatus () {
         String currentStatusCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[2]";
-        return getText (currentStatusCell);
+        String currentStatusCellText = getText (currentStatusCell);
+        return currentStatusCellText == null ? null : MiraStatus.valueOf (currentStatusCellText);
+    }
+    
+    private List <String> getPanelNamesText () {
+        String panelNamesField = "[data-ng-bind='panel.name']";
+        List <String> panelNamesText = getTextList (panelNamesField);
+        return panelNamesText;
     }
 
 }

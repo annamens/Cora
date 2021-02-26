@@ -24,7 +24,7 @@ public class PageHelper {
     public enum MiraPanel {
         Aloha, Belmont, Cherry, Denny, Eastlake, Lakeview, Minor, Pike
     }
-    
+
     public enum MiraLab {
         AntigenMapProduction ("Antigen Map Production"),
         AntigenMapRD ("Antigen Map R&D"),
@@ -60,7 +60,15 @@ public class PageHelper {
             this.text = name;
         }
     }
-    
+
+    public enum MiraStage {
+        MiraPrep, PoolExtraction, immunoSEQ, MiraAnalysis, MiraQC, Publishing;
+    }
+
+    public enum MiraStatus {
+        Ready, Processing, Awaiting, Stuck, Failed, Finished, Cancelled;
+    }
+
     public enum Carrier {
         UPS ("UPS"), FEDEX ("Fedex"), COURIER ("Courier"), OTHER ("Other");
 
