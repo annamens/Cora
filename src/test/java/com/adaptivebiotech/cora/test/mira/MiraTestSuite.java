@@ -126,12 +126,9 @@ MIRA goes to ImmunoSEQ/Awaiting phase
         String batchRecord = createNewBatchRecord (miraId);
         testLog ("new batch record is: " + batchRecord);
 
-        // b/c this just opens the file upload dialog and there is no input field to put the
-        // filename into
-        // the user should select the file to upload and click ok
-        mira.clickUpload ();
-        testLog ("now select the file to upload: " + batchRecord);
-        doWait (60000);
+        testLog("about to upload batch record");
+        mira.uploadBatchRecord (batchRecord);
+        testLog("uploaded batch record");
         testLog ("driving on...");
 
         mira.clickUploadAndSave (miraId);
@@ -154,6 +151,20 @@ MIRA goes to ImmunoSEQ/Awaiting phase
         mira.clickStatusTab ();
         assertEquals (mira.getCurrentStage (), "PoolExtraction");
         assertEquals (mira.getCurrentStatus (), "Ready");
+        
+        mira.clickMiras ();
+        mirasList.isCorrectPage ();
+        mirasList.selectLab (MiraLab.AntigenMapProduction);
+        // TODO - ok need to just search for the mira and not click it
+//        mirasList.searchAndClickMira (miraId);
+        mirasList.clickSelect ();
+        mirasList.selectMiraInList (miraId);
+        mirasList.clickCreateSampleManifest ();
+        mirasList.searchAndClickMira (miraId);
+        
+        mira.clickStatusTab ();
+        assertEquals(mira.getCurrentStage (), "immunoSEQ");
+        assertEquals(mira.getCurrentStatus (), "Awaiting");
 
     }
 

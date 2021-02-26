@@ -43,14 +43,14 @@ public class MirasList extends CoraPage {
         assertTrue (setText (searchField, miraId));
         assertTrue (pressKey (RETURN));
         pageLoading ();
-        
+
         // wait for the search results to populate
         String firstElementText = waitForElement (firstResult).getText ();
         int count = 0;
-        while(count < 20 && !firstElementText.equals (miraId)) {
-            info("waiting for search result");
+        while (count < 20 && !firstElementText.equals (miraId)) {
+            info ("waiting for search result");
             count++;
-            doWait(10000);
+            doWait (10000);
             firstElementText = waitForElement (firstResult).getText ();
         }
         assertEquals (waitForElement (firstResult).getText (), miraId);
@@ -87,7 +87,27 @@ public class MirasList extends CoraPage {
             return m;
         }).collect (toList ()));
     }
+
+    public void clickSelect () {
+        String selectButton = "//button[text()='Select']";
+        String selectAllCheckbox = "//table[contains(@class,'mira-table')]/thead/tr/th/input[contains(@type, 'checkbox')]";
+        assertTrue (click (selectButton));
+        assertTrue (waitUntilVisible (selectAllCheckbox));
+    }
+
+    public void selectMiraInList (String miraId) {
+        String miraCheckBox = "//td[contains(@class, 'mira-name-description')]/a/span[text()='%s']/../../../td[1]/input[contains(@type, 'checkbox')]";
+        assertTrue (click (String.format (miraCheckBox, miraId)));
+    }
     
+    public void clickCreateSampleManifest() {
+        String createSampleManifestButton = "//button[text()='Create Sample Manifest']";
+        assertTrue(click(createSampleManifestButton));
+        assertTrue(waitUntilVisible(".mira-manifest-dialog"));
+        assertTrue(click("//button[text()='Yes, Create Sample Manifest']"));
+        pageLoading();
+    }
+
     private String getMiraGuid (String href) {
         return href.replaceFirst (".*mira/details/", "");
     }

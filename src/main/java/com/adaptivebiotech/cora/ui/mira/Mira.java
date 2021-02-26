@@ -117,12 +117,11 @@ public class Mira extends CoraPage {
         assertTrue (click (verifyButton));
         assertTrue (waitUntilVisible (checkmark));
     }
-
-    // this brings up the browser upload dialog
-    public void clickUpload () {
-        String uploadButton = "button[data-ng-model='ctrl.poolsFiles']";
-        assertTrue (click (uploadButton));
-
+    
+    public void uploadBatchRecord (String batchRecordFile) {
+        // magic
+        waitForElement ("input[data-ngf-select*='ctrl.fileHandler']").sendKeys (batchRecordFile);
+        pageLoading ();
     }
 
     public void clickUploadAndSave (String miraId) {
