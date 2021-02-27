@@ -1,16 +1,10 @@
 package com.adaptivebiotech.cora.test.mira;
 
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -85,12 +79,12 @@ public class MiraTestSuite extends CoraBaseBrowser {
         mira.verifyContainerId (containerIds.get (0));
         testLog ("verified container id: " + containerIds.get (0));
 
-        String batchRecord = createNewBatchRecord (miraId);
+        String batchRecord = mira.createNewBatchRecord (miraId);
         testLog ("new batch record is: " + batchRecord);
 
-        testLog("about to upload batch record");
+        testLog ("about to upload batch record");
         mira.uploadBatchRecord (batchRecord);
-        testLog("uploaded batch record");
+        testLog ("uploaded batch record");
 
         mira.clickUploadAndSave (miraId);
         testLog ("clicked upload and save");
@@ -110,67 +104,31 @@ public class MiraTestSuite extends CoraBaseBrowser {
         mirasList.searchAndClickMira (miraId);
 
         mira.clickStatusTab ();
-        assertEquals (mira.getCurrentStage (), MiraStage.PoolExtraction);
-        assertEquals (mira.getCurrentStatus (), MiraStatus.Ready);
-        
+        assertTrue (mira.waitForStage (MiraStage.PoolExtraction));
+        assertTrue (mira.waitForStatus (MiraStatus.Ready));
+
         mira.clickMiras ();
         mirasList.isCorrectPage ();
         mirasList.selectLab (MiraLab.AntigenMapProduction);
         mirasList.searchForMira (miraId);
         mirasList.clickSelect ();
         mirasList.selectMiraInList (miraId);
-        
+
         String downloadedFileName = mirasList.clickCreateSampleManifest ();
-        testLog("downloaded sample manifest " + downloadedFileName);
-        
+        testLog ("downloaded sample manifest " + downloadedFileName);
+
         mirasList.clickMira (miraId);
-        
+
         mira.clickStatusTab ();
-        assertEquals(mira.getCurrentStage (), MiraStage.immunoSEQ);
-        assertEquals(mira.getCurrentStatus (), MiraStatus.Awaiting);
-        testLog("mira " + miraId + " now in ImmunoSEQ/Awaiting stage");
-               
+        assertTrue (mira.waitForStage (MiraStage.immunoSEQ));
+        assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
+        testLog ("mira " + miraId + " now in ImmunoSEQ/Awaiting stage");
+
         deleteFile (batchRecord);
-        testLog("deleted batch record " + batchRecord);
+        testLog ("deleted batch record " + batchRecord);
 
     }
 
-    // TODO should this be in the Mira class?
-    private String createNewBatchRecord (String miraId) {
-        String baseBatchRecord = "MIRA/M-xx_Batch_Record.xlsx";
-        String basePath = ClassLoader.getSystemResource (baseBatchRecord).getPath ();
-        String newBatchRecord = miraId + "_Batch_Record.xlsx";
-        String newPath = "/tmp/" + newBatchRecord;
-
-        testLog ("basePath is: " + basePath);
-        testLog ("newPath is: " + newPath);
-
-        try {
-            FileInputStream inputStream = new FileInputStream (new File (basePath));
-            Workbook workbook = WorkbookFactory.create (inputStream);
-            FileOutputStream outputStream = FileUtils.openOutputStream (new File (newPath));
-            Sheet sheet = workbook.getSheet ("Experiment Request");
-            sheet.protectSheet (null);
-            Cell cell = sheet.getRow (2).getCell (0);
-            String originalCellValue = cell.getStringCellValue ();
-            testLog ("originalCellValue is: " + originalCellValue);
-            cell.setBlank ();
-            cell.setCellValue (miraId);
-            String newCellValue = cell.getStringCellValue ();
-            testLog ("newCellValue is: " + newCellValue);
-
-            workbook.getCreationHelper ().createFormulaEvaluator ().evaluateAll ();
-            testLog ("evaluated formulas");
-            workbook.write (outputStream);
-            outputStream.close ();
-            inputStream.close ();
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-        
-        return newPath;
-    }
-    
     private void deleteFile (String filename) {
         File f = new File (filename);
         if (f.delete () == false) {

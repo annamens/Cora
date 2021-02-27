@@ -162,8 +162,6 @@ public class Accession extends CoraPage {
     }
     
     public void clickAccessionComplete () {
-//        String accessionComplete = "[data-ng-click='ctrl.$scope.$broadcast(\'accession-save\')]";
-        // /html/body/div[4]/div/div/div/form/ng-transclude/div/div[1]/div[2]/div/div/div/ul/li[6]/button
         String accessionComplete = "[data-ng-click='ctrl.$scope.$broadcast(\\'research-accession-complete\\')']";
         assertTrue (click (accessionComplete));
         clickPopupOK ();

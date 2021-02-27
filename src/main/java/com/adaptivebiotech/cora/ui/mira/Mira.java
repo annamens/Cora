@@ -4,8 +4,15 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.List;
-import org.openqa.selenium.support.ui.Select;
+import org.apache.commons.io.FileUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
@@ -21,6 +28,9 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
  */
 public class Mira extends CoraPage {
 
+    private final int numWaits = 10;
+    private final int msWait = 10000;
+    
     public Mira () {
         staticNavBarHeight = 90;
     }
@@ -32,14 +42,15 @@ public class Mira extends CoraPage {
 
     public void selectPanel (MiraPanel panel) {
         // after selection, the getFirstSelectedOption() stays at "Select..."
-        Select dropdown = new Select (scrollTo (waitForElementClickable (locateBy ("[name='panelType']"))));
+        String selector = "[name='panelType']";
+        CoraSelect dropdown = new CoraSelect (scrollTo (waitForElementClickable (locateBy (selector))));
         dropdown.selectByVisibleText (panel.name ());
         // wait until the panel is visible below
         int count = 0;
-        while (count < 10 && !getPanelNamesText ().contains (panel.name ())) {
+        while (count < numWaits && !getPanelNamesText ().contains (panel.name ())) {
             info ("waiting for panel to be added: " + panel.name ());
             count++;
-            doWait (10000);
+            doWait (msWait);
         }
         assertTrue (getPanelNamesText ().contains (panel.name ()));
     }
@@ -140,27 +151,77 @@ public class Mira extends CoraPage {
         // need to make sure that the table is loaded
         MiraStage currentStage = getCurrentStage ();
         int count = 0;
-        while (count < 20 && currentStage == null) {
+        while (count < numWaits && currentStage == null) {
             count++;
             info ("waiting for status table to load");
-            doWait (10000);
+            doWait (msWait);
             currentStage = getCurrentStage ();
         }
         assertNotNull (currentStage);
     }
 
-    public MiraStage getCurrentStage () {
+    public String createNewBatchRecord (String miraId) {
+        String baseBatchRecord = "MIRA/M-xx_Batch_Record.xlsx";
+        String basePath = ClassLoader.getSystemResource (baseBatchRecord).getPath ();
+        String newBatchRecord = miraId + "_Batch_Record.xlsx";
+        String newPath = "/tmp/" + newBatchRecord;
+        String worksheetName = "Experiment Request";
+
+        try {
+            FileInputStream inputStream = new FileInputStream (new File (basePath));
+            Workbook workbook = WorkbookFactory.create (inputStream);
+            FileOutputStream outputStream = FileUtils.openOutputStream (new File (newPath));
+            Sheet sheet = workbook.getSheet (worksheetName);
+            sheet.protectSheet (null);
+            Cell cell = sheet.getRow (2).getCell (0);
+            cell.setBlank ();
+            cell.setCellValue (miraId);
+            workbook.getCreationHelper ().createFormulaEvaluator ().evaluateAll ();
+            workbook.write (outputStream);
+            outputStream.close ();
+            inputStream.close ();
+            info ("created new mira batch record file " + newPath);
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+
+        return newPath;
+    }
+
+    public boolean waitForStage (MiraStage stage) {
+        int count = 0;
+        while (count < numWaits && getCurrentStage () != stage) {
+            count++;
+            info ("waiting for stage : " + stage);
+            refresh ();
+            doWait (msWait);
+        }
+        return getCurrentStage () == stage;
+    }
+
+    public boolean waitForStatus (MiraStatus status) {
+        int count = 0;
+        while (count < numWaits && getCurrentStatus () != status) {
+            count++;
+            info ("waiting for status : " + status);
+            refresh ();
+            doWait (msWait);
+        }
+        return getCurrentStatus () == status;
+    }
+
+    private MiraStage getCurrentStage () {
         String currentStageCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[1]";
         String currentStageCellText = getText (currentStageCell);
         return currentStageCellText == null ? null : MiraStage.valueOf (currentStageCellText);
     }
 
-    public MiraStatus getCurrentStatus () {
+    private MiraStatus getCurrentStatus () {
         String currentStatusCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[2]";
         String currentStatusCellText = getText (currentStatusCell);
         return currentStatusCellText == null ? null : MiraStatus.valueOf (currentStatusCellText);
     }
-    
+
     private List <String> getPanelNamesText () {
         String panelNamesField = "[data-ng-bind='panel.name']";
         List <String> panelNamesText = getTextList (panelNamesField);

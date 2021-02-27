@@ -4,6 +4,7 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
@@ -25,7 +26,7 @@ public class CoraSelect extends Select {
         }
     }
 
-    public boolean waitForDropdownText (String s) {
+    private boolean waitForDropdownText (String s) {
         int count = 0;
         List<String> optionTexts = getAllOptionTexts();
         while (count < 10 && !optionTexts.contains (s)) {
@@ -33,22 +34,21 @@ public class CoraSelect extends Select {
             count++;
             doWait (10000);
             optionTexts = getAllOptionTexts();
-            info("got all optionTexts, count is: " + count);
         }
-        info("waitForDropdownText returning");
         return optionTexts.contains (s);
     }
 
-    List <String> getAllOptionTexts () {
-        info("getAllOptionTexts called");
+    private List <String> getAllOptionTexts () {
         List <WebElement> options = this.getOptions ();
-        info("number of options is: " + options.size ());
         List <String> optionTexts = new ArrayList <> ();
         for (WebElement option : options) {
-            optionTexts.add (option.getText ());
-            info (option.getText ());
+            try { // sometimes it refreshes and you get a stale element reference
+                optionTexts.add (option.getText ());
+            } catch (StaleElementReferenceException sere) {
+                info ("caught exception " + sere);
+                break;
+            }
         }
-        info("returning " + optionTexts.size () + " optionTexts");
         return optionTexts;
     }
 
