@@ -3,7 +3,6 @@ package com.adaptivebiotech.cora.test.mira;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertTrue;
 
-import java.io.File;
 import java.util.List;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -124,16 +123,6 @@ public class MiraTestSuite extends CoraBaseBrowser {
         assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
         testLog ("mira " + miraId + " now in ImmunoSEQ/Awaiting stage");
 
-        deleteFile (batchRecord);
-        testLog ("deleted batch record " + batchRecord);
-
-    }
-
-    private void deleteFile (String filename) {
-        File f = new File (filename);
-        if (f.delete () == false) {
-            testLog ("failed to delete tmp file " + filename);
-        }
     }
 
 }

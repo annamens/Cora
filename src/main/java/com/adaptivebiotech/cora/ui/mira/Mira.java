@@ -161,16 +161,16 @@ public class Mira extends CoraPage {
     }
 
     public String createNewBatchRecord (String miraId) {
-        String baseBatchRecord = "MIRA/M-xx_Batch_Record.xlsx";
-        String basePath = ClassLoader.getSystemResource (baseBatchRecord).getPath ();
-        String newBatchRecord = miraId + "_Batch_Record.xlsx";
-        String newPath = "/tmp/" + newBatchRecord;
+        String xlFolder = "MIRA/";
+        String basePath = ClassLoader.getSystemResource (xlFolder).getPath ();
+        String originalBatchRecord = basePath + "M-xx_Batch_Record.xlsx";
+        String newBatchRecord = basePath + miraId + "_Batch_Record.xlsx";
         String worksheetName = "Experiment Request";
 
         try {
-            FileInputStream inputStream = new FileInputStream (new File (basePath));
+            FileInputStream inputStream = new FileInputStream (new File (originalBatchRecord));
             Workbook workbook = WorkbookFactory.create (inputStream);
-            FileOutputStream outputStream = FileUtils.openOutputStream (new File (newPath));
+            FileOutputStream outputStream = FileUtils.openOutputStream (new File (newBatchRecord));
             Sheet sheet = workbook.getSheet (worksheetName);
             sheet.protectSheet (null);
             Cell cell = sheet.getRow (2).getCell (0);
@@ -180,12 +180,12 @@ public class Mira extends CoraPage {
             workbook.write (outputStream);
             outputStream.close ();
             inputStream.close ();
-            info ("created new mira batch record file " + newPath);
+            info ("created new mira batch record file " + newBatchRecord);
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
 
-        return newPath;
+        return newBatchRecord;
     }
 
     public boolean waitForStage (MiraStage stage) {
