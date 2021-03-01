@@ -43,7 +43,7 @@ public class Mira extends CoraPage {
     public void selectPanel (MiraPanel panel) {
         // after selection, the getFirstSelectedOption() stays at "Select..."
         String selector = "[name='panelType']";
-        CoraSelect dropdown = new CoraSelect (scrollTo (waitForElementClickable (locateBy (selector))));
+        CoraSelect dropdown = new CoraSelect (waitForElementClickable (selector));
         dropdown.selectByVisibleText (panel.name ());
         // wait until the panel is visible below
         int count = 0;
@@ -57,21 +57,21 @@ public class Mira extends CoraPage {
 
     public void selectLab (MiraLab lab) {
         String labSelector = "[name='labType']";
-        CoraSelect dropdown = new CoraSelect (scrollTo (waitForElementClickable (locateBy (labSelector))));
+        CoraSelect dropdown = new CoraSelect (waitForElementClickable (labSelector));
         dropdown.selectByVisibleText (lab.text);
         assertEquals (dropdown.getFirstSelectedOption ().getText (), lab.text);
     }
 
     public void selectType (MiraType type) {
         String typeSelector = "[name='miraType']";
-        CoraSelect dropdown = new CoraSelect (scrollTo (waitForElementClickable (locateBy (typeSelector))));
+        CoraSelect dropdown = new CoraSelect (waitForElementClickable (typeSelector));
         dropdown.selectByVisibleText (type.text);
         assertEquals (dropdown.getFirstSelectedOption ().getText (), type.text);
     }
 
     public void selectExpansionMethod (MiraExpansionMethod expansionMethod) {
         String emSelector = "[name='expansionMethod']";
-        CoraSelect dropdown = new CoraSelect (scrollTo (waitForElementClickable (locateBy (emSelector))));
+        CoraSelect dropdown = new CoraSelect (waitForElementClickable (emSelector));
         dropdown.selectByVisibleText (expansionMethod.text);
         assertEquals (dropdown.getFirstSelectedOption ().getText (), expansionMethod.text);
     }
