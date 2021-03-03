@@ -6,6 +6,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.mira.Mira;
 import com.adaptivebiotech.cora.ui.mira.MirasList;
@@ -25,45 +26,84 @@ public class MiraTestSuite extends CoraBaseBrowser {
     @Test
     public void testCreateAndActivateMIRA () {
 
+        MiraLab miraLab = MiraLab.AntigenMapProduction;
+        MiraType miraType = MiraType.MIRA;
+        MiraPanel miraPanel = MiraPanel.Minor;
+        MiraExpansionMethod miraExpansionMethod = MiraExpansionMethod.AntiCD3;
+
+        loginToCora ();
+
+        List <String> specimenIds = createGeneralShipmentFromIntakeManifest ("MIRA/cora-intakemanifest_28JUL2020.xlsx");
+
+        String miraId = createNewMira (miraLab,
+                                       miraType,
+                                       miraPanel,
+                                       miraExpansionMethod,
+                                       specimenIds.get (0));
+
+        gotoMiraByLabAndId (miraId, miraLab);
+
+        waitForStageAndStatus (MiraStage.PoolExtraction, MiraStatus.Ready);
+
+        createSampleManifest (miraId, MiraLab.AntigenMapProduction);
+    }
+
+    private void loginToCora () {
         Login login = new Login ();
         login.doLogin ();
         OrdersList ordersList = new OrdersList ();
         ordersList.isCorrectPage ();
-        ordersList.selectNewGeneralShipment ();
+    }
 
-        Shipment shipment = new Shipment ();
-        shipment.isBatchOrGeneral ();
-        shipment.enterShippingCondition (ShippingCondition.Ambient);
-        shipment.clickSave ();
-        testLog ("saved general shipment " + shipment.getShipmentNum ());
+    private void waitForStageAndStatus (MiraStage miraStage, MiraStatus miraStatus) {
+        Mira mira = new Mira ();
+        mira.clickStatusTab ();
+        assertTrue (mira.waitForStage (miraStage));
+        assertTrue (mira.waitForStatus (miraStatus));
+    }
 
-        shipment.gotoAccession ();
+    private void gotoMiraByLabAndId (String miraId, MiraLab miraLab) {
+        CoraPage coraPage = new CoraPage ();
+        coraPage.clickMiras ();
+        MirasList mirasList = new MirasList ();
 
-        Accession accession = new Accession ();
-        String fullPath = ClassLoader.getSystemResource ("MIRA/cora-intakemanifest_28JUL2020.xlsx").getPath ();
-        accession.uploadIntakeManifest (fullPath);
-        accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
-        accession.clickAccessionComplete ();
-        accession.waitForStatus ("Accession Complete");
-        testLog ("accession complete");
+        mirasList.isCorrectPage ();
+        mirasList.searchAndClickMira (miraId, miraLab);
+    }
 
-        List <String> specimenIds = accession.getSpecimenIds ();
-        // these should all be the same
-        testLog ("specimen ids are: ");
-        for (String specimenId : specimenIds) {
-            testLog (specimenId);
-        }
+    private String createSampleManifest (String miraId, MiraLab miraLab) {
+        CoraPage coraPage = new CoraPage ();
+        coraPage.clickMiras ();
+        MirasList mirasList = new MirasList ();
 
-        accession.selectNewMira ();
+        mirasList.isCorrectPage ();
+        mirasList.searchForMira (miraId, miraLab);
+        mirasList.clickSelect ();
+        mirasList.selectMiraInList (miraId);
+
+        String downloadedFileName = mirasList.clickCreateSampleManifest ();
+        testLog ("downloaded sample manifest " + downloadedFileName);
+
+        mirasList.clickMira (miraId);
+
+        waitForStageAndStatus (MiraStage.immunoSEQ, MiraStatus.Awaiting);
+        testLog ("mira " + miraId + " now in ImmunoSEQ/Awaiting stage");
+
+        return downloadedFileName;
+    }
+
+    private String createNewMira (MiraLab miraLab, MiraType miraType, MiraPanel miraPanel,
+                                  MiraExpansionMethod miraEM, String specimenId) {
+        CoraPage coraPage = new CoraPage ();
+        coraPage.selectNewMira ();
+
         Mira mira = new Mira ();
         mira.isCorrectPage ();
-        mira.selectLab (MiraLab.AntigenMapProduction);
-        mira.selectType (MiraType.MIRA);
-        mira.selectPanel (MiraPanel.Minor);
-        mira.selectExpansionMethod (MiraExpansionMethod.AntiCD3);
-        mira.enterSpecimenAndFind (specimenIds.get (0));
+        mira.selectLab (miraLab);
+        mira.selectType (miraType);
+        mira.selectPanel (miraPanel);
+        mira.selectExpansionMethod (miraEM);
+        mira.enterSpecimenAndFind (specimenId);
         mira.clickSave (false);
 
         String miraId = mira.getMiraId ();
@@ -96,33 +136,40 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         testLog ("prep complete for mira " + miraId);
 
-        mira.clickMiras ();
-        MirasList mirasList = new MirasList ();
-        mirasList.isCorrectPage ();
-        mirasList.selectLab (MiraLab.AntigenMapProduction);
-        mirasList.searchAndClickMira (miraId);
+        return miraId;
+    }
 
-        mira.clickStatusTab ();
-        assertTrue (mira.waitForStage (MiraStage.PoolExtraction));
-        assertTrue (mira.waitForStatus (MiraStatus.Ready));
+    private List <String> createGeneralShipmentFromIntakeManifest (String intakeManifest) {
+        CoraPage coraPage = new CoraPage ();
+        coraPage.selectNewGeneralShipment ();
 
-        mira.clickMiras ();
-        mirasList.isCorrectPage ();
-        mirasList.selectLab (MiraLab.AntigenMapProduction);
-        mirasList.searchForMira (miraId);
-        mirasList.clickSelect ();
-        mirasList.selectMiraInList (miraId);
+        Shipment shipment = new Shipment ();
+        shipment.isBatchOrGeneral ();
+        shipment.enterShippingCondition (ShippingCondition.Ambient);
+        shipment.clickSave ();
+        testLog ("saved general shipment " + shipment.getShipmentNum ());
 
-        String downloadedFileName = mirasList.clickCreateSampleManifest ();
-        testLog ("downloaded sample manifest " + downloadedFileName);
+        shipment.gotoAccession ();
 
-        mirasList.clickMira (miraId);
+        Accession accession = new Accession ();
+        accession.isCorrectPage ();
+        String fullPath = ClassLoader.getSystemResource (intakeManifest).getPath ();
+        accession.uploadIntakeManifest (fullPath);
+        accession.clickIntakeComplete ();
+        accession.labelingComplete ();
+        accession.labelVerificationComplete ();
+        accession.clickAccessionComplete ();
+        accession.waitForStatus ("Accession Complete");
+        testLog ("accession complete");
 
-        mira.clickStatusTab ();
-        assertTrue (mira.waitForStage (MiraStage.immunoSEQ));
-        assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
-        testLog ("mira " + miraId + " now in ImmunoSEQ/Awaiting stage");
+        List <String> specimenIds = accession.getSpecimenIds ();
+        // these should all be the same
+        testLog ("specimen ids are: ");
+        for (String specimenId : specimenIds) {
+            testLog (specimenId);
+        }
 
+        return specimenIds;
     }
 
 }

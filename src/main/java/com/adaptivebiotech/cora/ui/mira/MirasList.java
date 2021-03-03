@@ -44,6 +44,16 @@ public class MirasList extends CoraPage {
         clickMira (miraId);
     }
 
+    public void searchAndClickMira (String miraId, MiraLab miraLab) {
+        selectLab (miraLab);
+        searchAndClickMira (miraId);
+    }
+    
+    public void searchForMira (String miraId, MiraLab miraLab) {
+        selectLab (miraLab);
+        searchForMira (miraId);
+    }
+    
     public void searchForMira (String miraId) {
         String searchField = "input[type='search']";
         String firstResult = "//table[contains(@class, 'mira-table')]/tbody/tr[1]/td[1]/a/span";

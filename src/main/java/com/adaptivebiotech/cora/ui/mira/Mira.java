@@ -29,8 +29,8 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 public class Mira extends CoraPage {
 
     private final int numWaits = 10;
-    private final int msWait = 10000;
-    
+    private final int msWait   = 10000;
+
     public Mira () {
         staticNavBarHeight = 90;
     }
