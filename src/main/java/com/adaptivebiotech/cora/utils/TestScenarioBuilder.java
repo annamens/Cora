@@ -37,6 +37,7 @@ import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.ProvidersResponse;
 import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.dto.Research.TechTransfer;
 import com.adaptivebiotech.cora.dto.Shipment;
@@ -98,6 +99,18 @@ public class TestScenarioBuilder {
                 account.id = response.objects.get (0).id;
                 return account;
             }
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    public synchronized static Physician getPhysician (String first, String last, String account) {
+        try {
+            String[] args = { "firstName=" + first, "lastName=" + last, "accountName=" + account };
+            String url = encodeUrl (coraTestUrl + "/cora/api/v1/providers?", args);
+            return mapper.readValue (get (url), ProvidersResponse.class).objects.stream ()
+                                                                                .filter (p -> p.npi != null && p.npi.length () > 0)
+                                                                                .findAny ().get ();
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
