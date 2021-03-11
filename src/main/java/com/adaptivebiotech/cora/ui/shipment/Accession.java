@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static org.testng.Assert.assertTrue;
+import java.util.List;
 import static org.testng.Assert.assertEquals;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
@@ -159,5 +160,17 @@ public class Accession extends CoraPage {
         String cssSave = "[ng-click='ctrl.save()'";
         assertTrue (click (cssSave));
     }
+    
+    public void clickAccessionComplete () {
+        String accessionComplete = "[data-ng-click='ctrl.$scope.$broadcast(\\'research-accession-complete\\')']";
+        assertTrue (click (accessionComplete));
+        clickPopupOK ();
+    }
+    
+    public List<String> getSpecimenIds () {
+        String specimenIds = "[data-ng-bind='::specimen.specimen.specimenNumber']";
+        return getTextList (specimenIds);
+    }
+    
 
 }

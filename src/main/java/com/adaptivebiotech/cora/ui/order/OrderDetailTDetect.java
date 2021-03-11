@@ -140,5 +140,100 @@ public class OrderDetailTDetect extends Diagnostic {
         String xpath = "//label[text()='ICD Codes']/..";
         assertTrue (isTextInElement (xpath, code));
     }
+    
+    public String getPatientGenderText () {
+        String xpath = "//label[text()='Gender']/../div[1]";
+        String genderText = getText (xpath);
+        return genderText;
+
+    }
+
+    public boolean isCovidTestSelected () {
+        String xpath = "input[ng-reflect-value='Covid19']";
+
+        return waitForElementVisible (xpath).isSelected ();
+    }
+
+    public String getOrderCode () {
+        String xpath = "input[formcontrolname='externalOrderCode']";
+        return readInput (xpath);
+    }
+
+    public String getOrderName () {
+        String xpath = "//labeled-value[@label='Order Name']/div/div[2]/span";
+        return getText (xpath);
+    }
+
+    @Override
+    public String getOrderNum () {
+        String xpath = "//label[@id='order-number-text']/../div[1]/span";
+        return getText (xpath);
+    }
+
+    public String getBillingAddressLine1 () {
+        String xpath = "input[formcontrolname='address1']";
+        return readInput (xpath);
+    }
+
+    public String getBillingAddressLine2 () {
+        String xpath = "input[formcontrolname='address2']";
+        return readInput (xpath);
+    }
+
+    public String getBillingAddressCity () {
+        String xpath = "input[formcontrolname='locality']";
+        return readInput (xpath);
+    }
+
+    public String getBillingAddressState () {
+        String xpath = "select[formcontrolname='region']";
+        return getFirstSelectedText (xpath);
+    }
+
+    public String getBillingZipcode () {
+        String xpath = "input[formcontrolname='postCode']";
+        return readInput (xpath);
+    }
+
+    public String getBillingType () {
+        String css = "#billing-type";
+        return getFirstSelectedText (css);
+    }
+
+    public String getPhlebotomySelection () {
+        String xpath = "//h3[text()='Phlebotomy Selection']/../div";
+        return getText (xpath);
+    }
+
+    public String getBillingPhone () {
+        String xpath = "input[formcontrolname='phone']";
+        return readInput (xpath);
+    }
+
+    public String getBillingEmail () {
+        String xpath = "input[formcontrolname='email']";
+        return readInput (xpath);
+    }
+
+    public String getPatientName () {
+        String xpath = "//label[text()='Patient']/../div[1]";
+        return getText (xpath);
+    }
+
+    public String getPatientDOB () {
+        String xpath = "//label[text()='Birth Date']/../div[1]";
+        return getText (xpath);
+    }
+
+    public String getPatientCode () {
+        String xpath = "//label[text()='Patient Code']/../div/a[1]/span";
+        return getText (xpath);
+    }
+
+    public void setCollectionDate (String date) {
+        String css = "[formcontrolname=\"collectionDate\"]";
+        setText (css, date);
+
+    }
 
 }

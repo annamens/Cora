@@ -20,6 +20,7 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
+import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
@@ -869,6 +870,55 @@ public class Diagnostic extends CoraPage {
     public String getOrderNotes (OrderStatus state) {
         String css = "[" + (Pending.equals (state) ? "ng-model" : "notes") + "='ctrl.orderEntry.order.notes']";
         return Pending.equals (state) ? readInput (css) : getText (css);
+    }
+
+    public String getDAGText () {
+        String DAG = "[ng-bind*='dataAnalysisGroup']";
+        return getText (DAG);
+    }
+
+    public void clickCorrectReport () {
+        String button = "//button[text()='Correct Report']";
+        assertTrue (click (button));
+        pageLoading ();
+    }
+
+    public void enterReasonForCorrection (String text) {
+        String reasonTextArea = "[ng-model='ctrl.reportEntry.report.commentInfo.correctionReason']";
+        assertTrue (setText (reasonTextArea, text));
+    }
+
+    public void clickCorrectReportSaveAndUpdate () {
+        String button = "[ng-click='ctrl.update()']";
+        assertTrue (click (button));
+        pageLoading ();
+    }
+
+    public int getMessageTableRowCount () {
+        String messages = "//h2[text()='Messages']";
+        assertTrue (click (messages));
+        String messagesTableRows = "[ng-repeat*='ctrl.orderEntry.orderMessages']";
+        List <WebElement> rows = waitForElementsVisible (messagesTableRows);
+        return rows.size ();
+    }
+
+    public boolean isMessagesTableVisible () {
+        String messages = "//h2[text()='Messages']";
+        return waitUntilVisible (messages);
+    }
+
+    public boolean waitForCorrectedReportStatusFinished () {
+        String reportDeliveryStatus = "//tr[contains (@ng-repeat-start, 'releasedReports')][1]/td[contains (@ng-bind, 'deliveryStatus')]";
+        int count = 0;
+
+        String status = getText (reportDeliveryStatus);
+        while (count < 10 && !status.equals ("Finished")) {
+            doWait (10000);
+            refresh ();
+            status = getText (reportDeliveryStatus);
+            count++;
+        }
+        return status.equals ("Finished");
     }
 
 }
