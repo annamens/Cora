@@ -89,7 +89,7 @@ public class Diagnostic extends CoraPage {
         // click release report, wait for popup, enter username and pw, then click release
         // button in popup
         assertTrue (click (releaseReport));
-        assertTrue (isTextInElement (popupTitle, "Sign & Release Report"));
+        assertTrue (isTextInElement (popupTitle, "Release Report"));
         assertTrue (setText (usernameField, coraTestUser));
         assertTrue (setText (passwordField, coraTestPass));
         assertTrue (click (button));
