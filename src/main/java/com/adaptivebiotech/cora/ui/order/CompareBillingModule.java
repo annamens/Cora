@@ -6,12 +6,11 @@ import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
-public class CompareBillingModule  extends CoraPage {
+public class CompareBillingModule extends CoraPage {
 
     public void isCorrectPage () {
-        String css = ".modal-title";
-        waitForElementVisible (css);
-        assertEquals (getText (css), "Compare and Select Billing");
+        waitForElementVisible (popupTitle);
+        assertEquals (getText (popupTitle), "Compare and Select Billing");
     }
 
     public int countNumDifferentFields () {

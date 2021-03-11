@@ -34,7 +34,7 @@ public class OrderStatus extends Diagnostic {
         String css = "[ng-click=\"ctrl.showPatientNotesDialog()\"]";
         assertTrue (click (css));
         waitForElementVisible (".patient-notes-modal");
-        assertTrue (getText (".modal-title").contains ("Patient Note for Patient "));
+        assertTrue (getText (popupTitle).contains ("Patient Note for Patient "));
     }
 
     // patient notes popup

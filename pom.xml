@@ -167,7 +167,7 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.functional</groupId>
             <artifactId>pipeline-plugins</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>

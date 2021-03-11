@@ -7,8 +7,8 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.Keys.ENTER;
-import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -24,13 +24,10 @@ import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 public class Shipment extends CoraPage {
-    
-    
+
     private final String cssCarrier        = "#carrierType";
     private final String cssTrackingNumber = "#trackingNumber";
     private final String cssNotes          = "#shipment-notes";
-
-
 
     public Shipment () {
         staticNavBarHeight = 195;
@@ -196,7 +193,7 @@ public class Shipment extends CoraPage {
         saveButton.click ();
         pageLoading ();
     }
-    
+
     public void enterCarrier (Carrier coraCarrier) {
         assertTrue (clickAndSelectValue (cssCarrier, "string:" + coraCarrier.text));
     }
@@ -219,8 +216,8 @@ public class Shipment extends CoraPage {
         assertTrue (click (cssShipmentDiscrepancy));
         pageLoading ();
         String expectedTitle = "Discrepancy";
-        String title = waitForElementVisible (".modal-title").getText ();
-        assertEquals(title, expectedTitle);
+        String title = waitForElementVisible (popupTitle).getText ();
+        assertEquals (title, expectedTitle);
     }
 
     public void enterNotes (String notes) {
@@ -252,17 +249,17 @@ public class Shipment extends CoraPage {
         return readInput ("#orderNumber");
     }
 
-     public ContainerType getContainerType () {
-         String text = getFirstSelectedText("#containerType");
-         return ContainerType.getContainerType (text);
-     }
+    public ContainerType getContainerType () {
+        String text = getFirstSelectedText ("#containerType");
+        return ContainerType.getContainerType (text);
+    }
 
     public String getInitialStorageLocation () {
         String cssInitialStorageLocation = "[ng-model='ctrl.storageLocation']";
         return getFirstSelectedText (cssInitialStorageLocation);
     }
 
-    public List<String> getAttachmentNames () {
+    public List <String> getAttachmentNames () {
         return getTextList ("[ng-bind='attachment.name']");
     }
 
