@@ -31,24 +31,21 @@ public class PatientDetail extends CoraPage {
         String xpathForEditButton = "//*[@class='demographics-details']/..//button";
         assertTrue (click (xpathForEditButton));
         String expectedTitle = "Edit Patient Demographics";
-        String title = getText (".modal-title");
-        assertEquals (title, expectedTitle);
+        assertTrue (isTextInElement (".modal-title", expectedTitle));
     }
 
     public void clickEditPatientInsurance () {
         String xpath = "//*[label='Billing Type']//ancestor::div[@class='editable-section']//button";
         assertTrue (click (xpath));
         String expectedTitle = "Edit Patient Insurance";
-        String title = getText (".modal-title");
-        assertEquals (title, expectedTitle);
+        assertTrue (isTextInElement (".modal-title", expectedTitle));
     }
 
     public void clickEditPatientBillingAddress () {
         String xpath = "//*[div='Patient Billing Address']//ancestor::div[@class='editable-section']//button";
         assertTrue (click (xpath));
         String expectedTitle = "Edit Patient Contact Information";
-        String title = getText (".modal-title");
-        assertEquals (title, expectedTitle);
+        assertTrue (isTextInElement (".modal-title", expectedTitle));
     }
 
     public void enterPatientNotes (String notes) {
