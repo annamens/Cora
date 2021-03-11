@@ -9,17 +9,15 @@ import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.adaptivebiotech.test.utils.TestHelper;
 
-
 public class EditPatientDemographicsModule extends CoraPage {
 
     private final String firstName   = "#firstName";
     private final String lastName    = "#lastName";
     private final String dateOfBirth = "#dateOfBirth";
-    
+
     @Override
     public void isCorrectPage () {
-        String modalTitle = ".modal-title";
-        assertTrue (isTextInElement (modalTitle, "Edit Patient Demographics"));
+        assertTrue (isTextInElement (popupTitle, "Edit Patient Demographics"));
     }
 
     public void enterDateOfBirth (String dateOfBirth) {
@@ -31,7 +29,7 @@ public class EditPatientDemographicsModule extends CoraPage {
         assertTrue (click ("[type='submit']"));
         pageLoading ();
     }
-    
+
     public void selectRace (Race race) {
         String css = "#race";
         assertTrue (clickAndSelectText (css, race.text));
@@ -41,7 +39,7 @@ public class EditPatientDemographicsModule extends CoraPage {
         String css = "#ethnicity";
         assertTrue (clickAndSelectText (css, ethnicity.text));
     }
-    
+
     public String getFirstName () {
         return getText (firstName);
     }

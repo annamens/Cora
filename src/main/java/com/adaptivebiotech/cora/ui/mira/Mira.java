@@ -1,8 +1,8 @@
 package com.adaptivebiotech.cora.ui.mira;
 
 import static com.seleniumfy.test.utils.Logging.info;
-import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
@@ -139,7 +139,7 @@ public class Mira extends CoraPage {
     public void clickMiraPrepComplete () {
         String miraPrepComplete = ".btn-activate";
         assertTrue (click (miraPrepComplete));
-        waitUntilVisible (".modal-title");
+        waitUntilVisible (popupTitle);
         clickPopupOK ();
         pageLoading ();
     }
