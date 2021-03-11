@@ -1,11 +1,16 @@
 package com.adaptivebiotech.cora.ui.workflow;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Cancelled;
 import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
@@ -38,9 +43,7 @@ public class History extends CoraPage {
     }
 
     public void cancelOrder () {
-        assertTrue (clickAndSelectValue ("[name='stageStatus']", "Cancelled"));
-        assertTrue (click ("[action*='/cora/debug/forceWorkflowStatus'] [name='submit']"));
-        assertTrue (isTextInElement ("table.genoTable", "Cancelled"));
+        forceStatusUpdate (null, Cancelled);
     }
 
     public String getWorkflowId () {
@@ -64,9 +67,10 @@ public class History extends CoraPage {
     public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//table[@class='genoTable']//td[text()='%s']/../td[text()='%s']/../td[contains (text(),'%s')]/..//span[text()='%s']";
+        String check = format (xpath, stage, status, substatus == null ? "" : substatus, message);
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
-        while (!timer.Timedout () && ! (found = isElementPresent (format (xpath, stage, status, substatus, message)))) {
+        while (!timer.Timedout () && ! (found = isElementPresent (check))) {
             doForceClaim ();
             timer.Wait ();
             refresh ();
@@ -179,6 +183,28 @@ public class History extends CoraPage {
             files.put (getText (a), getAttribute (a, "href"));
         });
         return files;
+    }
+
+    public List <Stage> parseStatusHistory () {
+        List <Stage> histories = new ArrayList <> ();
+        for (WebElement tr : waitForElements (".genoTable tr")) {
+            if (isElementPresent (tr, "td")) {
+                Stage stage = new Stage ();
+                stage.stageName = StageName.valueOf (getText (tr, "td:nth-child(1)"));
+                stage.stageStatus = StageStatus.valueOf (getText (tr, "td:nth-child(2)"));
+                String substatus = getText (tr, "td:nth-child(3)");
+                stage.stageSubstatus = substatus == null ? null : StageSubstatus.valueOf (substatus.replace ("-", "_"));
+                stage.subStatusMessage = getText (tr, ".ssm");
+                stage.timestamp = getText (tr, "td:nth-child(5)");
+                stage.actor = getText (tr, "td:nth-child(6)");
+
+                String drilldown = "td:nth-child(7) a";
+                if (isElementPresent (tr, drilldown))
+                    stage.drilldownUrl = getAttribute (tr, drilldown, "href");
+                histories.add (stage);
+            }
+        }
+        return histories;
     }
 
     private void enterWorkflowPropertyName (WorkflowProperty property) {
