@@ -12,8 +12,8 @@ public class MiraTestInfoProviderTestSuite {
         
         String prodTestInfoPath = "MIRA/M-457_test_info.json";
 
-        MiraTestInfoProvider miraTestInfoProvider = new MiraTestInfoProvider ();
-        List<MiraTestInfo> miraTestInfos = miraTestInfoProvider.getMiraTestsFromFile (prodTestInfoPath);
+        MiraTestInfoProvider miraTestInfoProvider = new MiraTestInfoProvider (prodTestInfoPath);
+        List<MiraTestInfo> miraTestInfos = miraTestInfoProvider.getMiraTestsFromFile ();
         assertNotNull (miraTestInfos);
         assertEquals(miraTestInfos.size (), 13);
  

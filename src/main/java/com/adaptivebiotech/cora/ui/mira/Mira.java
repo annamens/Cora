@@ -103,6 +103,18 @@ public class Mira extends CoraPage {
         String miraId = getText (idText);
         return miraId;
     }
+    
+    public String getSpecimenId () {
+        String specimenId = "span[ng-bind='::ctrl.mira.expansion.miraSpecimen.number']";
+        String specimenIdText = getText (specimenId);
+        return specimenIdText;
+    }
+    
+    public String getExpansionId () {
+        String expansionId = "span[ng-bind='::ctrl.mira.expansion.number']";
+        String expansionIdText = getText (expansionId);
+        return expansionIdText;
+    }
 
     public List <String> getContainerIds () {
         String containerIdField = "span[data-ng-bind='::containerDetail.container.containerNumber']";
@@ -139,7 +151,7 @@ public class Mira extends CoraPage {
     public void clickMiraPrepComplete () {
         String miraPrepComplete = ".btn-activate";
         assertTrue (click (miraPrepComplete));
-        waitUntilVisible (".modal-title");
+        assertTrue (waitUntilVisible (".modal-title"));
         clickPopupOK ();
         pageLoading ();
     }
@@ -149,6 +161,7 @@ public class Mira extends CoraPage {
         assertTrue (click (statusTab));
         pageLoading ();
         // need to make sure that the table is loaded
+        assertTrue (waitUntilVisible ("//table[contains(@class,'history')]"));
         MiraStage currentStage = getCurrentStage ();
         int count = 0;
         while (count < numWaits && currentStage == null) {

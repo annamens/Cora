@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptivebiotech.cloudfiles.CloudFilesClient;
 import com.adaptivebiotech.cloudfiles.configs.AWSCredentials;
+import com.adaptivebiotech.cloudfiles.configs.AzureCredentials;
 import com.adaptivebiotech.cloudfiles.exceptions.ConfigException;
 
 
@@ -19,14 +20,23 @@ public class MiraTsvCopier {
     private CloudFilesClient sourceClient;
     private CloudFilesClient targetClient;
     private AWSCredentials awsCredentials;
+    private AzureCredentials azureCredentials;
     
     private static final Logger logger = LoggerFactory.getLogger (MiraTsvCopier.class);
     
     public MiraTsvCopier () {
         
-        awsCredentials = new AWSCredentials (awskey, awssecret);
+        String client = "e0b1b68e-3160-4707-957b-ad09247f532e";
+        String key = "Rday+KZKIoVNsl79cSqQl4NQ/ZSbX+NKcxKy76gIwmo=";
+        String tenant = "497cd8de-e675-4c7b-aec9-e8f20f8f0026";
+        String resourceGroup = "CoraTest";
+        String subscription = "2c3047b5-a922-4ad0-9319-851026c53797";
+        
+        azureCredentials = new AzureCredentials (client, key, tenant, resourceGroup, subscription);
+        
+        
         try {
-            sourceClient = new CloudFilesClient(logger).withAws (awsCredentials);
+            sourceClient = new CloudFilesClient(logger).withAzure(azureCredentials);
             targetClient = sourceClient; // since we are using same creds
         } catch (ConfigException e) {
             error (e.getMessage ());
@@ -44,6 +54,10 @@ public class MiraTsvCopier {
             // source file = s3://cora-scripts-data-xfer-test/mgrossman/M-1345/Pools/HW5FFBGXC_0_Adaptive-MIRA-AMPL_SP-914830_M-1345_D_positive.adap.txt.results.tsv.gz
             // we want to replace "SP-914830_M-1345" with targetSpecimenNumber_targetMiraNumber
             // TODO need to refigure this for azure
+            
+            // source file =https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/mira/templates/ampl/HW5FFBGXC_0_Adaptive-MIRA-AMPL_SP-914830_M-1345_D_positive.adap.txt.results.tsv.gz
+            
+            // do we even need to copy the tsv files to a new location?
             
             String newSpecimenMiraNumber = targetSpecimenNumber + "_" + targetMiraNumber;
             String[] sourcePathParts = sourceTsvPath.split ("/");

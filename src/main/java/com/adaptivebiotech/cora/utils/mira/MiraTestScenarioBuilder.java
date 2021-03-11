@@ -1,27 +1,18 @@
 package com.adaptivebiotech.cora.utils.mira;
 
 import static com.seleniumfy.test.utils.Logging.info;
-import static com.seleniumfy.test.utils.Logging.error;
 
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import com.adaptivebiotech.cloudfiles.CloudFileInfo;
-import com.adaptivebiotech.cloudfiles.CloudFilesClient;
+import com.adaptivebiotech.cora.utils.mira.testscenario.TestFastForwardInfo;
+import com.adaptivebiotech.cora.utils.mira.testscenario.TestSampleInfo;
 import com.adaptivebiotech.cora.utils.mira.testscenario.TestScenarioConfig;
 import com.adaptivebiotech.cora.utils.mira.testscenario.TestScenarioInfo;
 import com.adaptivebiotech.cora.utils.mira.testscenario.TestScenarioProjectInfo;
 import com.adaptivebiotech.cora.utils.mira.testscenario.TestSpecimenInfo;
 import com.adaptivebiotech.cora.utils.mira.testscenario.TestTechTransferInfo;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * build MIRA test scenario
@@ -30,121 +21,91 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
  *
  */
 public class MiraTestScenarioBuilder {
-
-    private final String prodTestInfoPath = "MIRA/prod_test_info.json";
-    private final String sourceMiraNumber = "M-1345";
-    // TODO use azure
-    private final String miraTSVSourcePath = "s3://cora-scripts-data-xfer-test/mgrossman/M-1345/Pools/";
-    private ObjectMapper objectMapper = new ObjectMapper();
-    
-    private final String targetWorkspace = "Adaptive-Testing";
-    private final String flowcellId = "XMIRASCENARIO";
     
     private MiraTestInfoProvider miraTestInfoProvider;
-    private CloudFilesClient sourceCf;
-    private CloudFilesClient targetCf;
+    private MiraHttpClient miraHttpClient;
 
-    
-    public MiraTestScenarioBuilder (MiraTestInfoProvider miraTestInfoProvider,
-                                    CloudFilesClient sourceCf,
-                                    CloudFilesClient targetCf) {
+    public MiraTestScenarioBuilder (MiraTestInfoProvider miraTestInfoProvider, MiraHttpClient miraHttpClient) {
         
-        this.miraTestInfoProvider = miraTestInfoProvider;
-        this.sourceCf = sourceCf;
-        this.targetCf = targetCf;
-        
+        this.miraTestInfoProvider = miraTestInfoProvider;    
+        this.miraHttpClient = miraHttpClient;
     }
     
     
-    public void buildTestScenario(UUID projectId, UUID accountId, String targetDataPath, String targetSpecimenNumber,
-                                  String targetMiraNumber) throws Exception {
+    public void buildTestScenario(MiraTestFormInfo miraTestFormInfo) {
         
         
         TestScenarioInfo testScenarioInfo = new TestScenarioInfo();
        
-        List<MiraTestInfo> miraTestInfos = miraTestInfoProvider.getMiraTestsFromFile (prodTestInfoPath);
+        List<MiraTestInfo> miraTestInfos = miraTestInfoProvider.getMiraTestsFromFile ();
         info("number of mira tests is: " + miraTestInfos.size ());
         
         TestTechTransferInfo testTechTransferInfo = new TestTechTransferInfo();
-        testTechTransferInfo.Workspace = targetWorkspace;
-        testTechTransferInfo.FlowcellId = flowcellId;
-        testTechTransferInfo.Specimens = new ArrayList<>(miraTestInfos.size ());
+        testTechTransferInfo.workspace = miraTestFormInfo.targetWorkspace;
+        testTechTransferInfo.flowcellId = miraTestFormInfo.targetFlowcellId;
+        testTechTransferInfo.specimens = new ArrayList<>(miraTestInfos.size ());
         
         TestScenarioProjectInfo projectInfo = new TestScenarioProjectInfo();
-        projectInfo.ProjectId = projectId;
-        projectInfo.AccountId = accountId;
-        testScenarioInfo.ProjectInfo = projectInfo;
+        projectInfo.projectId = miraTestFormInfo.targetProjectId;
+        projectInfo.accountId = miraTestFormInfo.targetAccountId;
+        testScenarioInfo.projectInfo = projectInfo;
         
-        testScenarioInfo.ScenarioConfig = new TestScenarioConfig();
+        testScenarioInfo.scenarioConfig = new TestScenarioConfig();
+        
+        // let's just use the tsv files...
         
         for (MiraTestInfo miraTestInfo : miraTestInfos) {
-            File resultFile = null;
             
+            testScenarioInfo.fastForwardInfo = buildForward(miraTestFormInfo);
             
-            // source = s3://cora-scripts-data-xfer-test/mgrossman/M-1345/Pools/HW5FFBGXC_0_Adaptive-MIRA-AMPL_SP-914830_M-1345_D_positive.adap.txt.results.tsv.gz
-            String targetPath = String.format("%s/%s/%s", targetDataPath,
-                                              "Pools", getTargetTsvName(sourceCf, miraTestInfo, 
-                                                                        sourceMiraNumber,
-                                                                        targetSpecimenNumber,
-                                                                        targetMiraNumber));
-            
-            info("targetPath is: " + targetPath);
-            
-            resultFile = sourceCf.getAsTempFile(miraTestInfo.TsvPath);
-            info("resultFile is: " + resultFile.getAbsolutePath ());
-            targetCf.putFile (targetPath, resultFile);
-            
-            
+            TestSpecimenInfo specimen = buildSpecimen (miraTestInfo, miraTestFormInfo);
+            String tsvPath = miraTestInfo.TsvPath;
+            info("tsvPath is: " + tsvPath);
+            specimen.samples.get (0).tsvPath = tsvPath;
+            testTechTransferInfo.specimens.add (specimen);
+               
         }
         
-  
-//
-//
-//        CloudFilesClient sourceCf = CloudTools.getCloudFilesClient(config, Optional.empty(), logger);
-//        CloudFilesClient targetCf = CloudTools.getCloudFilesClient(config, Optional.of(formInfo.TargetEnvironmentType), logger);
-//
-
-//
-//
-//        for (Cora.MiraTestInfo miraTest : miraTests) {
-//            File resultFile = null;
-//            try {
-//                // Build fast forward object
-//                scenario.FastForwardInfo = buildForward(formInfo);;
-//
-//                // Pull source file and upload to target data path
-//                String targetPath = String.format("%s/%s/%s", formInfo.TargetDataPath,
-//                        "Pools", getTargetTsvName(sourceCf, miraTest, formInfo));
-//
-//                Logger.warn("target path is: " + targetPath);
-//
-//                resultFile = sourceCf.getAsTempFile(miraTest.TsvPath);
-//
-//                Logger.warn("resultFile is: " + resultFile.getAbsolutePath());
-//                targetCf.putFile(targetPath, resultFile);
-//
-//                // Build specimen object and update with target tsv path
-//                CoraTestScenario.TestSpecimenInfo specimen = buildSpecimen(miraTest, formInfo);
-//                specimen.Samples.get(0).TsvPath = targetPath;
-//                techTransfer.Specimens.add(specimen);
-//            }
-//            catch (Exception e) {
-//                Logger.error(e.getMessage());
-//                throw e;
-//            }
-//            finally {
-//                if (resultFile != null) resultFile.delete();
-//            }
-//        }
-//
-//        // Update scenario object and call target endpoint to create order
-//        scenario.TechTransferInfo = techTransfer;
-//        callTechTransferEndpoint(CoraTestScenario.TestScenarioInfo.toJson(scenario), formInfo);
-//
-//        response().setHeader("Content-Disposition",
-//                String.format("attachment; filename=%s.json", formInfo.TargetMiraNumber));
-//        return(ok(CoraTestScenario.TestScenarioInfo.toJson(scenario)));
+        testScenarioInfo.techTransferInfo = testTechTransferInfo;
+        
+        miraHttpClient.doCoraApiLogin();
+        miraHttpClient.postTestScenarioToCora (testScenarioInfo);
+               
     }
+     
+    private TestSpecimenInfo buildSpecimen(MiraTestInfo miraTest, MiraTestFormInfo formInfo) {
+
+        String miraTargetSample = getTargetSampleName(miraTest, formInfo.sourceMiraNumber, formInfo.targetSpecimenNumber,
+                                                      formInfo.targetMiraNumber);
+        TestSpecimenInfo specimenInfo = new TestSpecimenInfo();
+        specimenInfo.name = miraTargetSample;
+        specimenInfo.externalSubjectId = miraTargetSample;
+        specimenInfo.sampleType = formInfo.targetSpecimenType;
+        specimenInfo.sampleSource = formInfo.targetSpecimenSource;
+        specimenInfo.compartment = formInfo.targetSpecimenComparment;
+        specimenInfo.collectionDate = formInfo.targetSpecimenCollDate;
+        specimenInfo.samples = new ArrayList<TestSampleInfo>(1);
+
+        ObjectNode properties = new ObjectMapper().createObjectNode();
+        properties.put("Treatment", miraTest.PoolIndicator);
+        specimenInfo.properties = properties;
+
+        ObjectNode projProperties = new ObjectMapper().createObjectNode();
+        projProperties.put("Var1", formInfo.targetMiraNumber);
+        projProperties.put("Var2", formInfo.targetExpansionNumber);
+        projProperties.put("Var3", miraTest.CellCount);
+        specimenInfo.projectProperties = projProperties;
+
+        TestSampleInfo sampleInfo = new TestSampleInfo();
+        sampleInfo.name = miraTargetSample;
+        sampleInfo.externalId = miraTargetSample;
+        sampleInfo.test = miraTest.PoolIndicator.equals("US") ? "MIRAUNSORTED" : "MIRASORTED";
+        sampleInfo.tsvPath = miraTest.TsvPath;
+        specimenInfo.samples.add(sampleInfo);
+
+        return specimenInfo;
+    }
+    
     
     private String getSourceSamplePrefix(MiraTestInfo miraTest, String sourceMiraNumber) {
         String sourceSampleSpecimen = miraTest.SampleName.split("_")[0];
@@ -163,24 +124,16 @@ public class MiraTestScenarioBuilder {
         return miraTest.SampleName.replace(getSourceSamplePrefix(miraTest, sourceMiraNumber), targetSamplePrefix);
     }
     
-    private String getTargetTsvName(CloudFilesClient cf, 
-                                    MiraTestInfo miraTest, 
-                                    String sourceMiraNumber,
-                                    String targetSpecimenNumber,
-                                    String targetMiraNumber) throws Exception {
-        try {
-            CloudFileInfo tsvInfo = cf.parseUrl(miraTest.TsvPath);
-            String tsvName = tsvInfo.getObjectKey().substring(tsvInfo.getObjectKey().lastIndexOf("/") + 1);
-            return tsvName.replace(getSourceSamplePrefix(miraTest, sourceMiraNumber), getTargetSamplePrefix(targetSpecimenNumber,
-                                                                                                            targetMiraNumber));
-        }
-        catch (Exception e) {
-            error(e.getMessage());
-            throw e;
-        }
+    private TestFastForwardInfo buildForward(MiraTestFormInfo formInfo) {
+
+        TestFastForwardInfo fastForwardInfo = new TestFastForwardInfo();
+        fastForwardInfo.stageName = formInfo.fastForwardStage;
+        fastForwardInfo.stageStatus = formInfo.fastForwardStatus;
+        fastForwardInfo.subStatusCode = formInfo.fastForwardSubstatusCode;
+        fastForwardInfo.substatusMsg = formInfo.fastForwardSubstatusMsg;
+
+        return fastForwardInfo;
     }
-    
-   
     
     
 }
