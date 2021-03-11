@@ -24,6 +24,7 @@ import static java.util.Arrays.stream;
 import static org.testng.Assert.fail;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import com.adaptivebiotech.cora.dto.AccountsResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -104,13 +105,11 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static Physician getPhysician (String first, String last, String account) {
+    public synchronized static List <Physician> getPhysicians (String first, String last, String account) {
         try {
             String[] args = { "firstName=" + first, "lastName=" + last, "accountName=" + account };
             String url = encodeUrl (coraTestUrl + "/cora/api/v1/providers?", args);
-            return mapper.readValue (get (url), ProvidersResponse.class).objects.stream ()
-                                                                                .filter (p -> p.npi != null && p.npi.length () > 0)
-                                                                                .findAny ().get ();
+            return mapper.readValue (get (url), ProvidersResponse.class).objects;
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
