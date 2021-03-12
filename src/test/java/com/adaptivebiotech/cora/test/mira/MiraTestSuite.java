@@ -42,11 +42,11 @@ public class MiraTestSuite extends CoraBaseBrowser {
     
     private final String projectId = "a9d36064-de2a-49c3-b6af-3b3a46ee0c22";
     private final String accountId = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
-    private final String prodTestInfoPath = "MIRA/prod_test_info.json";
+    private final String prodTestInfoPath = "MIRA/prod_test_info_azure.json";
     private final String sourceMiraNumber = "M-1345";
     
     @Test
-    public void testCreateAndActivateMIRA () {
+    public void testCreateAndActivateAMPL () {
 
         MiraLab miraLab = MiraLab.AntigenMapProduction;
         MiraType miraType = MiraType.MIRA;
@@ -100,6 +100,9 @@ public class MiraTestSuite extends CoraBaseBrowser {
         MiraHttpClient miraHttpClient = new MiraHttpClient ();
         MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraTestInfoProvider, miraHttpClient);
         miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo);
+        
+        // fails b/c the filenames need to match the specimen and mira ids
+        // now we wait for mira to run, after ~2hours we need to stamp the workflows in the db, 
         
     }
 
