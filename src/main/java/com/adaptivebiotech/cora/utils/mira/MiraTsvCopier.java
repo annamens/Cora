@@ -2,120 +2,77 @@ package com.adaptivebiotech.cora.utils.mira;
 
 import static com.seleniumfy.test.utils.Logging.error;
 import static com.seleniumfy.test.utils.Logging.info;
-import java.io.File;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.adaptivebiotech.cloudfiles.CloudFilesClient;
-import com.adaptivebiotech.cloudfiles.configs.AWSCredentials;
-import com.adaptivebiotech.cloudfiles.configs.AzureCredentials;
-import com.adaptivebiotech.cloudfiles.exceptions.ConfigException;
+import static org.testng.Assert.assertEquals;
+import com.adaptivebiotech.cora.test.CoraEnvironment;
 
 
-public class MiraTsvCopier {
+public class MiraTsvCopier {   
     
-    // data in azure in adaptivetestcasedata/selenium/tsv/mira/templates/ampl
-
-    // maybe try the creds in flora repo? 
+    private String containerName = "selenium";
+    private String accountName = "adaptivetestcasedata";
+//    private String sourceFilePrefix = "tsv/mira/templates/ampl/";
+        
+    private String destinationPrefix = "tsv/mira/automatedtest";
+    private String destinationBase = "%s/%s/%s";
     
-    private CloudFilesClient sourceClient;
-    private CloudFilesClient targetClient;
-    private AWSCredentials awsCredentials;
-    private AzureCredentials azureCredentials;
+    private String loginCommandBase = "/usr/local/bin/az login -u %s -p %s";
+    private String downloadCommandBase = "/usr/local/bin/az storage blob download --container-name %s --auth-mode login --account-name %s --name %s --file %s";
+    private String uploadCommandBase = "/usr/local/bin/az storage blob upload --container-name %s --auth-mode login --account-name %s --name %s --file %s";
     
-    private static final Logger logger = LoggerFactory.getLogger (MiraTsvCopier.class);
+    private String tmpfileBase = "target/%s";    
     
     public MiraTsvCopier () {
+        String azureLogin = CoraEnvironment.azureLogin;
+        String azurePassword = CoraEnvironment.azurePassword;
         
-        String client = "e0b1b68e-3160-4707-957b-ad09247f532e";
-        String key = "Rday+KZKIoVNsl79cSqQl4NQ/ZSbX+NKcxKy76gIwmo=";
-        String tenant = "497cd8de-e675-4c7b-aec9-e8f20f8f0026";
-        String resourceGroup = "CoraTest";
-        String subscription = "2c3047b5-a922-4ad0-9319-851026c53797";
-        
-        azureCredentials = new AzureCredentials (client, key, tenant, resourceGroup, subscription);
-        
-        
-        try {
-            sourceClient = new CloudFilesClient(logger).withAzure(azureCredentials);
-            targetClient = sourceClient; // since we are using same creds
-        } catch (ConfigException e) {
-            error (e.getMessage ());
-            throw new RuntimeException (e);
-        }
-        
-        
+        String loginCommand = String.format (loginCommandBase, azureLogin, azurePassword);
+        runCommand (loginCommand);
     }
     
-    public void copyTsvFile (String textToReplace, String sourceTsvPath, String targetDataPath,
-                             String targetSpecimenNumber, String targetMiraNumber) {
-        File tmpFile = null;
+    
+    public String copyTsvFile (String miraId, String specimenId, String sourceFilePath,
+                               String sourceMiraId, String sourceSpecimenId) {
+        String specimenId_miraId = specimenId + "_" + miraId;
+        String textToReplace = sourceSpecimenId + "_" + sourceMiraId;
+        
+        String [] sourceFilePathParts = sourceFilePath.split ("/");
+        String sourceFile = sourceFilePathParts[sourceFilePathParts.length - 1];
+        String sourceContainerName = sourceFilePathParts[3];
+        String sourceFilePrefix = "";
+        for(int i = 4; i < sourceFilePathParts.length - 1; i++) {
+            sourceFilePrefix += sourceFilePathParts[i] + "/";
+        }
+        
+        String tmpFilename = String.format (tmpfileBase, sourceFile);
+        String downloadCommand = String.format (downloadCommandBase, 
+                                              sourceContainerName, accountName, 
+                                              sourceFilePrefix + sourceFile, tmpFilename);
+        
+        runCommand (downloadCommand);
+        
+        String renamedFile = sourceFile.replace (textToReplace, specimenId_miraId);
+        String destinationFile = String.format (destinationBase, 
+                                                destinationPrefix, miraId, renamedFile);
+        
+        String uploadCommand = String.format (uploadCommandBase,
+                                              containerName, accountName, 
+                                              destinationFile, tmpFilename);
+        
+        runCommand (uploadCommand);
+        
+        return "https://adaptivetestcasedata.blob.core.windows.net/" + containerName + "/" + destinationFile;
+    }
+    
+    private void runCommand (String command) {
+        info ("running " + command);
         try {
-            
-            // source file = s3://cora-scripts-data-xfer-test/mgrossman/M-1345/Pools/HW5FFBGXC_0_Adaptive-MIRA-AMPL_SP-914830_M-1345_D_positive.adap.txt.results.tsv.gz
-            // we want to replace "SP-914830_M-1345" with targetSpecimenNumber_targetMiraNumber
-            // TODO need to refigure this for azure
-            
-            // source file =https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/mira/templates/ampl/HW5FFBGXC_0_Adaptive-MIRA-AMPL_SP-914830_M-1345_D_positive.adap.txt.results.tsv.gz
-            
-            // do we even need to copy the tsv files to a new location?
-            
-            String newSpecimenMiraNumber = targetSpecimenNumber + "_" + targetMiraNumber;
-            String[] sourcePathParts = sourceTsvPath.split ("/");
-            String sourceTsvFilename = sourcePathParts[sourcePathParts.length - 1];
-            info("sourceTsvFilename is: " + sourceTsvFilename);
-            
-            String targetTsvFilename = sourceTsvFilename.replace (textToReplace, newSpecimenMiraNumber);
-            String targetPath = targetDataPath + "/Pools/" + targetTsvFilename;
-            info("targetPath is: " + targetPath);
-
-            
-            
-//            String targetPath = String.format("%s/%s/%s", targetDataPath,
-//                                          "Pools", getTargetTsvName(sourceClient, miraTestInfo, 
-//                                                                    sourceMiraNumber,
-//                                                                    targetSpecimenNumber,
-//                                                                    targetMiraNumber));
-        
-        
-            tmpFile = sourceClient.getAsTempFile(sourceTsvPath);
-            info("tmpFile is: " + tmpFile.getAbsolutePath ());
-            targetClient.putFile (targetPath, tmpFile);
+            Process loginProcess = Runtime.getRuntime ().exec (command);
+            int exitValue = loginProcess.waitFor ();
+            info ("command exited with value " + exitValue);
+            assertEquals(exitValue, 0);
         } catch (Exception e) {
             error (e.getMessage ());
             throw new RuntimeException (e);
-        } finally {
-            if(tmpFile != null) {
-                tmpFile.delete ();
-            }
-        } 
+        }
     }
-    
-//    
-//    private String getSourceSamplePrefix(String sourceSampleName, String sourceMiraNumber) {
-//        String sourceSampleSpecimen = sourceSampleName.split("_")[0];
-//        return String.format("%s_%s", sourceSampleSpecimen, sourceMiraNumber);
-//    }
-//
-//    private String getTargetSamplePrefix(String targetSpecimenNumber, String targetMiraNumber) {
-//        return String.format("%s_%s", targetSpecimenNumber, targetMiraNumber);
-//    }
-//    
-//    private String getTargetTsvName(CloudFilesClient cf, 
-//                                    String sourceFilePath,
-//                                    String sourceMiraNumber,
-//                                    String sourceSampleName,
-//                                    String targetSpecimenNumber,
-//                                    String targetMiraNumber) throws Exception {
-//        try {
-//            CloudFileInfo tsvInfo = cf.parseUrl(sourceFilePath);
-//            String tsvName = tsvInfo.getObjectKey().substring(tsvInfo.getObjectKey().lastIndexOf("/") + 1);
-//            return tsvName.replace(getSourceSamplePrefix(sourceSampleName, sourceMiraNumber), getTargetSamplePrefix(targetSpecimenNumber,
-//                                                                                                            targetMiraNumber));
-//        }
-//        catch (Exception e) {
-//            error(e.getMessage());
-//            throw e;
-//        }
-//    }
-
 }

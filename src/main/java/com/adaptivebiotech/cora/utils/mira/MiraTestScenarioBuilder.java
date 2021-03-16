@@ -24,11 +24,15 @@ public class MiraTestScenarioBuilder {
     
     private MiraTestInfoProvider miraTestInfoProvider;
     private MiraHttpClient miraHttpClient;
+    private MiraTsvCopier miraTsvCopier;
 
-    public MiraTestScenarioBuilder (MiraTestInfoProvider miraTestInfoProvider, MiraHttpClient miraHttpClient) {
+    public MiraTestScenarioBuilder (MiraTestInfoProvider miraTestInfoProvider, 
+                                    MiraHttpClient miraHttpClient, 
+                                    MiraTsvCopier miraTsvCopier) {
         
         this.miraTestInfoProvider = miraTestInfoProvider;    
         this.miraHttpClient = miraHttpClient;
+        this.miraTsvCopier = miraTsvCopier;
     }
     
     
@@ -51,15 +55,20 @@ public class MiraTestScenarioBuilder {
         testScenarioInfo.projectInfo = projectInfo;
         
         testScenarioInfo.scenarioConfig = new TestScenarioConfig();
-        
-        // let's just use the tsv files...
-        
+                
         for (MiraTestInfo miraTestInfo : miraTestInfos) {
             
             testScenarioInfo.fastForwardInfo = buildForward(miraTestFormInfo);
             
             TestSpecimenInfo specimen = buildSpecimen (miraTestInfo, miraTestFormInfo);
-            String tsvPath = miraTestInfo.TsvPath;
+//            String tsvPath = miraTestInfo.TsvPath;
+            
+            String tsvPath = miraTsvCopier.copyTsvFile (miraTestFormInfo.targetMiraNumber, 
+                                                        miraTestFormInfo.targetSpecimenNumber, 
+                                                        miraTestInfo.TsvPath,
+                                                        miraTestFormInfo.sourceMiraNumber,
+                                                        miraTestFormInfo.sourceSpecimenNumber);
+            
             info("tsvPath is: " + tsvPath);
             specimen.samples.get (0).tsvPath = tsvPath;
             testTechTransferInfo.specimens.add (specimen);

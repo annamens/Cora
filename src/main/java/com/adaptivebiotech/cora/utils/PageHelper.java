@@ -68,6 +68,10 @@ public class PageHelper {
     public enum MiraStatus {
         Ready, Processing, Awaiting, Stuck, Failed, Finished, Cancelled;
     }
+    
+    public enum MiraQCStatus {
+        ACCEPTED, FAILED;
+    }
 
     public enum Carrier {
         UPS ("UPS"), FEDEX ("Fedex"), COURIER ("Courier"), OTHER ("Other");
@@ -151,4 +155,6 @@ public class PageHelper {
             this.text = text;
         }
     }
+    
+
 }

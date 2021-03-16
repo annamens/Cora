@@ -26,6 +26,7 @@ import com.adaptivebiotech.cora.utils.mira.MiraHttpClient;
 import com.adaptivebiotech.cora.utils.mira.MiraTestFormInfo;
 import com.adaptivebiotech.cora.utils.mira.MiraTestInfoProvider;
 import com.adaptivebiotech.cora.utils.mira.MiraTestScenarioBuilder;
+import com.adaptivebiotech.cora.utils.mira.MiraTsvCopier;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 
 /*
@@ -44,6 +45,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
     private final String accountId = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
     private final String prodTestInfoPath = "MIRA/prod_test_info_azure.json";
     private final String sourceMiraNumber = "M-1345";
+    private final String sourceSpecimenNumber = "SP-914830";
     
     @Test
     public void testCreateAndActivateAMPL () {
@@ -77,6 +79,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
         
         MiraTestFormInfo miraTestFormInfo = new MiraTestFormInfo ();
         miraTestFormInfo.sourceMiraNumber = sourceMiraNumber;
+        miraTestFormInfo.sourceSpecimenNumber = sourceSpecimenNumber;
         miraTestFormInfo.targetEnvironmentType = "test";
         miraTestFormInfo.targetDataPath = "not used";
         miraTestFormInfo.targetHost = coraTestUrl;
@@ -98,11 +101,11 @@ public class MiraTestSuite extends CoraBaseBrowser {
         
         MiraTestInfoProvider miraTestInfoProvider = new MiraTestInfoProvider (prodTestInfoPath);
         MiraHttpClient miraHttpClient = new MiraHttpClient ();
-        MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraTestInfoProvider, miraHttpClient);
+        MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();
+        MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraTestInfoProvider, miraHttpClient, miraTsvCopier);
         miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo);
         
-        // fails b/c the filenames need to match the specimen and mira ids
-        // now we wait for mira to run, after ~2hours we need to stamp the workflows in the db, 
+        
         
     }
 

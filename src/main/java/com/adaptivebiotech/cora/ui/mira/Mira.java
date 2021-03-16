@@ -18,6 +18,7 @@ import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraQCStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
@@ -38,6 +39,11 @@ public class Mira extends CoraPage {
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement (".container .mira-heading", "New MIRA"));
+    }
+    
+    public void isCorrectPage (String miraId) {
+        assertTrue (waitUntilVisible (".mira-header"));
+        assertTrue (isTextInElement ("[data-ng-bind='ctrl.mira.miraId']", miraId));
     }
 
     public void selectPanel (MiraPanel panel) {
@@ -103,13 +109,13 @@ public class Mira extends CoraPage {
         String miraId = getText (idText);
         return miraId;
     }
-    
+
     public String getSpecimenId () {
         String specimenId = "span[ng-bind='::ctrl.mira.expansion.miraSpecimen.number']";
         String specimenIdText = getText (specimenId);
         return specimenIdText;
     }
-    
+
     public String getExpansionId () {
         String expansionId = "span[ng-bind='::ctrl.mira.expansion.number']";
         String expansionIdText = getText (expansionId);
@@ -173,6 +179,17 @@ public class Mira extends CoraPage {
         assertNotNull (currentStage);
     }
 
+    public void clickTestTab (boolean expectTests) {
+        String testTab = "a[data-ng-click='ctrl.setTab(\\'test\\')']";
+        assertTrue (click (testTab));
+        pageLoading ();
+
+        // if the tests are there then wait until the page has loaded
+        if (expectTests) {
+            assertTrue (waitUntilVisible ("//div[contains(@class, 'Genologics')]"));
+        }
+    }
+
     public String createNewBatchRecord (String miraId) {
         String xlFolder = "MIRA/";
         String basePath = ClassLoader.getSystemResource (xlFolder).getPath ();
@@ -213,6 +230,11 @@ public class Mira extends CoraPage {
     }
 
     public boolean waitForStatus (MiraStatus status) {
+        return waitForStatus (status, numWaits, msWait);
+    }
+    
+    // for the final need to wait a long time
+    public boolean waitForStatus (MiraStatus status, int numWaits, int msWait) {
         int count = 0;
         while (count < numWaits && getCurrentStatus () != status) {
             count++;
@@ -221,6 +243,16 @@ public class Mira extends CoraPage {
             doWait (msWait);
         }
         return getCurrentStatus () == status;
+    }
+    
+    public void setQCStatus (MiraQCStatus status) {
+        String dropdown = "select[name='qcStatus']";
+        String button = "button[data-ng-click='ctrl.qcComplete(ctrl.mira.qcStatus)']";
+        
+        assertTrue (clickAndSelectText (dropdown, status.toString ()));
+        assertTrue (click (button));
+        clickPopupOK (); // page reloads after you click ok
+        pageLoading();
     }
 
     private MiraStage getCurrentStage () {

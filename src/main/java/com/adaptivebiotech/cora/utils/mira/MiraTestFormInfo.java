@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class MiraTestFormInfo {
     public String sourceMiraNumber;
+    public String sourceSpecimenNumber;
     public String targetEnvironmentType;
     public String targetDataPath;
     public String targetHost;
