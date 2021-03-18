@@ -104,9 +104,10 @@ public class MiraTestSuite extends CoraBaseBrowser {
         MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();
         MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraTestInfoProvider, miraHttpClient, miraTsvCopier);
         miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo);
-        
-        
-        
+               
+        assertTrue (mira.waitForStage (MiraStage.MIRAAnalysis));
+        assertTrue (mira.waitForStatus (MiraStatus.Ready));
+                    
     }
 
     private void loginToCora () {

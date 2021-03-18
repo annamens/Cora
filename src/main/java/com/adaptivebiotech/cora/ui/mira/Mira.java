@@ -40,7 +40,7 @@ public class Mira extends CoraPage {
     public void isCorrectPage () {
         assertTrue (isTextInElement (".container .mira-heading", "New MIRA"));
     }
-    
+
     public void isCorrectPage (String miraId) {
         assertTrue (waitUntilVisible (".mira-header"));
         assertTrue (isTextInElement ("[data-ng-bind='ctrl.mira.miraId']", miraId));
@@ -232,27 +232,30 @@ public class Mira extends CoraPage {
     public boolean waitForStatus (MiraStatus status) {
         return waitForStatus (status, numWaits, msWait);
     }
-    
+
     // for the final need to wait a long time
     public boolean waitForStatus (MiraStatus status, int numWaits, int msWait) {
         int count = 0;
-        while (count < numWaits && getCurrentStatus () != status && getCurrentStatus () != MiraStatus.Stuck) {
+        MiraStatus currentStatus = getCurrentStatus ();
+        while (count < numWaits && currentStatus != status && currentStatus != MiraStatus.Stuck) {
             count++;
             info ("waiting for status : " + status);
             refresh ();
             doWait (msWait);
+            currentStatus = getCurrentStatus ();
         }
-        return getCurrentStatus () == status;
+        info ("final status is: " + currentStatus);
+        return currentStatus == status;
     }
-    
+
     public void setQCStatus (MiraQCStatus status) {
         String dropdown = "select[name='qcStatus']";
         String button = "button[data-ng-click='ctrl.qcComplete(ctrl.mira.qcStatus)']";
-        
+
         assertTrue (clickAndSelectText (dropdown, status.toString ()));
         assertTrue (click (button));
         clickPopupOK (); // page reloads after you click ok
-        pageLoading();
+        pageLoading ();
     }
 
     private MiraStage getCurrentStage () {
