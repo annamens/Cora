@@ -236,7 +236,7 @@ public class Mira extends CoraPage {
     // for the final need to wait a long time
     public boolean waitForStatus (MiraStatus status, int numWaits, int msWait) {
         int count = 0;
-        while (count < numWaits && getCurrentStatus () != status) {
+        while (count < numWaits && getCurrentStatus () != status && getCurrentStatus () != MiraStatus.Stuck) {
             count++;
             info ("waiting for status : " + status);
             refresh ();

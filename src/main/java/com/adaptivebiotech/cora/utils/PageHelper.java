@@ -62,7 +62,7 @@ public class PageHelper {
     }
 
     public enum MiraStage {
-        MiraPrep, PoolExtraction, immunoSEQ, MiraAnalysis, MiraQC, Publishing;
+        MIRAPrep, PoolExtraction, immunoSEQ, MIRAAnalysis, MIRAQC, Publishing;
     }
 
     public enum MiraStatus {
