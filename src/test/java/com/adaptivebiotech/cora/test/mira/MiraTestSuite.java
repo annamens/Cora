@@ -46,15 +46,15 @@ import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
  
 */
 public class MiraTestSuite extends CoraBaseBrowser {
-    
-    private final String projectId = "a9d36064-de2a-49c3-b6af-3b3a46ee0c22";
-    private final String accountId = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
-    private final String prodTestInfoPath = "MIRA/prod_test_info_azure_slim.json";
-    private final String sourceMiraNumber = "M-1345";
+
+    private final String projectId            = "a9d36064-de2a-49c3-b6af-3b3a46ee0c22";
+    private final String accountId            = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
+    private final String prodTestInfoPath     = "MIRA/prod_test_info_azure_slim.json";
+    private final String sourceMiraNumber     = "M-1345";
     private final String sourceSpecimenNumber = "SP-914830";
-    
+
     @Test
-    public void testCreateAndActivateAMPL () {
+    public void testAMPL_MIRA_slimmedInputs () {
 
         MiraLab miraLab = MiraLab.AntigenMapProduction;
         MiraType miraType = MiraType.MIRA;
@@ -72,17 +72,17 @@ public class MiraTestSuite extends CoraBaseBrowser {
                                        specimenIds.get (0));
 
         gotoMiraByLabAndId (miraId, miraLab);
-        
-        Mira mira = new Mira();
+
+        Mira mira = new Mira ();
         String specimenId = specimenIds.get (0);
         String expansionId = mira.getExpansionId ();
 
         waitForStageAndStatus (MiraStage.PoolExtraction, MiraStatus.Ready);
 
         createSampleManifest (miraId, miraLab);
-                
+
         String specimenCollectionDate = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format (LocalDateTime.now ()); // YYYY-MM-DDThh:mm:ss
-        
+
         MiraTestFormInfo miraTestFormInfo = new MiraTestFormInfo ();
         miraTestFormInfo.sourceMiraNumber = sourceMiraNumber;
         miraTestFormInfo.sourceSpecimenNumber = sourceSpecimenNumber;
@@ -104,26 +104,26 @@ public class MiraTestSuite extends CoraBaseBrowser {
         miraTestFormInfo.fastForwardStatus = "Finished";
         miraTestFormInfo.fastForwardSubstatusCode = "";
         miraTestFormInfo.fastForwardSubstatusMsg = "";
-        
+
         MiraTestInfoProvider miraTestInfoProvider = new MiraTestInfoProvider (prodTestInfoPath);
         MiraHttpClient miraHttpClient = new MiraHttpClient ();
         MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();
-        MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraTestInfoProvider, miraHttpClient, miraTsvCopier);
+        MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraTestInfoProvider,
+                miraHttpClient, miraTsvCopier);
         miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo);
-               
+
         assertTrue (mira.waitForStage (MiraStage.MIRAQC, 60, 60000));
         assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
-        
+
         stampWorkflow (miraId, specimenId, miraLab);
-        
-                    
+
     }
-    
+
     private void stampWorkflow (String miraId, String specimenId, MiraLab miraLab) {
-        
-        Map <String, String> flowcellToJobId          = new HashMap <> ();
+
+        Map <String, String> flowcellToJobId = new HashMap <> ();
         Map <String, String> workflowSuffixToFlowcell = new HashMap <> ();
-        
+
         flowcellToJobId.put ("HWFJMBGXC", "8a848a236fb16b8101708fa7229e68f8");
         flowcellToJobId.put ("HW5FFBGXC", "8a848a236fb16b8101708fa7166468e9");
         flowcellToJobId.put ("HWCGNBGXC", "8a848a236fb16b8101708fa7179668ec");
@@ -146,7 +146,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         testLog ("mira is: " + miraId);
 
-
+        testLog ("setting workflow properties");
         Mira mira = new Mira ();
         mira.clickTestTab (true);
         String fmtString = "%s_%s_%s";
@@ -165,6 +165,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
             properties.put (WorkflowProperty.lastFinishedPipelineJobId, jobId);
             properties.put (WorkflowProperty.lastFlowcellId, flowcellId);
             history.setWorkflowProperties (properties);
+            testLog ("set properties for workflow " + workflowName);
 
         }
 
@@ -176,7 +177,9 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         gotoMiraByLabAndId (miraId, miraLab);
 
+        testLog ("going to accept MIRA QC");
         mira.setQCStatus (MiraQCStatus.ACCEPTED);
+        testLog ("accepted MIRA QC");
 
         mira.clickStatusTab ();
         assertTrue (mira.waitForStage (MiraStage.Publishing));
