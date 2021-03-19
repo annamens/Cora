@@ -15,13 +15,30 @@ public class CoraEnvironment extends BaseEnvironment {
             coraTestUrl = format (appConfig.getProperty ("cora.test.url"), env);
             coraTestUser = appConfig.getProperty ("cora.test.user");
             coraTestPass = decrypt (appConfig.getProperty ("cora.test.pass"));
-            azureLogin = appConfig.getProperty ("azure.login");
-            azurePassword = decrypt (appConfig.getProperty ("azure.password"));
+            azureLogin = getProperty ("azure.login");
+            azurePassword = getPropertyEncryptedInFile ("azure.password");
             
             
         } catch (Exception e) {
             error ("failed to parse the config file", e);
             throw new RuntimeException (e);
         }
+    }
+    
+    private static String getProperty (String propertyName) {
+        String property = System.getProperty (propertyName);
+        if (property == null || property.length () == 0) {
+            property = appConfig.getProperty (propertyName);
+        }
+        return property;
+
+    }
+
+    private static String getPropertyEncryptedInFile (String propertyName) {
+        String property = System.getProperty (propertyName);
+        if (property != null && property.length () > 0) {
+            return property;
+        }
+        return decrypt (appConfig.getProperty (propertyName));
     }
 }
