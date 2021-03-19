@@ -16,7 +16,9 @@ public class CoraEnvironment extends BaseEnvironment {
             coraTestUser = appConfig.getProperty ("cora.test.user");
             coraTestPass = decrypt (appConfig.getProperty ("cora.test.pass"));
             azureLogin = getProperty ("azure.login");
+            error ("got azure login " + azureLogin);
             azurePassword = getPropertyEncryptedInFile ("azure.password");
+            error ("got azure password length " + azurePassword.length ());
             
             
         } catch (Exception e) {
