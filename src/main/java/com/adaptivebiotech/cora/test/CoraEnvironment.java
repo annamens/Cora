@@ -11,10 +11,15 @@ public class CoraEnvironment extends BaseEnvironment {
     
     public static void initialization () {
         try {
+            error ("started initialization");
             BaseEnvironment.initialization ();
+            error ("initialized base environment");
             coraTestUrl = format (appConfig.getProperty ("cora.test.url"), env);
+            error ("got coraTestUrl " + coraTestUrl);
             coraTestUser = appConfig.getProperty ("cora.test.user");
+            error ("got coraTestUser " + coraTestUser);
             coraTestPass = decrypt (appConfig.getProperty ("cora.test.pass"));
+            error ("got coraTestpass length " + coraTestPass.length ());
             azureLogin = getProperty ("azure.login");
             error ("got azure login " + azureLogin);
             azurePassword = getPropertyEncryptedInFile ("azure.password");
@@ -25,6 +30,7 @@ public class CoraEnvironment extends BaseEnvironment {
             error ("failed to parse the config file", e);
             throw new RuntimeException (e);
         }
+        error("finished environment initialization");
     }
     
     private static String getProperty (String propertyName) {
