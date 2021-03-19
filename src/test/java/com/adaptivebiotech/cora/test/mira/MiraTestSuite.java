@@ -209,7 +209,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
         mirasList.searchAndClickMira (miraId, miraLab);
     }
 
-    private String createSampleManifest (String miraId, MiraLab miraLab) {
+    private void createSampleManifest (String miraId, MiraLab miraLab) {
         CoraPage coraPage = new CoraPage ();
         coraPage.clickMiras ();
         MirasList mirasList = new MirasList ();
@@ -227,8 +227,6 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         waitForStageAndStatus (MiraStage.immunoSEQ, MiraStatus.Awaiting);
         testLog ("mira " + miraId + " now in ImmunoSEQ/Awaiting stage");
-
-        return downloadedFileName;
     }
 
     private String createNewMira (MiraLab miraLab, MiraType miraType, MiraPanel miraPanel,

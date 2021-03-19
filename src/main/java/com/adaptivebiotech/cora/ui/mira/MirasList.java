@@ -13,6 +13,7 @@ import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Miras;
 import com.adaptivebiotech.cora.dto.Miras.Mira;
+import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
@@ -128,28 +129,34 @@ public class MirasList extends CoraPage {
         assertTrue (waitUntilVisible (".mira-manifest-dialog"));
         assertTrue (click ("//button[text()='Yes, Create Sample Manifest']"));
         pageLoading ();
-        // verify file downloaded - seems it is downloaded by the time pageloading finishes
-        info ("downloads dir is: " + getDownloadsDir ());
-        File downloadDir = new File(getDownloadsDir());
-        String filenameMatch = "Adaptive-AMPL-P01-\\d+.xlsx";
-        
-        File[] downloadedFiles = downloadDir.listFiles ((File f) -> f.getName ().matches (filenameMatch));
-        int count = 0;
-        while (count < 10 && downloadedFiles == null) {
-            info ("waiting for sample manifest to download");
-            count++;
-            doWait (10000);
-            downloadedFiles = downloadDir.listFiles ((File f) -> f.getName ().matches (filenameMatch));
+        if (!CoraEnvironment.useSauceLabs) {
+            info ("downloads dir is: " + getDownloadsDir ());
+            File downloadDir = new File (getDownloadsDir ());
+            String filenameMatch = "Adaptive-AMPL-P01-\\d+.xlsx";
+
+            File[] downloadedFiles = listMatchingFiles (downloadDir, filenameMatch);
+            int count = 0;
+            while (count < 10 && downloadedFiles == null) {
+                info ("waiting for sample manifest to download");
+                count++;
+                doWait (10000);
+                downloadedFiles = listMatchingFiles (downloadDir, filenameMatch);
+            }
+            assertNotNull (downloadedFiles);
+            info ("found " + downloadedFiles.length + " downloaded files");
+            Arrays.sort (downloadedFiles, Comparator.comparingLong (File::lastModified).reversed ());
+            File latestDownload = downloadedFiles[0];
+            assertNotNull (latestDownload);
+            return latestDownload.getName ();
         }
-        assertNotNull (downloadedFiles);
-        info ("found " + downloadedFiles.length + " downloaded files");
-        Arrays.sort(downloadedFiles, Comparator.comparingLong(File::lastModified).reversed());
-        File latestDownload = downloadedFiles[0];
-        assertNotNull(latestDownload);
-        return latestDownload.getName ();
+        return "Can't verify file download on saucelabs";
         
     }
 
+    private File[] listMatchingFiles (File dir, String filenameMatch) {
+        return dir.listFiles ((File f) -> f.getName ().matches (filenameMatch));
+    }
+    
     private String getMiraGuid (String href) {
         return href.replaceFirst (".*mira/details/", "");
     }
