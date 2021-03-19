@@ -133,6 +133,8 @@ public class MirasList extends CoraPage {
         File downloadDir = new File(getDownloadsDir());
         String filenameMatch = "Adaptive-AMPL-P01-\\d+.xlsx";
         File[] downloadedFiles = downloadDir.listFiles ((File f) -> f.getName ().matches (filenameMatch));
+        assertNotNull (downloadedFiles);
+        info ("found " + downloadedFiles.length + " downloaded files");
         Arrays.sort(downloadedFiles, Comparator.comparingLong(File::lastModified).reversed());
         File latestDownload = downloadedFiles[0];
         assertNotNull(latestDownload);
