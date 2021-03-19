@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Miras;
 import com.adaptivebiotech.cora.dto.Miras.Mira;
@@ -64,15 +65,15 @@ public class MirasList extends CoraPage {
         pageLoading ();
 
         // wait for the search results to populate
-        String firstElementText = waitForElement (firstResult).getText ();
+        String firstElementText = waitAndGetText (firstResult);
         int count = 0;
         while (count < 20 && !firstElementText.equals (miraId)) {
             info ("waiting for search result");
             count++;
             doWait (10000);
-            firstElementText = waitForElement (firstResult).getText ();
+            firstElementText = waitAndGetText (firstResult);
         }
-        assertEquals (waitForElement (firstResult).getText (), miraId);
+        assertEquals (waitAndGetText (firstResult), miraId);
     }
 
     public void selectLab (MiraLab miraLab) {
@@ -159,5 +160,16 @@ public class MirasList extends CoraPage {
     
     private String getMiraGuid (String href) {
         return href.replaceFirst (".*mira/details/", "");
+    }
+    
+    // avoid stale element reference
+    private String waitAndGetText (String by) {
+        try {
+            return waitForElement (by).getText ();
+        } catch (StaleElementReferenceException e) {
+            info (e.getMessage ());
+            return waitForElement (by).getText ();
+        }
+       
     }
 }
