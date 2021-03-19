@@ -129,6 +129,7 @@ public class MirasList extends CoraPage {
         assertTrue (click ("//button[text()='Yes, Create Sample Manifest']"));
         pageLoading ();
         // verify file downloaded - seems it is downloaded by the time pageloading finishes
+        info ("downloads dir is: " + getDownloadsDir ());
         File downloadDir = new File(getDownloadsDir());
         String filenameMatch = "Adaptive-AMPL-P01-\\d+.xlsx";
         File[] downloadedFiles = downloadDir.listFiles ((File f) -> f.getName ().matches (filenameMatch));

@@ -219,6 +219,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
         mirasList.clickSelect ();
         mirasList.selectMiraInList (miraId);
 
+        testLog ("creating sample manifest");
         String downloadedFileName = mirasList.clickCreateSampleManifest ();
         testLog ("downloaded sample manifest " + downloadedFileName);
 

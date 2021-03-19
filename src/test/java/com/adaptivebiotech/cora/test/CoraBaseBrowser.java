@@ -1,7 +1,5 @@
 package com.adaptivebiotech.cora.test;
 
-import static com.adaptivebiotech.test.utils.Logging.error;
-
 import static com.adaptivebiotech.cora.test.CoraEnvironment.initialization;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
@@ -24,9 +22,9 @@ import com.seleniumfy.test.utils.BaseBrowser;
 public class CoraBaseBrowser extends BaseBrowser {
 
     static {
-        error ("initializing CoraBaseBrowser");
+        info ("initializing CoraBaseBrowser");
         initialization ();
-        error ("initialized CoraBaseBrowser");
+        info ("initialized CoraBaseBrowser");
         testLog ("Current branch: " + version);
     }
 
