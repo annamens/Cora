@@ -75,7 +75,7 @@ public class MiraStampWorkflowTestSuite extends CoraBaseBrowser {
         String miraPipelineResultOverride = "[{\n" + "\"forwardPcrPrimer\": \"TCRB_1rxn-P43-M164-A15SW\",\n" + "\"reversePcrPrimer\": \"TCRB_1rxn-P43-M164-A15SW\",\n" + "\"sample.flowcell.fcid\": \"190908_NB501176_0706_AHV7HVBGXB\",\n" + "\"sample.flowcell.job.archiveResultsPath\": \"s3://pipeline-cora-test-archive:us-west-2/190908_NB501176_0706_AHV7HVBGXB/v3.1/20190929_0306\",\n" + "\"sample.flowcell.runDate\": \"2019-09-08T07:00:00Z\",\n" + "\"sequencingRead1Primer\": \"\",\n" + "\"sequencingRead2Primer\": \"\"\n" + "}]";
 
         MiraLab miraLab = MiraLab.AntigenMapProduction;
-        String miraId = "M-1367";
+        String miraId = "M-1372";
 
         testLog ("mira is: " + miraId);
 

@@ -219,14 +219,20 @@ public class Mira extends CoraPage {
     }
 
     public boolean waitForStage (MiraStage stage) {
+        return waitForStage (stage, numWaits, msWait);
+    }
+    
+    public boolean waitForStage (MiraStage stage, int numWaits, int msWait) {
         int count = 0;
-        while (count < numWaits && getCurrentStage () != stage) {
+        MiraStage currentStage = getCurrentStage ();
+        while (count < numWaits && currentStage != stage) {
             count++;
             info ("waiting for stage : " + stage);
             refresh ();
             doWait (msWait);
+            currentStage = getCurrentStage ();
         }
-        return getCurrentStage () == stage;
+        return currentStage == stage;
     }
 
     public boolean waitForStatus (MiraStatus status) {

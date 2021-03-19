@@ -15,9 +15,11 @@ public class MiraTsvCopier {
     private String destinationPrefix = "tsv/mira/automatedtest";
     private String destinationBase = "%s/%s/%s";
     
-    private String loginCommandBase = "/usr/local/bin/az login -u %s -p %s";
-    private String downloadCommandBase = "/usr/local/bin/az storage blob download --container-name %s --auth-mode login --account-name %s --name %s --file %s";
-    private String uploadCommandBase = "/usr/local/bin/az storage blob upload --container-name %s --auth-mode login --account-name %s --name %s --file %s";
+    private String azCLI = "az";
+    
+    private String loginCommandBase = azCLI + " login -u %s -p %s";
+    private String downloadCommandBase = azCLI + " storage blob download --container-name %s --auth-mode login --account-name %s --name %s --file %s";
+    private String uploadCommandBase = azCLI + " storage blob upload --container-name %s --auth-mode login --account-name %s --name %s --file %s";
     
     private String tmpfileBase = "target/%s";    
     
@@ -64,7 +66,11 @@ public class MiraTsvCopier {
     }
     
     private void runCommand (String command) {
-        info ("running " + command);
+        if (command.contains ("login")) {
+            info ("logging into azure");
+        } else {
+            info ("running " + command);
+        }
         try {
             Process loginProcess = Runtime.getRuntime ().exec (command);
             int exitValue = loginProcess.waitFor ();

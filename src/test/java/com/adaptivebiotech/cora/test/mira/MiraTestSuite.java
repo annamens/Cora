@@ -5,10 +5,13 @@ import static org.testng.Assert.assertTrue;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.mira.Mira;
@@ -16,9 +19,11 @@ import com.adaptivebiotech.cora.ui.mira.MirasList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraQCStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
@@ -28,6 +33,7 @@ import com.adaptivebiotech.cora.utils.mira.MiraTestInfoProvider;
 import com.adaptivebiotech.cora.utils.mira.MiraTestScenarioBuilder;
 import com.adaptivebiotech.cora.utils.mira.MiraTsvCopier;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
+import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 
 /*
  TODO
@@ -43,7 +49,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
     
     private final String projectId = "a9d36064-de2a-49c3-b6af-3b3a46ee0c22";
     private final String accountId = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
-    private final String prodTestInfoPath = "MIRA/prod_test_info_azure.json";
+    private final String prodTestInfoPath = "MIRA/prod_test_info_azure_slim.json";
     private final String sourceMiraNumber = "M-1345";
     private final String sourceSpecimenNumber = "SP-914830";
     
@@ -73,7 +79,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         waitForStageAndStatus (MiraStage.PoolExtraction, MiraStatus.Ready);
 
-        createSampleManifest (miraId, MiraLab.AntigenMapProduction);
+        createSampleManifest (miraId, miraLab);
                 
         String specimenCollectionDate = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format (LocalDateTime.now ()); // YYYY-MM-DDThh:mm:ss
         
@@ -105,9 +111,76 @@ public class MiraTestSuite extends CoraBaseBrowser {
         MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraTestInfoProvider, miraHttpClient, miraTsvCopier);
         miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo);
                
-        assertTrue (mira.waitForStage (MiraStage.MIRAAnalysis));
-        assertTrue (mira.waitForStatus (MiraStatus.Ready));
+        assertTrue (mira.waitForStage (MiraStage.MIRAQC, 60, 60000));
+        assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
+        
+        stampWorkflow (miraId, specimenId, miraLab);
+        
                     
+    }
+    
+    private void stampWorkflow (String miraId, String specimenId, MiraLab miraLab) {
+        
+        Map <String, String> flowcellToJobId          = new HashMap <> ();
+        Map <String, String> workflowSuffixToFlowcell = new HashMap <> ();
+        
+        flowcellToJobId.put ("HWFJMBGXC", "8a848a236fb16b8101708fa7229e68f8");
+        flowcellToJobId.put ("HW5FFBGXC", "8a848a236fb16b8101708fa7166468e9");
+        flowcellToJobId.put ("HWCGNBGXC", "8a848a236fb16b8101708fa7179668ec");
+
+        workflowSuffixToFlowcell.put ("A_positive", "HWFJMBGXC");
+        workflowSuffixToFlowcell.put ("B_positive", "HWFJMBGXC");
+        workflowSuffixToFlowcell.put ("C_positive", "HWFJMBGXC");
+        workflowSuffixToFlowcell.put ("D_positive", "HW5FFBGXC");
+        workflowSuffixToFlowcell.put ("E_positive", "HW5FFBGXC");
+        workflowSuffixToFlowcell.put ("F_positive", "HW5FFBGXC");
+        workflowSuffixToFlowcell.put ("G_positive", "HW5FFBGXC");
+        workflowSuffixToFlowcell.put ("H_positive", "HW5FFBGXC");
+        workflowSuffixToFlowcell.put ("I_positive", "HW5FFBGXC");
+        workflowSuffixToFlowcell.put ("J_positive", "HW5FFBGXC");
+        workflowSuffixToFlowcell.put ("K_positive", "HW5FFBGXC");
+        workflowSuffixToFlowcell.put ("nopeptide_pos", "HW5FFBGXC");
+        workflowSuffixToFlowcell.put ("unsorted_expanded", "HWCGNBGXC"); // this is the unsorted guy
+
+        String miraPipelineResultOverride = "[{\n" + "\"forwardPcrPrimer\": \"TCRB_1rxn-P43-M164-A15SW\",\n" + "\"reversePcrPrimer\": \"TCRB_1rxn-P43-M164-A15SW\",\n" + "\"sample.flowcell.fcid\": \"190908_NB501176_0706_AHV7HVBGXB\",\n" + "\"sample.flowcell.job.archiveResultsPath\": \"s3://pipeline-cora-test-archive:us-west-2/190908_NB501176_0706_AHV7HVBGXB/v3.1/20190929_0306\",\n" + "\"sample.flowcell.runDate\": \"2019-09-08T07:00:00Z\",\n" + "\"sequencingRead1Primer\": \"\",\n" + "\"sequencingRead2Primer\": \"\"\n" + "}]";
+
+        testLog ("mira is: " + miraId);
+
+
+        Mira mira = new Mira ();
+        mira.clickTestTab (true);
+        String fmtString = "%s_%s_%s";
+
+        for (String workflowSuffix : workflowSuffixToFlowcell.keySet ()) {
+
+            String workflowName = String.format (fmtString, specimenId, miraId, workflowSuffix);
+
+            String flowcellId = workflowSuffixToFlowcell.get (workflowSuffix);
+            String jobId = flowcellToJobId.get (flowcellId);
+
+            History history = new History ();
+            history.gotoOrderDebug (workflowName);
+            history.isCorrectPage ();
+            Map <WorkflowProperty, String> properties = new HashMap <> ();
+            properties.put (WorkflowProperty.lastFinishedPipelineJobId, jobId);
+            properties.put (WorkflowProperty.lastFlowcellId, flowcellId);
+            history.setWorkflowProperties (properties);
+
+        }
+
+        History history = new History ();
+        history.gotoOrderDebug (miraId);
+        history.isCorrectPage ();
+        history.setWorkflowProperty (WorkflowProperty.miraPipelineResultOverride,
+                                     miraPipelineResultOverride.replaceAll ("\n", ""));
+
+        gotoMiraByLabAndId (miraId, miraLab);
+
+        mira.setQCStatus (MiraQCStatus.ACCEPTED);
+
+        mira.clickStatusTab ();
+        assertTrue (mira.waitForStage (MiraStage.Publishing));
+        assertTrue (mira.waitForStatus (MiraStatus.Finished, 30, 60000));
     }
 
     private void loginToCora () {
@@ -126,9 +199,12 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
     private void gotoMiraByLabAndId (String miraId, MiraLab miraLab) {
         CoraPage coraPage = new CoraPage ();
-        coraPage.clickMiras ();
-        MirasList mirasList = new MirasList ();
+        coraPage.navigateTo (CoraEnvironment.coraTestUrl);
+        OrdersList ordersList = new OrdersList ();
+        ordersList.isCorrectPage ();
+        ordersList.clickMiras ();
 
+        MirasList mirasList = new MirasList ();
         mirasList.isCorrectPage ();
         mirasList.searchAndClickMira (miraId, miraLab);
     }
