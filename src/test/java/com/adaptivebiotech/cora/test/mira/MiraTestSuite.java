@@ -28,6 +28,8 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 import com.adaptivebiotech.cora.utils.mira.MiraHttpClient;
+import com.adaptivebiotech.cora.utils.mira.MiraSourceInfo;
+import com.adaptivebiotech.cora.utils.mira.MiraSourceInfoProvider;
 import com.adaptivebiotech.cora.utils.mira.MiraTestFormInfo;
 import com.adaptivebiotech.cora.utils.mira.MiraTestInfoProvider;
 import com.adaptivebiotech.cora.utils.mira.MiraTestScenarioBuilder;
@@ -47,19 +49,31 @@ import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 */
 public class MiraTestSuite extends CoraBaseBrowser {
 
+    // TODO
+    // projectId and accountId are environment specific - these are for lionsmane
+    // requires cora db query to find the values
+    //
     private final String projectId            = "a9d36064-de2a-49c3-b6af-3b3a46ee0c22";
     private final String accountId            = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
-    private final String prodTestInfoPath     = "MIRA/prod_test_info_azure_slim.json";
-    private final String sourceMiraNumber     = "M-1345";
-    private final String sourceSpecimenNumber = "SP-914830";
+//    private final String prodTestInfoPath     = "MIRA/prod_test_info_azure_slim.json";
+//    private final String sourceMiraNumber     = "M-1345";
+//    private final String sourceSpecimenNumber = "SP-914830";
+    
 
     @Test
     public void testAMPL_MIRA_slimmedInputs () {
 
-        MiraLab miraLab = MiraLab.AntigenMapProduction;
-        MiraType miraType = MiraType.MIRA;
-        MiraPanel miraPanel = MiraPanel.Minor;
-        MiraExpansionMethod miraExpansionMethod = MiraExpansionMethod.AntiCD3;
+        String miraSourceInfoFile = "MIRA/mira_ampl_slim_testInfo.json";
+
+        MiraSourceInfoProvider miraSourceInfoProvider = new MiraSourceInfoProvider (miraSourceInfoFile);
+        MiraSourceInfo miraSourceInfo = miraSourceInfoProvider.getMiraSourceInfoFromFile ();
+        
+        String sourceMiraNumber = miraSourceInfo.getSourceMiraId ();
+        String sourceSpecimenNumber = miraSourceInfo.getSourceSpecimenId ();
+        MiraLab miraLab = miraSourceInfo.getMiraLab ();
+        MiraType miraType = miraSourceInfo.getMiraType ();
+        MiraPanel miraPanel = miraSourceInfo.getMiraPanel ();
+        MiraExpansionMethod miraExpansionMethod = miraSourceInfo.getExpansionMethod ();
 
         loginToCora ();
 
@@ -105,12 +119,11 @@ public class MiraTestSuite extends CoraBaseBrowser {
         miraTestFormInfo.fastForwardSubstatusCode = "";
         miraTestFormInfo.fastForwardSubstatusMsg = "";
 
-        MiraTestInfoProvider miraTestInfoProvider = new MiraTestInfoProvider (prodTestInfoPath);
+//        MiraTestInfoProvider miraTestInfoProvider = new MiraTestInfoProvider (prodTestInfoPath);
         MiraHttpClient miraHttpClient = new MiraHttpClient ();
         MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();
-        MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraTestInfoProvider,
-                miraHttpClient, miraTsvCopier);
-        miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo);
+        MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraHttpClient, miraTsvCopier);
+        miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo, miraSourceInfo);
 
         assertTrue (mira.waitForStage (MiraStage.MIRAQC, 60, 60000));
         assertTrue (mira.waitForStatus (MiraStatus.Awaiting));

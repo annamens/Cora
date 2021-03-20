@@ -65,9 +65,10 @@ public class MiraTsvCopier {
         return "https://adaptivetestcasedata.blob.core.windows.net/" + containerName + "/" + destinationFile;
     }
     
+    // TODO log the stdout and stderr of these commands
     private void runCommand (String command) {
-        if (command.contains ("login")) {
-            info ("logging into azure");
+        if (command.contains (" -p ")) {
+            info ("running azure command with password");
         } else {
             info ("running " + command);
         }

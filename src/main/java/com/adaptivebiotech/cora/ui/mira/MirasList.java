@@ -131,27 +131,30 @@ public class MirasList extends CoraPage {
         assertTrue (click ("//button[text()='Yes, Create Sample Manifest']"));
         pageLoading ();
         if (!CoraEnvironment.useSauceLabs) {
-            info ("downloads dir is: " + getDownloadsDir ());
-            File downloadDir = new File (getDownloadsDir ());
-            String filenameMatch = "Adaptive-AMPL-P01-\\d+.xlsx";
-
-            File[] downloadedFiles = listMatchingFiles (downloadDir, filenameMatch);
-            int count = 0;
-            while (count < 10 && downloadedFiles == null) {
-                info ("waiting for sample manifest to download");
-                count++;
-                doWait (10000);
-                downloadedFiles = listMatchingFiles (downloadDir, filenameMatch);
-            }
-            assertNotNull (downloadedFiles);
-            info ("found " + downloadedFiles.length + " downloaded files");
-            Arrays.sort (downloadedFiles, Comparator.comparingLong (File::lastModified).reversed ());
-            File latestDownload = downloadedFiles[0];
-            assertNotNull (latestDownload);
-            return latestDownload.getName ();
+            return getDownloadedSampleManifestName ();
         }
         return "Can't verify file download on saucelabs";
         
+    }
+
+    private String getDownloadedSampleManifestName () {
+        info ("downloads dir is: " + getDownloadsDir ());
+        File downloadDir = new File (getDownloadsDir ());
+        String filenameMatch = "Adaptive-AMPL-P01-\\d+.xlsx";
+
+        File[] downloadedFiles = listMatchingFiles (downloadDir, filenameMatch);
+        int count = 0;
+        while (count < 10 && downloadedFiles == null) {
+            info ("waiting for sample manifest to download");
+            count++;
+            doWait (10000);
+            downloadedFiles = listMatchingFiles (downloadDir, filenameMatch);
+        }
+        assertNotNull (downloadedFiles);
+        Arrays.sort (downloadedFiles, Comparator.comparingLong (File::lastModified).reversed ());
+        File latestDownload = downloadedFiles[0];
+        assertNotNull (latestDownload);
+        return latestDownload.getName ();
     }
 
     private File[] listMatchingFiles (File dir, String filenameMatch) {

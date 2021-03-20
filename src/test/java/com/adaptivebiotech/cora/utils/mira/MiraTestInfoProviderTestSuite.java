@@ -24,9 +24,9 @@ public class MiraTestInfoProviderTestSuite {
     }
     
     private void verifyMiraTestInfo (MiraTestInfo miraTestInfo, String orderNumber, String specimenNumber, String tsvPath) {
-        assertEquals(miraTestInfo.TsvPath, tsvPath);
-        assertEquals(miraTestInfo.OrderNumber, orderNumber);
-        assertEquals(miraTestInfo.SpecimenNumber, specimenNumber);
+        assertEquals(miraTestInfo.tsvPath, tsvPath);
+        assertEquals(miraTestInfo.orderNumber, orderNumber);
+        assertEquals(miraTestInfo.specimenNumber, specimenNumber);
     }
     
     
