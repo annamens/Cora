@@ -10,7 +10,7 @@ import java.util.Map;
 import org.apache.http.message.BasicHeader;
 import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
-import com.adaptivebiotech.cora.utils.mira.testscenario.TestScenarioInfo;
+import com.adaptivebiotech.cora.utils.mira.techtransfer.TestScenarioInfo;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
 public class MiraHttpClient {

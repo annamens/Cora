@@ -6,7 +6,8 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
-import com.adaptivebiotech.cora.utils.mira.MiraSourceInfo.SourceSpecimenInfo;
+import com.adaptivebiotech.cora.utils.mira.mirasource.MiraSourceInfo;
+import com.adaptivebiotech.cora.utils.mira.mirasource.SourceSpecimenInfo;
 
 public class MiraSourceInfoProviderTestSuite {
 

@@ -5,7 +5,7 @@
 	"miraType": "MIRA",
 	"miraPanel": "Minor",
 	"expansionMethod": "AntiCD3",
-	"specimenInfos": [
+	"sourceSpecimenInfos": [
 		{
 			"workflowName": "SP-914830_M-1345_A_positive",
 			"tsvPath": "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/mira/templates/ampl_slim1/HWFJMBGXC_0_Adaptive-MIRA-AMPL_SP-914830_M-1345_A_positive.adap.txt.results.tsv.gz",

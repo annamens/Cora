@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.utils.mira.testscenario;
+package com.adaptivebiotech.cora.utils.mira.techtransfer;
 
 import java.util.UUID;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -5,20 +5,10 @@ import com.adaptivebiotech.cora.test.CoraEnvironment;
 
 public class MiraTsvCopierTestSuite {
     
-//    @Test
-//    public void testCopyTsvFiles () {
-//
-//        CoraEnvironment.initialization ();
-//        
-//        MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();
-//        String specimenId = "123456";
-//        String miraId = "1234";
-//        
-//        miraTsvCopier.copyTsvFiles (specimenId, miraId);
-//    
-//    }
+    // unit test for miraTsvCopier
+    // disabled by default, useful if you need to check your permissions etc.
     
-    @Test
+    @Test (enabled = false)
     public void testCopyTsvFile () {
         CoraEnvironment.initialization ();
         MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();

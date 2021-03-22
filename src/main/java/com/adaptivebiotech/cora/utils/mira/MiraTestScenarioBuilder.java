@@ -3,14 +3,15 @@ package com.adaptivebiotech.cora.utils.mira;
 import static com.seleniumfy.test.utils.Logging.info;
 
 import java.util.ArrayList;
-import com.adaptivebiotech.cora.utils.mira.MiraSourceInfo.SourceSpecimenInfo;
-import com.adaptivebiotech.cora.utils.mira.testscenario.TestFastForwardInfo;
-import com.adaptivebiotech.cora.utils.mira.testscenario.TestSampleInfo;
-import com.adaptivebiotech.cora.utils.mira.testscenario.TestScenarioConfig;
-import com.adaptivebiotech.cora.utils.mira.testscenario.TestScenarioInfo;
-import com.adaptivebiotech.cora.utils.mira.testscenario.TestScenarioProjectInfo;
-import com.adaptivebiotech.cora.utils.mira.testscenario.TestSpecimenInfo;
-import com.adaptivebiotech.cora.utils.mira.testscenario.TestTechTransferInfo;
+import com.adaptivebiotech.cora.utils.mira.mirasource.MiraSourceInfo;
+import com.adaptivebiotech.cora.utils.mira.mirasource.SourceSpecimenInfo;
+import com.adaptivebiotech.cora.utils.mira.techtransfer.TestFastForwardInfo;
+import com.adaptivebiotech.cora.utils.mira.techtransfer.TestSampleInfo;
+import com.adaptivebiotech.cora.utils.mira.techtransfer.TestScenarioConfig;
+import com.adaptivebiotech.cora.utils.mira.techtransfer.TestScenarioInfo;
+import com.adaptivebiotech.cora.utils.mira.techtransfer.TestScenarioProjectInfo;
+import com.adaptivebiotech.cora.utils.mira.techtransfer.TestSpecimenInfo;
+import com.adaptivebiotech.cora.utils.mira.techtransfer.TestTechTransferInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -32,37 +33,37 @@ public class MiraTestScenarioBuilder {
         this.miraTsvCopier = miraTsvCopier;
     }
 
-    public void buildTestScenario (MiraTestFormInfo miraTestFormInfo,
+    public void buildTestScenario (MiraTargetInfo miraTargetInfo,
                                    MiraSourceInfo miraSourceInfo) {
 
         TestScenarioInfo testScenarioInfo = new TestScenarioInfo ();
 
-        SourceSpecimenInfo[] specimenInfos = miraSourceInfo.getSourceSpecimenInfos ();
+        SourceSpecimenInfo[] sourceSpecimenInfos = miraSourceInfo.getSourceSpecimenInfos ();
 
-        info ("number of mira tests is: " + specimenInfos.length);
+        info ("number of mira tests is: " + sourceSpecimenInfos.length);
 
         TestTechTransferInfo testTechTransferInfo = new TestTechTransferInfo ();
-        testTechTransferInfo.workspace = miraTestFormInfo.targetWorkspace;
-        testTechTransferInfo.flowcellId = miraTestFormInfo.targetFlowcellId;
-        testTechTransferInfo.specimens = new ArrayList <> (specimenInfos.length);
+        testTechTransferInfo.workspace = miraTargetInfo.targetWorkspace;
+        testTechTransferInfo.flowcellId = miraTargetInfo.targetFlowcellId;
+        testTechTransferInfo.specimens = new ArrayList <> (sourceSpecimenInfos.length);
 
         TestScenarioProjectInfo projectInfo = new TestScenarioProjectInfo ();
-        projectInfo.projectId = miraTestFormInfo.targetProjectId;
-        projectInfo.accountId = miraTestFormInfo.targetAccountId;
+        projectInfo.projectId = miraTargetInfo.targetProjectId;
+        projectInfo.accountId = miraTargetInfo.targetAccountId;
         testScenarioInfo.projectInfo = projectInfo;
-        testScenarioInfo.fastForwardInfo = buildForward (miraTestFormInfo);
+        testScenarioInfo.fastForwardInfo = buildForward (miraTargetInfo);
 
         testScenarioInfo.scenarioConfig = new TestScenarioConfig ();
 
-        for (SourceSpecimenInfo specimenInfo : specimenInfos) {
+        for (SourceSpecimenInfo sourceSpecimenInfo : sourceSpecimenInfos) {
 
-            TestSpecimenInfo specimen = buildSpecimen (specimenInfo, miraTestFormInfo);
+            TestSpecimenInfo specimen = buildSpecimen (sourceSpecimenInfo, miraTargetInfo, miraSourceInfo);
 
-            String tsvPath = miraTsvCopier.copyTsvFile (miraTestFormInfo.targetMiraNumber,
-                                                        miraTestFormInfo.targetSpecimenNumber,
-                                                        specimenInfo.getTsvPath (),
-                                                        miraTestFormInfo.sourceMiraNumber,
-                                                        miraTestFormInfo.sourceSpecimenNumber);
+            String tsvPath = miraTsvCopier.copyTsvFile (miraTargetInfo.targetMiraNumber,
+                                                        miraTargetInfo.targetSpecimenNumber,
+                                                        sourceSpecimenInfo.getTsvPath (),
+                                                        miraSourceInfo.getSourceMiraId (),
+                                                        miraSourceInfo.getSourceSpecimenId ());
 
             info ("tsvPath is: " + tsvPath);
             specimen.samples.get (0).tsvPath = tsvPath;
@@ -77,19 +78,20 @@ public class MiraTestScenarioBuilder {
 
     }
 
-    private TestSpecimenInfo buildSpecimen (SourceSpecimenInfo sourceSpecimenInfo, MiraTestFormInfo formInfo) {
+    private TestSpecimenInfo buildSpecimen (SourceSpecimenInfo sourceSpecimenInfo, MiraTargetInfo miraTargetInfo,
+                                            MiraSourceInfo miraSourceInfo) {
 
-        String miraTargetSample = getTargetSampleName (sourceSpecimenInfo,
-                                                       formInfo.sourceMiraNumber,
-                                                       formInfo.targetSpecimenNumber,
-                                                       formInfo.targetMiraNumber);
+        String miraTargetSample = sourceSpecimenInfo.getTargetWorkflowName (miraSourceInfo.getSourceSpecimenId (),
+                                                                            miraSourceInfo.getSourceMiraId (),
+                                                                            miraTargetInfo.targetSpecimenNumber,
+                                                                            miraTargetInfo.targetMiraNumber);
         TestSpecimenInfo specimenInfo = new TestSpecimenInfo ();
         specimenInfo.name = miraTargetSample;
         specimenInfo.externalSubjectId = miraTargetSample;
-        specimenInfo.sampleType = formInfo.targetSpecimenType;
-        specimenInfo.sampleSource = formInfo.targetSpecimenSource;
-        specimenInfo.compartment = formInfo.targetSpecimenComparment;
-        specimenInfo.collectionDate = formInfo.targetSpecimenCollDate;
+        specimenInfo.sampleType = miraTargetInfo.targetSpecimenType;
+        specimenInfo.sampleSource = miraTargetInfo.targetSpecimenSource;
+        specimenInfo.compartment = miraTargetInfo.targetSpecimenComparment;
+        specimenInfo.collectionDate = miraTargetInfo.targetSpecimenCollDate;
         specimenInfo.samples = new ArrayList <TestSampleInfo> (1);
 
         ObjectNode properties = new ObjectMapper ().createObjectNode ();
@@ -97,8 +99,8 @@ public class MiraTestScenarioBuilder {
         specimenInfo.properties = properties;
 
         ObjectNode projProperties = new ObjectMapper ().createObjectNode ();
-        projProperties.put ("Var1", formInfo.targetMiraNumber);
-        projProperties.put ("Var2", formInfo.targetExpansionNumber);
+        projProperties.put ("Var1", miraTargetInfo.targetMiraNumber);
+        projProperties.put ("Var2", miraTargetInfo.targetExpansionNumber);
         projProperties.put ("Var3", sourceSpecimenInfo.getCellCount ());
         specimenInfo.projectProperties = projProperties;
 
@@ -112,26 +114,7 @@ public class MiraTestScenarioBuilder {
         return specimenInfo;
     }
 
-    private String getSourceSamplePrefix (SourceSpecimenInfo sourceSpecimenInfo, String sourceMiraNumber) {
-        String sourceSampleSpecimen = sourceSpecimenInfo.getWorkflowName ().split ("_")[0];
-        return String.format ("%s_%s", sourceSampleSpecimen, sourceMiraNumber);
-    }
-
-    private String getTargetSamplePrefix (String targetSpecimenNumber, String targetMiraNumber) {
-        return String.format ("%s_%s", targetSpecimenNumber, targetMiraNumber);
-    }
-
-    private String getTargetSampleName (SourceSpecimenInfo sourceSpecimenInfo,
-                                        String sourceMiraNumber,
-                                        String targetSpecimenNumber,
-                                        String targetMiraNumber) {
-        String targetSamplePrefix = getTargetSamplePrefix (targetSpecimenNumber, targetMiraNumber);
-        return sourceSpecimenInfo.getWorkflowName ()
-                                 .replace (getSourceSamplePrefix (sourceSpecimenInfo, sourceMiraNumber),
-                                           targetSamplePrefix);
-    }
-
-    private TestFastForwardInfo buildForward (MiraTestFormInfo formInfo) {
+    private TestFastForwardInfo buildForward (MiraTargetInfo formInfo) {
 
         TestFastForwardInfo fastForwardInfo = new TestFastForwardInfo ();
         fastForwardInfo.stageName = formInfo.fastForwardStage;

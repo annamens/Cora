@@ -6,6 +6,7 @@ import static com.seleniumfy.test.utils.Logging.error;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import com.adaptivebiotech.cora.utils.mira.mirasource.MiraSourceInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MiraSourceInfoProvider {

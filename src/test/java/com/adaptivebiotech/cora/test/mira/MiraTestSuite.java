@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
@@ -28,25 +27,15 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 import com.adaptivebiotech.cora.utils.mira.MiraHttpClient;
-import com.adaptivebiotech.cora.utils.mira.MiraSourceInfo;
-import com.adaptivebiotech.cora.utils.mira.MiraSourceInfo.SourceSpecimenInfo;
 import com.adaptivebiotech.cora.utils.mira.MiraSourceInfoProvider;
-import com.adaptivebiotech.cora.utils.mira.MiraTestFormInfo;
+import com.adaptivebiotech.cora.utils.mira.MiraTargetInfo;
 import com.adaptivebiotech.cora.utils.mira.MiraTestScenarioBuilder;
 import com.adaptivebiotech.cora.utils.mira.MiraTsvCopier;
+import com.adaptivebiotech.cora.utils.mira.mirasource.MiraSourceInfo;
+import com.adaptivebiotech.cora.utils.mira.mirasource.SourceSpecimenInfo;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 
-/*
- TODO
- 
- get projectId and accountId from cora DB
- run sql against coraDB after job has processed... but this will time out? it takes hours
- maybe best to just output the sql that should be run after the job has processed?
- use azure tsv files
- see if there is a simpler way to setup the tech transfer
- 
-*/
 public class MiraTestSuite extends CoraBaseBrowser {
 
     // TODO
@@ -54,12 +43,8 @@ public class MiraTestSuite extends CoraBaseBrowser {
     // requires cora db query to find the values
     // make these build parameters
     //
-    private final String projectId            = "a9d36064-de2a-49c3-b6af-3b3a46ee0c22";
-    private final String accountId            = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
-//    private final String prodTestInfoPath     = "MIRA/prod_test_info_azure_slim.json";
-//    private final String sourceMiraNumber     = "M-1345";
-//    private final String sourceSpecimenNumber = "SP-914830";
-    
+    private final String projectId = "a9d36064-de2a-49c3-b6af-3b3a46ee0c22";
+    private final String accountId = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
 
     @Test
     public void testAMPL_MIRA_slimmedInputs () {
@@ -68,7 +53,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         MiraSourceInfoProvider miraSourceInfoProvider = new MiraSourceInfoProvider (miraSourceInfoFile);
         MiraSourceInfo miraSourceInfo = miraSourceInfoProvider.getMiraSourceInfoFromFile ();
-        
+
         String sourceMiraNumber = miraSourceInfo.getSourceMiraId ();
         String sourceSpecimenNumber = miraSourceInfo.getSourceSpecimenId ();
         MiraLab miraLab = miraSourceInfo.getMiraLab ();
@@ -96,16 +81,16 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         createSampleManifest (miraId, miraLab);
 
-        MiraTestFormInfo miraTestFormInfo = buildMiraTestFormInfo (sourceMiraNumber,
-                                                                   sourceSpecimenNumber,
-                                                                   miraId,
-                                                                   specimenId,
-                                                                   expansionId);
+        MiraTargetInfo miraTargetInfo = buildMiraTargetInfo (sourceMiraNumber,
+                                                             sourceSpecimenNumber,
+                                                             miraId,
+                                                             specimenId,
+                                                             expansionId);
 
         MiraHttpClient miraHttpClient = new MiraHttpClient ();
         MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();
         MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraHttpClient, miraTsvCopier);
-        miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo, miraSourceInfo);
+        miraTestScenarioBuilder.buildTestScenario (miraTargetInfo, miraSourceInfo);
 
         assertTrue (mira.waitForStage (MiraStage.MIRAQC, 60, 60000));
         assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
@@ -114,43 +99,30 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
     }
 
-    private MiraTestFormInfo buildMiraTestFormInfo (String sourceMiraNumber, String sourceSpecimenNumber, String miraId,
-                                                    String specimenId, String expansionId) {
+    private MiraTargetInfo buildMiraTargetInfo (String sourceMiraNumber, String sourceSpecimenNumber, String miraId,
+                                                String specimenId, String expansionId) {
         String specimenCollectionDate = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format (LocalDateTime.now ()); // YYYY-MM-DDThh:mm:ss
+        String specimenType = "Blood";
+        String specimenSource = "Blood";
+        String specimenCompartment = "Cellular";
+        String fastForwardStage = "NorthQC";
+        String fastForwardStatus = "Finished";
 
-        MiraTestFormInfo miraTestFormInfo = new MiraTestFormInfo ();
-        miraTestFormInfo.sourceMiraNumber = sourceMiraNumber;
-        miraTestFormInfo.sourceSpecimenNumber = sourceSpecimenNumber;
-        miraTestFormInfo.targetEnvironmentType = "test";
-        miraTestFormInfo.targetDataPath = "not used";
-        miraTestFormInfo.targetHost = coraTestUrl;
-        miraTestFormInfo.targetMiraNumber = miraId;
-        miraTestFormInfo.targetExpansionNumber = expansionId;
-        miraTestFormInfo.targetWorkspace = "Adaptive-Testing";
-        miraTestFormInfo.targetProjectId = UUID.fromString (projectId);
-        miraTestFormInfo.targetAccountId = UUID.fromString (accountId);
-        miraTestFormInfo.targetFlowcellId = "XMIRASCENARIO";
-        miraTestFormInfo.targetSpecimenNumber = specimenId;
-        miraTestFormInfo.targetSpecimenType = "Blood";
-        miraTestFormInfo.targetSpecimenSource = "Blood";
-        miraTestFormInfo.targetSpecimenComparment = "Cellular";
-        miraTestFormInfo.targetSpecimenCollDate = specimenCollectionDate;
-        miraTestFormInfo.fastForwardStage = "NorthQC";
-        miraTestFormInfo.fastForwardStatus = "Finished";
-        miraTestFormInfo.fastForwardSubstatusCode = "";
-        miraTestFormInfo.fastForwardSubstatusMsg = "";
-        return miraTestFormInfo;
+        return new MiraTargetInfo (coraTestUrl, miraId, specimenId, expansionId, projectId, accountId,
+                specimenType, specimenSource, specimenCompartment, specimenCollectionDate,
+                fastForwardStage, fastForwardStatus);
+
     }
-    
-    private void stampWorkflowsAndWaitForCompletion (String miraId, String specimenId, MiraLab miraLab, 
-                                MiraSourceInfo miraSourceInfo) {
+
+    private void stampWorkflowsAndWaitForCompletion (String miraId, String specimenId, MiraLab miraLab,
+                                                     MiraSourceInfo miraSourceInfo) {
 
         String miraPipelineResultOverride = "[{\n" + "\"forwardPcrPrimer\": \"TCRB_1rxn-P43-M164-A15SW\",\n" + "\"reversePcrPrimer\": \"TCRB_1rxn-P43-M164-A15SW\",\n" + "\"sample.flowcell.fcid\": \"190908_NB501176_0706_AHV7HVBGXB\",\n" + "\"sample.flowcell.job.archiveResultsPath\": \"s3://pipeline-cora-test-archive:us-west-2/190908_NB501176_0706_AHV7HVBGXB/v3.1/20190929_0306\",\n" + "\"sample.flowcell.runDate\": \"2019-09-08T07:00:00Z\",\n" + "\"sequencingRead1Primer\": \"\",\n" + "\"sequencingRead2Primer\": \"\"\n" + "}]";
-        
+
         testLog ("setting workflow properties");
         Mira mira = new Mira ();
         mira.clickTestTab (true);
-        
+
         SourceSpecimenInfo[] sourceSpecimenInfos = miraSourceInfo.getSourceSpecimenInfos ();
         for (SourceSpecimenInfo sourceSpecimenInfo : sourceSpecimenInfos) {
             stampWorkflow (miraId, specimenId, miraSourceInfo, sourceSpecimenInfo);
@@ -175,14 +147,14 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
     private void stampWorkflow (String miraId, String specimenId, MiraSourceInfo miraSourceInfo,
                                 SourceSpecimenInfo sourceSpecimenInfo) {
-        String sourceWorkflowName = sourceSpecimenInfo.getWorkflowName ();
-        String targetWorkflowName = sourceWorkflowName.
-                replace (miraSourceInfo.getSourceMiraId (), miraId).
-                replace (miraSourceInfo.getSourceSpecimenId (), specimenId);
-        testLog("target workflow is: " + targetWorkflowName);
+        String targetWorkflowName = sourceSpecimenInfo.getTargetWorkflowName (miraSourceInfo.getSourceSpecimenId (),
+                                                                              miraSourceInfo.getSourceMiraId (),
+                                                                              specimenId,
+                                                                              miraId);
+        testLog ("target workflow is: " + targetWorkflowName);
         String flowcell = sourceSpecimenInfo.getFlowcell ();
         String jobId = sourceSpecimenInfo.getJobId ();
-        
+
         History history = new History ();
         history.gotoOrderDebug (targetWorkflowName);
         history.isCorrectPage ();
