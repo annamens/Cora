@@ -3,23 +3,23 @@ package com.adaptivebiotech.cora.utils.mira;
 import java.util.UUID;
 
 public class MiraTargetInfo {
-    public String targetEnvironmentType    = "test";
-    public String targetHost;
-    public String targetMiraNumber;
-    public String targetExpansionNumber;
-    public String targetWorkspace          = "Adaptive-Testing";
-    public UUID   targetProjectId;
-    public UUID   targetAccountId;
-    public String targetFlowcellId         = "XMIRASCENARIO";
-    public String targetSpecimenNumber;
-    public String targetSpecimenType;
-    public String targetSpecimenSource;
-    public String targetSpecimenComparment;
-    public String targetSpecimenCollDate;
-    public String fastForwardStage;
-    public String fastForwardStatus;
-    public String fastForwardSubstatusCode = "";
-    public String fastForwardSubstatusMsg  = "";
+    private String targetEnvironmentType    = "test";
+    private String targetHost;
+    private String targetMiraNumber;
+    private String targetExpansionNumber;
+    private String targetWorkspace          = "Adaptive-Testing";
+    private UUID   targetProjectId;
+    private UUID   targetAccountId;
+    private String targetFlowcellId         = "XMIRASCENARIO";
+    private String targetSpecimenNumber;
+    private String targetSpecimenType;
+    private String targetSpecimenSource;
+    private String targetSpecimenCompartment;
+    private String targetSpecimenCollDate;
+    private String fastForwardStage;
+    private String fastForwardStatus;
+    private String fastForwardSubstatusCode = "";
+    private String fastForwardSubstatusMsg  = "";
 
     public MiraTargetInfo (String targetHost,
                            String miraId,
@@ -41,11 +41,79 @@ public class MiraTargetInfo {
         this.targetAccountId = UUID.fromString (accountId);
         this.targetSpecimenType = specimenType;
         this.targetSpecimenSource = specimenSource;
-        this.targetSpecimenComparment = specimenCompartment;
+        this.targetSpecimenCompartment = specimenCompartment;
         this.targetSpecimenCollDate = specimenCollectionDate;
         this.fastForwardStage = fastForwardStage;
         this.fastForwardStatus = fastForwardStatus;
 
+    }
+
+    public String getTargetEnvironmentType () {
+        return targetEnvironmentType;
+    }
+
+    public String getTargetHost () {
+        return targetHost;
+    }
+
+    public String getTargetMiraNumber () {
+        return targetMiraNumber;
+    }
+
+    public String getTargetExpansionNumber () {
+        return targetExpansionNumber;
+    }
+
+    public String getTargetWorkspace () {
+        return targetWorkspace;
+    }
+
+    public UUID getTargetProjectId () {
+        return targetProjectId;
+    }
+
+    public UUID getTargetAccountId () {
+        return targetAccountId;
+    }
+
+    public String getTargetFlowcellId () {
+        return targetFlowcellId;
+    }
+
+    public String getTargetSpecimenNumber () {
+        return targetSpecimenNumber;
+    }
+
+    public String getTargetSpecimenType () {
+        return targetSpecimenType;
+    }
+
+    public String getTargetSpecimenSource () {
+        return targetSpecimenSource;
+    }
+
+    public String getTargetSpecimenCompartment () {
+        return targetSpecimenCompartment;
+    }
+
+    public String getTargetSpecimenCollDate () {
+        return targetSpecimenCollDate;
+    }
+
+    public String getFastForwardStage () {
+        return fastForwardStage;
+    }
+
+    public String getFastForwardStatus () {
+        return fastForwardStatus;
+    }
+
+    public String getFastForwardSubstatusCode () {
+        return fastForwardSubstatusCode;
+    }
+
+    public String getFastForwardSubstatusMsg () {
+        return fastForwardSubstatusMsg;
     }
 
 }

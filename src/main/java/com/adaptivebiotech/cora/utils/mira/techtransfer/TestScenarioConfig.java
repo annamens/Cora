@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class TestScenarioConfig {
-    public Boolean retainS3Paths = true;
+    private Boolean retainS3Paths = true;
 
     public static JsonNode toJson(TestScenarioConfig testScenarioConfig) {
         ObjectNode scenarioConfig = JsonNodeFactory.instance.objectNode();

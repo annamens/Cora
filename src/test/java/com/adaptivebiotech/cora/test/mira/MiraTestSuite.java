@@ -38,14 +38,6 @@ import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 
 public class MiraTestSuite extends CoraBaseBrowser {
 
-    // TODO
-    // projectId and accountId are environment specific - these are for lionsmane
-    // requires cora db query to find the values
-    // make these build parameters
-    //
-    private final String projectId = "a9d36064-de2a-49c3-b6af-3b3a46ee0c22";
-    private final String accountId = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
-
     @Test
     public void testAMPL_MIRA_slimmedInputs () {
 
@@ -90,7 +82,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
         MiraHttpClient miraHttpClient = new MiraHttpClient ();
         MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();
         MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraHttpClient, miraTsvCopier);
-        miraTestScenarioBuilder.buildTestScenario (miraTargetInfo, miraSourceInfo);
+        miraTestScenarioBuilder.buildTestScenarioAndPostToCora (miraTargetInfo, miraSourceInfo);
 
         assertTrue (mira.waitForStage (MiraStage.MIRAQC, 60, 60000));
         assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
@@ -108,7 +100,8 @@ public class MiraTestSuite extends CoraBaseBrowser {
         String fastForwardStage = "NorthQC";
         String fastForwardStatus = "Finished";
 
-        return new MiraTargetInfo (coraTestUrl, miraId, specimenId, expansionId, projectId, accountId,
+        return new MiraTargetInfo (coraTestUrl, miraId, specimenId, expansionId, CoraEnvironment.miraProjectId,
+                CoraEnvironment.miraAccountId,
                 specimenType, specimenSource, specimenCompartment, specimenCollectionDate,
                 fastForwardStage, fastForwardStatus);
 

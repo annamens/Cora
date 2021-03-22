@@ -4,10 +4,11 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 
 public class MiraTsvCopierTestSuite {
-    
+
     // unit test for miraTsvCopier
     // disabled by default, useful if you need to check your permissions etc.
-    
+    // doesn't work when run from eclipse
+
     @Test (enabled = false)
     public void testCopyTsvFile () {
         CoraEnvironment.initialization ();
@@ -16,12 +17,14 @@ public class MiraTsvCopierTestSuite {
         String miraId = "M-1234";
         String sourceSpecimenNumber = "SP-914830";
         String sourceMiraNumber = "M-1345";
-        
-        String url = miraTsvCopier.copyTsvFile (miraId, specimenId, 
+
+        String url = miraTsvCopier.copyTsvFile (miraId,
+                                                specimenId,
                                                 "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/mira/templates/ampl/HWFJMBGXC_0_Adaptive-MIRA-AMPL_SP-914830_M-1345_B_positive.adap.txt.results.tsv.gz",
-                                                sourceMiraNumber, sourceSpecimenNumber);
-    
-        System.out.println("url is: " + url);
+                                                sourceMiraNumber,
+                                                sourceSpecimenNumber);
+
+        System.out.println ("url is: " + url);
     }
 
 }

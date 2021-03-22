@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class TestFastForwardInfo {
-    public String stageName;
-    public String stageStatus;
-    public String subStatusCode;
-    public String substatusMsg;
-    public String Actor = "Automated Test";
+    private String stageName;
+    private String stageStatus;
+    private String subStatusCode;
+    private String substatusMsg;
+    private String Actor = "Automated Test";
 
     public static JsonNode toJson(TestFastForwardInfo fastForwardInfo) {
         ObjectNode fastForward = JsonNodeFactory.instance.objectNode();
@@ -20,5 +20,12 @@ public class TestFastForwardInfo {
         fastForward.put("actor", fastForwardInfo.Actor);
 
         return fastForward;
+    }
+    
+    public TestFastForwardInfo (String stageName, String stageStatus, String subStatusCode, String subStatusMsg) {
+        this.stageName = stageName;
+        this.stageStatus = stageStatus;
+        this.subStatusCode = subStatusCode;
+        this.substatusMsg = subStatusMsg;
     }
 }

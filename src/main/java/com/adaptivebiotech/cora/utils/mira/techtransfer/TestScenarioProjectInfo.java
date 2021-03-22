@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class TestScenarioProjectInfo {
-    public UUID projectId;
-    public UUID accountId;
+    private UUID projectId;
+    private UUID accountId;
 
     public static JsonNode toJson(TestScenarioProjectInfo projectInfo) {
         ObjectNode project = JsonNodeFactory.instance.objectNode();
@@ -15,5 +15,10 @@ public class TestScenarioProjectInfo {
         project.put("accountId", projectInfo.accountId.toString());
 
         return project;
+    }
+    
+    public TestScenarioProjectInfo (UUID projectId, UUID accountId) {
+        this.projectId = projectId;
+        this.accountId = accountId;
     }
 }

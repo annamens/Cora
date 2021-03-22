@@ -1,6 +1,5 @@
 package com.adaptivebiotech.cora.utils.mira;
 
-
 import static com.seleniumfy.test.utils.Logging.error;
 
 import java.nio.charset.StandardCharsets;
@@ -11,14 +10,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MiraSourceInfoProvider {
 
-    private String jsonFilename;
+    private String       jsonFilename;
     private ObjectMapper objectMapper = new ObjectMapper ();
 
-    
     public MiraSourceInfoProvider (String jsonFilename) {
         this.jsonFilename = jsonFilename;
     }
-    
+
     public MiraSourceInfo getMiraSourceInfoFromFile () {
         String path = ClassLoader.getSystemResource (jsonFilename).getPath ();
         try {
@@ -30,5 +28,5 @@ public class MiraSourceInfoProvider {
             throw new RuntimeException (e);
         }
     }
-    
+
 }

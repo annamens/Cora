@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class TestScenarioInfo {
-    public TestTechTransferInfo techTransferInfo;
-    public TestScenarioProjectInfo projectInfo;
-    public TestFastForwardInfo fastForwardInfo;
-    public TestScenarioConfig scenarioConfig;
+    private TestTechTransferInfo techTransferInfo;
+    private TestScenarioProjectInfo projectInfo;
+    private TestFastForwardInfo fastForwardInfo;
+    private TestScenarioConfig scenarioConfig;
 
     public static JsonNode toJson(TestScenarioInfo scenarioInfo) {
         ObjectNode scenario = JsonNodeFactory.instance.objectNode();
@@ -26,5 +26,15 @@ public class TestScenarioInfo {
             scenario.set("scenarioConfig", TestScenarioConfig.toJson(scenarioInfo.scenarioConfig));
 
         return scenario;
+    }
+    
+    public TestScenarioInfo (TestTechTransferInfo techTransferInfo,
+                             TestScenarioProjectInfo projectInfo,
+                             TestFastForwardInfo fastForwardInfo,
+                             TestScenarioConfig scenarioConfig) {
+        this.techTransferInfo = techTransferInfo;
+        this.projectInfo = projectInfo;
+        this.fastForwardInfo = fastForwardInfo;
+        this.scenarioConfig = scenarioConfig;
     }
 }
