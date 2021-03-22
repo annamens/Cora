@@ -22,9 +22,7 @@ import com.seleniumfy.test.utils.BaseBrowser;
 public class CoraBaseBrowser extends BaseBrowser {
 
     static {
-        info ("initializing CoraBaseBrowser");
         initialization ();
-        info ("initialized CoraBaseBrowser");
         testLog ("Current branch: " + version);
     }
 
