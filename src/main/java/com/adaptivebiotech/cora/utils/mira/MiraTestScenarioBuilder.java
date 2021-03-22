@@ -37,7 +37,7 @@ public class MiraTestScenarioBuilder {
 
         TestScenarioInfo testScenarioInfo = new TestScenarioInfo ();
 
-        SourceSpecimenInfo[] specimenInfos = miraSourceInfo.getSpecimenInfos ();
+        SourceSpecimenInfo[] specimenInfos = miraSourceInfo.getSourceSpecimenInfos ();
 
         info ("number of mira tests is: " + specimenInfos.length);
 

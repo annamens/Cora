@@ -24,9 +24,9 @@ public class MiraSourceInfoProviderTestSuite {
         assertEquals (miraSourceInfo.getMiraType (), MiraType.MIRA);
         assertEquals (miraSourceInfo.getMiraPanel (), MiraPanel.Minor);
         assertEquals (miraSourceInfo.getExpansionMethod (), MiraExpansionMethod.AntiCD3);
-        assertEquals (miraSourceInfo.getSpecimenInfos ().length, 13);
+        assertEquals (miraSourceInfo.getSourceSpecimenInfos ().length, 13);
         
-        SourceSpecimenInfo specimenInfo = miraSourceInfo.getSpecimenInfos ()[0];
+        SourceSpecimenInfo specimenInfo = miraSourceInfo.getSourceSpecimenInfos ()[0];
         assertEquals (specimenInfo.getTsvPath (), "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/mira/templates/ampl_slim1/HWFJMBGXC_0_Adaptive-MIRA-AMPL_SP-914830_M-1345_A_positive.adap.txt.results.tsv.gz");
         assertEquals (specimenInfo.getPoolIndicator (), "A");
         assertEquals (specimenInfo.getCellCount ().intValue (), 2292);

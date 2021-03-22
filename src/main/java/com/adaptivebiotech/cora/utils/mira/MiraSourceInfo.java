@@ -19,7 +19,7 @@ public class MiraSourceInfo {
     private MiraPanel miraPanel;
     private MiraExpansionMethod expansionMethod;
     
-    private SourceSpecimenInfo[] specimenInfos;
+    private SourceSpecimenInfo[] sourceSpecimenInfos;
     
     public MiraLab getMiraLab () {
         return miraLab;
@@ -70,13 +70,13 @@ public class MiraSourceInfo {
     }
 
 
-    public SourceSpecimenInfo[] getSpecimenInfos () {
-        return specimenInfos;
+    public SourceSpecimenInfo[] getSourceSpecimenInfos () {
+        return sourceSpecimenInfos;
     }
 
 
-    public void setSpecimenInfos (SourceSpecimenInfo[] specimenInfos) {
-        this.specimenInfos = specimenInfos;
+    public void setSourceSpecimenInfos (SourceSpecimenInfo[] specimenInfos) {
+        this.sourceSpecimenInfos = specimenInfos;
     }
 
 

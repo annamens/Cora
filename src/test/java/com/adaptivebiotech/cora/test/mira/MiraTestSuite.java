@@ -29,9 +29,9 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 import com.adaptivebiotech.cora.utils.mira.MiraHttpClient;
 import com.adaptivebiotech.cora.utils.mira.MiraSourceInfo;
+import com.adaptivebiotech.cora.utils.mira.MiraSourceInfo.SourceSpecimenInfo;
 import com.adaptivebiotech.cora.utils.mira.MiraSourceInfoProvider;
 import com.adaptivebiotech.cora.utils.mira.MiraTestFormInfo;
-import com.adaptivebiotech.cora.utils.mira.MiraTestInfoProvider;
 import com.adaptivebiotech.cora.utils.mira.MiraTestScenarioBuilder;
 import com.adaptivebiotech.cora.utils.mira.MiraTsvCopier;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
@@ -52,6 +52,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
     // TODO
     // projectId and accountId are environment specific - these are for lionsmane
     // requires cora db query to find the values
+    // make these build parameters
     //
     private final String projectId            = "a9d36064-de2a-49c3-b6af-3b3a46ee0c22";
     private final String accountId            = "9536e8eb-eff0-4e37-ba54-26caa2592be2";
@@ -95,6 +96,26 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         createSampleManifest (miraId, miraLab);
 
+        MiraTestFormInfo miraTestFormInfo = buildMiraTestFormInfo (sourceMiraNumber,
+                                                                   sourceSpecimenNumber,
+                                                                   miraId,
+                                                                   specimenId,
+                                                                   expansionId);
+
+        MiraHttpClient miraHttpClient = new MiraHttpClient ();
+        MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();
+        MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraHttpClient, miraTsvCopier);
+        miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo, miraSourceInfo);
+
+        assertTrue (mira.waitForStage (MiraStage.MIRAQC, 60, 60000));
+        assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
+
+        stampWorkflowsAndWaitForCompletion (miraId, specimenId, miraLab, miraSourceInfo);
+
+    }
+
+    private MiraTestFormInfo buildMiraTestFormInfo (String sourceMiraNumber, String sourceSpecimenNumber, String miraId,
+                                                    String specimenId, String expansionId) {
         String specimenCollectionDate = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format (LocalDateTime.now ()); // YYYY-MM-DDThh:mm:ss
 
         MiraTestFormInfo miraTestFormInfo = new MiraTestFormInfo ();
@@ -118,68 +139,21 @@ public class MiraTestSuite extends CoraBaseBrowser {
         miraTestFormInfo.fastForwardStatus = "Finished";
         miraTestFormInfo.fastForwardSubstatusCode = "";
         miraTestFormInfo.fastForwardSubstatusMsg = "";
-
-//        MiraTestInfoProvider miraTestInfoProvider = new MiraTestInfoProvider (prodTestInfoPath);
-        MiraHttpClient miraHttpClient = new MiraHttpClient ();
-        MiraTsvCopier miraTsvCopier = new MiraTsvCopier ();
-        MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraHttpClient, miraTsvCopier);
-        miraTestScenarioBuilder.buildTestScenario (miraTestFormInfo, miraSourceInfo);
-
-        assertTrue (mira.waitForStage (MiraStage.MIRAQC, 60, 60000));
-        assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
-
-        stampWorkflow (miraId, specimenId, miraLab);
-
+        return miraTestFormInfo;
     }
-
-    private void stampWorkflow (String miraId, String specimenId, MiraLab miraLab) {
-
-        Map <String, String> flowcellToJobId = new HashMap <> ();
-        Map <String, String> workflowSuffixToFlowcell = new HashMap <> ();
-
-        flowcellToJobId.put ("HWFJMBGXC", "8a848a236fb16b8101708fa7229e68f8");
-        flowcellToJobId.put ("HW5FFBGXC", "8a848a236fb16b8101708fa7166468e9");
-        flowcellToJobId.put ("HWCGNBGXC", "8a848a236fb16b8101708fa7179668ec");
-
-        workflowSuffixToFlowcell.put ("A_positive", "HWFJMBGXC");
-        workflowSuffixToFlowcell.put ("B_positive", "HWFJMBGXC");
-        workflowSuffixToFlowcell.put ("C_positive", "HWFJMBGXC");
-        workflowSuffixToFlowcell.put ("D_positive", "HW5FFBGXC");
-        workflowSuffixToFlowcell.put ("E_positive", "HW5FFBGXC");
-        workflowSuffixToFlowcell.put ("F_positive", "HW5FFBGXC");
-        workflowSuffixToFlowcell.put ("G_positive", "HW5FFBGXC");
-        workflowSuffixToFlowcell.put ("H_positive", "HW5FFBGXC");
-        workflowSuffixToFlowcell.put ("I_positive", "HW5FFBGXC");
-        workflowSuffixToFlowcell.put ("J_positive", "HW5FFBGXC");
-        workflowSuffixToFlowcell.put ("K_positive", "HW5FFBGXC");
-        workflowSuffixToFlowcell.put ("nopeptide_pos", "HW5FFBGXC");
-        workflowSuffixToFlowcell.put ("unsorted_expanded", "HWCGNBGXC"); // this is the unsorted guy
+    
+    private void stampWorkflowsAndWaitForCompletion (String miraId, String specimenId, MiraLab miraLab, 
+                                MiraSourceInfo miraSourceInfo) {
 
         String miraPipelineResultOverride = "[{\n" + "\"forwardPcrPrimer\": \"TCRB_1rxn-P43-M164-A15SW\",\n" + "\"reversePcrPrimer\": \"TCRB_1rxn-P43-M164-A15SW\",\n" + "\"sample.flowcell.fcid\": \"190908_NB501176_0706_AHV7HVBGXB\",\n" + "\"sample.flowcell.job.archiveResultsPath\": \"s3://pipeline-cora-test-archive:us-west-2/190908_NB501176_0706_AHV7HVBGXB/v3.1/20190929_0306\",\n" + "\"sample.flowcell.runDate\": \"2019-09-08T07:00:00Z\",\n" + "\"sequencingRead1Primer\": \"\",\n" + "\"sequencingRead2Primer\": \"\"\n" + "}]";
-
-        testLog ("mira is: " + miraId);
-
+        
         testLog ("setting workflow properties");
         Mira mira = new Mira ();
         mira.clickTestTab (true);
-        String fmtString = "%s_%s_%s";
-
-        for (String workflowSuffix : workflowSuffixToFlowcell.keySet ()) {
-
-            String workflowName = String.format (fmtString, specimenId, miraId, workflowSuffix);
-
-            String flowcellId = workflowSuffixToFlowcell.get (workflowSuffix);
-            String jobId = flowcellToJobId.get (flowcellId);
-
-            History history = new History ();
-            history.gotoOrderDebug (workflowName);
-            history.isCorrectPage ();
-            Map <WorkflowProperty, String> properties = new HashMap <> ();
-            properties.put (WorkflowProperty.lastFinishedPipelineJobId, jobId);
-            properties.put (WorkflowProperty.lastFlowcellId, flowcellId);
-            history.setWorkflowProperties (properties);
-            testLog ("set properties for workflow " + workflowName);
-
+        
+        SourceSpecimenInfo[] sourceSpecimenInfos = miraSourceInfo.getSourceSpecimenInfos ();
+        for (SourceSpecimenInfo sourceSpecimenInfo : sourceSpecimenInfos) {
+            stampWorkflow (miraId, specimenId, miraSourceInfo, sourceSpecimenInfo);
         }
 
         History history = new History ();
@@ -197,6 +171,26 @@ public class MiraTestSuite extends CoraBaseBrowser {
         mira.clickStatusTab ();
         assertTrue (mira.waitForStage (MiraStage.Publishing));
         assertTrue (mira.waitForStatus (MiraStatus.Finished, 30, 60000));
+    }
+
+    private void stampWorkflow (String miraId, String specimenId, MiraSourceInfo miraSourceInfo,
+                                SourceSpecimenInfo sourceSpecimenInfo) {
+        String sourceWorkflowName = sourceSpecimenInfo.getWorkflowName ();
+        String targetWorkflowName = sourceWorkflowName.
+                replace (miraSourceInfo.getSourceMiraId (), miraId).
+                replace (miraSourceInfo.getSourceSpecimenId (), specimenId);
+        testLog("target workflow is: " + targetWorkflowName);
+        String flowcell = sourceSpecimenInfo.getFlowcell ();
+        String jobId = sourceSpecimenInfo.getJobId ();
+        
+        History history = new History ();
+        history.gotoOrderDebug (targetWorkflowName);
+        history.isCorrectPage ();
+        Map <WorkflowProperty, String> properties = new HashMap <> ();
+        properties.put (WorkflowProperty.lastFinishedPipelineJobId, jobId);
+        properties.put (WorkflowProperty.lastFlowcellId, flowcell);
+        history.setWorkflowProperties (properties);
+        testLog ("set properties for workflow " + targetWorkflowName);
     }
 
     private void loginToCora () {
