@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adaptivebiotech.test.functional</groupId>
     <artifactId>cora</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.0.6</version>
     <name>Adaptive Biotechnologies Functional Tests for Cora</name>
     <repositories>
         <repository>
@@ -174,10 +174,10 @@
             <artifactId>poi</artifactId>
             <version>4.1.2</version>
         </dependency>
-		<dependency>
-    		<groupId>org.apache.poi</groupId>
-    		<artifactId>poi-ooxml</artifactId>
-    		<version>4.1.2</version>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.2</version>
+        </dependency>
     </dependencies>
 </project>
