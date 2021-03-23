@@ -34,6 +34,8 @@ import com.adaptivebiotech.cora.utils.mira.MiraTsvCopier;
 import com.adaptivebiotech.cora.utils.mira.mirasource.MiraSourceInfo;
 import com.adaptivebiotech.cora.utils.mira.mirasource.SourceSpecimenInfo;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
+import com.adaptivebiotech.test.utils.PageHelper.StageName;
+import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 
 public class MiraTestSuite extends CoraBaseBrowser {
@@ -133,6 +135,15 @@ public class MiraTestSuite extends CoraBaseBrowser {
         mira.setQCStatus (MiraQCStatus.ACCEPTED);
         testLog ("accepted MIRA QC");
 
+        // skip MIRAAgate stage
+        
+        waitForStageAndStatus (MiraStage.MIRAAgate, MiraStatus.Ready);
+        history.gotoOrderDebug (miraId);
+        history.isCorrectPage ();
+        history.forceStatusUpdate (StageName.Publishing, StageStatus.Ready);
+        
+        gotoMiraByLabAndId (miraId, miraLab);
+        
         mira.clickStatusTab ();
         assertTrue (mira.waitForStage (MiraStage.Publishing));
         assertTrue (mira.waitForStatus (MiraStatus.Finished, 30 * 60, 60));
