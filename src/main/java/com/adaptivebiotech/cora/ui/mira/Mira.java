@@ -235,6 +235,9 @@ public class Mira extends CoraPage {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {
                 MiraStatus currentStatus = getCurrentStatus ();
+                if (currentStatus == MiraStatus.Stuck) {
+                    throw new RuntimeException ("workflow is stuck");
+                }
                 if (currentStatus == status) {
                     return true;
                 }
