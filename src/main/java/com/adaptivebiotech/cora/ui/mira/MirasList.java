@@ -10,7 +10,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Miras;
 import com.adaptivebiotech.cora.dto.Miras.Mira;
@@ -50,12 +52,12 @@ public class MirasList extends CoraPage {
         selectLab (miraLab);
         searchAndClickMira (miraId);
     }
-    
+
     public void searchForMira (String miraId, MiraLab miraLab) {
         selectLab (miraLab);
         searchForMira (miraId);
     }
-    
+
     public void searchForMira (String miraId) {
         String searchField = "input[type='search']";
         String firstResult = "//table[contains(@class, 'mira-table')]/tbody/tr[1]/td[1]/a/span";
@@ -64,15 +66,7 @@ public class MirasList extends CoraPage {
         assertTrue (pressKey (RETURN));
         pageLoading ();
 
-        // wait for the search results to populate
-        String firstElementText = waitAndGetText (firstResult);
-        int count = 0;
-        while (count < 20 && !firstElementText.equals (miraId)) {
-            info ("waiting for search result");
-            count++;
-            doWait (10000);
-            firstElementText = waitAndGetText (firstResult);
-        }
+        waitForFirstMiraId (miraId, firstResult);
         assertEquals (waitAndGetText (firstResult), miraId);
     }
 
@@ -134,7 +128,7 @@ public class MirasList extends CoraPage {
             return getDownloadedSampleManifestName ();
         }
         return "Can't verify file download on saucelabs";
-        
+
     }
 
     private String getDownloadedSampleManifestName () {
@@ -142,14 +136,8 @@ public class MirasList extends CoraPage {
         File downloadDir = new File (getDownloadsDir ());
         String filenameMatch = "Adaptive-AMPL-P01-\\d+.xlsx";
 
-        File[] downloadedFiles = listMatchingFiles (downloadDir, filenameMatch);
-        int count = 0;
-        while (count < 10 && downloadedFiles == null) {
-            info ("waiting for sample manifest to download");
-            count++;
-            doWait (10000);
-            downloadedFiles = listMatchingFiles (downloadDir, filenameMatch);
-        }
+        File[] downloadedFiles = waitForDownloadedFiles (downloadDir, filenameMatch);
+
         assertNotNull (downloadedFiles);
         Arrays.sort (downloadedFiles, Comparator.comparingLong (File::lastModified).reversed ());
         File latestDownload = downloadedFiles[0];
@@ -157,14 +145,35 @@ public class MirasList extends CoraPage {
         return latestDownload.getName ();
     }
 
-    private File[] listMatchingFiles (File dir, String filenameMatch) {
-        return dir.listFiles ((File f) -> f.getName ().matches (filenameMatch));
+    private void waitForFirstMiraId (String miraId, String firstResult) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                info ("waiting for miraId " + miraId + " in search result");
+                return waitAndGetText (firstResult).equals (miraId);
+            }
+        };
+        assertTrue (waitForBooleanCondition (240, 10, func));
     }
-    
+
+    private File[] waitForDownloadedFiles (File downloadDir, String filenameMatch) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                info ("waiting for sample manifest to download");
+                return listMatchingFiles (downloadDir, filenameMatch) != null;
+            }
+        };
+        assertTrue (waitForBooleanCondition (120, 10, func));
+        return listMatchingFiles (downloadDir, filenameMatch);
+    }
+
+    private File[] listMatchingFiles (File dir, String filenameMatch) {
+        return dir.listFiles ( (File f) -> f.getName ().matches (filenameMatch));
+    }
+
     private String getMiraGuid (String href) {
         return href.replaceFirst (".*mira/details/", "");
     }
-    
+
     // avoid stale element reference
     private String waitAndGetText (String by) {
         try {
@@ -173,6 +182,6 @@ public class MirasList extends CoraPage {
             info (e.getMessage ());
             return waitForElement (by).getText ();
         }
-       
+
     }
 }

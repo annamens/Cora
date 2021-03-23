@@ -8,11 +8,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.function.Function;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.openqa.selenium.WebDriver;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
@@ -29,8 +31,8 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
  */
 public class Mira extends CoraPage {
 
-    private final int numWaits = 10;
-    private final int msWait   = 10000;
+    private final int durationSeconds = 120;
+    private final int pollingSeconds  = 10;
 
     public Mira () {
         staticNavBarHeight = 90;
@@ -52,12 +54,7 @@ public class Mira extends CoraPage {
         CoraSelect dropdown = new CoraSelect (waitForElementClickable (selector));
         dropdown.selectByVisibleText (panel.name ());
         // wait until the panel is visible below
-        int count = 0;
-        while (count < numWaits && !getPanelNamesText ().contains (panel.name ())) {
-            info ("waiting for panel to be added: " + panel.name ());
-            count++;
-            doWait (msWait);
-        }
+        waitForPanelText (panel);
         assertTrue (getPanelNamesText ().contains (panel.name ()));
     }
 
@@ -168,14 +165,7 @@ public class Mira extends CoraPage {
         pageLoading ();
         // need to make sure that the table is loaded
         assertTrue (waitUntilVisible ("//table[contains(@class,'history')]"));
-        MiraStage currentStage = getCurrentStage ();
-        int count = 0;
-        while (count < numWaits && currentStage == null) {
-            count++;
-            info ("waiting for status table to load");
-            doWait (msWait);
-            currentStage = getCurrentStage ();
-        }
+        MiraStage currentStage = waitForStatusTable (120, 10);
         assertNotNull (currentStage);
     }
 
@@ -219,39 +209,41 @@ public class Mira extends CoraPage {
     }
 
     public boolean waitForStage (MiraStage stage) {
-        return waitForStage (stage, numWaits, msWait);
-    }
-    
-    public boolean waitForStage (MiraStage stage, int numWaits, int msWait) {
-        int count = 0;
-        MiraStage currentStage = getCurrentStage ();
-        while (count < numWaits && currentStage != stage) {
-            count++;
-            info ("waiting for stage : " + stage);
-            refresh ();
-            doWait (msWait);
-            currentStage = getCurrentStage ();
-        }
-        return currentStage == stage;
+        return waitForStage (stage, durationSeconds, pollingSeconds);
     }
 
     public boolean waitForStatus (MiraStatus status) {
-        return waitForStatus (status, numWaits, msWait);
+        return waitForStatus (status, durationSeconds, pollingSeconds);
     }
 
-    // for the final need to wait a long time
-    public boolean waitForStatus (MiraStatus status, int numWaits, int msWait) {
-        int count = 0;
-        MiraStatus currentStatus = getCurrentStatus ();
-        while (count < numWaits && currentStatus != status && currentStatus != MiraStatus.Stuck) {
-            count++;
-            info ("waiting for status : " + status);
-            refresh ();
-            doWait (msWait);
-            currentStatus = getCurrentStatus ();
-        }
-        info ("final status is: " + currentStatus);
-        return currentStatus == status;
+    public Boolean waitForStage (MiraStage stage, int durationSeconds, int pollingSeconds) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                MiraStage currentStage = getCurrentStage ();
+                if (currentStage == stage) {
+                    return true;
+                }
+                info ("waiting for stage : " + stage);
+                refresh ();
+                return false;
+            }
+        };
+        return waitForBooleanCondition (durationSeconds, pollingSeconds, func);
+    }
+
+    public Boolean waitForStatus (MiraStatus status, int durationSeconds, int pollingSeconds) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                MiraStatus currentStatus = getCurrentStatus ();
+                if (currentStatus == status) {
+                    return true;
+                }
+                info ("waiting for status : " + status);
+                refresh ();
+                return false;
+            }
+        };
+        return waitForBooleanCondition (durationSeconds, pollingSeconds, func);
     }
 
     public void setQCStatus (MiraQCStatus status) {
@@ -262,6 +254,33 @@ public class Mira extends CoraPage {
         assertTrue (click (button));
         clickPopupOK (); // page reloads after you click ok
         pageLoading ();
+    }
+
+    private void waitForPanelText (MiraPanel panel) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                if (getPanelNamesText ().contains (panel.name ())) {
+                    return true;
+                }
+                info ("waiting for panel to be added: " + panel.name ());
+                return false;
+            }
+        };
+        assertTrue (waitForBooleanCondition (120, 10, func));
+    }
+
+    private MiraStage waitForStatusTable (int durationSeconds, int pollingSeconds) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                MiraStage currentStage = getCurrentStage ();
+                if (currentStage != null) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        assertTrue (waitForBooleanCondition (durationSeconds, pollingSeconds, func));
+        return getCurrentStage ();
     }
 
     private MiraStage getCurrentStage () {

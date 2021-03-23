@@ -5,7 +5,12 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
+import java.time.Duration;
 import java.util.List;
+import java.util.function.Function;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.seleniumfy.test.utils.BasePage;
 
@@ -259,5 +264,12 @@ public class CoraPage extends BasePage {
 
     public void clickFilter () {
         assertTrue (click ("[ng-click='ctrl.search()']"));
+    }
+
+    public Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds, Function <WebDriver, Boolean> func) {
+        Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
+                                                                     .withTimeout (Duration.ofSeconds (secondsDuration))
+                                                                     .pollingEvery (Duration.ofSeconds (pollSeconds));
+        return wait.until (func);
     }
 }

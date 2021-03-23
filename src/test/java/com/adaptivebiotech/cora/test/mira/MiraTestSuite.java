@@ -84,7 +84,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
         MiraTestScenarioBuilder miraTestScenarioBuilder = new MiraTestScenarioBuilder (miraHttpClient, miraTsvCopier);
         miraTestScenarioBuilder.buildTestScenarioAndPostToCora (miraTargetInfo, miraSourceInfo);
 
-        assertTrue (mira.waitForStage (MiraStage.MIRAQC, 60, 60000));
+        assertTrue (mira.waitForStage (MiraStage.MIRAQC, 60 * 60, 60));
         assertTrue (mira.waitForStatus (MiraStatus.Awaiting));
 
         stampWorkflowsAndWaitForCompletion (miraId, specimenId, miraLab, miraSourceInfo);
@@ -135,7 +135,7 @@ public class MiraTestSuite extends CoraBaseBrowser {
 
         mira.clickStatusTab ();
         assertTrue (mira.waitForStage (MiraStage.Publishing));
-        assertTrue (mira.waitForStatus (MiraStatus.Finished, 30, 60000));
+        assertTrue (mira.waitForStatus (MiraStatus.Finished, 30 * 60, 60));
     }
 
     private void stampWorkflow (String miraId, String specimenId, MiraSourceInfo miraSourceInfo,
