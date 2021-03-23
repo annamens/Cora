@@ -136,14 +136,15 @@ public class MiraTestSuite extends CoraBaseBrowser {
         testLog ("accepted MIRA QC");
 
         // skip MIRAAgate stage
-        
+
+        testLog ("skipping MIRAAgate stage");
         waitForStageAndStatus (MiraStage.MIRAAgate, MiraStatus.Ready);
         history.gotoOrderDebug (miraId);
         history.isCorrectPage ();
         history.forceStatusUpdate (StageName.Publishing, StageStatus.Ready);
-        
+
         gotoMiraByLabAndId (miraId, miraLab);
-        
+
         mira.clickStatusTab ();
         assertTrue (mira.waitForStage (MiraStage.Publishing));
         assertTrue (mira.waitForStatus (MiraStatus.Finished, 30 * 60, 60));
