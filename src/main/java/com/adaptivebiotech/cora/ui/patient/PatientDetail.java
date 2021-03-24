@@ -1,6 +1,5 @@
 package com.adaptivebiotech.cora.ui.patient;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
@@ -27,22 +26,27 @@ public class PatientDetail extends CoraPage {
         return getText ("[label='Last Name']").replace ("Last Name", "").trim ();
     }
 
-    public void clickEditPatientDemographics() {
+    public void clickEditPatientDemographics () {
         String xpathForEditButton = "//*[@class='demographics-details']/..//button";
-        assertTrue(click(xpathForEditButton));
+        assertTrue (click (xpathForEditButton));
         String expectedTitle = "Edit Patient Demographics";
-        String title = getText (".modal-title");
-        assertEquals(title, expectedTitle);
+        assertTrue (isTextInElement (popupTitle, expectedTitle));
     }
-    
-    public void clickEditPatientInsurance() {
-        String xpath =  "//*[label='Billing Type']//ancestor::div[@class='editable-section']//button";
-        assertTrue(click(xpath));
+
+    public void clickEditPatientInsurance () {
+        String xpath = "//*[label='Billing Type']//ancestor::div[@class='editable-section']//button";
+        assertTrue (click (xpath));
         String expectedTitle = "Edit Patient Insurance";
-        String title = getText (".modal-title");
-        assertEquals(title, expectedTitle);
+        assertTrue (isTextInElement (popupTitle, expectedTitle));
     }
- 
+
+    public void clickEditPatientBillingAddress () {
+        String xpath = "//*[div='Patient Billing Address']//ancestor::div[@class='editable-section']//button";
+        assertTrue (click (xpath));
+        String expectedTitle = "Edit Patient Contact Information";
+        assertTrue (isTextInElement (popupTitle, expectedTitle));
+    }
+
     public void enterPatientNotes (String notes) {
         String cssForTextField = ".patient-notes-section textarea";
         assertTrue (setText (cssForTextField, notes));
@@ -59,36 +63,34 @@ public class PatientDetail extends CoraPage {
         assertTrue (click (cssForCloseButton));
         moduleLoading ();
     }
-    
+
     public String getPrimaryInsuranceProvider () {
         String xpath = "//*[label=\"Insurance Provider\"]/following-sibling::div";
         return getText (xpath);
     }
 
-    public String getPrimaryInsuranceGroupNumber() {
+    public String getPrimaryInsuranceGroupNumber () {
         String xpath = "//*[label=\"Group Number\"]/following-sibling::div";
         return getText (xpath);
     }
-    
-    public String getPrimaryInsurancePolicyNumber() {
+
+    public String getPrimaryInsurancePolicyNumber () {
         String xpath = "//*[label=\"Policy Number\"]/following-sibling::div";
         return getText (xpath);
     }
-    
-    public String getPrimaryInsurancePatientRelationship() {
+
+    public String getPrimaryInsurancePatientRelationship () {
         String xpath = "//*[label='Patient Relationship to Policyholder']/following-sibling::div";
         return getText (xpath);
     }
-    
-    public String getPrimaryInsurancePolicyholderName() {
+
+    public String getPrimaryInsurancePolicyholderName () {
         String xpath = "//*[label=\"Policyholder name\"]/following-sibling::div";
         return getText (xpath);
     }
-    
-    
+
     // edit patient insurance popup
 
-    
     public void setBillingType (String billingType) {
         String css = "#billingType";
         assertTrue (clickAndSelectText (css, billingType));
@@ -122,6 +124,42 @@ public class PatientDetail extends CoraPage {
         assertTrue (click ("[type='submit']"));
         moduleLoading ();
     }
-    
+
+    // edit patient contact information
+
+    public void enterAddressLine1 (String address) {
+        String css = "#address";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterAddressLine2 (String address) {
+        String css = "#address2";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterCity (String address) {
+        String css = "#locality";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterState (String address) {
+        String css = "#region";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterZip (String address) {
+        String css = "#postCode";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterPhone (String address) {
+        String css = "#phone";
+        assertTrue (setText (css, address));
+    }
+
+    public void enterEmail (String address) {
+        String css = "#email";
+        assertTrue (setText (css, address));
+    }
 
 }

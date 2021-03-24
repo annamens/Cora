@@ -1,8 +1,8 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
-import static org.testng.Assert.assertEquals;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee;
@@ -14,10 +14,10 @@ import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
  */
 public class Accession extends CoraPage {
 
-    private String accessionNotes = "#accession-notes";
+    private String accessionNotes       = "#accession-notes";
     private String specimenApprovalPass = "#specimen-pass-button";
     private String specimenApprovalFail = "#specimen-fail-button";
-       
+
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(2)", "ACCESSION"));
@@ -78,7 +78,7 @@ public class Accession extends CoraPage {
         assertTrue (click ("[role='presentation'] [data-ng-click*='shipment']"));
         pageLoading ();
     }
-    
+
     public void clickPassAllDocumentation () {
         assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('TwoMatchingIdentifiers', 'Pass')\"]"));
         assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('PatientNameMatch', 'Pass')\"]"));
@@ -86,7 +86,7 @@ public class Accession extends CoraPage {
         assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('MrnMatch', 'Pass')\"]"));
         assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('UniqueSpecimenIdMatch', 'Pass')\"]"));
     }
-    
+
     public void clickPassSpecimenType () {
         assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('SpecimenTypeMatch', 'Pass')\"]"));
     }
@@ -120,10 +120,9 @@ public class Accession extends CoraPage {
     public void clickAddContainerSpecimenDiscrepancy () {
         String button = "button[title=\"Add Container/Specimen Discrepancy\"]"; // doesn't work
         assertTrue (click (button));
-        pageLoading();
-        String title = ".modal-title";
+        pageLoading ();
         String expectedTitle = "Discrepancy";
-        assertEquals (waitForElementVisible(title).getText (), expectedTitle);
+        assertEquals (waitForElementVisible (popupTitle).getText (), expectedTitle);
     }
 
     public boolean specimenApprovalPassEnabled () {
@@ -133,14 +132,14 @@ public class Accession extends CoraPage {
     public boolean specimenApprovalFailEnabled () {
         return waitForElementVisible (specimenApprovalFail).isEnabled ();
     }
-    
+
     public void waitForStatus (String expectedStatus) {
         String status = "[ng-bind='ctrl.entry | shipmentEntryStatus']";
         assertTrue (isTextInElement (status, expectedStatus));
     }
-    
+
     // discrepancy pop up methods
-    
+
     public void addDiscrepancy (Discrepancy discrepancy, String notes,
                                 DiscrepancyAssignee assignee) {
         String cssAdd = "#dropdownDiscrepancy";
@@ -148,7 +147,7 @@ public class Accession extends CoraPage {
 
         String menuItemFmtString = "//*[@class='discrepancies-options']/ul/li[text()='%s']";
         String menuItem = String.format (menuItemFmtString, discrepancy.text);
-        
+
         assertTrue (click (menuItem));
         String cssTextArea = "[ng-repeat='discrepancy in ctrl.discrepancies'] textarea";
         assertTrue (setText (cssTextArea, notes));
@@ -160,17 +159,16 @@ public class Accession extends CoraPage {
         String cssSave = "[ng-click='ctrl.save()'";
         assertTrue (click (cssSave));
     }
-    
+
     public void clickAccessionComplete () {
         String accessionComplete = "[data-ng-click='ctrl.$scope.$broadcast(\\'research-accession-complete\\')']";
         assertTrue (click (accessionComplete));
         clickPopupOK ();
     }
-    
-    public List<String> getSpecimenIds () {
+
+    public List <String> getSpecimenIds () {
         String specimenIds = "[data-ng-bind='::specimen.specimen.specimenNumber']";
         return getTextList (specimenIds);
     }
-    
 
 }

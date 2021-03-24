@@ -13,8 +13,6 @@ import com.seleniumfy.test.utils.BasePage;
  */
 public class Login extends BasePage {
 
-    protected final String popupTitle = ".modal-header .modal-title";
-
     public Login () {
         staticNavBarHeight = 35;
     }
