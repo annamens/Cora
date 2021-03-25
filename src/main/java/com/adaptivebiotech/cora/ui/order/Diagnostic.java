@@ -89,8 +89,7 @@ public class Diagnostic extends CoraPage {
         // click release report, wait for popup, enter username and pw, then click release
         // button in popup
         assertTrue (click (releaseReport));
-        String popupTitle = waitForElementVisible (".modal-title").getText ();
-        assertEquals (popupTitle, "Sign & Release Report");
+        assertTrue (isTextInElement (popupTitle, "Release Report"));
         assertTrue (setText (usernameField, coraTestUser));
         assertTrue (setText (passwordField, coraTestPass));
         assertTrue (click (button));
@@ -125,9 +124,8 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickSaveAndUpdate () {
-        String css = "[ng-click=\"isClinicalConsultant ? ctrl.update() : ctrl.updateNotes()\"]";
+        String css = "[ng-click=\"canEditReport ? ctrl.update() : ctrl.updateNotes()\"]";
         assertTrue (click (css));
-        pageLoading ();
         pageLoading ();
     }
 

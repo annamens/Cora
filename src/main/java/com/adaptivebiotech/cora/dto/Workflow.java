@@ -3,6 +3,7 @@ package com.adaptivebiotech.cora.dto;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
+import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 /**
@@ -32,6 +33,7 @@ public final class Workflow {
         public String  lastAcceptedTsvPath;
         public String  lastFlowcellId;
         public String  tsvOverridePath;
+        public String  lastFinishedPipelineJobId;
         public Boolean disableHiFreqSave;
         public Boolean disableHiFreqSharing;
         public Boolean skipNorthQCToContam;
@@ -39,21 +41,22 @@ public final class Workflow {
 
     public static final class Stage {
 
-        public String      id;
-        public String      workflowId;
+        public String         id;
+        public String         workflowId;
         @JsonAlias ("stage")
-        public StageName   stageName;
-        public StageStatus stageStatus;
-        public String      subStatusCode;
-        public String      subStatusMessage;
-        public String      drilldownUrl;
-        public String      timestamp;
-        public String      actor;
-        public Boolean     hasFinished;
-        public Boolean     isCurrent;
-        public Boolean     hasProblems;
-        public Integer     requeueCount;
-        public Boolean     current;
+        public StageName      stageName;
+        public StageStatus    stageStatus;
+        public StageSubstatus stageSubstatus;
+        public String         subStatusCode;
+        public String         subStatusMessage;
+        public String         drilldownUrl;
+        public String         timestamp;
+        public String         actor;
+        public Boolean        hasFinished;
+        public Boolean        isCurrent;
+        public Boolean        hasProblems;
+        public Integer        requeueCount;
+        public Boolean        current;
 
         @Override
         public String toString () {
