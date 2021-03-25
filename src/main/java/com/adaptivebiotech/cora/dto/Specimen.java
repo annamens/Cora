@@ -45,9 +45,9 @@ public final class Specimen {
     }
 
     public static final class ProjectProperties {
-        public String Var1;
-        public String Var2;
-        public String Var3;
+        public String  Var1;
+        public String  Var2;
+        public Integer Var3;
 
         @Override
         public String toString () {

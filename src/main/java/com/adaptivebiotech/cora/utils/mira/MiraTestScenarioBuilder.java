@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.dto.Research.Project;
+import com.adaptivebiotech.cora.dto.Research.ScenarioConfig;
 import com.adaptivebiotech.cora.dto.Research.TechTransfer;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.ProjectProperties;
@@ -74,6 +75,10 @@ public class MiraTestScenarioBuilder {
         Research research = new Research (techTransfer);
         research.project = project;
         research.fastForwardStatus = stage;
+        
+        ScenarioConfig scenarioConfig = new ScenarioConfig ();
+        scenarioConfig.retainS3Paths = true;
+        research.scenarioConfig = scenarioConfig;
 
         return research;
     }
@@ -93,7 +98,7 @@ public class MiraTestScenarioBuilder {
         ProjectProperties projectProperties = new ProjectProperties ();
         projectProperties.Var1 = miraTargetInfo.getTargetMiraNumber ();
         projectProperties.Var2 = miraTargetInfo.getTargetExpansionNumber ();
-        projectProperties.Var3 = sourceSpecimenInfo.getCellCount ().toString ();
+        projectProperties.Var3 = sourceSpecimenInfo.getCellCount ();
 
         List <Sample> samples = new ArrayList <> (1);
         Sample sample = new Sample ();
@@ -136,7 +141,8 @@ public class MiraTestScenarioBuilder {
         fastForwardInfo.stageStatus = StageStatus.valueOf (miraTargetInfo.getFastForwardStatus ());
         fastForwardInfo.subStatusCode = miraTargetInfo.getFastForwardSubstatusCode ();
         fastForwardInfo.subStatusMessage = miraTargetInfo.getFastForwardSubstatusMsg ();
-
+        fastForwardInfo.actor = "Automated Test";
+        
         return fastForwardInfo;
     }
 

@@ -10,9 +10,10 @@ import com.adaptivebiotech.cora.dto.Workflow.Stage;
  */
 public final class Research {
 
-    public TechTransfer techTransfer;
-    public Project      project;
-    public Stage        fastForwardStatus;
+    public TechTransfer   techTransfer;
+    public Project        project;
+    public Stage          fastForwardStatus;
+    public ScenarioConfig scenarioConfig;
 
     public Research () {}
 
@@ -26,6 +27,19 @@ public final class Research {
             return mapper.writeValueAsString (this);
         } catch (Exception e) {
             throw new RuntimeException (e);
+        }
+    }
+
+    public static final class ScenarioConfig {
+        public Boolean retainS3Paths;
+
+        @Override
+        public String toString () {
+            try {
+                return mapper.writeValueAsString (this);
+            } catch (Exception e) {
+                throw new RuntimeException (e);
+            }
         }
     }
 
@@ -56,7 +70,7 @@ public final class Research {
         public String  recordType;
         public String  accessioningSpecialRequests;
         public String  croContactDetails;
-        public boolean transitionedToV2;
+        public Boolean transitionedToV2;
         public String  handlingNotes;
 
         @Override
