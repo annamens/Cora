@@ -2,16 +2,16 @@ package com.adaptivebiotech.cora.utils.mira;
 
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.mirasource.MiraSourceInfo;
+import com.adaptivebiotech.cora.dto.mirasource.SourceSpecimenInfo;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
-import com.adaptivebiotech.cora.utils.mira.mirasource.MiraSourceInfo;
-import com.adaptivebiotech.cora.utils.mira.mirasource.SourceSpecimenInfo;
 
 public class MiraSourceInfoProviderTestSuite {
 
-    @Test
+    @Test (groups = { "mira" })
     public void testMiraSourceInfoProvider () {
         String miraSourceInfoFile = "MIRA/mira_ampl_slim_testInfo.json";
 

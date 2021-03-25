@@ -1,40 +1,22 @@
 package com.adaptivebiotech.cora.utils.mira;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static com.seleniumfy.test.utils.HttpClientHelper.body;
-import static com.seleniumfy.test.utils.HttpClientHelper.post;
-import static com.seleniumfy.test.utils.Logging.error;
 import static com.seleniumfy.test.utils.Logging.info;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.http.message.BasicHeader;
 import com.adaptivebiotech.cora.dto.HttpResponse;
+import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
-import com.adaptivebiotech.cora.utils.mira.techtransfer.TestScenarioInfo;
+import com.adaptivebiotech.cora.utils.TestScenarioBuilder;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
 public class MiraHttpClient {
 
-    private final String techTransferEndpoint = "/cora/api/v1/test/scenarios/researchTechTransfer";
-
-    public void postTestScenarioToCora (TestScenarioInfo testScenarioInfo) {
-
-        String url = CoraEnvironment.coraTestUrl + techTransferEndpoint;
-        info ("url is: " + url);
+    public void postTestScenarioToCora (Research research) {
 
         HttpClientHelper.headers.add (new BasicHeader ("X-Api-UserName", CoraEnvironment.coraTestUser));
-
-        try {
-            HttpResponse response = mapper.readValue (post (url,
-                                                            body (TestScenarioInfo.toJson (testScenarioInfo)
-                                                                                  .toString ())),
-                                                      HttpResponse.class);
-            info ("response is " + response.toString ());
-
-        } catch (Exception e) {
-            error (e.getMessage ());
-            throw new RuntimeException (e);
-        }
+        HttpResponse httpResponse = TestScenarioBuilder.newResearchOrder (research);
+        info ("response is: " + httpResponse.toString ());
     }
 
     public void doCoraApiLogin () {

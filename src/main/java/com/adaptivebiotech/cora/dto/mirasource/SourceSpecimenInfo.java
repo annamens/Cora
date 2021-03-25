@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.utils.mira.mirasource;
+package com.adaptivebiotech.cora.dto.mirasource;
 
 public class SourceSpecimenInfo {
     private String tsvPath;

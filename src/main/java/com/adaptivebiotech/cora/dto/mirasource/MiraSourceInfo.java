@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.utils.mira.mirasource;
+package com.adaptivebiotech.cora.dto.mirasource;
 
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
@@ -11,6 +11,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
  * @author mgrossman
  *
  */
+
 public class MiraSourceInfo {
 
     private String               sourceMiraId;

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.mirasource.MiraSourceInfo;
+import com.adaptivebiotech.cora.dto.mirasource.SourceSpecimenInfo;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -31,8 +33,6 @@ import com.adaptivebiotech.cora.utils.mira.MiraSourceInfoProvider;
 import com.adaptivebiotech.cora.utils.mira.MiraTargetInfo;
 import com.adaptivebiotech.cora.utils.mira.MiraTestScenarioBuilder;
 import com.adaptivebiotech.cora.utils.mira.MiraTsvCopier;
-import com.adaptivebiotech.cora.utils.mira.mirasource.MiraSourceInfo;
-import com.adaptivebiotech.cora.utils.mira.mirasource.SourceSpecimenInfo;
 import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
@@ -40,7 +40,7 @@ import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 
 public class MiraTestSuite extends CoraBaseBrowser {
 
-    @Test
+    @Test (groups = { "regression", "mira" })
     public void testAMPL_MIRA_slimmedInputs () {
 
         String miraSourceInfoFile = "MIRA/mira_ampl_slim_testInfo.json";

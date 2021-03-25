@@ -7,19 +7,19 @@ import com.adaptivebiotech.cora.test.CoraEnvironment;
 
 public class MiraTsvCopier {
 
-    private String containerName       = "selenium";
-    private String accountName         = "adaptivetestcasedata";
+    private String containerName         = "selenium";
+    private String accountName           = "adaptivetestcasedata";
 
-    private String destinationPrefix   = "tsv/mira/automatedtest";
-    private String destinationBase     = "%s/%s/%s";
+    private String destinationPrefixBase = "tsv/mira/automatedtest/%s";
+    private String destinationBase       = "%s/%s/%s";
 
-    private String azCLI               = "az";
+    private String azCLI                 = "az";
 
-    private String loginCommandBase    = azCLI + " login -u %s -p %s";
-    private String downloadCommandBase = azCLI + " storage blob download --container-name %s --auth-mode login --account-name %s --name %s --file %s";
-    private String uploadCommandBase   = azCLI + " storage blob upload --container-name %s --auth-mode login --account-name %s --name %s --file %s";
+    private String loginCommandBase      = azCLI + " login -u %s -p %s";
+    private String downloadCommandBase   = azCLI + " storage blob download --container-name %s --auth-mode login --account-name %s --name %s --file %s";
+    private String uploadCommandBase     = azCLI + " storage blob upload --container-name %s --auth-mode login --account-name %s --name %s --file %s";
 
-    private String tmpfileBase         = "target/%s";
+    private String tmpfileBase           = "target/%s";
 
     public MiraTsvCopier () {
         String azureLogin = CoraEnvironment.azureLogin;
@@ -52,6 +52,7 @@ public class MiraTsvCopier {
         runCommand (downloadCommand);
 
         String renamedFile = sourceFile.replace (textToReplace, specimenId_miraId);
+        String destinationPrefix = String.format (destinationPrefixBase, CoraEnvironment.env);
         String destinationFile = String.format (destinationBase,
                                                 destinationPrefix,
                                                 miraId,

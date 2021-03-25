@@ -33,6 +33,7 @@ public final class Specimen {
     public Object             reconciliationDate;
     public SpecimenProperties properties;
     public Anticoagulant      anticoagulant;
+    public ProjectProperties  projectProperties;
 
     @Override
     public String toString () {
@@ -43,12 +44,29 @@ public final class Specimen {
         }
     }
 
+    public static final class ProjectProperties {
+        public String Var1;
+        public String Var2;
+        public String Var3;
+
+        @Override
+        public String toString () {
+            try {
+                return mapper.writeValueAsString (this);
+            } catch (Exception e) {
+                throw new RuntimeException (e);
+            }
+        }
+
+    }
+
     public static final class SpecimenProperties {
 
         public String         ArrivalDate;
         public SpecimenSource SourceType;
         public String         ApprovalStatus;
         public String         SampleTypeDisplayName;
+        public String         Treatment;
 
         public SpecimenProperties () {}
 
