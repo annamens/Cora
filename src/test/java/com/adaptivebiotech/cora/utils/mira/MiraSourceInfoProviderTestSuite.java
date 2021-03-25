@@ -11,7 +11,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 
 public class MiraSourceInfoProviderTestSuite {
 
-    @Test (groups = { "mira" })
+    @Test (groups = { "regression", "mira" })
     public void testMiraSourceInfoProvider () {
         String miraSourceInfoFile = "MIRA/mira_ampl_slim_testInfo.json";
 

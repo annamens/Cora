@@ -57,7 +57,6 @@ public final class Specimen {
                 throw new RuntimeException (e);
             }
         }
-
     }
 
     public static final class SpecimenProperties {
