@@ -289,13 +289,19 @@ public class Mira extends CoraPage {
     private MiraStage getCurrentStage () {
         String currentStageCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[1]";
         String currentStageCellText = getText (currentStageCell);
-        return currentStageCellText == null ? null : MiraStage.valueOf (currentStageCellText);
+        if (currentStageCellText == null || currentStageCellText == "") {
+            return null;
+        }
+        return MiraStage.valueOf (currentStageCellText);
     }
 
     private MiraStatus getCurrentStatus () {
         String currentStatusCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[2]";
         String currentStatusCellText = getText (currentStatusCell);
-        return currentStatusCellText == null ? null : MiraStatus.valueOf (currentStatusCellText);
+        if (currentStatusCellText == null || currentStatusCellText == "") {
+            return null;
+        }
+        return MiraStatus.valueOf (currentStatusCellText);
     }
 
     private List <String> getPanelNamesText () {
