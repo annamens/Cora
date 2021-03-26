@@ -5,7 +5,7 @@ import static java.lang.String.format;
 import com.adaptivebiotech.test.BaseEnvironment;
 
 public class CoraEnvironment extends BaseEnvironment {
-    
+
     public static void initialization () {
         try {
             BaseEnvironment.initialization ();
