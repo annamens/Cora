@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.openqa.selenium.WebDriver;
+import org.testng.util.Strings;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
@@ -289,7 +290,7 @@ public class Mira extends CoraPage {
     private MiraStage getCurrentStage () {
         String currentStageCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[1]";
         String currentStageCellText = getText (currentStageCell);
-        if (currentStageCellText == null || currentStageCellText == "") {
+        if (Strings.isNullOrEmpty (currentStageCellText)) {
             return null;
         }
         return MiraStage.valueOf (currentStageCellText);
@@ -298,7 +299,7 @@ public class Mira extends CoraPage {
     private MiraStatus getCurrentStatus () {
         String currentStatusCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[2]";
         String currentStatusCellText = getText (currentStatusCell);
-        if (currentStatusCellText == null || currentStatusCellText == "") {
+        if (Strings.isNullOrEmpty (currentStatusCellText)) {
             return null;
         }
         return MiraStatus.valueOf (currentStatusCellText);
