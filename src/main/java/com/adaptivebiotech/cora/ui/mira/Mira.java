@@ -8,16 +8,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.function.Function;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.openqa.selenium.WebDriver;
+import org.testng.util.Strings;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraQCStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
@@ -28,8 +32,8 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
  */
 public class Mira extends CoraPage {
 
-    private final int numWaits = 10;
-    private final int msWait   = 10000;
+    private final int durationSeconds = 120;
+    private final int pollingSeconds  = 10;
 
     public Mira () {
         staticNavBarHeight = 90;
@@ -40,18 +44,18 @@ public class Mira extends CoraPage {
         assertTrue (isTextInElement (".container .mira-heading", "New MIRA"));
     }
 
+    public void isCorrectPage (String miraId) {
+        assertTrue (waitUntilVisible (".mira-header"));
+        assertTrue (isTextInElement ("[data-ng-bind='ctrl.mira.miraId']", miraId));
+    }
+
     public void selectPanel (MiraPanel panel) {
         // after selection, the getFirstSelectedOption() stays at "Select..."
         String selector = "[name='panelType']";
         CoraSelect dropdown = new CoraSelect (waitForElementClickable (selector));
         dropdown.selectByVisibleText (panel.name ());
         // wait until the panel is visible below
-        int count = 0;
-        while (count < numWaits && !getPanelNamesText ().contains (panel.name ())) {
-            info ("waiting for panel to be added: " + panel.name ());
-            count++;
-            doWait (msWait);
-        }
+        waitForPanelText (panel);
         assertTrue (getPanelNamesText ().contains (panel.name ()));
     }
 
@@ -104,6 +108,18 @@ public class Mira extends CoraPage {
         return miraId;
     }
 
+    public String getSpecimenId () {
+        String specimenId = "span[ng-bind='::ctrl.mira.expansion.miraSpecimen.number']";
+        String specimenIdText = getText (specimenId);
+        return specimenIdText;
+    }
+
+    public String getExpansionId () {
+        String expansionId = "span[ng-bind='::ctrl.mira.expansion.number']";
+        String expansionIdText = getText (expansionId);
+        return expansionIdText;
+    }
+
     public List <String> getContainerIds () {
         String containerIdField = "span[data-ng-bind='::containerDetail.container.containerNumber']";
         List <String> containerIds = getTextList (containerIdField);
@@ -149,15 +165,20 @@ public class Mira extends CoraPage {
         assertTrue (click (statusTab));
         pageLoading ();
         // need to make sure that the table is loaded
-        MiraStage currentStage = getCurrentStage ();
-        int count = 0;
-        while (count < numWaits && currentStage == null) {
-            count++;
-            info ("waiting for status table to load");
-            doWait (msWait);
-            currentStage = getCurrentStage ();
-        }
+        assertTrue (waitUntilVisible ("//table[contains(@class,'history')]"));
+        MiraStage currentStage = waitForStatusTable (120, 10);
         assertNotNull (currentStage);
+    }
+
+    public void clickTestTab (boolean expectTests) {
+        String testTab = "a[data-ng-click='ctrl.setTab(\\'test\\')']";
+        assertTrue (click (testTab));
+        pageLoading ();
+
+        // if the tests are there then wait until the page has loaded
+        if (expectTests) {
+            assertTrue (waitUntilVisible ("//div[contains(@class, 'Genologics')]"));
+        }
     }
 
     public String createNewBatchRecord (String miraId) {
@@ -189,37 +210,99 @@ public class Mira extends CoraPage {
     }
 
     public boolean waitForStage (MiraStage stage) {
-        int count = 0;
-        while (count < numWaits && getCurrentStage () != stage) {
-            count++;
-            info ("waiting for stage : " + stage);
-            refresh ();
-            doWait (msWait);
-        }
-        return getCurrentStage () == stage;
+        return waitForStage (stage, durationSeconds, pollingSeconds);
     }
 
     public boolean waitForStatus (MiraStatus status) {
-        int count = 0;
-        while (count < numWaits && getCurrentStatus () != status) {
-            count++;
-            info ("waiting for status : " + status);
-            refresh ();
-            doWait (msWait);
-        }
-        return getCurrentStatus () == status;
+        return waitForStatus (status, durationSeconds, pollingSeconds);
+    }
+
+    public Boolean waitForStage (MiraStage stage, int durationSeconds, int pollingSeconds) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                MiraStage currentStage = getCurrentStage ();
+                if (currentStage == stage) {
+                    return true;
+                }
+                info ("waiting for stage : " + stage);
+                refresh ();
+                return false;
+            }
+        };
+        return waitForBooleanCondition (durationSeconds, pollingSeconds, func);
+    }
+
+    public Boolean waitForStatus (MiraStatus status, int durationSeconds, int pollingSeconds) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                MiraStatus currentStatus = getCurrentStatus ();
+                if (currentStatus == MiraStatus.Stuck) {
+                    throw new RuntimeException ("workflow is stuck");
+                }
+                if (currentStatus == status) {
+                    return true;
+                }
+                info ("waiting for status : " + status);
+                refresh ();
+                return false;
+            }
+        };
+        return waitForBooleanCondition (durationSeconds, pollingSeconds, func);
+    }
+
+    public void setQCStatus (MiraQCStatus status) {
+        String dropdown = "select[name='qcStatus']";
+        String button = "button[data-ng-click='ctrl.qcComplete(ctrl.mira.qcStatus)']";
+
+        assertTrue (clickAndSelectText (dropdown, status.toString ()));
+        assertTrue (click (button));
+        clickPopupOK (); // page reloads after you click ok
+        pageLoading ();
+    }
+
+    private void waitForPanelText (MiraPanel panel) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                if (getPanelNamesText ().contains (panel.name ())) {
+                    return true;
+                }
+                info ("waiting for panel to be added: " + panel.name ());
+                return false;
+            }
+        };
+        assertTrue (waitForBooleanCondition (120, 10, func));
+    }
+
+    private MiraStage waitForStatusTable (int durationSeconds, int pollingSeconds) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                MiraStage currentStage = getCurrentStage ();
+                if (currentStage != null) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        assertTrue (waitForBooleanCondition (durationSeconds, pollingSeconds, func));
+        return getCurrentStage ();
     }
 
     private MiraStage getCurrentStage () {
         String currentStageCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[1]";
         String currentStageCellText = getText (currentStageCell);
-        return currentStageCellText == null ? null : MiraStage.valueOf (currentStageCellText);
+        if (Strings.isNullOrEmpty (currentStageCellText)) {
+            return null;
+        }
+        return MiraStage.valueOf (currentStageCellText);
     }
 
     private MiraStatus getCurrentStatus () {
         String currentStatusCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[2]";
         String currentStatusCellText = getText (currentStatusCell);
-        return currentStatusCellText == null ? null : MiraStatus.valueOf (currentStatusCellText);
+        if (Strings.isNullOrEmpty (currentStatusCellText)) {
+            return null;
+        }
+        return MiraStatus.valueOf (currentStatusCellText);
     }
 
     private List <String> getPanelNamesText () {

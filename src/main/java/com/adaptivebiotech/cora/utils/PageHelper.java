@@ -62,11 +62,15 @@ public class PageHelper {
     }
 
     public enum MiraStage {
-        MiraPrep, PoolExtraction, immunoSEQ, MiraAnalysis, MiraQC, Publishing;
+        MIRAPrep, PoolExtraction, immunoSEQ, MIRAAnalysis, MIRAQC, MIRAAgate, Publishing;
     }
 
     public enum MiraStatus {
         Ready, Processing, Awaiting, Stuck, Failed, Finished, Cancelled;
+    }
+
+    public enum MiraQCStatus {
+        ACCEPTED, FAILED;
     }
 
     public enum Carrier {
@@ -151,4 +155,5 @@ public class PageHelper {
             this.text = text;
         }
     }
+
 }
