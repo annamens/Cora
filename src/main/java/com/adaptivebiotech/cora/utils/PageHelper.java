@@ -52,7 +52,11 @@ public class PageHelper {
         DCExpansionCD4 ("DC Expansion - CD4"),
         DCExpansionCD8 ("DC Expansion - CD8"),
         DCExpansionPanT ("DC Expansion - Pan T"),
-        ImmunocultCD3CD28CD2 ("Immunocult CD3/CD28/CD2");
+        ImmunocultCD3CD28CD2 ("Immunocult CD3/CD28/CD2"),
+        AntigenSpecificPeptide ("Antigen Specific- Peptide"),
+        AntigenSpecificTransgene ("Antigen Specific- Transgene"),
+        NoExpansion ("No Expansion"),
+        Polyclonal ("Polyclonal");
 
         public final String text;
 
@@ -71,6 +75,40 @@ public class PageHelper {
 
     public enum MiraQCStatus {
         ACCEPTED, FAILED;
+    }
+
+    public enum MiraCostCenter {
+        COV ("COV"), CRI ("CRI"), AMDL ("AMDL"), CRI_NAM ("CRI-NAM"), CRI_PERSONAL ("CRI-PERSONAL");
+
+        public final String text;
+
+        private MiraCostCenter (String text) {
+            this.text = text;
+        }
+    }
+
+    public enum MiraSortType {
+        CD4 ("CD4"), CD8 ("CD8"), CD8andCD4 ("CD8 and CD4");
+
+        public final String text;
+
+        private MiraSortType (String text) {
+            this.text = text;
+        }
+    }
+
+    public enum MiraInputCellType {
+        NaiveCD4 ("Naive CD4 T cells"),
+        NaiveCD8 ("Naive CD8 T cells"),
+        NaiveTcells ("Naive T cells (CD8 and CD4)"),
+        PBMC ("PBMC"),
+        Tcells ("T cells (pan/memory)");
+
+        public final String text;
+
+        private MiraInputCellType (String text) {
+            this.text = text;
+        }
     }
 
     public enum Carrier {
