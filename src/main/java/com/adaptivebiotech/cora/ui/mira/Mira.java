@@ -163,14 +163,14 @@ public class Mira extends CoraPage {
     public void clickUploadAndSave (String miraId) {
         clickUploadAndSave (miraId, MiraLab.AntigenMapProduction);
     }
-    
+
     public void clickUploadAndSave (String miraId, MiraLab miraLab) {
         String uploadAndSave = "button[ng-click='ctrl.uploadPoolsFile()']";
 
         assertTrue (click (uploadAndSave));
         moduleLoading ();
 
-        if(miraLab.equals (MiraLab.AntigenMapProduction)) {
+        if (miraLab.equals (MiraLab.AntigenMapProduction)) {
             String poolDetail = "span[data-ng-bind='poolDetail.miraId']";
             assertTrue (waitUntilVisible (poolDetail));
             List <String> poolDetailsMiraIds = getTextList (poolDetail);
@@ -210,6 +210,22 @@ public class Mira extends CoraPage {
         if (expectTests) {
             assertTrue (waitUntilVisible ("//div[contains(@class, 'Genologics')]"));
         }
+    }
+
+    public void clickDetailsTab (String miraId) {
+        String detailsTab = "a[data-ng-click='ctrl.setTab(\\'detail\\')']";
+        assertTrue (click (detailsTab));
+        pageLoading ();
+        String miraIdField = "div[ng-bind='ctrl.mira.miraId']";
+        assertTrue (waitUntilVisible (miraIdField));
+        assertEquals (getText (miraIdField), miraId);
+    }
+
+    public void clickReadyToShip () {
+        String readyToShipButton = "button[data-ng-click='ctrl.$scope.$broadcast(\\'mira-ship\\')']";
+        assertTrue (click (readyToShipButton));
+        clickPopupOK ();
+        pageLoading ();
     }
 
     public String createNewBatchRecord (String miraId) {
@@ -256,10 +272,10 @@ public class Mira extends CoraPage {
             for (int i = 0; i < numsheets; i++) {
                 Sheet sheet = workbook.getSheetAt (i);
                 String sheetName = sheet.getSheetName ();
-                System.out.println("sheet " + i + " is " + sheetName);
+                System.out.println ("sheet " + i + " is " + sheetName);
             }
             Sheet sheet = workbook.getSheet (worksheetName);
-//            sheet.protectSheet (null);
+            // sheet.protectSheet (null);
             Cell specimenCell = sheet.getRow (1).getCell (5);
             specimenCell.setBlank ();
             specimenCell.setCellValue (specimenId);
