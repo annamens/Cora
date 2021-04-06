@@ -224,7 +224,7 @@ public class Mira extends CoraPage {
         String ignorePairseqResultButton = "button[data-ng-click='ctrl.ignorePairSeqResult()']";
         assertTrue (click (ignorePairseqResultButton));
         clickPopupOK ();
-        pageLoading (); // maybe doing something else weird here
+        pageLoading ();
         assertTrue (waitUntilVisible ("div.label-ignored"));
     }
 
