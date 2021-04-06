@@ -227,6 +227,14 @@ public class Mira extends CoraPage {
         clickPopupOK ();
         pageLoading ();
     }
+    
+    public void ignorePairseqResult () {
+        String ignorePairseqResultButton = "button[data-ng-click='ctrl.ignorePairSeqResult()']";
+        assertTrue (click (ignorePairseqResultButton));
+        clickPopupOK ();
+        pageLoading (); // maybe doing something else weird here
+        assertTrue (waitUntilVisible ("div.label-ignored"));
+    }
 
     public String createNewBatchRecord (String miraId) {
         String xlFolder = "MIRA/";
@@ -259,7 +267,7 @@ public class Mira extends CoraPage {
     public String createNewTCRDiscoveryBatchRecord (String miraName, String specimenId) {
         String xlFolder = "MIRA/";
         String basePath = ClassLoader.getSystemResource (xlFolder).getPath ();
-        String originalBatchRecord = basePath + "eMRDx_Sample_Sheet.xlsx";
+        String originalBatchRecord = basePath + "eMRDx Sample Sheet Demo_panelHP458.xlsx";
         String newBatchRecord = basePath + miraName + "_Sample_Sheet.xlsx";
         String worksheetName = "Sample sheet";
 
