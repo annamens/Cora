@@ -4,16 +4,8 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.List;
 import java.util.function.Function;
-import org.apache.commons.io.FileUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.openqa.selenium.WebDriver;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -227,80 +219,13 @@ public class Mira extends CoraPage {
         clickPopupOK ();
         pageLoading ();
     }
-    
+
     public void ignorePairseqResult () {
         String ignorePairseqResultButton = "button[data-ng-click='ctrl.ignorePairSeqResult()']";
         assertTrue (click (ignorePairseqResultButton));
         clickPopupOK ();
         pageLoading (); // maybe doing something else weird here
         assertTrue (waitUntilVisible ("div.label-ignored"));
-    }
-
-    public String createNewBatchRecord (String miraId) {
-        String xlFolder = "MIRA/";
-        String basePath = ClassLoader.getSystemResource (xlFolder).getPath ();
-        String originalBatchRecord = basePath + "M-xx_Batch_Record.xlsx";
-        String newBatchRecord = basePath + miraId + "_Batch_Record.xlsx";
-        String worksheetName = "Experiment Request";
-
-        try {
-            FileInputStream inputStream = new FileInputStream (new File (originalBatchRecord));
-            Workbook workbook = WorkbookFactory.create (inputStream);
-            FileOutputStream outputStream = FileUtils.openOutputStream (new File (newBatchRecord));
-            Sheet sheet = workbook.getSheet (worksheetName);
-            sheet.protectSheet (null);
-            Cell cell = sheet.getRow (2).getCell (0);
-            cell.setBlank ();
-            cell.setCellValue (miraId);
-            workbook.getCreationHelper ().createFormulaEvaluator ().evaluateAll ();
-            workbook.write (outputStream);
-            outputStream.close ();
-            inputStream.close ();
-            info ("created new mira batch record file " + newBatchRecord);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-
-        return newBatchRecord;
-    }
-
-    public String createNewTCRDiscoveryBatchRecord (String miraName, String specimenId) {
-        String xlFolder = "MIRA/";
-        String basePath = ClassLoader.getSystemResource (xlFolder).getPath ();
-        String originalBatchRecord = basePath + "eMRDx Sample Sheet Demo_panelHP458.xlsx";
-        String newBatchRecord = basePath + miraName + "_Sample_Sheet.xlsx";
-        String worksheetName = "Sample sheet";
-
-        try {
-            FileInputStream inputStream = new FileInputStream (new File (originalBatchRecord));
-            Workbook workbook = WorkbookFactory.create (inputStream);
-            FileOutputStream outputStream = FileUtils.openOutputStream (new File (newBatchRecord));
-            int numsheets = workbook.getNumberOfSheets ();
-            System.out.println ("number of sheets is: " + workbook.getNumberOfSheets ());
-            for (int i = 0; i < numsheets; i++) {
-                Sheet sheet = workbook.getSheetAt (i);
-                String sheetName = sheet.getSheetName ();
-                System.out.println ("sheet " + i + " is " + sheetName);
-            }
-            Sheet sheet = workbook.getSheet (worksheetName);
-            // sheet.protectSheet (null);
-            Cell specimenCell = sheet.getRow (1).getCell (5);
-            specimenCell.setBlank ();
-            specimenCell.setCellValue (specimenId);
-            Cell nameCell = sheet.getRow (1).getCell (6);
-            nameCell.setBlank ();
-            nameCell.setCellValue (miraName);
-
-            workbook.getCreationHelper ().createFormulaEvaluator ().evaluateAll ();
-            workbook.write (outputStream);
-            outputStream.close ();
-            inputStream.close ();
-            info ("created new mira batch record file " + newBatchRecord);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-
-        return newBatchRecord;
     }
 
     public boolean waitForStage (MiraStage stage) {
