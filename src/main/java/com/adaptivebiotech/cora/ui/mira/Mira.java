@@ -4,24 +4,19 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.List;
 import java.util.function.Function;
-import org.apache.commons.io.FileUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.openqa.selenium.WebDriver;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.CoraSelect;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraCostCenter;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraInputCellType;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraQCStatus;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraSortType;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
@@ -61,23 +56,27 @@ public class Mira extends CoraPage {
 
     public void selectLab (MiraLab lab) {
         String labSelector = "[name='labType']";
-        CoraSelect dropdown = new CoraSelect (waitForElementClickable (labSelector));
-        dropdown.selectByVisibleText (lab.text);
-        assertEquals (dropdown.getFirstSelectedOption ().getText (), lab.text);
+        selectAndVerifySelection (labSelector, lab.text);
     }
 
     public void selectType (MiraType type) {
         String typeSelector = "[name='miraType']";
-        CoraSelect dropdown = new CoraSelect (waitForElementClickable (typeSelector));
-        dropdown.selectByVisibleText (type.text);
-        assertEquals (dropdown.getFirstSelectedOption ().getText (), type.text);
+        selectAndVerifySelection (typeSelector, type.text);
+    }
+
+    public void selectSortType (MiraSortType miraSortType) {
+        String selector = "select[name='sortType']";
+        selectAndVerifySelection (selector, miraSortType.text);
     }
 
     public void selectExpansionMethod (MiraExpansionMethod expansionMethod) {
-        String emSelector = "[name='expansionMethod']";
-        CoraSelect dropdown = new CoraSelect (waitForElementClickable (emSelector));
-        dropdown.selectByVisibleText (expansionMethod.text);
-        assertEquals (dropdown.getFirstSelectedOption ().getText (), expansionMethod.text);
+        String emSelector = "select[name='expansionMethod']";
+        selectAndVerifySelection (emSelector, expansionMethod.text);
+    }
+
+    public void selectInputCellType (MiraInputCellType inputCellType) {
+        String selector = "select[name='inputCellType']";
+        selectAndVerifySelection (selector, inputCellType.text);
     }
 
     public void enterSpecimenAndFind (String specimenId) {
@@ -126,6 +125,19 @@ public class Mira extends CoraPage {
         return containerIds;
     }
 
+    public void selectFirstContainer () {
+        String containerCheckboxField = "input[data-ng-model='containerDetail.selected'";
+        assertTrue (click (waitForElementsVisible (containerCheckboxField).get (0)));
+    }
+
+    public void clickVerifyAllSelectedContainers () {
+        String button = "button[ng-click='ctrl.verifyAll()']";
+        String checkmark = "img[data-ng-if='::containerDetail.verified']";
+
+        assertTrue (click (button));
+        assertTrue (waitUntilVisible (checkmark));
+    }
+
     public void verifyContainerId (String containerId) {
         String inputField = "input[ng-model='ctrl.containerNumber']";
         String verifyButton = "button[ng-click='ctrl.verify()']";
@@ -141,15 +153,26 @@ public class Mira extends CoraPage {
     }
 
     public void clickUploadAndSave (String miraId) {
+        clickUploadAndSave (miraId, MiraLab.AntigenMapProduction);
+    }
+
+    public void clickUploadAndSave (String miraId, MiraLab miraLab) {
         String uploadAndSave = "button[ng-click='ctrl.uploadPoolsFile()']";
-        String poolDetail = "span[data-ng-bind='poolDetail.miraId']";
 
         assertTrue (click (uploadAndSave));
         moduleLoading ();
 
-        assertTrue (waitUntilVisible (poolDetail));
-        List <String> poolDetailsMiraIds = getTextList (poolDetail);
-        assertEquals (poolDetailsMiraIds.get (0), miraId);
+        if (miraLab.equals (MiraLab.AntigenMapProduction)) {
+            String poolDetail = "span[data-ng-bind='poolDetail.miraId']";
+            assertTrue (waitUntilVisible (poolDetail));
+            List <String> poolDetailsMiraIds = getTextList (poolDetail);
+            assertEquals (poolDetailsMiraIds.get (0), miraId);
+        } else if (miraLab.equals (MiraLab.TCRDiscovery)) {
+            String containerName = "span[data-ng-bind='poolDetail.containerName']";
+            assertTrue (waitUntilVisible (containerName));
+            List <String> containerNames = getTextList (containerName);
+            assertNotNull (containerNames.get (0));
+        }
     }
 
     public void clickMiraPrepComplete () {
@@ -181,32 +204,28 @@ public class Mira extends CoraPage {
         }
     }
 
-    public String createNewBatchRecord (String miraId) {
-        String xlFolder = "MIRA/";
-        String basePath = ClassLoader.getSystemResource (xlFolder).getPath ();
-        String originalBatchRecord = basePath + "M-xx_Batch_Record.xlsx";
-        String newBatchRecord = basePath + miraId + "_Batch_Record.xlsx";
-        String worksheetName = "Experiment Request";
+    public void clickDetailsTab (String miraId) {
+        String detailsTab = "a[data-ng-click='ctrl.setTab(\\'detail\\')']";
+        assertTrue (click (detailsTab));
+        pageLoading ();
+        String miraIdField = "div[ng-bind='ctrl.mira.miraId']";
+        assertTrue (waitUntilVisible (miraIdField));
+        assertEquals (getText (miraIdField), miraId);
+    }
 
-        try {
-            FileInputStream inputStream = new FileInputStream (new File (originalBatchRecord));
-            Workbook workbook = WorkbookFactory.create (inputStream);
-            FileOutputStream outputStream = FileUtils.openOutputStream (new File (newBatchRecord));
-            Sheet sheet = workbook.getSheet (worksheetName);
-            sheet.protectSheet (null);
-            Cell cell = sheet.getRow (2).getCell (0);
-            cell.setBlank ();
-            cell.setCellValue (miraId);
-            workbook.getCreationHelper ().createFormulaEvaluator ().evaluateAll ();
-            workbook.write (outputStream);
-            outputStream.close ();
-            inputStream.close ();
-            info ("created new mira batch record file " + newBatchRecord);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+    public void clickReadyToShip () {
+        String readyToShipButton = "button[data-ng-click='ctrl.$scope.$broadcast(\\'mira-ship\\')']";
+        assertTrue (click (readyToShipButton));
+        clickPopupOK ();
+        pageLoading ();
+    }
 
-        return newBatchRecord;
+    public void ignorePairseqResult () {
+        String ignorePairseqResultButton = "button[data-ng-click='ctrl.ignorePairSeqResult()']";
+        assertTrue (click (ignorePairseqResultButton));
+        clickPopupOK ();
+        pageLoading ();
+        assertTrue (waitUntilVisible ("div.label-ignored"));
     }
 
     public boolean waitForStage (MiraStage stage) {
@@ -260,6 +279,16 @@ public class Mira extends CoraPage {
         pageLoading ();
     }
 
+    public void enterName (String name) {
+        String nameField = "input[name='name']";
+        assertTrue (setText (nameField, name));
+    }
+
+    public void setCostCenter (MiraCostCenter costCenter) {
+        String costCenterField = "select[name='costCenter']";
+        selectAndVerifySelection (costCenterField, costCenter.text);
+    }
+
     private void waitForPanelText (MiraPanel panel) {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {
@@ -309,6 +338,12 @@ public class Mira extends CoraPage {
         String panelNamesField = "[data-ng-bind='panel.name']";
         List <String> panelNamesText = getTextList (panelNamesField);
         return panelNamesText;
+    }
+
+    private void selectAndVerifySelection (String selector, String text) {
+        CoraSelect dropdown = new CoraSelect (waitForElementClickable (selector));
+        dropdown.selectByVisibleText (text);
+        assertEquals (dropdown.getFirstSelectedOption ().getText (), text);
     }
 
 }
