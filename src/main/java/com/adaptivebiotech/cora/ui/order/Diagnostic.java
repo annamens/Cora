@@ -919,4 +919,14 @@ public class Diagnostic extends CoraPage {
         return status.equals ("Finished");
     }
 
+    public void selectUpdatedCorrectedReport () {
+        String updatedRadio = "input#updated";
+        assertTrue (click (updatedRadio));
+    }
+
+    public void selectAmendedCorrectedReport () {
+        String amendedRadio = "input#amended";
+        assertTrue (click (amendedRadio));
+    }
+
 }
