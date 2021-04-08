@@ -289,6 +289,19 @@ public class Mira extends CoraPage {
         selectAndVerifySelection (costCenterField, costCenter.text);
     }
 
+    public void waitForSubstatusTextContains (String text) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                if (getCurrentSubstatusText ().contains (text)) {
+                    return true;
+                }
+                info ("waiting for substatus text: " + text);
+                return false;
+            }
+        };
+        assertTrue (waitForBooleanCondition (120, 10, func));
+    }
+
     private void waitForPanelText (MiraPanel panel) {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {
@@ -332,6 +345,12 @@ public class Mira extends CoraPage {
             return null;
         }
         return MiraStatus.valueOf (currentStatusCellText);
+    }
+
+    private String getCurrentSubstatusText () {
+        String currentStatusCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[3]";
+        String currentSubstatusText = getText (currentStatusCell);
+        return currentSubstatusText;
     }
 
     private List <String> getPanelNamesText () {

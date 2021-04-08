@@ -1,5 +1,7 @@
 package com.adaptivebiotech.cora.ui;
 
+import static com.seleniumfy.test.utils.Logging.warn;
+import static com.seleniumfy.test.utils.Logging.info;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -271,5 +273,25 @@ public class CoraPage extends BasePage {
                                                                      .withTimeout (Duration.ofSeconds (secondsDuration))
                                                                      .pollingEvery (Duration.ofSeconds (pollSeconds));
         return wait.until (func);
+    }
+
+    public boolean click (String target) {
+        if (super.click (target)) {
+            return true;
+        } else {
+            info ("retrying click");
+            doWait (10000);
+            return super.click (target);
+        }
+    }
+
+    public String getText (String target) {
+        try {
+            return super.getText (target);
+        } catch (Exception e) {
+            warn ("caught exception, retrying getText: " + e.getMessage ());
+            doWait (10000);
+            return super.getText (target);
+        }
     }
 }
