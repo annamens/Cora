@@ -289,6 +289,12 @@ public class Mira extends CoraPage {
         selectAndVerifySelection (costCenterField, costCenter.text);
     }
 
+    public void waitForSubstatusTextContains (String text) {
+        String currentSubstatusText = "//table[contains(@class,'history')]/tbody/tr[1]/td[3]";
+
+        assertTrue (isTextInElement (currentSubstatusText, text));
+    }
+
     private void waitForPanelText (MiraPanel panel) {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {
