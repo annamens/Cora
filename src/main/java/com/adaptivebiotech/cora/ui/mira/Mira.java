@@ -290,17 +290,9 @@ public class Mira extends CoraPage {
     }
 
     public void waitForSubstatusTextContains (String text) {
-        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
-            public Boolean apply (WebDriver driver) {
-                String currentSubstatusText = "//table[contains(@class,'history')]/tbody/tr[1]/td[3]";
-                if (isTextInElement (currentSubstatusText, text)) {
-                    return true;
-                }
-                info ("waiting for substatus text: " + text);
-                return false;
-            }
-        };
-        assertTrue (waitForBooleanCondition (120, 10, func));
+        String currentSubstatusText = "//table[contains(@class,'history')]/tbody/tr[1]/td[3]";
+
+        assertTrue (isTextInElement (currentSubstatusText, text));
     }
 
     private void waitForPanelText (MiraPanel panel) {
