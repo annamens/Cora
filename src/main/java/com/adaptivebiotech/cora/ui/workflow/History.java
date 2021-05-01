@@ -5,6 +5,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Cancelled;
 import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import static org.testng.util.Strings.isNullOrEmpty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,7 @@ import com.seleniumfy.test.utils.Timeout;
 public class History extends CoraPage {
 
     private final long millisRetry = 3000000l; // 50mins
-    private final long waitRetry   = 20000l;   // 20sec
+    private final long waitRetry   = 60000l;   // 60sec
 
     public History () {
         staticNavBarHeight = 200;
@@ -192,8 +193,8 @@ public class History extends CoraPage {
                 Stage stage = new Stage ();
                 stage.stageName = StageName.valueOf (getText (tr, "td:nth-child(1)"));
                 stage.stageStatus = StageStatus.valueOf (getText (tr, "td:nth-child(2)"));
-                String substatus = getText (tr, "td:nth-child(3)");
-                stage.stageSubstatus = substatus == null ? null : StageSubstatus.valueOf (substatus.replace ("-", "_"));
+                String subs = getText (tr, "td:nth-child(3)");
+                stage.stageSubstatus = isNullOrEmpty (subs) ? null : StageSubstatus.valueOf (subs.replace ("-", "_"));
                 stage.subStatusMessage = getText (tr, ".ssm");
                 stage.timestamp = getText (tr, "td:nth-child(5)");
                 stage.actor = getText (tr, "td:nth-child(6)");

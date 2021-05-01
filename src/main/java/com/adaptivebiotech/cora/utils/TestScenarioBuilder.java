@@ -65,15 +65,15 @@ public class TestScenarioBuilder {
     public static AssayResponse       coraCDxTests       = getTests (CDx);
     public static AssayResponse       coraTDxTests       = getTests (TDx);
 
-    public synchronized static CoraTest getCDxTest (Assay assay) {
+    public static CoraTest getCDxTest (Assay assay) {
         return coraCDxTests.get (assay);
     }
 
-    public synchronized static CoraTest getTDxTest (Assay assay) {
+    public static CoraTest getTDxTest (Assay assay) {
         return coraTDxTests.get (assay);
     }
 
-    public synchronized static AssayResponse getTests (OrderType type) {
+    public static AssayResponse getTests (OrderType type) {
         try {
             String id = null;
             switch (type) {
@@ -90,7 +90,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static Account getAccounts (Account account) {
+    public static Account getAccounts (Account account) {
         try {
             String url = encodeUrl (coraTestUrl + "/cora/api/v1/accounts?", "name=" + account.name);
             AccountsResponse response = mapper.readValue (get (url), AccountsResponse.class);
@@ -105,7 +105,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static List <Physician> getPhysicians (String first, String last, String account) {
+    public static List <Physician> getPhysicians (String first, String last, String account) {
         try {
             String[] args = { "firstName=" + first, "lastName=" + last, "accountName=" + account };
             String url = encodeUrl (coraTestUrl + "/cora/api/v1/providers?", args);
@@ -115,7 +115,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static OrderTest[] getOrderTest (String term) {
+    public static OrderTest[] getOrderTest (String term) {
         try {
             String url = coraTestUrl + "/cora/api/v1/orderTests/search?search=" + term + "&sort=DueDate&limit=500";
             OrderTest[] tests = mapper.readValue (get (url), OrderTest[].class);
@@ -146,7 +146,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    private synchronized static OrderTest[] waitForOrderReady (String orderId) {
+    private static OrderTest[] waitForOrderReady (String orderId) {
         try {
             String url = coraTestUrl + "/cora/api/v1/orderTests/order/" + orderId;
             OrderTest[] tests = mapper.readValue (get (url), OrderTest[].class);
@@ -171,7 +171,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
+    public static HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
             HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
@@ -183,7 +183,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static HttpResponse createPortalJob (Diagnostic diagnostic) {
+    public static HttpResponse createPortalJob (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/createPortalJob";
             HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
@@ -196,7 +196,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static HttpResponse newCovidOrder (Diagnostic diagnostic) {
+    public static HttpResponse newCovidOrder (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
             HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
@@ -209,7 +209,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static HttpResponse newResearchOrder (Research research) {
+    public static HttpResponse newResearchOrder (Research research) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
             return mapper.readValue (post (url, body (mapper.writeValueAsString (research))), HttpResponse.class);
@@ -218,7 +218,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static Order order (OrderProperties properties, CoraTest... tests) {
+    public static Order order (OrderProperties properties, CoraTest... tests) {
         Order order = new Order ();
         order.name = "Selenium Test Order";
         order.properties = properties;
@@ -226,7 +226,7 @@ public class TestScenarioBuilder {
         return order;
     }
 
-    public synchronized static Stage stage (StageName name, StageStatus status) {
+    public static Stage stage (StageName name, StageStatus status) {
         Stage stage = new Stage ();
         stage.stageName = name;
         stage.stageStatus = status;
@@ -237,7 +237,7 @@ public class TestScenarioBuilder {
         return stage;
     }
 
-    public synchronized static Specimen specimen () {
+    public static Specimen specimen () {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.collectionDate = dateToArrInt (collectionDate);
@@ -246,7 +246,7 @@ public class TestScenarioBuilder {
         return specimen;
     }
 
-    public synchronized static Shipment shipment () {
+    public static Shipment shipment () {
         Shipment shipment = new Shipment ();
         shipment.category = Diagnostic;
         shipment.status = "IntakeComplete";
@@ -264,7 +264,7 @@ public class TestScenarioBuilder {
         return shipment;
     }
 
-    public synchronized static Task workflowNanny () {
+    public static Task workflowNanny () {
         Task task = new Task ();
         task.name = "Clonoseq Report Scenario Test Helper";
         task.description = "Moves ClonoSeq workflows through the correct stages for tests.";
@@ -276,11 +276,11 @@ public class TestScenarioBuilder {
         return task;
     }
 
-    public synchronized static Diagnostic diagnosticOrder (Account account,
-                                                           Physician physician,
-                                                           Patient patient,
-                                                           Specimen specimen,
-                                                           Shipment shipment) {
+    public static Diagnostic diagnosticOrder (Account account,
+                                              Physician physician,
+                                              Patient patient,
+                                              Specimen specimen,
+                                              Shipment shipment) {
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.account = account;
         diagnostic.provider = physician;
@@ -292,7 +292,7 @@ public class TestScenarioBuilder {
         return diagnostic;
     }
 
-    public synchronized static Research researchOrder (Specimen... specimens) {
+    public static Research researchOrder (Specimen... specimens) {
         TechTransfer techTransfer = new TechTransfer ();
         techTransfer.workspace = "Adaptive-Testing";
         techTransfer.flowcellId = "selenium-staging";
@@ -300,7 +300,7 @@ public class TestScenarioBuilder {
         return new Research (techTransfer);
     }
 
-    public synchronized static Integer[] dateToArrInt (LocalDateTime dateTime) {
+    public static Integer[] dateToArrInt (LocalDateTime dateTime) {
         DateTimeFormatter fmt = ofPattern ("uuuu-MM-dd-HH-mm-ss-SSS");
         return asList (dateTime.format (fmt).split ("-")).stream ().map (Integer::valueOf).toArray (Integer[]::new);
     }

@@ -8,13 +8,11 @@ import static com.adaptivebiotech.test.BaseEnvironment.version;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.seleniumfy.test.utils.HttpClientHelper.formPost;
-import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import com.seleniumfy.test.utils.BaseBrowser;
@@ -32,7 +30,7 @@ public class CoraBaseBrowser extends BaseBrowser {
     }
 
     @BeforeMethod (alwaysRun = true)
-    public void baseBeforeMethod (Method method) throws Exception {
+    public void baseBeforeMethod (Method method) {
         info (format ("running: %s.%s()", getClass ().getSimpleName (), method.getName ()));
     }
 
@@ -45,6 +43,5 @@ public class CoraBaseBrowser extends BaseBrowser {
         forms.put ("userName", coraTestUser);
         forms.put ("password", coraTestPass);
         formPost (coraTestUrl + "/cora/login", forms);
-        headers.add (new BasicHeader ("X-Api-UserName", "svc_test_user"));
     }
 }
