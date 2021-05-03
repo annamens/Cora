@@ -90,7 +90,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public static Account getAccounts (Account account) {
+    public synchronized static Account getAccounts (Account account) {
         try {
             String url = encodeUrl (coraTestUrl + "/cora/api/v1/accounts?", "name=" + account.name);
             AccountsResponse response = mapper.readValue (get (url), AccountsResponse.class);
@@ -171,7 +171,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public static HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
+    public synchronized static HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
             HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
@@ -183,7 +183,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public static HttpResponse createPortalJob (Diagnostic diagnostic) {
+    public synchronized static HttpResponse createPortalJob (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/createPortalJob";
             HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
@@ -196,7 +196,7 @@ public class TestScenarioBuilder {
         }
     }
 
-    public static HttpResponse newCovidOrder (Diagnostic diagnostic) {
+    public synchronized static HttpResponse newCovidOrder (Diagnostic diagnostic) {
         try {
             String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
             HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
