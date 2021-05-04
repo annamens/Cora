@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import com.seleniumfy.test.utils.BaseBrowser;
+import com.adaptivebiotech.test.TestBase;
 
-public class CoraBaseBrowser extends BaseBrowser {
+public class CoraBaseBrowser extends TestBase {
 
     static {
         initialization ();
