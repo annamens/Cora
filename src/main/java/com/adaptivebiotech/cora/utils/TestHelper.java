@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
@@ -65,25 +64,6 @@ public class TestHelper {
         container.containerNumber = testdata ().get ("AB039003_num");
         container.name = "AB039003 (Ambient)";
         return container;
-    }
-
-    public static Account account () {
-        Account account = new Account ();
-        account.id = "4a8d76af-2273-4d7f-8853-ba80467b570f";
-        account.parent_id = "09ba0e40-4274-486e-86a6-8305ac7f05cc";
-        account.name = "Dorsey Testola";
-        account.description = "So f'n chill";
-        account.accountTypes = "Hospital";
-        account.billingAddress = "411 Whatsup Ave";
-        account.billingCity = "Portland";
-        account.billingState = "OR";
-        account.billingZip = "98101";
-        account.billingCountry = "United States";
-        account.billingPhone = "(000) NON-ONON";
-        account.billingEmail = "forest@lakes.com";
-        account.billingContact = "Momma";
-        account.billingName = "Holla Back";
-        return account;
     }
 
     public static Physician physician1 () {
