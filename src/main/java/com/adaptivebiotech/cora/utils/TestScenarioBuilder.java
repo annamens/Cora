@@ -90,15 +90,14 @@ public class TestScenarioBuilder {
         }
     }
 
-    public synchronized static Account getAccounts (Account account) {
+    public static Account getAccounts (String name) {
         try {
-            String url = encodeUrl (coraTestUrl + "/cora/api/v1/accounts?", "name=" + account.name);
+            String url = encodeUrl (coraTestUrl + "/cora/api/v1/accounts?", "name=" + name);
             AccountsResponse response = mapper.readValue (get (url), AccountsResponse.class);
             if (response.objects.size () == 0)
-                return account;
+                return null;
             else {
-                account.id = response.objects.get (0).id;
-                return account;
+                return response.objects.get (0);
             }
         } catch (Exception e) {
             throw new RuntimeException (e);
