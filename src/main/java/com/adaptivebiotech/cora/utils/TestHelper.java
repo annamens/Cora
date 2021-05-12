@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
@@ -27,7 +26,7 @@ import com.adaptivebiotech.cora.dto.Physician;
 
 public class TestHelper {
 
-    public synchronized static Container freezerDestroyed () {
+    public static Container freezerDestroyed () {
         Container container = new Container ();
         container.id = testdata ().get ("freezerDestroyed_id");
         container.containerNumber = testdata ().get ("freezerDestroyed_num");
@@ -35,7 +34,7 @@ public class TestHelper {
         return container;
     }
 
-    public synchronized static Container freezerAB018055 () {
+    public static Container freezerAB018055 () {
         Container container = new Container ();
         container.id = testdata ().get ("AB018055_id");
         container.containerNumber = testdata ().get ("AB018055_num");
@@ -43,7 +42,7 @@ public class TestHelper {
         return container;
     }
 
-    public synchronized static Container freezerAB018078 () {
+    public static Container freezerAB018078 () {
         Container container = new Container ();
         container.id = testdata ().get ("AB018078_id");
         container.containerNumber = testdata ().get ("AB018078_num");
@@ -51,7 +50,7 @@ public class TestHelper {
         return container;
     }
 
-    public synchronized static Container freezerAB018082 () {
+    public static Container freezerAB018082 () {
         Container container = new Container ();
         container.id = testdata ().get ("AB018082_id");
         container.containerNumber = testdata ().get ("AB018082_num");
@@ -59,7 +58,7 @@ public class TestHelper {
         return container;
     }
 
-    public synchronized static Container freezerAB039003 () {
+    public static Container freezerAB039003 () {
         Container container = new Container ();
         container.id = testdata ().get ("AB039003_id");
         container.containerNumber = testdata ().get ("AB039003_num");
@@ -67,26 +66,7 @@ public class TestHelper {
         return container;
     }
 
-    public synchronized static Account account () {
-        Account account = new Account ();
-        account.id = "4a8d76af-2273-4d7f-8853-ba80467b570f";
-        account.parent_id = "09ba0e40-4274-486e-86a6-8305ac7f05cc";
-        account.name = "Dorsey Testola";
-        account.description = "So f'n chill";
-        account.accountTypes = "Hospital";
-        account.billingAddress = "411 Whatsup Ave";
-        account.billingCity = "Portland";
-        account.billingState = "OR";
-        account.billingZip = "98101";
-        account.billingCountry = "United States";
-        account.billingPhone = "(000) NON-ONON";
-        account.billingEmail = "forest@lakes.com";
-        account.billingContact = "Momma";
-        account.billingName = "Holla Back";
-        return account;
-    }
-
-    public synchronized static Physician physician1 () {
+    public static Physician physician1 () {
         Physician physician = new Physician ();
         physician.id = "dfb8acb3-37af-474b-bb07-0dc8c6c10668";
         physician.firstName = "Selenium";
@@ -107,7 +87,7 @@ public class TestHelper {
     }
 
     // AllowInternalOrderUpload flag enabled in SalesForce
-    public synchronized static Physician physician2 () {
+    public static Physician physician2 () {
         Physician physician = new Physician ();
         physician.id = "a1461f9d-29e0-464c-8bf6-a383079f1d62";
         physician.firstName = "Automated";
@@ -128,7 +108,7 @@ public class TestHelper {
     }
 
     // clean: no insurance, medicare, address, etc.
-    public synchronized static Patient newPatient () {
+    public static Patient newPatient () {
         Patient patient = new Patient ();
         patient.firstName = "selenium" + randomWords (1);
         patient.middleName = randomWords (1) + "test";
@@ -141,7 +121,7 @@ public class TestHelper {
     }
 
     // has medicare, secondary insurance, address, etc.
-    public synchronized static Patient patientMedicare () {
+    public static Patient patientMedicare () {
         Patient patient = new Patient ();
         patient.firstName = "Test1";
         patient.lastName = "Fun";
@@ -165,7 +145,7 @@ public class TestHelper {
     }
 
     // address is not required for cora
-    public synchronized static Patient newInsurancePatient () {
+    public static Patient newInsurancePatient () {
         Patient patient = newPatient ();
         patient.billingType = CommercialInsurance;
         patient.insurance1 = insurance1 ();
@@ -174,7 +154,7 @@ public class TestHelper {
     }
 
     // address is not required for cora
-    public synchronized static Patient newMedicarePatient () {
+    public static Patient newMedicarePatient () {
         Patient patient = newPatient ();
         patient.billingType = Medicare;
         patient.abnStatusType = RequiredIncludedBillMedicare;
@@ -185,7 +165,7 @@ public class TestHelper {
     }
 
     // scenario builder takes only client billingType
-    public synchronized static Patient scenarioBuilderPatient () {
+    public static Patient scenarioBuilderPatient () {
         Patient patient = new Patient ();
         patient.id = randomUUID ().toString ();
         patient.firstName = "Jane";
@@ -205,7 +185,7 @@ public class TestHelper {
         return patient;
     }
 
-    public synchronized static Address address () {
+    public static Address address () {
         Address address = new Address ();
         address.line1 = "1551 Eastlake Ave E";
         address.phone = "206-201-1868";
@@ -215,7 +195,7 @@ public class TestHelper {
         return address;
     }
 
-    public synchronized static Insurance insurance1 () {
+    public static Insurance insurance1 () {
         Insurance insurance = new Insurance ();
         insurance.provider = "Blue Cross";
         insurance.groupNumber = "B5299";
@@ -228,7 +208,7 @@ public class TestHelper {
         return insurance;
     }
 
-    public synchronized static Insurance insurance2 () {
+    public static Insurance insurance2 () {
         Insurance insurance = new Insurance ();
         insurance.provider = "Farmers";
         insurance.groupNumber = "C9000";
@@ -238,7 +218,7 @@ public class TestHelper {
         return insurance;
     }
 
-    public synchronized static Insurance insurance3 () {
+    public static Insurance insurance3 () {
         Insurance insurance = new Insurance ();
         insurance.provider = "Blue Cross Blue Shield";
         insurance.groupNumber = "4008158";
@@ -248,7 +228,7 @@ public class TestHelper {
         return insurance;
     }
 
-    private synchronized static Map <String, String> testdata () {
+    private static Map <String, String> testdata () {
         Map <String, String> data = new HashMap <> ();
         data.put ("freezerDestroyed_id", "c182b9e5-bdbe-44ae-8dfd-12c957cc1fc8");
         data.put ("freezerDestroyed_num", "CO-139956");
