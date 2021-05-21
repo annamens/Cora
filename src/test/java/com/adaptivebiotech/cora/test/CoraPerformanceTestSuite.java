@@ -1,14 +1,10 @@
 package com.adaptivebiotech.cora.test;
 
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.VacutainerBox7x7;
+import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018078;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
-import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.adaptivebiotech.cora.dto.Containers;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -100,13 +96,7 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
 
     public void filterContainers () {
         oList.isCorrectPage ();
-        cora.selectNewContainer ();
-        cAdd.addContainer (VacutainerBox7x7, 1);
-        cAdd.clickSave ();
-        Containers containerList = cAdd.getContainers();
-        cora.clickContainers ();
-        cList.isCorrectPage ();
-        cora.searchContainer(containerList.list.get(0));
+        cora.searchContainer (freezerAB018078 ());
         cList.isCorrectPage ();
     }
 
