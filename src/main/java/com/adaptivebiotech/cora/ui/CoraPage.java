@@ -185,12 +185,6 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
-    public void doContainerSearch (String searchTerm) {
-        String search = String.format("/cora/containers/list?arrivalDate=all&customer=Account&searchText=%s&sort=ContainerNumber&ascending=false", searchTerm);
-        assertTrue (navigateTo (coraTestUrl + search));
-        pageLoading ();
-    }
-
     public void clickOrder (String orderNum) {
         assertTrue (click ("//table//*[text()='" + orderNum + "']"));
         pageLoading ();

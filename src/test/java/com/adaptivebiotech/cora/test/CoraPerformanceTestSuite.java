@@ -7,6 +7,8 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.adaptivebiotech.cora.dto.Containers;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -97,15 +99,14 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
     }
 
     public void filterContainers () {
-        String cName = randomString (7);
         oList.isCorrectPage ();
         cora.selectNewContainer ();
         cAdd.addContainer (VacutainerBox7x7, 1);
-        cAdd.setContainerName (1, cName);
         cAdd.clickSave ();
+        Containers containerList = cAdd.getContainers();
         cora.clickContainers ();
         cList.isCorrectPage ();
-        cora.doContainerSearch (cName);
+        cora.searchContainer(containerList.list.get(0));
         cList.isCorrectPage ();
     }
 
