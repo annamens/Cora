@@ -1,25 +1,27 @@
 package com.adaptivebiotech.cora.ui.mira;
 
-import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 import static org.openqa.selenium.Keys.RETURN;
 import static org.testng.Assert.assertTrue;
 import static com.seleniumfy.test.utils.Logging.info;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
+import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Miras;
 import com.adaptivebiotech.cora.dto.Miras.Mira;
-import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.cora.ui.mira.MirasListHelper.Filter;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraCostCenter;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 
 /**
@@ -28,8 +30,16 @@ import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
  */
 public class MirasList extends CoraPage {
 
+    private Set <String>    knownPanels              = new HashSet <String> ();
+    private MirasListHelper mirasListHelper          = new MirasListHelper ();
+    private final String    searchTypeDropdown       = "//span[contains(@class, 'list-search-type-container')]/dropdown-filter/div[contains(@class, 'dropdown')]";
+    private final String    searchTypeDropdownButton = searchTypeDropdown + "/button";
+
     public MirasList () {
         staticNavBarHeight = 90;
+        for (MiraPanel miraPanel : MiraPanel.values ()) {
+            knownPanels.add (miraPanel.name ());
+        }
     }
 
     @Override
@@ -71,32 +81,12 @@ public class MirasList extends CoraPage {
     }
 
     public void selectLab (MiraLab miraLab) {
-        String dropdown = "//dropdown-filter[@label='Lab']/div[@class='dropdown']/button";
-        String menu = "//dropdown-filter[@label='Lab']/div[@class='dropdown open']/ul[@class='dropdown-menu']";
-        String itemToClick = menu + "/li/a[text()='" + miraLab.text + "']";
-        String selectedLab = dropdown + "/span";
-
-        assertTrue (click (dropdown));
-        assertTrue (click (itemToClick));
-        assertEquals (getText (selectedLab), miraLab.text);
+        mirasListHelper.selectLab (miraLab);
     }
 
+    // VERY SLOW
     public Miras getMiras () {
-        return new Miras (waitForElements (".miras-list > tbody > tr").stream ().map (el -> {
-            List <WebElement> columns = el.findElements (locateBy ("td"));
-            Mira m = new Mira ();
-            m.id = getMiraGuid (getAttribute (columns.get (1), "a", "href"));
-            m.miraId = getText (columns.get (1));
-            String panel = getText (columns.get (2));
-            m.panel = panel != null ? MiraPanel.valueOf (panel) : null;
-            m.numPools = Integer.valueOf (getText (columns.get (3)));
-            m.asid = getText (columns.get (4));
-            m.lastActivity = getText (columns.get (5));
-            m.status = OrderStatus.valueOf (getText (columns.get (6)));
-            m.stages = getAttributeList (columns.get (7), ".ordertest-list-stage-back", "title");
-            m.stageStatus = getText (columns.get (8));
-            return m;
-        }).collect (toList ()));
+        return getMirasFromMiraListPage ();
     }
 
     public void clickSelect () {
@@ -113,7 +103,12 @@ public class MirasList extends CoraPage {
 
     public void clickMira (String miraId) {
         String miraLink = "//td[contains(@class, 'mira-name-description')]/a/span[text()='%s']";
-        assertTrue (click (String.format (miraLink, miraId)));
+
+        if (click (String.format (miraLink, miraId)) == false) {
+            // sometimes get a stale element exception here, really retry the click
+            assertTrue (click (String.format (miraLink, miraId)));
+        }
+
         pageLoading ();
         assertTrue (waitUntilVisible (".mira-header"));
     }
@@ -124,25 +119,252 @@ public class MirasList extends CoraPage {
         assertTrue (waitUntilVisible (".mira-manifest-dialog"));
         assertTrue (click ("//button[text()='Yes, Create Sample Manifest']"));
         pageLoading ();
-        if (!CoraEnvironment.useSauceLabs) {
-            return getDownloadedSampleManifestName ();
-        }
         return "Can't verify file download on saucelabs";
-
     }
 
-    private String getDownloadedSampleManifestName () {
-        info ("downloads dir is: " + getDownloadsDir ());
-        File downloadDir = new File (getDownloadsDir ());
-        String filenameMatch = "Adaptive-AMPL-P01-\\d+.xlsx";
+    public void selectAllLabs () {
+        mirasListHelper.selectAllLabs ();
+    }
 
-        File[] downloadedFiles = waitForDownloadedFiles (downloadDir, filenameMatch);
+    public void selectPanelByName (String panelName) {
+        mirasListHelper.selectFilter (Filter.Panel, panelName);
+    }
 
-        assertNotNull (downloadedFiles);
-        Arrays.sort (downloadedFiles, Comparator.comparingLong (File::lastModified).reversed ());
-        File latestDownload = downloadedFiles[0];
-        assertNotNull (latestDownload);
-        return latestDownload.getName ();
+    public void selectCostCenter (MiraCostCenter costCenter) {
+        mirasListHelper.selectFilter (Filter.CostCenter, costCenter.text);
+    }
+
+    public void selectExperimentOwner (String ownerName) {
+        mirasListHelper.selectFilter (Filter.ExperimentOwner, ownerName);
+    }
+
+    public void selectStatus (String status) {
+        mirasListHelper.selectFilter (Filter.Status, status);
+    }
+
+    public void selectWorkflowStage (MiraStage workflowStage) {
+        mirasListHelper.selectFilter (Filter.WorkflowStage, workflowStage.name ());
+    }
+
+    public void selectStageStatus (MiraStatus stageStatus) {
+        mirasListHelper.selectFilter (Filter.StageStatus, stageStatus.name ());
+    }
+
+    public void enterStageSubstatus (String stageSubStatus) {
+        String stageSubstatusFilter = "input#subStatusSearch";
+        assertTrue (setText (stageSubstatusFilter, stageSubStatus));
+    }
+
+    public void enterSearchBoxText (String text) {
+        mirasListHelper.enterSearchBoxText (text);
+    }
+
+    public String getLabText () {
+        return mirasListHelper.getFilterText (Filter.Lab);
+    }
+
+    public String getPanelText () {
+        return mirasListHelper.getFilterText (Filter.Panel);
+    }
+
+    public String getCostCenterText () {
+        return mirasListHelper.getFilterText (Filter.CostCenter);
+    }
+
+    public String getExperimentOwnerText () {
+        return mirasListHelper.getFilterText (Filter.ExperimentOwner);
+    }
+
+    public String getStatusText () {
+        return mirasListHelper.getFilterText (Filter.Status);
+    }
+
+    public String getWorkflowStageText () {
+        return mirasListHelper.getFilterText (Filter.WorkflowStage);
+    }
+
+    public String getStageStatusText () {
+        return mirasListHelper.getFilterText (Filter.StageStatus);
+    }
+
+    public String getStageSubstatusText () {
+        return readInput ("input#subStatusSearch");
+    }
+
+    public String getSearchBoxText () {
+        return mirasListHelper.getSearchBoxText ();
+    }
+
+    /**
+     * after you click the filter button and the page loads, need to wait until the mira table
+     * refreshes
+     * so loop on checking the first mira Id until:
+     * 1) it changes
+     * 2) we get a stale element reference exception
+     * 3) the wait times out
+     * if there is no first mira id, we just wait until timeout
+     */
+    public void clickFilterList () {
+        String filterButton = "//button[text()='Filter list']";
+        assertTrue (click (filterButton));
+        pageLoading ();
+        String firstResult = "//table[contains(@class, 'mira-table')]/tbody/tr[1]/td[1]/a/span";
+
+        mirasListHelper.waitForTableToRefresh (firstResult);
+    }
+
+    public int countMiras () {
+        List <WebElement> miraRows = waitForElements (".mira-table > tbody > tr");
+        return miraRows.size ();
+    }
+
+    public List <String> getMiraIds () {
+        String miraIdField = "//td[contains(@class, 'mira-name-description')]/a/span";
+        List <String> miraIds = getTextList (miraIdField);
+        return miraIds;
+    }
+
+    public List <String> getMiraPanelTexts () {
+        String miraPanelField = "//table[contains(@class, 'mira-table')]/tbody/tr/td[3]";
+        List <String> miraPanelTexts = getTextList (miraPanelField);
+        return miraPanelTexts;
+    }
+
+    public Mira getMira (String miraId) {
+        String miraLink = "//span[text()='%s']/../../..";
+        WebElement miraRow = waitForElement (String.format (miraLink, miraId));
+        Mira mira = getMiraFromRow (miraRow);
+
+        return mira;
+    }
+
+    public void clickMIRASpecimens () {
+        String miraSpecimensButton = "//a[text()='MIRA Specimens']";
+        click (miraSpecimensButton);
+        pageLoading ();
+    }
+
+    public void selectSearchType (SearchType searchType) {
+        String dropdownItemBase = searchTypeDropdown + "/ul[contains(@class, 'dropdown-menu')]/li/a[text()='%s']";
+        String dropdownItem = String.format (dropdownItemBase, searchType.text);
+
+        assertTrue (click (searchTypeDropdownButton));
+        assertTrue (click (dropdownItem));
+        assertEquals (getSelectedSearchType (), searchType);
+    }
+
+    public SearchType getSelectedSearchType () {
+        String buttonText = searchTypeDropdownButton + "/span";
+        return SearchType.getByText (getText (buttonText));
+    }
+
+    public void reprocessMIRAs () {
+        String reprocessMIRAsButton = "//button[text()='Reprocess MIRA(s)']";
+        String dialog = ".mira-reprocess-dialog";
+        String yesButton = "//button[text()='Yes, Reprocess MIRA(s)']";
+        String toast = ".toast-message";
+
+        assertTrue (click (reprocessMIRAsButton));
+        assertTrue (waitUntilVisible (dialog));
+        assertTrue (click (yesButton));
+        assertTrue (waitUntilVisible (toast));
+        assertTrue (waitForElementInvisible (toast));
+        pageLoading ();
+    }
+
+    public void clickAcceptMIRAQC () {
+        String button = "//button[text()='Accept MIRA QC']";
+        String modal = "//modal-content/div[contains(@class,'accept-mira-qc-dialog')]";
+        assertTrue (click (button));
+        assertTrue (waitUntilVisible (modal));
+    }
+
+    public String clickAcceptMIRAQCExpectFailure () {
+        String button = "//button[text()='Accept MIRA QC']";
+        String toast = "//div[contains(@class, 'toast-message')]";
+
+        assertTrue (click (button));
+        assertTrue (waitUntilVisible (toast));
+        String toastText = getAttribute (toast, "aria-label");
+        assertTrue (waitForElementInvisible (toast));
+        return toastText;
+    }
+
+    public boolean isMIRASelected (String miraId) {
+        String miraCheckBoxBase = "//td[contains(@class, 'mira-name-description')]/a/span[text()='%s']/../../../td[1]/input[contains(@type, 'checkbox')]";
+        String miraCheckBox = String.format (miraCheckBoxBase, miraId);
+        return Boolean.parseBoolean (getAttribute (miraCheckBox, "checked"));
+    }
+
+    public void acceptMIRAQCWithComments (String comments) {
+        String commentsField = "//modal-content/div[contains(@class,'accept-mira-qc-dialog')]/div[contains(@class,'modal-body')]/div[3]/div/div/textarea";
+        String saveButton = "//modal-content/div[contains(@class,'accept-mira-qc-dialog')]/div[contains(@class,'modal-footer')]/button[text()='Save']";
+        String toast = "//div[contains(@class, 'toast-message')]";
+
+        assertTrue (setText (commentsField, comments));
+        assertTrue (click (saveButton));
+        pageLoading ();
+        assertTrue (waitUntilVisible (toast));
+        assertTrue (waitForElementInvisible (toast));
+    }
+
+    public void cancelAcceptMIRAQC () {
+        String button = "//modal-content/div[contains(@class,'accept-mira-qc-dialog')]/div[contains(@class,'modal-footer')]/button[text()='Cancel']";
+        String modal = "//modal-content/div[contains(@class,'accept-mira-qc-dialog')]";
+        assertTrue (click (button));
+        assertTrue (waitForElementInvisible (modal));
+    }
+
+    public boolean isMirasListInSelectMode () {
+        return !isSelectButtonVisible ();
+    }
+
+    public boolean isSelectButtonVisible () {
+        String selectButton = "//button[text()='Select']";
+        return isElementPresent (selectButton);
+    }
+
+    private Mira getMiraFromRow (WebElement miraRow) {
+        List <WebElement> columns = miraRow.findElements (By.xpath (".//td"));
+        assertEquals (columns.size (), 10);
+        Mira mira = new Mira ();
+        mira.id = getMiraGuid (getAttribute (columns.get (0), "a", "href"));
+        mira.miraId = getText (columns.get (0));
+        String panel = getText (columns.get (2));
+        if (panel == null || panel.equals ("")) {
+            mira.panel = null;
+        } else if (knownPanels.contains (panel)) {
+            mira.panel = MiraPanel.valueOf (panel);
+        }
+        mira.numPools = Integer.valueOf (getText (columns.get (3)));
+        mira.asid = getText (columns.get (4));
+        mira.lastActivity = getText (columns.get (5));
+        mira.status = OrderStatus.valueOf (getText (columns.get (6)));
+        mira.stages = getAttributeList (columns.get (7), ".ordertest-list-stage-back", "title");
+        mira.stageStatus = getText (columns.get (8));
+
+        return mira;
+    }
+
+    private Miras getMirasFromMiraListPage () {
+
+        List <WebElement> miraRows = waitForElements (".mira-table > tbody > tr");
+        info ("found " + miraRows.size () + " miras");
+        int count = 0;
+
+        Miras miras = new Miras (new ArrayList <Mira> (500));
+
+        for (WebElement row : miraRows) {
+            Mira m = getMiraFromRow (row);
+            miras.list.add (m);
+            count++;
+            if (count % 100 == 0) {
+                info ("found " + count + " miras");
+            }
+        }
+
+        return miras;
+
     }
 
     private void waitForFirstMiraId (String miraId, String firstResult) {
@@ -153,21 +375,6 @@ public class MirasList extends CoraPage {
             }
         };
         assertTrue (waitForBooleanCondition (240, 10, func));
-    }
-
-    private File[] waitForDownloadedFiles (File downloadDir, String filenameMatch) {
-        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
-            public Boolean apply (WebDriver driver) {
-                info ("waiting for sample manifest to download");
-                return listMatchingFiles (downloadDir, filenameMatch) != null;
-            }
-        };
-        assertTrue (waitForBooleanCondition (120, 10, func));
-        return listMatchingFiles (downloadDir, filenameMatch);
-    }
-
-    private File[] listMatchingFiles (File dir, String filenameMatch) {
-        return dir.listFiles ( (File f) -> f.getName ().matches (filenameMatch));
     }
 
     private String getMiraGuid (String href) {
@@ -181,6 +388,32 @@ public class MirasList extends CoraPage {
         } catch (StaleElementReferenceException e) {
             info (e.getMessage ());
             return waitForElement (by).getText ();
+        }
+
+    }
+
+    public static enum SearchType {
+        MiraID ("MIRA ID"),
+        ExperimentName ("Experiment Name"),
+        SpecimenID ("Specimen ID"),
+        immunoSEQOrder ("immunoSEQ order"),
+        pairSEQOrder ("pairSEQ order"),
+        ExpansionID ("Expansion ID"),
+        ContainerID ("Container ID");
+
+        public final String text;
+
+        private SearchType (String s) {
+            text = s;
+        }
+
+        public static SearchType getByText (String s) {
+            for (SearchType searchType : SearchType.values ()) {
+                if (searchType.text.equals (s)) {
+                    return searchType;
+                }
+            }
+            return null;
         }
 
     }

@@ -171,4 +171,14 @@ public class Accession extends CoraPage {
         return getTextList (specimenIds);
     }
 
+    /**
+     * this button is labeled "Revert"
+     */
+    public void clickUndoAccessionComplete () {
+        String button = "button[ng-click='ctrl.undoAccessionComplete()']";
+        assertTrue (click (button));
+        moduleLoading ();
+        waitForStatus ("Label Verification Complete");
+    }
+
 }

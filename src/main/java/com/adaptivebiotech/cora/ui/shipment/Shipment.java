@@ -280,4 +280,14 @@ public class Shipment extends CoraPage {
         assertTrue (click (css));
     }
 
+    public void clickDiscontinueShipment () {
+        String button = "//button[contains(., 'Discontinue Shipment')]";
+        assertTrue (click (button));
+        assertTrue (waitUntilVisible (".modal-dialog"));
+        assertTrue (click ("button[ng-click='ctrl.save()']"));
+        moduleLoading ();
+        String status = "div[ng-bind='ctrl.entry | shipmentEntryStatus']";
+        assertTrue (isTextInElement (status, "Discontinued"));
+    }
+
 }

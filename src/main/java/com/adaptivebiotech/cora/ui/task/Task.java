@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.task;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -93,5 +94,10 @@ public class Task extends CoraPage {
 
     public void clickTaskStatus () {
         assertTrue (click ("//a[text()='Task Status']"));
+    }
+
+    public void gotoTaskById (String id) {
+        String url = coraTestUrl + "/cora/task/" + id + "?p=status";
+        assertTrue (navigateTo (url));
     }
 }
