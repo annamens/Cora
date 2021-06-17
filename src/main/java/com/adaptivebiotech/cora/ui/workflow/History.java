@@ -47,6 +47,14 @@ public class History extends CoraPage {
         forceStatusUpdate (null, Cancelled);
     }
 
+    public String getCreated () {
+        return getText ("//*[th='Created:']/td");
+    }
+
+    public String getFinished () {
+        return getText ("//*[th='Finished:']/td");
+    }
+
     public String getWorkflowId () {
         return readInput ("#claimDiv [name='workflowId']");
     }
