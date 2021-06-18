@@ -120,19 +120,6 @@ public class Mira extends CoraPage {
         assertTrue (waitUntilVisible (removeSpecimenButton));
     }
 
-    @Deprecated
-    public void clickSave (boolean isActive) {
-        String saveButton = isActive ? "//button[text()='Save']" : "button[ng-click='ctrl.save()']";
-        assertTrue (click (saveButton));
-        pageLoading ();
-        if (isActive) {
-            clickPopupOK ();
-            // pageLoading() does not work here
-            assertTrue (waitUntilVisible (".loading-overlay"));
-            assertTrue (waitForElementInvisible (".loading-overlay"));
-        }
-    }
-
     public String getMiraId () {
         String idText = "span[data-ng-bind='ctrl.mira.miraId']";
         String miraId = getText (idText);
@@ -185,11 +172,7 @@ public class Mira extends CoraPage {
         pageLoading ();
     }
 
-    public void clickUploadAndSave (String miraId) {
-        clickUploadAndSave (miraId, MiraLab.AntigenMapProduction);
-    }
-
-    public void clickUploadAndSave (String miraId, MiraLab miraLab) {
+    public void clickUploadAndSave () {
         String uploadAndSave = "button[ng-click='ctrl.uploadPoolsFile()']";
 
         assertTrue (click (uploadAndSave));
