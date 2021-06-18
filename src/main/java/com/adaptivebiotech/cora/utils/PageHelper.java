@@ -35,6 +35,10 @@ public class PageHelper {
         private MiraLab (String name) {
             this.text = name;
         }
+
+        public static MiraLab getMiraLab (String text) {
+            return allOf (MiraLab.class).parallelStream ().filter (r -> r.text.equals (text)).findAny ().get ();
+        }
     }
 
     public enum MiraType {
@@ -44,6 +48,10 @@ public class PageHelper {
 
         private MiraType (String name) {
             this.text = name;
+        }
+
+        public static MiraType getMiraType (String text) {
+            return allOf (MiraType.class).parallelStream ().filter (r -> r.text.equals (text)).findAny ().get ();
         }
     }
 
@@ -62,6 +70,11 @@ public class PageHelper {
 
         private MiraExpansionMethod (String name) {
             this.text = name;
+        }
+
+        public static MiraExpansionMethod getMiraExpansionMethod (String text) {
+            return allOf (MiraExpansionMethod.class).parallelStream ().filter (r -> r.text.equals (text)).findAny ()
+                                                    .get ();
         }
     }
 
@@ -85,6 +98,10 @@ public class PageHelper {
         private MiraCostCenter (String text) {
             this.text = text;
         }
+
+        public static MiraCostCenter getMiraCostCenter (String text) {
+            return allOf (MiraCostCenter.class).parallelStream ().filter (r -> r.text.equals (text)).findAny ().get ();
+        }
     }
 
     public enum MiraSortType {
@@ -94,6 +111,10 @@ public class PageHelper {
 
         private MiraSortType (String text) {
             this.text = text;
+        }
+
+        public static MiraSortType getMiraSortType (String text) {
+            return allOf (MiraSortType.class).parallelStream ().filter (r -> r.text.equals (text)).findAny ().get ();
         }
     }
 
@@ -108,6 +129,11 @@ public class PageHelper {
 
         private MiraInputCellType (String text) {
             this.text = text;
+        }
+
+        public static MiraInputCellType getMiraInputCellType (String text) {
+            return allOf (MiraInputCellType.class).parallelStream ().filter (r -> r.text.equals (text)).findAny ()
+                                                  .get ();
         }
     }
 

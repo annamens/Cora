@@ -47,6 +47,14 @@ public class History extends CoraPage {
         forceStatusUpdate (null, Cancelled);
     }
 
+    public String getCreated () {
+        return getText ("//*[th='Created:']/td");
+    }
+
+    public String getFinished () {
+        return getText ("//*[th='Finished:']/td");
+    }
+
     public String getWorkflowId () {
         return readInput ("#claimDiv [name='workflowId']");
     }
@@ -206,6 +214,20 @@ public class History extends CoraPage {
             }
         }
         return histories;
+    }
+
+    public void uploadFile (String path, String filename) {
+        String chooseFile = "//form[@action='/cora/debug/uploadFile']//input[@name='uploadFile']";
+        String input = "//form[@action='/cora/debug/uploadFile']//input[@name='fileName']";
+        String submit = "//form[@action='/cora/debug/uploadFile']//input[@name='submit']";
+
+        waitForElement (chooseFile).sendKeys (path);
+        String fileUrl = String.format ("//a[text()='%s']", filename);
+
+        assertTrue (setText (input, filename));
+        assertTrue (click (submit));
+        assertTrue (waitUntilVisible (fileUrl));
+
     }
 
     private void enterWorkflowPropertyName (WorkflowProperty property) {

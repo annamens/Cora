@@ -94,4 +94,5 @@ public class Task extends CoraPage {
     public void clickTaskStatus () {
         assertTrue (click ("//a[text()='Task Status']"));
     }
+
 }

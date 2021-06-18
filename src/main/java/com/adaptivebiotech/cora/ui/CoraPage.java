@@ -272,4 +272,9 @@ public class CoraPage extends BasePage {
                                                                      .pollingEvery (Duration.ofSeconds (pollSeconds));
         return wait.until (func);
     }
+
+    public void gotoTaskById (String id) {
+        String url = coraTestUrl + "/cora/task/" + id + "?p=status";
+        assertTrue (navigateTo (url));
+    }
 }
