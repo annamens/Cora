@@ -405,30 +405,25 @@ public class Mira extends CoraPage {
     public MiraLab getMiraLab () {
         String labField = "div[ng-bind='ctrl.mira.labTypeDisplay']";
         String labText = getText (labField);
-        for (MiraLab miraLab : MiraLab.values ()) {
-            if (miraLab.text.equals (labText)) {
-                return miraLab;
-            }
+        if (Strings.isNullOrEmpty (labText)) {
+            return null;
         }
-        return null;
+        return MiraLab.getMiraLab (labText);
     }
 
     public MiraType getMiraType () {
         String typeField = "div[ng-bind='ctrl.mira.miraType']";
         String typeSelector = "select[name='miraType']";
-        String text;
+        String name;
         if (waitUntilVisible (typeSelector, 1)) {
-            text = waitForSelectedText (typeSelector);
+            name = waitForSelectedText (typeSelector);
         } else {
-            text = getText (typeField);
+            name = getText (typeField);
         }
-        for (MiraType miraType : MiraType.values ()) {
-            if (miraType.name ().equals (text)) {
-                return miraType;
-            }
+        if (Strings.isNullOrEmpty (name)) {
+            return null;
         }
-        info ("found unknown mira type text: " + text);
-        return null;
+        return MiraType.valueOf (name);
     }
 
     public boolean isPanelInputVisible () {
@@ -453,13 +448,10 @@ public class Mira extends CoraPage {
         } else {
             costCenterText = getText (costCenterField);
         }
-
-        for (MiraCostCenter costCenter : MiraCostCenter.values ()) {
-            if (costCenter.text.equals (costCenterText)) {
-                return costCenter;
-            }
+        if (Strings.isNullOrEmpty (costCenterText)) {
+            return null;
         }
-        return null;
+        return MiraCostCenter.getMiraCostCenter (costCenterText);
     }
 
     public MiraExpansionMethod getExpansionMethod () {
@@ -471,12 +463,10 @@ public class Mira extends CoraPage {
         } else {
             text = getText (expansionMethodField);
         }
-        for (MiraExpansionMethod em : MiraExpansionMethod.values ()) {
-            if (em.text.equals (text)) {
-                return em;
-            }
+        if (Strings.isNullOrEmpty (text)) {
+            return null;
         }
-        return null;
+        return MiraExpansionMethod.getMiraExpansionMethod (text);
     }
 
     public MiraSortType getSortType () {
@@ -488,12 +478,10 @@ public class Mira extends CoraPage {
         } else {
             text = getText (field);
         }
-        for (MiraSortType mst : MiraSortType.values ()) {
-            if (mst.text.equals (text)) {
-                return mst;
-            }
+        if (Strings.isNullOrEmpty (text)) {
+            return null;
         }
-        return null;
+        return MiraSortType.getMiraSortType (text);
     }
 
     public MiraInputCellType getInputCellType () {
@@ -505,12 +493,10 @@ public class Mira extends CoraPage {
         } else {
             text = getText (field);
         }
-        for (MiraInputCellType ict : MiraInputCellType.values ()) {
-            if (ict.text.equals (text)) {
-                return ict;
-            }
+        if (Strings.isNullOrEmpty (text)) {
+            return null;
         }
-        return null;
+        return MiraInputCellType.getMiraInputCellType (text);
     }
 
     public String getNotes () {
