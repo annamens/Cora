@@ -19,6 +19,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraQCStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 
 public class MiraDetail extends Mira {
 
@@ -35,6 +36,15 @@ public class MiraDetail extends Mira {
             assertTrue (waitUntilVisible (".mira-header"));
             assertTrue (isTextInElement ("[data-ng-bind='ctrl.mira.miraId']", miraId));
         }
+    }
+    
+    @Override
+    public boolean refresh () {
+        assertTrue (super.refresh ());
+        if (!isMiraDetailsPage ()) {
+            assertTrue (super.refresh ());
+        }
+        return isMiraDetailsPage ();
     }
 
     public String getMiraId () {
@@ -242,6 +252,14 @@ public class MiraDetail extends Mira {
         }
         return MiraLab.getMiraLab (labText);
     }
+    
+    public MiraType getMiraType () {
+        String typeField = "div[ng-bind='ctrl.mira.miraType']";
+        String name = getText (typeField);
+        
+        return MiraType.valueOf (name);
+    }
+
 
     public String getNotes () {
         String notesField = "textarea[ng-model='ctrl.mira.notes']";
@@ -258,8 +276,7 @@ public class MiraDetail extends Mira {
         return getText (field);
     }
 
-    // TODO rename and override
-    public void clickRemovePanelMiraDetails () {
+    public void clickRemovePanel () {
         String editIcon = "span[data-ng-click='ctrl.removePanel()']";
         String panelInput = "input[ng-model='ctrl.panelSearchText']";
         assertTrue (click (editIcon));
@@ -434,6 +451,10 @@ public class MiraDetail extends Mira {
         String locator = "span[ng-bind='attachment.name']";
         List <String> texts = getTextList (locator);
         return texts;
+    }
+    
+    private boolean isMiraDetailsPage () {
+        return waitUntilVisible (".mira-header");
     }
 
     private PoolDetails getPoolDetailsFromTableRow (List <WebElement> cols) {

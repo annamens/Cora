@@ -4,14 +4,21 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.WebElement;
+import org.testng.util.Strings;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 
 public class NewMira extends Mira {
 
+    private final String typeSelector = "select[name='miraType']";
+    
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement (".container .mira-heading", "New MIRA"));
+    }
+    
+    public boolean isNewMiraPage () {
+        return waitUntilVisible (".container .mira-heading");
     }
 
     public void selectLab (MiraLab lab) {
@@ -20,8 +27,16 @@ public class NewMira extends Mira {
     }
 
     public void selectType (MiraType type) {
-        String typeSelector = "[name='miraType']";
         selectAndVerifySelection (typeSelector, type.text);
+    }
+    
+    public MiraType getMiraType () {
+        String name = waitForSelectedText (typeSelector);
+       
+        if (Strings.isNullOrEmpty (name)) {
+            return null;
+        }
+        return MiraType.valueOf (name);
     }
 
     public void enterSpecimenAndFind (String specimenId) {
@@ -52,6 +67,13 @@ public class NewMira extends Mira {
         clickPopupOK ();
         pageLoading ();
         assertTrue (waitUntilVisible (specimenInput));
+    }
+    
+    public void clickRemovePanel () {
+        String trashIcon = "span[data-ng-click='ctrl.removePanel($index)']";
+        String panelInput = "input[ng-model='ctrl.panelSearchText']";
+        assertTrue (click (trashIcon));
+        assertTrue (waitUntilVisible (panelInput));
     }
 
     public boolean isLabelInExperimentSection (String text, boolean isRequired) {

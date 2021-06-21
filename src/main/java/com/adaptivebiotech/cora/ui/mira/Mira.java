@@ -21,7 +21,6 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraExpansionMethod;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraInputCellType;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraSortType;
-import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 
 /**
  * @author Harry Soehalim
@@ -36,15 +35,6 @@ public abstract class Mira extends CoraPage {
         staticNavBarHeight = 90;
     }
 
-    @Override
-    public boolean refresh () {
-        assertTrue (super.refresh ());
-        if (!isMiraDetailsPage ()) {
-            assertTrue (super.refresh ());
-        }
-        return isMiraDetailsPage ();
-    }
-
     public void selectPanel (MiraPanel panel) {
         // after selection, the getFirstSelectedOption() stays at "Select..."
         String selector = "[name='panelType']";
@@ -54,10 +44,6 @@ public abstract class Mira extends CoraPage {
         waitForPanelText (panel);
         assertTrue (getPanelNamesText ().contains (panel.name ()));
     }
-
-
-
-
 
     public void selectSortType (MiraSortType miraSortType) {
         String selector = "select[name='sortType']";
@@ -98,13 +84,9 @@ public abstract class Mira extends CoraPage {
         }
     }
 
-    public boolean isNewMiraPage () {
-        return waitUntilVisible (".container .mira-heading");
-    }
 
-    public boolean isMiraDetailsPage () {
-        return waitUntilVisible (".mira-header");
-    }
+
+
 
     public String getPopupTextAndWait () {
         String popup = "span[ng-bind-html='notification.msg']";
@@ -157,22 +139,6 @@ public abstract class Mira extends CoraPage {
     public void enterNotes (String text) {
         String notesField = "textarea[ng-model='ctrl.miraEntry.notes']";
         assertTrue (setText (notesField, text));
-    }
-
-    // TODO - split
-    public MiraType getMiraType () {
-        String typeField = "div[ng-bind='ctrl.mira.miraType']";
-        String typeSelector = "select[name='miraType']";
-        String name;
-        if (waitUntilVisible (typeSelector, 1)) {
-            name = waitForSelectedText (typeSelector);
-        } else {
-            name = getText (typeField);
-        }
-        if (Strings.isNullOrEmpty (name)) {
-            return null;
-        }
-        return MiraType.valueOf (name);
     }
 
     public boolean isPanelInputVisible () {
@@ -248,12 +214,7 @@ public abstract class Mira extends CoraPage {
         return MiraInputCellType.getMiraInputCellType (text);
     }
 
-    public void clickRemovePanel () {
-        String trashIcon = "span[data-ng-click='ctrl.removePanel($index)']";
-        String panelInput = "input[ng-model='ctrl.panelSearchText']";
-        assertTrue (click (trashIcon));
-        assertTrue (waitUntilVisible (panelInput));
-    }
+ 
 
     public void verifyErrorMessagesAreVisible (Map <String, String> requiredFieldMessages) {
         String locatorBase = "span[ng-bind='ctrl.errors.%s']";
@@ -319,11 +280,43 @@ public abstract class Mira extends CoraPage {
         clickPopupOK ();
         new MirasList ().isCorrectPage ();
     }
-    
+
     protected void selectAndVerifySelection (String selector, String text) {
         CoraSelect dropdown = new CoraSelect (waitForElementClickable (selector));
         dropdown.selectByVisibleText (text);
         assertEquals (dropdown.getFirstSelectedOption ().getText (), text);
+    }
+    
+    protected String waitForSelectedText (String locator) {
+
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                String selectedText = getSelectedText (locator);
+                // info ("selected text is: " + selectedText);
+                return selectedText != null && !selectedText.equals ("");
+            }
+        };
+
+        try {
+            waitForBooleanCondition (10, 2, func);
+        } catch (Throwable t) {
+            // field is not set
+        }
+
+        return getSelectedText (locator);
+    }
+    
+    protected boolean waitUntilVisible (String target, int timeoutInSeconds) {
+        waitForAjaxCalls ();
+        int sleepInMillis = 100;
+        By by = locateBy (target);
+        try {
+            WebDriverWait webDriverWait = new WebDriverWait (getDriver (), timeoutInSeconds, sleepInMillis);
+            WebElement webElement = webDriverWait.until (ExpectedConditions.visibilityOfElementLocated (by));
+            return webElement.isDisplayed ();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private List <String> getOptionTexts (String field) {
@@ -343,24 +336,7 @@ public abstract class Mira extends CoraPage {
         return rv;
     }
 
-    private String waitForSelectedText (String locator) {
-
-        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
-            public Boolean apply (WebDriver driver) {
-                String selectedText = getSelectedText (locator);
-                // info ("selected text is: " + selectedText);
-                return selectedText != null && !selectedText.equals ("");
-            }
-        };
-
-        try {
-            waitForBooleanCondition (10, 2, func);
-        } catch (Throwable t) {
-            // field is not set
-        }
-
-        return getSelectedText (locator);
-    }
+ 
 
     private String getSelectedText (String locator) {
         CoraSelect selector = new CoraSelect (waitForElementVisible (locator));
@@ -369,18 +345,7 @@ public abstract class Mira extends CoraPage {
         return selectedText;
     }
 
-    private boolean waitUntilVisible (String target, int timeoutInSeconds) {
-        waitForAjaxCalls ();
-        int sleepInMillis = 100;
-        By by = locateBy (target);
-        try {
-            WebDriverWait webDriverWait = new WebDriverWait (getDriver (), timeoutInSeconds, sleepInMillis);
-            WebElement webElement = webDriverWait.until (ExpectedConditions.visibilityOfElementLocated (by));
-            return webElement.isDisplayed ();
-        } catch (Exception e) {
-            return false;
-        }
-    }
+
 
     private void waitForPanelText (MiraPanel panel) {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
@@ -400,7 +365,5 @@ public abstract class Mira extends CoraPage {
         List <String> panelNamesText = getTextList (panelNamesField);
         return panelNamesText;
     }
-
-
 
 }
