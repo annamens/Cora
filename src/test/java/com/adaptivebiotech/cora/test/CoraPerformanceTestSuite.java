@@ -2,14 +2,16 @@ package com.adaptivebiotech.cora.test;
 
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018078;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.PerformanceHelper.softAssert;
+import static com.seleniumfy.test.utils.Environment.sauceKey;
 import static com.seleniumfy.test.utils.Environment.sauceOptions;
+import static com.seleniumfy.test.utils.Environment.sauceUser;
 import java.util.HashMap;
 import java.util.Map;
-import org.openqa.selenium.JavascriptExecutor;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.common.dto.saucelabs.Metrics;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
@@ -19,20 +21,27 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientsList;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
 import com.adaptivebiotech.cora.ui.task.TaskList;
-import com.adaptivebiotech.common.dto.PerformanceMetrics;
+import com.adaptivebiotech.test.utils.PerformanceHelper;
+import com.adaptivebiotech.test.utils.SauceHelper;
 
 @Test (groups = "performance")
 public class CoraPerformanceTestSuite extends CoraBaseBrowser {
 
-    private Login          login;
-    private CoraPage       cora;
-    private OrdersList     oList;
-    private OrderTestsList otList;
-    private ShipmentList   shList;
-    private ContainerList  cList;
-    private TaskList       tList;
-    private MirasList      mList;
-    private PatientsList   pList;
+    private static final String  PAGE_LOAD_METRIC_NAME              = "Page load";
+    private static final int     PAGE_LOAD_METRIC_THRESHOLD         = 8000;
+    private static final String  PERFORMANCE_SCORE_METRIC_NAME      = "Performance Score";
+    private static final double  PERFORMANCE_SCORE_METRIC_THRESHOLD = 0.4;
+
+    private Login                login;
+    private CoraPage             cora;
+    private OrdersList           oList;
+    private OrderTestsList       otList;
+    private ShipmentList         shList;
+    private ContainerList        cList;
+    private TaskList             tList;
+    private MirasList            mList;
+    private PatientsList         pList;
+    private Map <String, String> sauceJobId;
 
     static {
         sauceOptions.put ("extendedDebugging", "true");
@@ -50,6 +59,7 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
         tList = new TaskList ();
         mList = new MirasList ();
         pList = new PatientsList ();
+        sauceJobId = new HashMap <> ();
         login.doLogin ();
     }
 
@@ -59,75 +69,102 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
         sauceOptions.remove ("capturePerformance");
     }
 
+    @Test (priority = 1)
     public void loadListOfOrders () {
         oList.isCorrectTopNavRow2 ();
-        navigateTo(coraTestUrl + "/cora/orders");
+        navigateTo (coraTestUrl + "/cora/orders");
         oList.isCorrectPage ();
-        PerformanceMetrics listOfOrdersMetrics = obtainPerformanceMetrics();
+        sauceJobId.put ("orders", getSessionId ());
     }
 
+    @Test (priority = 1)
     public void loadListOfOrderTests () {
         oList.isCorrectPage ();
-        //cora.clickOrderTests ();
-        navigateTo(coraTestUrl + "/cora/ordertests");
+        navigateTo (coraTestUrl + "/cora/ordertests");
         otList.isCorrectPage ();
-        PerformanceMetrics listOfOrderTestsMetrics = obtainPerformanceMetrics();
+        sauceJobId.put ("orderTests", getSessionId ());
     }
 
+    @Test (priority = 1)
     public void loadListOfShipments () {
         oList.isCorrectPage ();
-        //cora.clickShipments ();
-        navigateTo(coraTestUrl + "/cora/shipments");
+        navigateTo (coraTestUrl + "/cora/shipments");
         shList.isCorrectPage ();
-        PerformanceMetrics listOfShipmentsMetrics = obtainPerformanceMetrics();
+        sauceJobId.put ("shipments", getSessionId ());
     }
 
+    @Test (priority = 1)
     public void loadListOfContainers () {
         oList.isCorrectPage ();
-        //cora.clickContainers ();
-        navigateTo(coraTestUrl + "/cora/containers");
+        navigateTo (coraTestUrl + "/cora/containers");
         cList.isCorrectPage ();
-        PerformanceMetrics listOfContainersMetrics = obtainPerformanceMetrics();
+        sauceJobId.put ("containers", getSessionId ());
     }
 
+    @Test (priority = 1)
     public void loadListOfTasks () {
         oList.isCorrectPage ();
-        //cora.clickTasks ();
-        navigateTo(coraTestUrl + "/cora/tasks");
+        navigateTo (coraTestUrl + "/cora/tasks");
         tList.isCorrectPage ();
-        PerformanceMetrics listOfTasksMetrics = obtainPerformanceMetrics();
+        sauceJobId.put ("tasks", getSessionId ());
     }
 
+    @Test (priority = 1)
     public void loadListOfMiras () {
         oList.isCorrectPage ();
-        //cora.clickMiras ();
-        navigateTo(coraTestUrl + "/cora/miras/list");
+        navigateTo (coraTestUrl + "/cora/miras/list");
         mList.isCorrectPage ();
-        PerformanceMetrics listOfMirasMetrics = obtainPerformanceMetrics();
+        sauceJobId.put ("miras", getSessionId ());
     }
 
+    @Test (priority = 1)
     public void loadListOfPatients () {
         oList.isCorrectPage ();
-        //cora.clickPatients ();
-        navigateTo(coraTestUrl + "/cora/patients/list");
+        navigateTo (coraTestUrl + "/cora/patients/list");
         pList.isCorrectPage ();
-        PerformanceMetrics listOfPatientsMetrics = obtainPerformanceMetrics();
+        sauceJobId.put ("patients", getSessionId ());
     }
 
+    @Test (priority = 1)
     public void filterContainers () {
         oList.isCorrectPage ();
         cora.searchContainer (freezerAB018078 ());
         cList.isCorrectPage ();
-        PerformanceMetrics filterContainersMetrics = obtainPerformanceMetrics();
+        sauceJobId.put ("filterContainers", getSessionId ());
     }
 
-    private PerformanceMetrics obtainPerformanceMetrics () {
-        testLog ("Current page: " + getDriver ().getCurrentUrl ());
-        HashMap<String, Object> metrics = new HashMap <> ();
-        metrics.put ("type", "sauce:performance");
-        Map<?, ?> perfMetrics = (Map <?, ?>) ((JavascriptExecutor) getDriver ()).executeScript ("sauce:log",
-                metrics);
-        return PerformanceMetrics.buildPerformanceMetrics (perfMetrics);
+    @Test (priority = 2)
+    public void assertMetrics () {
+        SauceHelper sauce = new SauceHelper (sauceUser, sauceKey);
+        Metrics metrics;
+        Metrics.MetricData data;
+
+        for (Map.Entry <String, String> k : sauceJobId.entrySet ()) {
+            metrics = sauce.getPerformanceMetrics (k.getValue ());
+            data = getMetricData (metrics);
+            PerformanceHelper.checkGreaterThanThreshold (data.score,
+                                                         PERFORMANCE_SCORE_METRIC_THRESHOLD,
+                                                         PERFORMANCE_SCORE_METRIC_NAME,
+                                                         k.getKey ());
+            PerformanceHelper.checkLessThanThreshold (data.load,
+                                                      PAGE_LOAD_METRIC_THRESHOLD,
+                                                      PAGE_LOAD_METRIC_NAME,
+                                                      k.getKey ());
+        }
+        softAssert.assertAll ();
+    }
+
+    private Metrics.MetricData getMetricData (Metrics metrics) {
+        Metrics.MetricData data = new Metrics.MetricData ();
+        for (Metrics.MetricItem d : metrics.items) {
+            if (d.metric_data == null || d.page_url.contains ("login")) {
+                continue;
+            } else {
+                data = d.metric_data;
+                break;
+            }
+        }
+        return data;
     }
 
 }
