@@ -34,6 +34,7 @@ import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.mira.Mira;
 import com.adaptivebiotech.cora.ui.mira.MirasList;
+import com.adaptivebiotech.cora.ui.mira.NewMira;
 import com.adaptivebiotech.cora.ui.order.Batch;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
@@ -57,7 +58,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
     private Task          task;
     private Shipment      shipment;
     private Batch         batch;
-    private Mira          mira;
+    private NewMira       mira;
     private AddContainer  addContainer;
     private OrdersList    oList;
     private PatientsList  pList;
@@ -72,7 +73,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         task = new Task ();
         shipment = new Shipment ();
         batch = new Batch ();
-        mira = new Mira ();
+        mira = new NewMira ();
         addContainer = new AddContainer ();
         oList = new OrdersList ();
         pList = new PatientsList ();
