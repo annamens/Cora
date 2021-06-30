@@ -41,7 +41,7 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
     private TaskList             tList;
     private MirasList            mList;
     private PatientsList         pList;
-    private Map <String, String> sauceJobId;
+    private Map <String, String> sauceJobId  = new HashMap <> ();
 
     static {
         sauceOptions.put ("extendedDebugging", "true");
@@ -59,7 +59,6 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
         tList = new TaskList ();
         mList = new MirasList ();
         pList = new PatientsList ();
-        sauceJobId = new HashMap <> ();
         login.doLogin ();
     }
 
@@ -153,6 +152,7 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
         }
         softAssert.assertAll ();
     }
+
 
     private Metrics.MetricData getMetricData (Metrics metrics) {
         Metrics.MetricData data = new Metrics.MetricData ();
