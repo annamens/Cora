@@ -9,12 +9,9 @@ import java.util.function.Function;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 
-public class MiraSpecimens extends CoraPage {
-
-    private MirasListHelper mirasListHelper = new MirasListHelper ();
+public class MiraSpecimens extends MirasListBase {
 
     @Override
     public void isCorrectPage () {
@@ -22,11 +19,7 @@ public class MiraSpecimens extends CoraPage {
     }
 
     public void selectLab (MiraLab miraLab) {
-        mirasListHelper.selectLab (miraLab);
-    }
-
-    public void selectAllLabs () {
-        mirasListHelper.selectAllLabs ();
+        selectLab (miraLab);
     }
 
     public void clickFilterList () {
@@ -35,7 +28,7 @@ public class MiraSpecimens extends CoraPage {
 
         assertTrue (click (button));
         pageLoading ();
-        mirasListHelper.waitForTableToRefresh (firstResult);
+        waitForTableToRefresh (firstResult);
     }
 
     /**
@@ -131,7 +124,7 @@ public class MiraSpecimens extends CoraPage {
         assertTrue (click (locator));
         pageLoading ();
         String firstResult = "//table[contains(@class, 'specimen-table')]/tbody/tr[1]/td[1]/a";
-        mirasListHelper.waitForTableToRefresh (firstResult);
+        waitForTableToRefresh (firstResult);
     }
 
     public List <String> getCellCountsText () {
