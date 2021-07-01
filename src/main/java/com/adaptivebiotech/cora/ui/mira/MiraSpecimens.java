@@ -9,17 +9,12 @@ import java.util.function.Function;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 
 public class MiraSpecimens extends MirasListBase {
 
     @Override
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (".specimen-table"));
-    }
-
-    public void selectLab (MiraLab miraLab) {
-        selectLab (miraLab);
     }
 
     public void clickFilterList () {
