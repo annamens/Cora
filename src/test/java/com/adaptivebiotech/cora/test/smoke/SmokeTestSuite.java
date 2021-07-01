@@ -32,7 +32,6 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
-import com.adaptivebiotech.cora.ui.mira.Mira;
 import com.adaptivebiotech.cora.ui.mira.MirasList;
 import com.adaptivebiotech.cora.ui.mira.NewMira;
 import com.adaptivebiotech.cora.ui.order.Batch;
