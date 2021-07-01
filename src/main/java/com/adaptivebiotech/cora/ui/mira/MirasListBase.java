@@ -3,10 +3,14 @@ package com.adaptivebiotech.cora.ui.mira;
 import static com.seleniumfy.test.utils.Logging.info;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.Duration;
 import java.util.function.Function;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 
@@ -45,12 +49,26 @@ public class MirasListBase extends CoraPage {
     }
 
     public void enterSearchBoxText (String text) {
+        waitForElementClickable ("input[type='search']");
+        clearSearchBoxText ();
         assertTrue (setText (searchBox, text));
         assertEquals (readInput (searchBox), text);
     }
 
     public String getSearchBoxText () {
         return readInput (searchBox);
+    }
+
+    public void clearSearchBoxText () {
+        String searchBox = "input[type='search']";
+        assertTrue (clear (searchBox));
+    }
+
+    public void clickSearchButton () {
+        String searchButton = "//div[contains(@class, 'input-group')]/span[1]/button";
+        assertTrue (click (searchButton));
+        waitForPageLoading ();
+
     }
 
     protected void waitForTableToRefresh (String firstResult) {
@@ -62,6 +80,40 @@ public class MirasListBase extends CoraPage {
         } catch (TimeoutException te) {
             info ("caught timeout exception");
         }
+    }
+
+    // the pageLoading method doesn't catch the yellow bar
+    protected void waitForPageLoading () {
+        final String pageLoadingBar = "div.loading";
+
+        Function <WebDriver, Boolean> waitForPageloadingBar = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return isPageLoadingBarVisible ();
+            }
+        };
+        Wait <WebDriver> wait = new FluentWait <> (this.getDriver ()).withTimeout (Duration.ofSeconds (10))
+                                                                     .pollingEvery (Duration.ofMillis (100));
+
+        try {
+            wait.until (waitForPageloadingBar);
+        } catch (TimeoutException e) {
+            // sometimes we miss it if it comes and goes really fast
+            info (e.toString ());
+        }
+
+        assertTrue (waitForElementInvisible (pageLoadingBar));
+    }
+
+    protected boolean isPageLoadingBarVisible () {
+        String pageLoadingBar = "div.loading";
+        try {
+            if (isElementVisible (pageLoadingBar)) {
+                return true;
+            }
+        } catch (NoSuchElementException e) {
+            // do nothing
+        }
+        return false;
     }
 
     protected class HasTableRefreshedFunction implements Function <WebDriver, Boolean> {

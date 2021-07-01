@@ -201,8 +201,14 @@ public class MirasList extends MirasListBase {
 
     public List <String> getMiraIds () {
         String miraIdField = "//td[contains(@class, 'mira-name-description')]/a/span";
-        List <String> miraIds = getTextList (miraIdField);
-        return miraIds;
+        List <String> rv = new ArrayList <> ();
+
+        if (waitUntilVisible (miraIdField)) {
+            rv = getTextList (miraIdField);
+        }
+
+        assertEquals (rv.size (), getMiraCount ());
+        return rv;
     }
 
     public List <String> getMiraPanelTexts () {
@@ -303,6 +309,12 @@ public class MirasList extends MirasListBase {
     public boolean isSelectButtonVisible () {
         String selectButton = "//button[text()='Select']";
         return isElementPresent (selectButton);
+    }
+
+    public int getMiraCount () {
+        String countDiv = "//div[contains(@class, 'mira-count')]";
+        int count = Integer.parseInt (getText (countDiv).split (" ")[0]);
+        return count;
     }
 
     private Mira getMiraFromRow (WebElement miraRow) {
