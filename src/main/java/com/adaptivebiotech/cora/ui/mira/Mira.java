@@ -7,12 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.CoraSelect;
@@ -83,10 +80,6 @@ public abstract class Mira extends CoraPage {
             return rv;
         }
     }
-
-
-
-
 
     public String getPopupTextAndWait () {
         String popup = "span[ng-bind-html='notification.msg']";
@@ -214,8 +207,6 @@ public abstract class Mira extends CoraPage {
         return MiraInputCellType.getMiraInputCellType (text);
     }
 
- 
-
     public void verifyErrorMessagesAreVisible (Map <String, String> requiredFieldMessages) {
         String locatorBase = "span[ng-bind='ctrl.errors.%s']";
         for (String fieldName : requiredFieldMessages.keySet ()) {
@@ -286,7 +277,7 @@ public abstract class Mira extends CoraPage {
         dropdown.selectByVisibleText (text);
         assertEquals (dropdown.getFirstSelectedOption ().getText (), text);
     }
-    
+
     protected String waitForSelectedText (String locator) {
 
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
@@ -304,19 +295,6 @@ public abstract class Mira extends CoraPage {
         }
 
         return getSelectedText (locator);
-    }
-    
-    protected boolean waitUntilVisible (String target, int timeoutInSeconds) {
-        waitForAjaxCalls ();
-        int sleepInMillis = 100;
-        By by = locateBy (target);
-        try {
-            WebDriverWait webDriverWait = new WebDriverWait (getDriver (), timeoutInSeconds, sleepInMillis);
-            WebElement webElement = webDriverWait.until (ExpectedConditions.visibilityOfElementLocated (by));
-            return webElement.isDisplayed ();
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     private List <String> getOptionTexts (String field) {
@@ -336,16 +314,12 @@ public abstract class Mira extends CoraPage {
         return rv;
     }
 
- 
-
     private String getSelectedText (String locator) {
         CoraSelect selector = new CoraSelect (waitForElementVisible (locator));
         WebElement selectedOption = selector.getFirstSelectedOption ();
         String selectedText = getText (selectedOption);
         return selectedText;
     }
-
-
 
     private void waitForPanelText (MiraPanel panel) {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {

@@ -3,20 +3,18 @@ package com.adaptivebiotech.cora.ui.mira;
 import static com.seleniumfy.test.utils.Logging.info;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.time.Duration;
 import java.util.function.Function;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 
 public class MirasListBase extends CoraPage {
 
-    protected final String searchBox = "input[type='search']";
+    private final String   searchTypeDropdown       = "//span[contains(@class, 'list-search-type-container')]/dropdown-filter/div[contains(@class, 'dropdown')]";
+    private final String   searchTypeDropdownButton = searchTypeDropdown + "/button";
+    protected final String searchBox                = "input[type='search']";
 
     public void selectAllLabs () {
         selectFilter (Filter.Lab, "All");
@@ -68,7 +66,20 @@ public class MirasListBase extends CoraPage {
         String searchButton = "//div[contains(@class, 'input-group')]/span[1]/button";
         assertTrue (click (searchButton));
         waitForPageLoading ();
+    }
 
+    public void selectSearchType (SearchType searchType) {
+        String dropdownItemBase = searchTypeDropdown + "/ul[contains(@class, 'dropdown-menu')]/li/a[text()='%s']";
+        String dropdownItem = String.format (dropdownItemBase, searchType.text);
+
+        assertTrue (click (searchTypeDropdownButton));
+        assertTrue (click (dropdownItem));
+        assertEquals (getSelectedSearchType (), searchType);
+    }
+
+    public SearchType getSelectedSearchType () {
+        String buttonText = searchTypeDropdownButton + "/span";
+        return SearchType.getByText (getText (buttonText));
     }
 
     protected void waitForTableToRefresh (String firstResult) {
@@ -86,34 +97,8 @@ public class MirasListBase extends CoraPage {
     protected void waitForPageLoading () {
         final String pageLoadingBar = "div.loading";
 
-        Function <WebDriver, Boolean> waitForPageloadingBar = new Function <WebDriver, Boolean> () {
-            public Boolean apply (WebDriver driver) {
-                return isPageLoadingBarVisible ();
-            }
-        };
-        Wait <WebDriver> wait = new FluentWait <> (this.getDriver ()).withTimeout (Duration.ofSeconds (10))
-                                                                     .pollingEvery (Duration.ofMillis (100));
-
-        try {
-            wait.until (waitForPageloadingBar);
-        } catch (TimeoutException e) {
-            // sometimes we miss it if it comes and goes really fast
-            info (e.toString ());
-        }
-
+        waitUntilVisible (pageLoadingBar, 10);
         assertTrue (waitForElementInvisible (pageLoadingBar));
-    }
-
-    protected boolean isPageLoadingBarVisible () {
-        String pageLoadingBar = "div.loading";
-        try {
-            if (isElementVisible (pageLoadingBar)) {
-                return true;
-            }
-        } catch (NoSuchElementException e) {
-            // do nothing
-        }
-        return false;
     }
 
     protected class HasTableRefreshedFunction implements Function <WebDriver, Boolean> {
@@ -161,6 +146,38 @@ public class MirasListBase extends CoraPage {
         private Filter (String text) {
             this.text = text;
         }
+    }
+
+    public static enum SearchType {
+        MiraID ("MIRA ID"),
+        ExperimentName ("Experiment Name"),
+        SpecimenID ("Specimen ID"),
+        immunoSEQOrder ("immunoSEQ order"),
+        pairSEQOrder ("pairSEQ order"),
+        ExpansionID ("Expansion ID"),
+        ContainerID ("Container ID"),
+        SpecimenName ("Specimen Name"),
+        SubjectID ("Subject ID"),
+        SampleType ("Sample type"),
+        Vendor ("Vendor"),
+        Comments ("Comments"),
+        RelatedExperiments ("Related Experiments");
+
+        public final String text;
+
+        private SearchType (String s) {
+            text = s;
+        }
+
+        public static SearchType getByText (String s) {
+            for (SearchType searchType : SearchType.values ()) {
+                if (searchType.text.equals (s)) {
+                    return searchType;
+                }
+            }
+            return null;
+        }
+
     }
 
 }
