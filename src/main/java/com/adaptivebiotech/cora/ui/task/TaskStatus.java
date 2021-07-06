@@ -30,10 +30,6 @@ public class TaskStatus extends Task {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "TASK STATUS"));
     }
 
-    public void clickTaskDetail () {
-        assertTrue (click ("//a[text()='Task Detail']"));
-    }
-
     public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//td[text()='%s']/../td[text()='%s']/../td[text()[contains (.,'%s')]]/span[text()='%s']";
@@ -42,8 +38,7 @@ public class TaskStatus extends Task {
         while (!timer.Timedout () && ! (found = isElementPresent (format (xpath, stage, status, substatus, message)))) {
             nudge ();
             timer.Wait ();
-            refresh ();
-            pageLoading ();
+            doRefresh ();
         }
         if (!found)
             fail (format (fail, stage, status, substatus, message));
@@ -57,8 +52,7 @@ public class TaskStatus extends Task {
         while (!timer.Timedout () && ! (found = isElementPresent (format (xpath, stage, status, substatus)))) {
             nudge ();
             timer.Wait ();
-            refresh ();
-            pageLoading ();
+            doRefresh ();
         }
         if (!found)
             fail (format (fail, stage, status, substatus));
@@ -72,8 +66,7 @@ public class TaskStatus extends Task {
         while (!timer.Timedout () && ! (found = isElementPresent (format (xpath, stage, status)))) {
             nudge ();
             timer.Wait ();
-            refresh ();
-            pageLoading ();
+            doRefresh ();
         }
         if (!found)
             fail (format (fail, stage, status));
@@ -88,6 +81,11 @@ public class TaskStatus extends Task {
             assertTrue (click ("[ng-click='ctrl.nudgeCurrentWorkflow()']"));
             pageLoading ();
         }
+    }
+
+    public void doRefresh () {
+        clickTaskDetail ();
+        clickTaskStatus ();
     }
 
     public List <TaskHistory> parseTaskHistory () {
