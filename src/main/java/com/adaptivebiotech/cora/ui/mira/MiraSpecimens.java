@@ -172,7 +172,7 @@ public class MiraSpecimens extends MirasListBase {
     }
 
     public int getSpecimenCount () {
-        String countDiv = "//specimen-table-header/table-select-header/div/div/div[contains(@class, 'info-msg')]";
+        String countDiv = "table-select-header .info-msg";
         int count = Integer.parseInt ( (getText (countDiv).split (" ")[0]));
         return count;
     }
