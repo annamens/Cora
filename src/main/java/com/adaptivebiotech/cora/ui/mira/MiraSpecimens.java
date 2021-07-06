@@ -162,7 +162,7 @@ public class MiraSpecimens extends MirasListBase {
         String specimenIdField = "//table[contains(@class, 'specimen-table')]/tbody/tr/td[1]/a";
         String noResultsMessage = "p.no-results-message";
         List <String> rv = new ArrayList <> ();
-        if (waitUntilVisible (specimenIdField, 10)) {
+        if (waitUntilVisible (specimenIdField, 10, 100)) {
             rv = getTextList (specimenIdField);
             assertEquals (rv.size (), getSpecimenCount ());
         } else {

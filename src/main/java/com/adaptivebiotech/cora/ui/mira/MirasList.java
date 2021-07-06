@@ -201,7 +201,7 @@ public class MirasList extends MirasListBase {
         String miraIdField = "//td[contains(@class, 'mira-name-description')]/a/span";
         List <String> rv = new ArrayList <> ();
 
-        if (waitUntilVisible (miraIdField, 10)) {
+        if (waitUntilVisible (miraIdField, 10, 100)) {
             rv = getTextList (miraIdField);
         }
 

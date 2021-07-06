@@ -282,9 +282,8 @@ public class CoraPage extends BasePage {
         assertTrue (navigateTo (url));
     }
 
-    public boolean waitUntilVisible (String target, int timeoutInSeconds) {
+    public boolean waitUntilVisible (String target, int timeoutInSeconds, int sleepInMillis) {
         waitForAjaxCalls ();
-        int sleepInMillis = 100;
         By by = locateBy (target);
         try {
             WebDriverWait webDriverWait = new WebDriverWait (getDriver (), timeoutInSeconds, sleepInMillis);

@@ -97,7 +97,7 @@ public class MirasListBase extends CoraPage {
     protected void waitForPageLoading () {
         final String pageLoadingBar = "div.loading";
 
-        waitUntilVisible (pageLoadingBar, 10);
+        waitUntilVisible (pageLoadingBar, 10, 100);
         assertTrue (waitForElementInvisible (pageLoadingBar));
     }
 
