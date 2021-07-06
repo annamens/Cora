@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.mira;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static com.seleniumfy.test.utils.Logging.info;
@@ -155,6 +156,25 @@ public class MiraSpecimens extends MirasListBase {
 
         info ("got specimen data");
         return rv;
+    }
+
+    public List <String> getSpecimenIds () {
+        String specimenIdField = "//table[contains(@class, 'specimen-table')]/tbody/tr/td[1]/a";
+        String noResultsMessage = "p.no-results-message";
+        List <String> rv = new ArrayList <> ();
+        if (waitUntilVisible (specimenIdField, 10, 100)) {
+            rv = getTextList (specimenIdField);
+            assertEquals (rv.size (), getSpecimenCount ());
+        } else {
+            assertTrue (isElementVisible (noResultsMessage));
+        }
+        return rv;
+    }
+
+    public int getSpecimenCount () {
+        String countDiv = "//specimen-table-header/table-select-header/div/div/div[contains(@class, 'info-msg')]";
+        int count = Integer.parseInt ( (getText (countDiv).split (" ")[0]));
+        return count;
     }
 
 }

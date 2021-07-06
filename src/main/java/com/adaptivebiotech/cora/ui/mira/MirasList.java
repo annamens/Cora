@@ -29,8 +29,6 @@ import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 public class MirasList extends MirasListBase {
 
     private Set <String> knownPanels              = new HashSet <String> ();
-    private final String searchTypeDropdown       = "//span[contains(@class, 'list-search-type-container')]/dropdown-filter/div[contains(@class, 'dropdown')]";
-    private final String searchTypeDropdownButton = searchTypeDropdown + "/button";
 
     public MirasList () {
         staticNavBarHeight = 90;
@@ -203,7 +201,7 @@ public class MirasList extends MirasListBase {
         String miraIdField = "//td[contains(@class, 'mira-name-description')]/a/span";
         List <String> rv = new ArrayList <> ();
 
-        if (waitUntilVisible (miraIdField)) {
+        if (waitUntilVisible (miraIdField, 10, 100)) {
             rv = getTextList (miraIdField);
         }
 
@@ -229,20 +227,6 @@ public class MirasList extends MirasListBase {
         String miraSpecimensButton = "//a[text()='MIRA Specimens']";
         click (miraSpecimensButton);
         pageLoading ();
-    }
-
-    public void selectSearchType (SearchType searchType) {
-        String dropdownItemBase = searchTypeDropdown + "/ul[contains(@class, 'dropdown-menu')]/li/a[text()='%s']";
-        String dropdownItem = String.format (dropdownItemBase, searchType.text);
-
-        assertTrue (click (searchTypeDropdownButton));
-        assertTrue (click (dropdownItem));
-        assertEquals (getSelectedSearchType (), searchType);
-    }
-
-    public SearchType getSelectedSearchType () {
-        String buttonText = searchTypeDropdownButton + "/span";
-        return SearchType.getByText (getText (buttonText));
     }
 
     public void reprocessMIRAs () {
@@ -381,32 +365,6 @@ public class MirasList extends MirasListBase {
         } catch (StaleElementReferenceException e) {
             info (e.getMessage ());
             return waitForElement (by).getText ();
-        }
-
-    }
-
-    public static enum SearchType {
-        MiraID ("MIRA ID"),
-        ExperimentName ("Experiment Name"),
-        SpecimenID ("Specimen ID"),
-        immunoSEQOrder ("immunoSEQ order"),
-        pairSEQOrder ("pairSEQ order"),
-        ExpansionID ("Expansion ID"),
-        ContainerID ("Container ID");
-
-        public final String text;
-
-        private SearchType (String s) {
-            text = s;
-        }
-
-        public static SearchType getByText (String s) {
-            for (SearchType searchType : SearchType.values ()) {
-                if (searchType.text.equals (s)) {
-                    return searchType;
-                }
-            }
-            return null;
         }
 
     }
