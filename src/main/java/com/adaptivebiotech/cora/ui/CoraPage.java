@@ -35,7 +35,7 @@ public class CoraPage extends BasePage {
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (".navbar"));
         assertTrue (waitUntilVisible (".content"));
-        assertTrue (waitUntilVisible (".search-btn-col"));
+        assertTrue (waitUntilVisible ("[type='search']"));
         pageLoading ();
     }
 
