@@ -71,7 +71,7 @@ public class TestHelper {
         physician.id = "dfb8acb3-37af-474b-bb07-0dc8c6c10668";
         physician.firstName = "Selenium";
         physician.lastName = "Test1";
-        physician.accountName = "Dorsey Testola";
+        physician.accountName = "SEA_QA Test";
         physician.providerFullName = format ("%s %s", physician.firstName, physician.lastName);
         physician.address1 = "1234 Main St";
         physician.city = "Seattle";
@@ -92,7 +92,7 @@ public class TestHelper {
         physician.id = "a1461f9d-29e0-464c-8bf6-a383079f1d62";
         physician.firstName = "Automated";
         physician.lastName = "Tests";
-        physician.accountName = "Dorsey Testola";
+        physician.accountName = "SEA_QA Test";
         physician.providerFullName = format ("%s %s", physician.firstName, physician.lastName);
         physician.address1 = "1234 Main St";
         physician.city = "Seattle";

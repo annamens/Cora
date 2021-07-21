@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
 import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
 
@@ -26,31 +26,11 @@ public final class Insurance {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
     @Override
     public boolean equals (Object o) {
-
-        if (o == this)
-            return true;
-
-        if (! (o instanceof Insurance))
-            return false;
-
-        Insurance i = (Insurance) o;
-        return new EqualsBuilder ().append (provider, i.provider)
-                                   .append (groupNumber, i.groupNumber)
-                                   .append (policyNumber, i.policyNumber)
-                                   .append (insuredRelationship, i.insuredRelationship)
-                                   .append (policyholder, i.policyholder)
-                                   .append (hospitalizationStatus, i.hospitalizationStatus)
-                                   .append (billingInstitution, i.billingInstitution)
-                                   .append (dischargeDate, i.dischargeDate)
-                                   .isEquals ();
+        return equalsOverride (this, (Insurance) o);
     }
 }
