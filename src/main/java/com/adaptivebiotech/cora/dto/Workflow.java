@@ -37,6 +37,8 @@ public final class Workflow {
         public Boolean disableHiFreqSave;
         public Boolean disableHiFreqSharing;
         public Boolean skipNorthQCToContam;
+        public Boolean ighvAnalysisEnabled;
+        public Boolean ighvReportEnabled;
     }
 
     public static final class Stage {
