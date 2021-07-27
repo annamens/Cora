@@ -23,10 +23,10 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 
 public class MiraDetail extends Mira {
 
-    private final int    durationSeconds         = 120;
-    private final int    pollingSeconds          = 10;
-    private final String SFDCOrderLabelParent    = "//label[text()='immunoSEQ SFDC Order']/..";
-    private final String PairSEQOrderLabelParent = "//label[text()='pairSEQ SFDC Order']/..";
+    private final int      durationSeconds         = 120;
+    private final int      pollingSeconds          = 10;
+    protected final String SFDCOrderLabelParent    = "//label[text()='immunoSEQ SFDC Order']/..";
+    protected final String PairSEQOrderLabelParent = "//label[text()='pairSEQ SFDC Order']/..";
 
     public void isCorrectPage (String miraId) {
         assertTrue (waitUntilVisible (".mira-header"));
@@ -37,7 +37,7 @@ public class MiraDetail extends Mira {
             assertTrue (isTextInElement ("[data-ng-bind='ctrl.mira.miraId']", miraId));
         }
     }
-    
+
     @Override
     public boolean refresh () {
         assertTrue (super.refresh ());
@@ -252,14 +252,13 @@ public class MiraDetail extends Mira {
         }
         return MiraLab.getMiraLab (labText);
     }
-    
+
     public MiraType getMiraType () {
         String typeField = "div[ng-bind='ctrl.mira.miraType']";
         String name = getText (typeField);
-        
+
         return MiraType.valueOf (name);
     }
-
 
     public String getNotes () {
         String notesField = "textarea[ng-model='ctrl.mira.notes']";
@@ -452,7 +451,58 @@ public class MiraDetail extends Mira {
         List <String> texts = getTextList (locator);
         return texts;
     }
-    
+
+    protected void waitForDangerNotification () {
+        String popup = "//div[contains(@class, 'alert-danger')]";
+        WaitForPopupFunction func = new WaitForPopupFunction (popup);
+        Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
+                                                                     .withTimeout (Duration.ofSeconds (120))
+                                                                     .pollingEvery (Duration.ofMillis (25));
+        wait.until (func);
+    }
+
+    protected void waitForNotification () {
+        String popup = "span[ng-bind-html='notification.msg']";
+        WaitForPopupFunction func = new WaitForPopupFunction (popup);
+
+        Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
+                                                                     .withTimeout (Duration.ofSeconds (120))
+                                                                     .pollingEvery (Duration.ofMillis (25));
+        wait.until (func);
+    }
+
+    protected MiraStage waitForStatusTable (int durationSeconds, int pollingSeconds) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                MiraStage currentStage = getCurrentStage ();
+                if (currentStage != null) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        assertTrue (waitForBooleanCondition (durationSeconds, pollingSeconds, func));
+        return getCurrentStage ();
+    }
+
+    protected MiraStage getCurrentStage () {
+        String currentStageCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[1]";
+        String currentStageCellText = getText (currentStageCell);
+        if (Strings.isNullOrEmpty (currentStageCellText)) {
+            return null;
+        }
+        return MiraStage.valueOf (currentStageCellText);
+    }
+
+    protected MiraStatus getCurrentStatus () {
+        String currentStatusCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[2]";
+        String currentStatusCellText = getText (currentStatusCell);
+        if (Strings.isNullOrEmpty (currentStatusCellText)) {
+            return null;
+        }
+        return MiraStatus.valueOf (currentStatusCellText);
+    }
+
     private boolean isMiraDetailsPage () {
         return waitUntilVisible (".mira-header");
     }
@@ -469,63 +519,12 @@ public class MiraDetail extends Mira {
         return poolDetails;
     }
 
-    private void waitForDangerNotification () {
-        String popup = "//div[contains(@class, 'alert-danger')]";
-        WaitForPopupFunction func = new WaitForPopupFunction (popup);
-        Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
-                                                                     .withTimeout (Duration.ofSeconds (120))
-                                                                     .pollingEvery (Duration.ofMillis (100));
-        wait.until (func);
-    }
-
-    private void waitForNotification () {
-        String popup = "span[ng-bind-html='notification.msg']";
-        WaitForPopupFunction func = new WaitForPopupFunction (popup);
-
-        Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
-                                                                     .withTimeout (Duration.ofSeconds (120))
-                                                                     .pollingEvery (Duration.ofMillis (100));
-        wait.until (func);
-    }
-
     private String getStageText () {
         String stage = "span[data-ng-bind='ctrl.mira.stageName']";
         return getText (stage);
     }
 
-    private MiraStage waitForStatusTable (int durationSeconds, int pollingSeconds) {
-        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
-            public Boolean apply (WebDriver driver) {
-                MiraStage currentStage = getCurrentStage ();
-                if (currentStage != null) {
-                    return true;
-                }
-                return false;
-            }
-        };
-        assertTrue (waitForBooleanCondition (durationSeconds, pollingSeconds, func));
-        return getCurrentStage ();
-    }
-
-    private MiraStage getCurrentStage () {
-        String currentStageCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[1]";
-        String currentStageCellText = getText (currentStageCell);
-        if (Strings.isNullOrEmpty (currentStageCellText)) {
-            return null;
-        }
-        return MiraStage.valueOf (currentStageCellText);
-    }
-
-    private MiraStatus getCurrentStatus () {
-        String currentStatusCell = "//table[contains(@class,'history')]/tbody/tr[1]/td[2]";
-        String currentStatusCellText = getText (currentStatusCell);
-        if (Strings.isNullOrEmpty (currentStatusCellText)) {
-            return null;
-        }
-        return MiraStatus.valueOf (currentStatusCellText);
-    }
-
-    private class WaitForPopupFunction implements Function <WebDriver, Boolean> {
+    protected class WaitForPopupFunction implements Function <WebDriver, Boolean> {
 
         private String locator;
 
