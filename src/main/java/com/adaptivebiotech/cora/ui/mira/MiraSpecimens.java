@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.mira;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static com.seleniumfy.test.utils.Logging.info;
@@ -9,24 +10,12 @@ import java.util.function.Function;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 
-public class MiraSpecimens extends CoraPage {
-
-    private MirasListHelper mirasListHelper = new MirasListHelper ();
+public class MiraSpecimens extends MirasListBase {
 
     @Override
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (".specimen-table"));
-    }
-
-    public void selectLab (MiraLab miraLab) {
-        mirasListHelper.selectLab (miraLab);
-    }
-
-    public void selectAllLabs () {
-        mirasListHelper.selectAllLabs ();
     }
 
     public void clickFilterList () {
@@ -35,7 +24,7 @@ public class MiraSpecimens extends CoraPage {
 
         assertTrue (click (button));
         pageLoading ();
-        mirasListHelper.waitForTableToRefresh (firstResult);
+        waitForTableToRefresh (firstResult);
     }
 
     /**
@@ -131,7 +120,7 @@ public class MiraSpecimens extends CoraPage {
         assertTrue (click (locator));
         pageLoading ();
         String firstResult = "//table[contains(@class, 'specimen-table')]/tbody/tr[1]/td[1]/a";
-        mirasListHelper.waitForTableToRefresh (firstResult);
+        waitForTableToRefresh (firstResult);
     }
 
     public List <String> getCellCountsText () {
@@ -167,6 +156,25 @@ public class MiraSpecimens extends CoraPage {
 
         info ("got specimen data");
         return rv;
+    }
+
+    public List <String> getSpecimenIds () {
+        String specimenIdField = "//table[contains(@class, 'specimen-table')]/tbody/tr/td[1]/a";
+        String noResultsMessage = "p.no-results-message";
+        List <String> rv = new ArrayList <> ();
+        if (waitUntilVisible (specimenIdField, 10, 100)) {
+            rv = getTextList (specimenIdField);
+            assertEquals (rv.size (), getSpecimenCount ());
+        } else {
+            assertTrue (isElementVisible (noResultsMessage));
+        }
+        return rv;
+    }
+
+    public int getSpecimenCount () {
+        String countDiv = "table-select-header .info-msg";
+        int count = Integer.parseInt ( (getText (countDiv).split (" ")[0]));
+        return count;
     }
 
 }

@@ -8,9 +8,13 @@ import static org.testng.Assert.assertTrue;
 import java.time.Duration;
 import java.util.List;
 import java.util.function.Function;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.seleniumfy.test.utils.BasePage;
 
@@ -31,7 +35,7 @@ public class CoraPage extends BasePage {
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (".navbar"));
         assertTrue (waitUntilVisible (".content"));
-        assertTrue (waitUntilVisible (".search-btn-col"));
+        assertTrue (waitUntilVisible ("[type='search']"));
         pageLoading ();
     }
 
@@ -276,5 +280,17 @@ public class CoraPage extends BasePage {
     public void gotoTaskById (String id) {
         String url = coraTestUrl + "/cora/task/" + id + "?p=status";
         assertTrue (navigateTo (url));
+    }
+
+    public boolean waitUntilVisible (String target, int timeoutInSeconds, int sleepInMillis) {
+        waitForAjaxCalls ();
+        By by = locateBy (target);
+        try {
+            WebDriverWait webDriverWait = new WebDriverWait (getDriver (), timeoutInSeconds, sleepInMillis);
+            WebElement webElement = webDriverWait.until (ExpectedConditions.visibilityOfElementLocated (by));
+            return webElement.isDisplayed ();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

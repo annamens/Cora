@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 
 /**
  * @author Harry Soehalim
@@ -17,28 +17,11 @@ public final class ContainerHistory {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
     @Override
     public boolean equals (Object o) {
-
-        if (o == this)
-            return true;
-
-        if (! (o instanceof ContainerHistory))
-            return false;
-
-        ContainerHistory c = (ContainerHistory) o;
-        return new EqualsBuilder ().append (activityDate, c.activityDate)
-                                   .append (activity, c.activity)
-                                   .append (comment, c.comment)
-                                   .append (location, c.location)
-                                   .append (activityBy, c.activityBy)
-                                   .isEquals ();
+        return equalsOverride (this, (ContainerHistory) o);
     }
 }

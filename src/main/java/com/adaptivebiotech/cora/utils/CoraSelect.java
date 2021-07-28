@@ -19,21 +19,31 @@ public class CoraSelect extends Select {
     @Override
     public void selectByVisibleText (String text) {
         if (this.waitForDropdownText (text)) {
-            info("found text : " + text);
+            info ("found text : " + text);
             super.selectByVisibleText (text);
         } else {
             fail ("cannot find text: " + text);
         }
     }
 
+    @Override
+    public WebElement getFirstSelectedOption () {
+        try {
+            return super.getFirstSelectedOption ();
+        } catch (StaleElementReferenceException e) {
+            info ("caught exception: " + e.toString ());
+            return super.getFirstSelectedOption ();
+        }
+    }
+
     private boolean waitForDropdownText (String s) {
         int count = 0;
-        List<String> optionTexts = getAllOptionTexts();
+        List <String> optionTexts = getAllOptionTexts ();
         while (count < 10 && !optionTexts.contains (s)) {
             info ("waiting for text: " + s);
             count++;
             doWait (10000);
-            optionTexts = getAllOptionTexts();
+            optionTexts = getAllOptionTexts ();
         }
         return optionTexts.contains (s);
     }

@@ -66,6 +66,7 @@ public final class Specimen {
         public String         ApprovalStatus;
         public String         SampleTypeDisplayName;
         public String         Treatment;
+        public String         Anticoagulant;
 
         public SpecimenProperties () {}
 

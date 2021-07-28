@@ -15,8 +15,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Miras;
 import com.adaptivebiotech.cora.dto.Miras.Mira;
-import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.cora.ui.mira.MirasListHelper.Filter;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraCostCenter;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
@@ -28,12 +26,9 @@ import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class MirasList extends CoraPage {
+public class MirasList extends MirasListBase {
 
-    private Set <String>    knownPanels              = new HashSet <String> ();
-    private MirasListHelper mirasListHelper          = new MirasListHelper ();
-    private final String    searchTypeDropdown       = "//span[contains(@class, 'list-search-type-container')]/dropdown-filter/div[contains(@class, 'dropdown')]";
-    private final String    searchTypeDropdownButton = searchTypeDropdown + "/button";
+    private Set <String> knownPanels              = new HashSet <String> ();
 
     public MirasList () {
         staticNavBarHeight = 90;
@@ -80,10 +75,6 @@ public class MirasList extends CoraPage {
         assertEquals (waitAndGetText (firstResult), miraId);
     }
 
-    public void selectLab (MiraLab miraLab) {
-        mirasListHelper.selectLab (miraLab);
-    }
-
     // VERY SLOW
     public Miras getMiras () {
         return getMirasFromMiraListPage ();
@@ -122,32 +113,28 @@ public class MirasList extends CoraPage {
         return "Can't verify file download on saucelabs";
     }
 
-    public void selectAllLabs () {
-        mirasListHelper.selectAllLabs ();
-    }
-
     public void selectPanelByName (String panelName) {
-        mirasListHelper.selectFilter (Filter.Panel, panelName);
+        selectFilter (Filter.Panel, panelName);
     }
 
     public void selectCostCenter (MiraCostCenter costCenter) {
-        mirasListHelper.selectFilter (Filter.CostCenter, costCenter.text);
+        selectFilter (Filter.CostCenter, costCenter.text);
     }
 
     public void selectExperimentOwner (String ownerName) {
-        mirasListHelper.selectFilter (Filter.ExperimentOwner, ownerName);
+        selectFilter (Filter.ExperimentOwner, ownerName);
     }
 
     public void selectStatus (String status) {
-        mirasListHelper.selectFilter (Filter.Status, status);
+        selectFilter (Filter.Status, status);
     }
 
     public void selectWorkflowStage (MiraStage workflowStage) {
-        mirasListHelper.selectFilter (Filter.WorkflowStage, workflowStage.name ());
+        selectFilter (Filter.WorkflowStage, workflowStage.name ());
     }
 
     public void selectStageStatus (MiraStatus stageStatus) {
-        mirasListHelper.selectFilter (Filter.StageStatus, stageStatus.name ());
+        selectFilter (Filter.StageStatus, stageStatus.name ());
     }
 
     public void enterStageSubstatus (String stageSubStatus) {
@@ -155,44 +142,36 @@ public class MirasList extends CoraPage {
         assertTrue (setText (stageSubstatusFilter, stageSubStatus));
     }
 
-    public void enterSearchBoxText (String text) {
-        mirasListHelper.enterSearchBoxText (text);
-    }
-
     public String getLabText () {
-        return mirasListHelper.getFilterText (Filter.Lab);
+        return getFilterText (Filter.Lab);
     }
 
     public String getPanelText () {
-        return mirasListHelper.getFilterText (Filter.Panel);
+        return getFilterText (Filter.Panel);
     }
 
     public String getCostCenterText () {
-        return mirasListHelper.getFilterText (Filter.CostCenter);
+        return getFilterText (Filter.CostCenter);
     }
 
     public String getExperimentOwnerText () {
-        return mirasListHelper.getFilterText (Filter.ExperimentOwner);
+        return getFilterText (Filter.ExperimentOwner);
     }
 
     public String getStatusText () {
-        return mirasListHelper.getFilterText (Filter.Status);
+        return getFilterText (Filter.Status);
     }
 
     public String getWorkflowStageText () {
-        return mirasListHelper.getFilterText (Filter.WorkflowStage);
+        return getFilterText (Filter.WorkflowStage);
     }
 
     public String getStageStatusText () {
-        return mirasListHelper.getFilterText (Filter.StageStatus);
+        return getFilterText (Filter.StageStatus);
     }
 
     public String getStageSubstatusText () {
         return readInput ("input#subStatusSearch");
-    }
-
-    public String getSearchBoxText () {
-        return mirasListHelper.getSearchBoxText ();
     }
 
     /**
@@ -210,7 +189,7 @@ public class MirasList extends CoraPage {
         pageLoading ();
         String firstResult = "//table[contains(@class, 'mira-table')]/tbody/tr[1]/td[1]/a/span";
 
-        mirasListHelper.waitForTableToRefresh (firstResult);
+        waitForTableToRefresh (firstResult);
     }
 
     public int countMiras () {
@@ -220,8 +199,14 @@ public class MirasList extends CoraPage {
 
     public List <String> getMiraIds () {
         String miraIdField = "//td[contains(@class, 'mira-name-description')]/a/span";
-        List <String> miraIds = getTextList (miraIdField);
-        return miraIds;
+        List <String> rv = new ArrayList <> ();
+
+        if (waitUntilVisible (miraIdField, 10, 100)) {
+            rv = getTextList (miraIdField);
+        }
+
+        assertEquals (rv.size (), getMiraCount ());
+        return rv;
     }
 
     public List <String> getMiraPanelTexts () {
@@ -242,20 +227,6 @@ public class MirasList extends CoraPage {
         String miraSpecimensButton = "//a[text()='MIRA Specimens']";
         click (miraSpecimensButton);
         pageLoading ();
-    }
-
-    public void selectSearchType (SearchType searchType) {
-        String dropdownItemBase = searchTypeDropdown + "/ul[contains(@class, 'dropdown-menu')]/li/a[text()='%s']";
-        String dropdownItem = String.format (dropdownItemBase, searchType.text);
-
-        assertTrue (click (searchTypeDropdownButton));
-        assertTrue (click (dropdownItem));
-        assertEquals (getSelectedSearchType (), searchType);
-    }
-
-    public SearchType getSelectedSearchType () {
-        String buttonText = searchTypeDropdownButton + "/span";
-        return SearchType.getByText (getText (buttonText));
     }
 
     public void reprocessMIRAs () {
@@ -324,6 +295,12 @@ public class MirasList extends CoraPage {
         return isElementPresent (selectButton);
     }
 
+    public int getMiraCount () {
+        String countDiv = "//div[contains(@class, 'mira-count')]";
+        int count = Integer.parseInt (getText (countDiv).split (" ")[0]);
+        return count;
+    }
+
     private Mira getMiraFromRow (WebElement miraRow) {
         List <WebElement> columns = miraRow.findElements (By.xpath (".//td"));
         assertEquals (columns.size (), 10);
@@ -388,32 +365,6 @@ public class MirasList extends CoraPage {
         } catch (StaleElementReferenceException e) {
             info (e.getMessage ());
             return waitForElement (by).getText ();
-        }
-
-    }
-
-    public static enum SearchType {
-        MiraID ("MIRA ID"),
-        ExperimentName ("Experiment Name"),
-        SpecimenID ("Specimen ID"),
-        immunoSEQOrder ("immunoSEQ order"),
-        pairSEQOrder ("pairSEQ order"),
-        ExpansionID ("Expansion ID"),
-        ContainerID ("Container ID");
-
-        public final String text;
-
-        private SearchType (String s) {
-            text = s;
-        }
-
-        public static SearchType getByText (String s) {
-            for (SearchType searchType : SearchType.values ()) {
-                if (searchType.text.equals (s)) {
-                    return searchType;
-                }
-            }
-            return null;
         }
 
     }
