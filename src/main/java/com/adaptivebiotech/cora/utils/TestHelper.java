@@ -242,4 +242,23 @@ public class TestHelper {
         data.put ("AB039003_num", "CO-166946");
         return data;
     };
+    
+    /**
+     * Create Physician
+     * 
+     * @param lastName
+     *            last name
+     * @param firstName
+     *            first name
+     * @param accountName
+     *            account name
+     * @return Physician
+     */
+    public static Physician createPhysician (String lastName, String firstName, String accountName) {
+        Physician physician = new Physician ();
+        physician.lastName = lastName;
+        physician.firstName = firstName;
+        physician.accountName = accountName;
+        return physician;
+    }
 }

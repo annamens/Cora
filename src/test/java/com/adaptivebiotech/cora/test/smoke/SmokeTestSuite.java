@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.test.smoke;
 
 import static com.adaptivebiotech.cora.utils.PageHelper.LinkShipment.SalesforceOrder;
-import static com.adaptivebiotech.cora.utils.PageHelper.MiraPanel.Aloha;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
@@ -9,7 +8,6 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox5x5;
-import static com.adaptivebiotech.test.utils.PageHelper.DateRange.All;
 import static com.adaptivebiotech.test.utils.PageHelper.LinkType.Project;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
@@ -20,7 +18,7 @@ import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
@@ -48,6 +46,7 @@ import com.adaptivebiotech.cora.ui.task.TaskList;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
 import com.adaptivebiotech.cora.ui.utilities.AuditTool;
 import com.adaptivebiotech.cora.ui.utilities.BarcodeComparisonTool;
+import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 
 @Test (groups = "smoke")
 public class SmokeTestSuite extends CoraBaseBrowser {
@@ -124,7 +123,8 @@ public class SmokeTestSuite extends CoraBaseBrowser {
                        "'?' help icon"));
 
         List <String> menu = asList ("Diagnostic Shipment",
-                                     "Diagnostic Order",
+                                     "clonoSEQ Diagnostic Order",
+                                     "T-Detect Diagnostic Order",
                                      "Batch Shipment",
                                      "Batch Order",
                                      "General Shipment",
@@ -220,7 +220,10 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         assertTrue (pList.isHeaderNavHighlighted ("Patients"));
         testLog ("'Patients' header nav element was highlighted");
 
-        List <String> utilities = asList ("Audit Tool", "Barcode Comparison Tool");
+        List <String> utilities = asList ("Alerts",
+                                          "Audit Tool",
+                                          "Barcode Comparison Tool",
+                                          "Patient Merge Tool");
         pList.clickUtilities ();
         assertEquals (pList.getUtilitiesMenu (), utilities);
         pList.clickUtilities ();
@@ -335,8 +338,8 @@ public class SmokeTestSuite extends CoraBaseBrowser {
 
         shipment.selectNewMira ();
         mira.isCorrectPage ();
-        mira.selectPanel (Aloha);
-        testLog (format ("%s displayed below the Panel(s) dropdown", Aloha));
+        mira.selectLab (MiraLab.AntigenMapProduction);
+        testLog (format ("%s displayed below Lab dropdown", MiraLab.AntigenMapProduction));
 
         mira.clickMiras ();
         mira.ignoredUnsavedChanges ();
@@ -394,7 +397,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         Containers containers = addContainer.getContainers ();
         assertEquals (containers.list.size (), 1);
         assertEquals (containers.list.get (0).containerType, TubeBox5x5);
-        assertNull (containers.list.get (0).containerNumber);
+        assertNotNull (containers.list.get (0).containerNumber);
         testLog (TubeBox5x5.label + " displayed below the Add Container(s) section");
 
         addContainer.setContainerLocation (1, freezer);
@@ -412,10 +415,11 @@ public class SmokeTestSuite extends CoraBaseBrowser {
 
         addContainer.clickContainers ();
         cList.isCorrectPage ();
+        cList.searchContainerIdOrName (test.containerNumber);
+        cList.setCategory (ContainerList.Category.All);
         cList.setCurrentLocationFilter (freezer);
         cList.setContainerType (TubeBox5x5);
-        cList.setArrivalDate (All);
-        cList.setCreatedBy (coraTestUser);
+        cList.setGroupBy (ContainerList.GroupBy.None);
         cList.clickFilter ();
         containers = cList.getContainers ();
         assertEquals (containers.list.stream ().filter (c -> {
@@ -431,4 +435,5 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         assertEquals (CUSTODYEND - CUSTODYBEGIN, 1);
         testLog ("the delta between before and after scan for My Custody size is 1");
     }
+
 }

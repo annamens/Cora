@@ -5,6 +5,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.Keys;
@@ -13,7 +14,6 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.DateRange;
 
 /**
  * @author Harry Soehalim
@@ -38,44 +38,56 @@ public class ContainerList extends CoraPage {
         assertTrue (waitUntilVisible ("[uisref='main.containers.list']"));
         assertTrue (waitUntilVisible ("[uisref='main.containers.custody']"));
     }
+    
+    public static enum Category {
+        All, Diagnostic, Batch
+    }
+    
+    public static enum GroupBy {
+        None, HoldingContainer
+    }
 
     public int getMyCustodySize () {
         return Integer.valueOf (getText ("[uisref='main.containers.custody'] span"));
     }
 
+    public void searchContainerIdOrName (String containerIdOrName) {
+        assertTrue (setText ("[placeholder='CO-000000 or Container Name']", containerIdOrName));
+        assertNotNull (waitForElementClickable ("//button[text()='Filter list']"));
+    }
+
+    public void setCategory (Category category) {
+        assertTrue (click ("//*[contains (p,'Category')]//button"));
+        assertTrue (click (format ("//*[contains (p,'Category')]//a[text()='%s']", category.name ())));
+    }
+
     public void setCurrentLocationFilter (String freezer) {
-        assertTrue (click (".filters-sm:nth-child(2) .dropdown-toggle"));
+        assertTrue (click ("//*[contains (p,'Current Location')]//button"));
         assertTrue (click (format ("//*[contains (p,'Current Location')]//a[text()='%s']", freezer)));
     }
 
     public void setContainerType (ContainerType type) {
-        assertTrue (click (".filters-sm:nth-child(3) .dropdown-toggle"));
+        assertTrue (click ("//*[contains (p,'Container Type')]//button"));
         assertTrue (click (format ("//*[contains (p,'Container Type')]//a[text()='%s']", type.label)));
     }
-
-    public void setArrivalDate (DateRange range) {
-        assertTrue (click (".filters-sm:nth-child(4) .dropdown-toggle"));
-        assertTrue (click (format ("//*[contains (p,'Arrival Date')]//a[text()='%s']", range.label)));
-    }
-
-    public void setCreatedBy (String user) {
-        assertTrue (click (".filters-sm:nth-child(5) .dropdown-toggle"));
-        assertTrue (click (format ("//*[contains (p,'Created By')]//a[text()='%s']", user)));
+    
+    public void setGroupBy (GroupBy groupBy) {
+        assertTrue (click ("//*[contains (p,'Group By')]//button"));
+        assertTrue (click (format ("//*[contains (p,'Group By')]//a[text()='%s']", groupBy.name ())));
     }
 
     public Containers getContainers () {
         return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
             List <WebElement> columns = el.findElements (locateBy ("td"));
             Container c = new Container ();
-            c.id = getConId (getAttribute (columns.get (0), "a", "href"));
-            c.containerNumber = getText (columns.get (0));
-            String containerType = getText (columns.get (1));
+            c.id = getConId (getAttribute (columns.get (1), "a", "href"));
+            c.containerNumber = getText (columns.get (1));
+            String containerType = getText (columns.get (2));
             c.containerType = containerType != null && !containerType.equals ("Unsupported") ? getContainerType (containerType) : null;
-            c.contents = getText (columns.get (2));
-            c.location = getText (columns.get (3));
+            c.specimenId = getText (columns.get (3));
             c.name = getText (columns.get (4));
-            c.arrivalDate = getText (columns.get (5));
-            c.orderId = getText (columns.get (6));
+            c.location = getText (columns.get (5));
+            c.capacity = Integer.parseInt (getText (columns.get (6)));
             return c;
         }).collect (toList ()));
     }
@@ -308,7 +320,7 @@ public class ContainerList extends CoraPage {
 
     @Override
     public void clickFilter () {
-        assertTrue (click (".filters-sm:nth-child(7) button"));
+        assertTrue (click ("//button[text()='Filter list']"));
         doWait (1000); // work around for StaleElementReferenceException
     }
 }

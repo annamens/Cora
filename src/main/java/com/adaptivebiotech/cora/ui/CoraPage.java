@@ -52,13 +52,20 @@ public class CoraPage extends BasePage {
     }
 
     public List <String> getNewPopupMenu () {
-        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> li != null).collect (toList ());
+        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> li != null && !li.equalsIgnoreCase ("")).collect (toList ());
     }
-
+    
+    // TODO Was there only Diagnostic Order previously? If that is the case, I will refactor this method.
     public void selectNewDiagnosticOrder () {
         assertTrue (click (newmenu));
         assertTrue (waitUntilVisible (".dropdown.new-order.open"));
-        assertTrue (click ("//a[text()='Diagnostic Order']"));
+        assertTrue (click ("//a[text()='clonoSEQ Diagnostic Order']"));
+    }
+    
+    public void selectNewTDetectDiagnosticOrder () {
+        assertTrue (click (newmenu));
+        assertTrue (waitUntilVisible (".dropdown.new-order.open"));
+        assertTrue (click ("//a[text()='T-Detect Diagnostic Order']"));
     }
 
     public void selectNewDiagnosticShipment () {

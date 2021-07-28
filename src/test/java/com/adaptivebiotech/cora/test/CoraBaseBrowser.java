@@ -13,9 +13,11 @@ import static java.lang.String.join;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import com.adaptivebiotech.test.TestBase;
+import com.seleniumfy.test.utils.HttpClientHelper;
 
 public class CoraBaseBrowser extends TestBase {
 
@@ -43,5 +45,7 @@ public class CoraBaseBrowser extends TestBase {
         forms.put ("userName", coraTestUser);
         forms.put ("password", coraTestPass);
         formPost (coraTestUrl + "/cora/login", forms);
+        HttpClientHelper.headers.get ().add (new BasicHeader ("X-Api-UserName", coraTestUser));
     }
+    
 }

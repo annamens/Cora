@@ -51,6 +51,7 @@ public class Diagnostic extends CoraPage {
     private final String   assayEl            = "//span[@ng-bind='test.name' and text()='%s']";
     private final String   reportNotes        = "[ng-model=\"ctrl.reportEntry.notes\"]";
     private final String   additionalComments = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
+    private final String   btnCLIAIGHV        = "//li//div[text()='CLIA-IGHV']";
 
     protected final String specimenNumber     = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
 
@@ -280,7 +281,7 @@ public class Diagnostic extends CoraPage {
         waitUntilActivated ();
     }
 
-    void clickSaveAndActivate () {
+    public void clickSaveAndActivate () {
         String css = "#order-entry-save-and-activate";
         assertTrue (click (css));
     }
@@ -928,5 +929,8 @@ public class Diagnostic extends CoraPage {
         String amendedRadio = "input#amended";
         assertTrue (click (amendedRadio));
     }
-
+    
+    public boolean isCLIAIGHVBtnPresent() {
+        return isElementPresent (btnCLIAIGHV);
+    }
 }

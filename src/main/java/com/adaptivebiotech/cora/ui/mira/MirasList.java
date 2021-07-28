@@ -49,7 +49,7 @@ public class MirasList extends CoraPage {
     }
 
     public void searchMira (String miraId) {
-        assertTrue (setText (".search-orders input", miraId));
+        assertTrue (setText ("[placeholder='M-000000']", miraId));
         assertTrue (pressKey (RETURN));
     }
 
