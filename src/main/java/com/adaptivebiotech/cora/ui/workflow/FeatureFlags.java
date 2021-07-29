@@ -7,14 +7,16 @@ import java.util.Map;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
- * feature-flags page (end-point: /cora/debug/feature-flags) displays the status of all feature flags
+ * feature-flags page (end-point: /cora/debug/feature-flags) displays the status of all feature
+ * flags
+ * 
  * @author Jaydeepkumar Patel
  *         <a href="mailto:jpatelm@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
  */
 public class FeatureFlags extends CoraPage {
 
-    private String pageHeader = ".container h1";
-    private String tableRows  = ".table tbody tr";
+    private final String pageHeader = ".container h1";
+    private final String tableRows  = ".table tbody tr";
 
     public FeatureFlags () {
         staticNavBarHeight = 200;

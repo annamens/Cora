@@ -55,8 +55,8 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     private Physician            IgHVPhysician;
     private Physician            NYPhysician;
 
-    private String               c91_10          = "C91.10";
-    private String               c83_00          = "C83.00";
+    private final String         c91_10          = "C91.10";
+    private final String         c83_00          = "C83.00";
 
     private final String         tsvOverridePath = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
 
