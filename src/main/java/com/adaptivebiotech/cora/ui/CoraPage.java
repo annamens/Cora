@@ -11,6 +11,7 @@ import java.util.function.Function;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
+import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.seleniumfy.test.utils.BasePage;
 
@@ -52,7 +53,7 @@ public class CoraPage extends BasePage {
     }
 
     public List <String> getNewPopupMenu () {
-        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> li != null && !li.equalsIgnoreCase ("")).collect (toList ());
+        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li)).collect (toList ());
     }
     
     // TODO Was there only Diagnostic Order previously? If that is the case, I will refactor this method.
