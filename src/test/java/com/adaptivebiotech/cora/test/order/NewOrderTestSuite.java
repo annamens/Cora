@@ -63,7 +63,7 @@ public class NewOrderTestSuite extends OrderTestBase {
 
     private void prep_new_order (Patient patient) {
         Billing billing = new Billing ();
-        billing.selectNewDiagnosticOrder ();
+        billing.selectNewClonoSEQDiagnosticOrder ();
         billing.isCorrectPage ();
         billing.selectPhysician (physicianTRF);
         billing.createNewPatient (patient);

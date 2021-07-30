@@ -45,7 +45,7 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
         new Login ().doLogin ();
         oList = new OrdersList ();
         oList.isCorrectPage ();
-        oList.selectNewDiagnosticOrder ();
+        oList.selectNewClonoSEQDiagnosticOrder ();
 
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();

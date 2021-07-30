@@ -37,7 +37,7 @@ public class ReflexTestSuite extends OrderTestBase {
         new Login ().doLogin ();
         oList = new OrdersList ();
         oList.isCorrectPage ();
-        oList.selectNewDiagnosticOrder ();
+        oList.selectNewClonoSEQDiagnosticOrder ();
 
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
@@ -61,7 +61,7 @@ public class ReflexTestSuite extends OrderTestBase {
         history.gotoOrderDebug (addDiagnosticShipment_and_Activate ());
         history.cancelOrder ();
 
-        specimen.selectNewDiagnosticOrder ();
+        specimen.selectNewClonoSEQDiagnosticOrder ();
         specimen.isCorrectPage ();
         specimen.selectPhysician (physicianTRF);
         specimen.clickSave ();

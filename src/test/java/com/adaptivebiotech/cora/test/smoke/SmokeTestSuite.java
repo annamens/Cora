@@ -141,7 +141,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         shipment.isDiagnostic ();
         testLog ("new diagnostic shipment page was displayed");
 
-        shipment.selectNewDiagnosticOrder ();
+        shipment.selectNewClonoSEQDiagnosticOrder ();
         diagnostic.isCorrectPage ();
         testLog ("new diagnostic order page was displayed");
 
@@ -257,7 +257,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
     public void new_diagnostic_order () {
         login.doLogin ();
         oList.isCorrectPage ();
-        oList.selectNewDiagnosticOrder ();
+        oList.selectNewClonoSEQDiagnosticOrder ();
         diagnostic.isCorrectPage ();
         testLog ("new diagnostic order page was displayed");
 

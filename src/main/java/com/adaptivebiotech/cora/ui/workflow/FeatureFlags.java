@@ -18,10 +18,6 @@ public class FeatureFlags extends CoraPage {
     private final String pageHeader = ".container h1";
     private final String tableRows  = ".table tbody tr";
 
-    public FeatureFlags () {
-        staticNavBarHeight = 200;
-    }
-
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement (pageHeader, "Feature Flags"));

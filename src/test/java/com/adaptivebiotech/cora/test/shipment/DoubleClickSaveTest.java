@@ -31,7 +31,7 @@ public class DoubleClickSaveTest extends OrderTestBase {
     }
 
     public void doubleClickSave () {
-        diagnostic.selectNewDiagnosticOrder ();
+        diagnostic.selectNewClonoSEQDiagnosticOrder ();
         diagnostic.isCorrectPage ();
         diagnostic.selectPhysician (physicianTRF);
         diagnostic.enterPatientICD_Codes (icdCode);

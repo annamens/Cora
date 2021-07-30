@@ -41,7 +41,7 @@ public class BillingTestSuite extends OrderTestBase {
         new Login ().doLogin ();
         oList = new OrdersList ();
         oList.isCorrectPage ();
-        oList.selectNewDiagnosticOrder ();
+        oList.selectNewClonoSEQDiagnosticOrder ();
 
         diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();

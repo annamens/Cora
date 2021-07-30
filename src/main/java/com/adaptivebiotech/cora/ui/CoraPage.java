@@ -56,8 +56,7 @@ public class CoraPage extends BasePage {
         return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li)).collect (toList ());
     }
     
-    // TODO Was there only Diagnostic Order previously? If that is the case, I will refactor this method.
-    public void selectNewDiagnosticOrder () {
+    public void selectNewClonoSEQDiagnosticOrder () {
         assertTrue (click (newmenu));
         assertTrue (waitUntilVisible (".dropdown.new-order.open"));
         assertTrue (click ("//a[text()='clonoSEQ Diagnostic Order']"));

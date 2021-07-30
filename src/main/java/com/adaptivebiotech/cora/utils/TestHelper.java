@@ -242,9 +242,9 @@ public class TestHelper {
         data.put ("AB039003_num", "CO-166946");
         return data;
     };
-    
+
     /**
-     * Create Physician
+     * Set Physician object with given properties
      * 
      * @param lastName
      *            last name
@@ -254,7 +254,7 @@ public class TestHelper {
      *            account name
      * @return Physician
      */
-    public static Physician createPhysician (String lastName, String firstName, String accountName) {
+    public static Physician setPhysician (String lastName, String firstName, String accountName) {
         Physician physician = new Physician ();
         physician.lastName = lastName;
         physician.firstName = firstName;

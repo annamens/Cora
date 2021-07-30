@@ -23,17 +23,13 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcceptedTsvPath;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
-import static com.adaptivebiotech.test.utils.TestHelper.setDate;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import java.time.ZoneId;
 import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Physician;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
@@ -50,7 +46,7 @@ import com.adaptivebiotech.test.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
-public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
+public class IgHVUpdatesTestSuite extends OrderTestBase {
 
     private Physician            IgHVPhysician;
     private Physician            NYPhysician;
@@ -66,14 +62,14 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     public void beforeMethod () {
 
         // IgHVPhysician Physician
-        IgHVPhysician = TestHelper.createPhysician (CoraEnvironment.physicianLastName,
-                                                    CoraEnvironment.physicianFirstName,
-                                                    CoraEnvironment.physicianAccountName);
+        IgHVPhysician = TestHelper.setPhysician (CoraEnvironment.physicianLastName,
+                                                 CoraEnvironment.physicianFirstName,
+                                                 CoraEnvironment.physicianAccountName);
 
         // NY Physician
-        NYPhysician = TestHelper.createPhysician (CoraEnvironment.NYphysicianLastName,
-                                                  CoraEnvironment.NYphysicianFirstName,
-                                                  CoraEnvironment.physicianAccountName);
+        NYPhysician = TestHelper.setPhysician (CoraEnvironment.NYphysicianLastName,
+                                               CoraEnvironment.NYphysicianFirstName,
+                                               CoraEnvironment.physicianAccountName);
 
         new Login ().doLogin ();
         new OrdersList ().isCorrectPage ();
@@ -211,7 +207,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                                               boolean expectedCLIAIGHVFlag) {
         // create clonoSEQ diagnostic order
         Billing billing = new Billing ();
-        billing.selectNewDiagnosticOrder ();
+        billing.selectNewClonoSEQDiagnosticOrder ();
         billing.isCorrectPage ();
 
         billing.selectPhysician (physician);
@@ -229,9 +225,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         specimen.enterSpecimenType (specimenType);
         if (specimenSource != null)
             specimen.enterSpecimenSource (specimenSource);
-        String collectionDate = formatDt1.format (setDate (-1).getTime ().toInstant ()
-                                                              .atZone (ZoneId.systemDefault ()));
-        specimen.enterCollectionDate (collectionDate);
+        specimen.enterCollectionDate (collectionDt);
         specimen.clickSave ();
 
         String orderNum = specimen.getOrderNum ();
