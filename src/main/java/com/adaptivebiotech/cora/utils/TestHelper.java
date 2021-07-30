@@ -87,7 +87,7 @@ public class TestHelper {
     }
 
     // AllowInternalOrderUpload flag enabled in SalesForce
-    public static Physician physician2 () {
+    public static Physician physicianTRF () {
         Physician physician = new Physician ();
         physician.id = "a1461f9d-29e0-464c-8bf6-a383079f1d62";
         physician.firstName = "Automated";

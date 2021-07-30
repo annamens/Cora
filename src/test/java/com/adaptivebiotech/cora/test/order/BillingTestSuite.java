@@ -4,6 +4,7 @@ import static com.adaptivebiotech.cora.utils.TestHelper.insurance1;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
+import static com.adaptivebiotech.cora.utils.TestHelper.physicianTRF;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
@@ -21,6 +22,7 @@ import static org.testng.Assert.assertNull;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
@@ -28,9 +30,10 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.utils.DateUtils;
 
 @Test (groups = "regression", enabled = false)
-public class BillingTestSuite extends OrderTestBase {
+public class BillingTestSuite extends CoraBaseBrowser {
 
     private OrdersList oList;
     private Diagnostic diagnostic;
@@ -45,8 +48,8 @@ public class BillingTestSuite extends OrderTestBase {
 
         diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
-        diagnostic.selectPhysician (physicianTRF);
-        diagnostic.enterPatientICD_Codes (icdCode);
+        diagnostic.selectPhysician (physicianTRF ());
+        diagnostic.enterPatientICD_Codes ("A01.02");
         billing = new Billing ();
     }
 
@@ -236,7 +239,7 @@ public class BillingTestSuite extends OrderTestBase {
         specimen.clickEnterSpecimenDetails ();
         specimen.enterSpecimenType (Blood);
         specimen.enterAntiCoagulant (EDTA);
-        specimen.enterCollectionDate (collectionDt);
+        specimen.enterCollectionDate (DateUtils.getPastFutureDate (3));
         specimen.clickSave ();
         String orderNum = specimen.getOrderNum ();
 

@@ -11,7 +11,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambien
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.test.order.OrderTestBase;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
@@ -20,6 +20,8 @@ import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.workflow.History;
+import com.adaptivebiotech.cora.utils.DateUtils;
+import com.adaptivebiotech.cora.utils.TestHelper;
 
 /**
  * Note:
@@ -28,7 +30,7 @@ import com.adaptivebiotech.cora.ui.workflow.History;
  * - the old test can't be active
  */
 @Test (enabled = false, groups = "regression")
-public class ReflexTestSuite extends OrderTestBase {
+public class ReflexTestSuite extends CoraBaseBrowser {
 
     private OrdersList oList;
 
@@ -41,9 +43,9 @@ public class ReflexTestSuite extends OrderTestBase {
 
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
-        diagnostic.selectPhysician (physicianTRF);
+        diagnostic.selectPhysician (TestHelper.physicianTRF ());
         diagnostic.createNewPatient (newPatient ());
-        diagnostic.enterPatientICD_Codes (icdCode);
+        diagnostic.enterPatientICD_Codes ("A01.02");
         diagnostic.clickSave (); // have to Save first before we can set Specimen info
     }
 
@@ -53,7 +55,7 @@ public class ReflexTestSuite extends OrderTestBase {
         specimen.clickEnterSpecimenDetails ();
         specimen.enterSpecimenType (Blood);
         specimen.enterAntiCoagulant (EDTA);
-        specimen.enterCollectionDate (collectionDt);
+        specimen.enterCollectionDate (DateUtils.getPastFutureDate (3));
         specimen.clickSave ();
         String specimenId = specimen.getSpecimenId ();
 
@@ -63,7 +65,7 @@ public class ReflexTestSuite extends OrderTestBase {
 
         specimen.selectNewClonoSEQDiagnosticOrder ();
         specimen.isCorrectPage ();
-        specimen.selectPhysician (physicianTRF);
+        specimen.selectPhysician (TestHelper.physicianTRF ());
         specimen.clickSave ();
         specimen.enterSpecimenDelivery (Reflex);
         specimen.findSpecimenId (specimenId);

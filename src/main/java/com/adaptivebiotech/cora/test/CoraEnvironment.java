@@ -19,11 +19,11 @@ public class CoraEnvironment extends BaseEnvironment {
             coraTestUser = appConfig.getProperty ("cora.test.user");
             coraTestPass = decrypt (appConfig.getProperty ("cora.test.pass"));
             
-            physicianLastName = getProperty ("physician.last.name");
-            physicianFirstName = getProperty ("physician.first.name");
-            physicianAccountName = getProperty ("physician.account.name");
-            NYphysicianLastName = getProperty ("nyphysician.last.name");
-            NYphysicianFirstName = getProperty ("nyphysician.first.name");
+            physicianLastName = "Tests";
+            physicianFirstName = "Automated";
+            physicianAccountName = "SEA_QA Test";
+            NYphysicianLastName = "IgHV";
+            NYphysicianFirstName = "Selenium";
             
         } catch (Exception e) {
             error ("failed to parse the config file", e);

@@ -30,6 +30,7 @@ import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
@@ -40,13 +41,14 @@ import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.workflow.FeatureFlags;
 import com.adaptivebiotech.cora.ui.workflow.History;
+import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
-public class IgHVUpdatesTestSuite extends OrderTestBase {
+public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     private Physician            IgHVPhysician;
     private Physician            NYPhysician;
@@ -79,16 +81,25 @@ public class IgHVUpdatesTestSuite extends OrderTestBase {
 
     }
 
+    @BeforeMethod (groups = "featureFlagOn")
+    public void validateIgHVFeatureFlagOn () {
+        assertTrue (Boolean.valueOf (featureFlags.get ("IgHV")),
+                    "Validate IgHV flag is true before test starts");
+    }
+
+    @BeforeMethod (groups = "featureFlagOff")
+    public void validateIgHVFeatureFlagOff () {
+        assertFalse (Boolean.valueOf (featureFlags.get ("IgHV")),
+                     "Validate IgHV flag is true before test starts");
+    }
+
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
      * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureFlagOn () {
-
-        assertTrue (Boolean.valueOf (featureFlags.get ("IgHV")),
-                    "Validate IgHV flag is true before test starts");
+    public void verifyIgHVStageAndReportFeatureOrder1FlagOn () {
         // order 1
         createOrderAndReleaseReport (IgHVPhysician,
                                      CellPellet,
@@ -100,7 +111,15 @@ public class IgHVUpdatesTestSuite extends OrderTestBase {
         testLog ("step 2 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
         testLog ("step 3 - CLIA-IGHV flag appears just below the Report tab ");
         testLog ("step 4 - SHM analysis results are included in reportData.json");
+    }
 
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder2FlagOn () {
         // order 2
         createOrderAndReleaseReport (NYPhysician,
                                      CellPellet,
@@ -112,7 +131,15 @@ public class IgHVUpdatesTestSuite extends OrderTestBase {
         testLog ("step 6 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
         testLog ("step 7 - CLIA-IGHV flag does not appear below the Report tab ");
         testLog ("step 8 - SHM analysis results are not included in reportData.json");
+    }
 
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder3FlagOn () {
         // order 3
         createOrderAndReleaseReport (IgHVPhysician,
                                      gDNA,
@@ -122,7 +149,15 @@ public class IgHVUpdatesTestSuite extends OrderTestBase {
                                      true);
         testLog ("step 9, order3 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 10, order3 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
+    }
 
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder4FlagOn () {
         // order 4
         createOrderAndReleaseReport (IgHVPhysician,
                                      Blood,
@@ -132,7 +167,15 @@ public class IgHVUpdatesTestSuite extends OrderTestBase {
                                      true);
         testLog ("step 9, order3 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 10, order3 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
+    }
 
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder5FlagOn () {
         // order 5
         createOrderAndReleaseReport (IgHVPhysician,
                                      FFPEScrolls,
@@ -142,7 +185,15 @@ public class IgHVUpdatesTestSuite extends OrderTestBase {
                                      false);
         testLog ("step 11, order5 - ighvAnalysisEnabled and ighvReportEnabled are false (or absent)");
         testLog ("step 12, order5 - SHM Analysis stage is skipped");
+    }
 
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder6FlagOn () {
         // order 6
         createOrderAndReleaseReport (IgHVPhysician,
                                      CellSuspension,
@@ -152,7 +203,15 @@ public class IgHVUpdatesTestSuite extends OrderTestBase {
                                      false);
         testLog ("step 11, order6 - ighvAnalysisEnabled and ighvReportEnabled are false (or absent)");
         testLog ("step 12, order6 - SHM Analysis stage is skipped");
+    }
 
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder7FlagOn () {
         // order 7
         createOrderAndReleaseReport (IgHVPhysician,
                                      CellPellet,
@@ -171,9 +230,6 @@ public class IgHVUpdatesTestSuite extends OrderTestBase {
      */
     @Test (groups = "featureFlagOff")
     public void verifyIgHVStageAndReportFeatureFlagOff () {
-
-        assertFalse (Boolean.valueOf (featureFlags.get ("IgHV")),
-                     "Validate IgHV flag is true before test starts");
 
         // order 1
         createOrderAndReleaseReport (IgHVPhysician,
@@ -225,7 +281,7 @@ public class IgHVUpdatesTestSuite extends OrderTestBase {
         specimen.enterSpecimenType (specimenType);
         if (specimenSource != null)
             specimen.enterSpecimenSource (specimenSource);
-        specimen.enterCollectionDate (collectionDt);
+        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
         specimen.clickSave ();
 
         String orderNum = specimen.getOrderNum ();
