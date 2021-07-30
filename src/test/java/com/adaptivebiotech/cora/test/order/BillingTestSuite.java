@@ -239,7 +239,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         specimen.clickEnterSpecimenDetails ();
         specimen.enterSpecimenType (Blood);
         specimen.enterAntiCoagulant (EDTA);
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (3));
+        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
         specimen.clickSave ();
         String orderNum = specimen.getOrderNum ();
 
