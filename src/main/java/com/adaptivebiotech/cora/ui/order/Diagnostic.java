@@ -53,6 +53,7 @@ public class Diagnostic extends CoraPage {
     private final String   additionalComments = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
 
     protected final String specimenNumber     = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
+    protected final String tabBase            = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
 
     public Diagnostic () {
         staticNavBarHeight = 200;
@@ -118,8 +119,8 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickOrderDetailsTab () {
-        String css = "[ng-click=\"ctrl.tab='detail';\"]";
-        assertTrue (click (css));
+        String tab = String.format (tabBase, "Order Details");
+        assertTrue (click (tab));
         pageLoading ();
     }
 
@@ -153,8 +154,8 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickOrderStatusTab () {
-        String css = "[ng-click=\"ctrl.tab='status';\"]";
-        assertTrue (click (css));
+        String tab = String.format (tabBase, "Order Status");
+        assertTrue (click (tab));
         pageLoading ();
     }
 
