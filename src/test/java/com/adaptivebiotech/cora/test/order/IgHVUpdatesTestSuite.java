@@ -153,7 +153,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         createOrder (NYPhysician,
                      CellPellet,
                      PBMC,
-                     new String[] { c83_00, c91_10 },
+                     new String[] { c83_00},
                      "Order 2 Flag On");
         List <Stage> stages = forceStatusUpdate (tsvOverridePathO1O2,
                                                  lastFinishedPipelineJobIdO1O2,
