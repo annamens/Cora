@@ -108,6 +108,6 @@ public class Detail extends CoraPage {
     }
 
     public List <String> getDetailHistory () {
-        return getTextList (".container-details .ab-panel:nth-child(5) li");
+        return getTextList ("//h2[text()='History']/ancestor::div[@class='container']//li");
     }
 }

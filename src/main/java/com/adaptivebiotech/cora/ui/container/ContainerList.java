@@ -153,7 +153,7 @@ public class ContainerList extends CoraPage {
         String loc = getText (pass).replace (success, "");
         container.location = loc;
         container.root = null;
-        if (container.containerType.isHolding && !container.containerType.equals (Plate))
+        if (container.containerType.isHolding && !container.containerType.equals (Plate) && container.children != null)
             container.children.forEach (c -> {
                 c.location = String.join (" : ", loc, c.containerType.label, c.location.replaceFirst (regex, "$2"));
             });

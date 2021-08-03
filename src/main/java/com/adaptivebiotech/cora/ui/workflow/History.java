@@ -63,7 +63,7 @@ public class History extends CoraPage {
         return getAttribute (format ("//a[text()='%s']", filename), "href");
     }
 
-    public void downloadFile (String filename) {
+    public String downloadFile (String filename) {
         assertTrue (click (format ("//a[text()='%s']", filename)));
 
         String report = getDownloadsDir () + filename;
@@ -71,6 +71,7 @@ public class History extends CoraPage {
         while (!timer.Timedout () && !navigateTo (format ("file://%s", report)))
             timer.Wait ();
         getDriver ().navigate ().back ();
+        return report;
     }
 
     public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {
