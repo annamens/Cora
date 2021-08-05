@@ -68,22 +68,22 @@ import com.seleniumfy.test.utils.Timeout;
 
 public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
-    private Physician            IgHVPhysician;
-    private Physician            NYPhysician;
+    private Physician    IgHVPhysician;
+    private Physician    NYPhysician;
 
-    private final String         c91_10                        = "C91.10";
-    private final String         c83_00                        = "C83.00";
-    private final String         c90_00                        = "C90.00";
+    private final String c91_10                        = "C91.10";
+    private final String c83_00                        = "C83.00";
+    private final String c90_00                        = "C90.00";
 
-    private final String         tsvOverridePathO1O2           = "s3://pipeline-north-production-archive:us-west-2/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
-    private final String         tsvOverridePathO3O4           = "s3://pipeline-fda-production-archive:us-west-2/210615_NB551732_0294_AH3G53BGXJ/v3.1/20210617_0828/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/H3G53BGXJ_0_CLINICAL-CLINICAL_96633-08MC-UA001BM.adap.txt.results.tsv.gz";
-    private final String         tsvOverridePathO5O6O7O8       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
-    private final String         lastFinishedPipelineJobIdO1O2 = "8a7a94db77a26ee1017a01c874c67394";
-    private final String         lastFinishedPipelineJobIdO3O4 = "8a7a958877a26e74017a176ecd2b1b45";
-    private final String         sampleNameO1O2                = "96343-05BC";
-    private final String         sampleNameO3O4                = "96633-08MC-UA001BM";
+    private final String tsvOverridePathO1O2           = "s3://pipeline-north-production-archive:us-west-2/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
+    private final String tsvOverridePathO3O4           = "s3://pipeline-fda-production-archive:us-west-2/210615_NB551732_0294_AH3G53BGXJ/v3.1/20210617_0828/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/H3G53BGXJ_0_CLINICAL-CLINICAL_96633-08MC-UA001BM.adap.txt.results.tsv.gz";
+    private final String tsvOverridePathO5O6O7O8       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
+    private final String lastFinishedPipelineJobIdO1O2 = "8a7a94db77a26ee1017a01c874c67394";
+    private final String lastFinishedPipelineJobIdO3O4 = "8a7a958877a26e74017a176ecd2b1b45";
+    private final String sampleNameO1O2                = "96343-05BC";
+    private final String sampleNameO3O4                = "96633-08MC-UA001BM";
 
-    private Map <String, String> featureFlags;
+    private boolean      isIgHVFlag;
 
     @BeforeMethod
     public void beforeMethod () {
@@ -102,13 +102,9 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         new OrdersList ().isCorrectPage ();
         FeatureFlags featureFlagsPage = new FeatureFlags ();
         featureFlagsPage.navigateToFeatureFlagsPage ();
-        featureFlags = featureFlagsPage.getFeatureFlags ();
+        Map <String, String> featureFlags = featureFlagsPage.getFeatureFlags ();
+        isIgHVFlag = Boolean.valueOf (featureFlags.get ("IgHV"));
 
-    }
-
-    public void validateIgHVFeatureFlagOn () {
-        assertTrue (Boolean.valueOf (featureFlags.get ("IgHV")),
-                    "Validate IgHV flag is true before test starts");
     }
 
     /**
@@ -118,7 +114,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder1FlagOn () {
-        validateIgHVFeatureFlagOn ();
+        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 1
         createOrder (IgHVPhysician,
                      CellPellet,
@@ -148,12 +144,12 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder2FlagOn () {
-        validateIgHVFeatureFlagOn ();
+        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 2
         createOrder (NYPhysician,
                      CellPellet,
                      PBMC,
-                     new String[] { c83_00},
+                     new String[] { c83_00 },
                      "Order 2 Flag On");
         List <Stage> stages = forceStatusUpdate (tsvOverridePathO1O2,
                                                  lastFinishedPipelineJobIdO1O2,
@@ -178,7 +174,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder3FlagOn () {
-        validateIgHVFeatureFlagOn ();
+        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 3
         createOrder (IgHVPhysician,
                      gDNA,
@@ -208,7 +204,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder4FlagOn () {
-        validateIgHVFeatureFlagOn ();
+        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 4
         createOrder (IgHVPhysician,
                      Blood,
@@ -238,7 +234,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder5FlagOn () {
-        validateIgHVFeatureFlagOn ();
+        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 5
         createOrder (IgHVPhysician,
                      FFPEScrolls,
@@ -264,7 +260,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder6FlagOn () {
-        validateIgHVFeatureFlagOn ();
+        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 6
         createOrder (IgHVPhysician,
                      CellSuspension,
@@ -291,7 +287,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder7FlagOn () {
-        validateIgHVFeatureFlagOn ();
+        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 7
         createOrder (IgHVPhysician,
                      CellPellet,
@@ -317,8 +313,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOff")
     public void verifyIgHVStageAndReportFeatureFlagOff () {
-        assertFalse (Boolean.valueOf (featureFlags.get ("IgHV")),
-                     "Validate IgHV flag is true before test starts");
+        assertFalse (isIgHVFlag, "Validate IgHV flag is false before test starts");
         // order 8
         createOrder (IgHVPhysician,
                      CellPellet,
