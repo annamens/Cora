@@ -183,7 +183,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         createOrder (IgHVPhysician,
                      gDNA,
                      BoneMarrow,
-                     new String[] { c83_00, c91_10 },
+                     new String[] { c91_10 },
                      "Order 3 Flag On");
         List <Stage> stages = forceStatusUpdate (tsvOverridePathO3O4,
                                                  lastFinishedPipelineJobIdO3O4,
@@ -213,7 +213,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         createOrder (IgHVPhysician,
                      Blood,
                      null,
-                     new String[] { c83_00, c91_10 },
+                     new String[] { c91_10 },
                      "Order 4 Flag On");
         List <Stage> stages = forceStatusUpdate (tsvOverridePathO3O4,
                                                  lastFinishedPipelineJobIdO3O4,

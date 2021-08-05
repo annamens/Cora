@@ -7,6 +7,7 @@ import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.google.common.base.Strings;
 
 /**
  * @author Harry Soehalim
@@ -31,7 +32,8 @@ public class MyCustody extends ContainerList {
             c.specimenId = getText (columns.get (3));
             c.name = getText (columns.get (4));
             c.location = getText (columns.get (5));
-            c.capacity = Integer.parseInt (getText (columns.get (6)));
+            String capacity = getText (columns.get (6));
+            c.capacity = Strings.isNullOrEmpty (capacity) ? 0 : Integer.parseInt (capacity);
             return c;
         }).collect (toList ()));
     }
