@@ -82,7 +82,6 @@ public class TestHelper {
         physician.email = "selenium.test1@1secmail.com";
         physician.notificationEmails = "selenium.test1@1secmail.com";
         physician.portal_emails = "selenium.test1@1secmail.com";
-        physician.password = "password123";
         return physician;
     }
 
@@ -103,7 +102,6 @@ public class TestHelper {
         physician.email = "automated.test@adaptivebiotech.com";
         physician.notificationEmails = "automated.test@adaptivebiotech.com";
         physician.portal_emails = "automated.test@adaptivebiotech.com";
-        physician.password = "password123";
         return physician;
     }
 

@@ -45,7 +45,6 @@ public final class Physician {
     public Boolean       allowInternalOrderUpload;
     public Boolean       medicareEnrolled;
     public Boolean       needsCLEPApproval;
-    public String        password;
     public String        key;
 
     public Physician () {}
