@@ -81,7 +81,7 @@ public class History extends CoraPage {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
         while (!timer.Timedout () && ! (found = isElementPresent (check))) {
-//            doForceClaim ();
+            doForceClaim ();
             timer.Wait ();
             refresh ();
         }
@@ -94,7 +94,7 @@ public class History extends CoraPage {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status, substatus))) {
-//            doForceClaim ();
+            doForceClaim ();
             timer.Wait ();
             refresh ();
         }
@@ -107,7 +107,7 @@ public class History extends CoraPage {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status))) {
-//            doForceClaim ();
+            doForceClaim ();
             timer.Wait ();
             refresh ();
         }
