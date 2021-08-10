@@ -31,9 +31,11 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -57,6 +59,7 @@ import com.adaptivebiotech.pipeline.dto.Status;
 import com.adaptivebiotech.pipeline.utils.PageHelper.JobStatus;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
+import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
@@ -365,7 +368,8 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         for (String icdCode : icdCodes)
             billing.enterPatientICD_Codes (icdCode);
 
-        billing.clickAssayTest (ID_BCell2_IVD);
+        List <Assay> assayTests = Arrays.asList (ID_BCell2_IVD, ID_BCell2_CLIA);
+        billing.clickAssayTest (assayTests.get (new Random ().nextInt (assayTests.size ())));
         billing.selectBilling (InternalPharmaBilling);
         billing.clickSave ();
 
