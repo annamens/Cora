@@ -1,9 +1,9 @@
 package com.adaptivebiotech.cora.ui.mira;
 
-import static org.testng.Assert.assertEquals;
-import static org.openqa.selenium.Keys.RETURN;
-import static org.testng.Assert.assertTrue;
 import static com.seleniumfy.test.utils.Logging.info;
+import static org.openqa.selenium.Keys.RETURN;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +34,7 @@ public class MirasList extends CoraPage {
     private MirasListHelper mirasListHelper          = new MirasListHelper ();
     private final String    searchTypeDropdown       = "//span[contains(@class, 'list-search-type-container')]/dropdown-filter/div[contains(@class, 'dropdown')]";
     private final String    searchTypeDropdownButton = searchTypeDropdown + "/button";
+    private final String    searchField              = "input[type='search']";
 
     public MirasList () {
         staticNavBarHeight = 90;
@@ -49,7 +50,7 @@ public class MirasList extends CoraPage {
     }
 
     public void searchMira (String miraId) {
-        assertTrue (setText ("[placeholder='M-000000']", miraId));
+        assertTrue (setText (searchField, miraId));
         assertTrue (pressKey (RETURN));
     }
 
@@ -69,7 +70,6 @@ public class MirasList extends CoraPage {
     }
 
     public void searchForMira (String miraId) {
-        String searchField = "input[type='search']";
         String firstResult = "//table[contains(@class, 'mira-table')]/tbody/tr[1]/td[1]/a/span";
 
         assertTrue (setText (searchField, miraId));
