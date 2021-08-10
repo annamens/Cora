@@ -72,8 +72,7 @@ public class MirasList extends CoraPage {
     public void searchForMira (String miraId) {
         String firstResult = "//table[contains(@class, 'mira-table')]/tbody/tr[1]/td[1]/a/span";
 
-        assertTrue (setText (searchField, miraId));
-        assertTrue (pressKey (RETURN));
+        searchMira (miraId);
         pageLoading ();
 
         waitForFirstMiraId (miraId, firstResult);

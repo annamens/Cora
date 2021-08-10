@@ -31,11 +31,9 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -113,13 +111,24 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder1FlagOn () {
+    public void verifyIgHVStageAndReportFeatureOrder1IVDFeatureFlagOn () {
+        order1 (ID_BCell2_IVD);
+    }
+
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder1CLIAFeatureFlagOn () {
+        order1 (ID_BCell2_CLIA);
+    }
+
+    private void order1 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 1
         createOrder (IgHVPhysician,
+                     assayTest,
                      CellPellet,
                      PBMC,
                      new String[] { c83_00, c91_10 },
@@ -143,13 +152,30 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder2FlagOn () {
+    public void verifyIgHVStageAndReportFeatureOrder2IVDFeatureFlagOn () {
+        order2 (ID_BCell2_IVD);
+    }
+
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder2CLIAFeatureFlagOn () {
+        order2 (ID_BCell2_CLIA);
+    }
+
+    private void order2 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 2
         createOrder (NYPhysician,
+                     assayTest,
                      CellPellet,
                      PBMC,
                      new String[] { c83_00 },
@@ -173,13 +199,30 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder3FlagOn () {
+    public void verifyIgHVStageAndReportFeatureOrder3IVDFeatureFlagOn () {
+        order3 (ID_BCell2_IVD);
+    }
+
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder3CLIAFeatureFlagOn () {
+        order3 (ID_BCell2_CLIA);
+    }
+
+    private void order3 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 3
         createOrder (IgHVPhysician,
+                     ID_BCell2_IVD,
                      gDNA,
                      BoneMarrow,
                      new String[] { c91_10 },
@@ -203,13 +246,30 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder4FlagOn () {
+    public void verifyIgHVStageAndReportFeatureOrder4IVDFeatureFlagOn () {
+        order4 (ID_BCell2_IVD);
+    }
+
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder4CLIAFeatureFlagOn () {
+        order4 (ID_BCell2_CLIA);
+    }
+
+    private void order4 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 4
         createOrder (IgHVPhysician,
+                     ID_BCell2_IVD,
                      Blood,
                      null,
                      new String[] { c91_10 },
@@ -233,13 +293,30 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder5FlagOn () {
+    public void verifyIgHVStageAndReportFeatureOrder5IVDFeatureFlagOn () {
+        order5 (ID_BCell2_IVD);
+    }
+
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder5CLIAFeatureFlagOn () {
+        order5 (ID_BCell2_CLIA);
+    }
+
+    private void order5 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 5
         createOrder (IgHVPhysician,
+                     ID_BCell2_IVD,
                      FFPEScrolls,
                      LymphNode,
                      new String[] { c83_00, c91_10 },
@@ -259,13 +336,30 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder6FlagOn () {
+    public void verifyIgHVStageAndReportFeatureOrder6IVDFeatureFlagOn () {
+        order6 (ID_BCell2_IVD);
+    }
+
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder6CLIAFeatureFlagOn () {
+        order6 (ID_BCell2_CLIA);
+    }
+
+    private void order6 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 6
         createOrder (IgHVPhysician,
+                     ID_BCell2_IVD,
                      CellSuspension,
                      BCells,
                      new String[] { c83_00, c91_10 },
@@ -280,19 +374,35 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         validateShmAnalysisNotEnabled (stages);
         testLog ("step 14 - 1 - order6 - ​ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order6 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
-
     }
 
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-T3689, SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder7FlagOn () {
+    public void verifyIgHVStageAndReportFeatureOrder7IVDFeatureFlagOn () {
+        order7 (ID_BCell2_IVD);
+    }
+
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag ON
+     * 
+     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     *                    NOTE: SR-T3689
+     */
+    @Test (groups = "featureFlagOn")
+    public void verifyIgHVStageAndReportFeatureOrder7CLIAFeatureFlagOn () {
+        order7 (ID_BCell2_CLIA);
+    }
+
+    private void order7 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 7
         createOrder (IgHVPhysician,
+                     ID_BCell2_IVD,
                      CellPellet,
                      PBMC,
                      new String[] { c90_00 },
@@ -312,13 +422,30 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag OFF
      * 
-     * @sdlc_requirements SR-T3689, SR-6656:R7
+     * @sdlc_requirements SR-6656:R7
+     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOff")
-    public void verifyIgHVStageAndReportFeatureFlagOff () {
+    public void verifyIgHVStageAndReportIVDFeatureFlagOff () {
+        order8 (ID_BCell2_IVD);
+    }
+
+    /**
+     * Ask the Cora dev team to turn the IgHV feature flag OFF
+     * 
+     * @sdlc_requirements SR-6656:R7
+     *                    NOTE: SR-T3689
+     */
+    @Test (groups = "featureFlagOff")
+    public void verifyIgHVStageAndReportCLIAFeatureFlagOff () {
+        order8 (ID_BCell2_CLIA);
+    }
+
+    private void order8 (Assay assayTest) {
         assertFalse (isIgHVFlag, "Validate IgHV flag is false before test starts");
         // order 8
         createOrder (IgHVPhysician,
+                     ID_BCell2_IVD,
                      CellPellet,
                      PBMC,
                      new String[] { c83_00, c91_10 },
@@ -344,6 +471,8 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      * 
      * @param physician
      *            Physician object
+     * @param assayTest
+     *            Assay Test
      * @param specimenType
      *            SpecimenType
      * @param specimenSource
@@ -354,6 +483,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      *            order notes
      */
     private void createOrder (Physician physician,
+                              Assay assayTest,
                               SpecimenType specimenType,
                               SpecimenSource specimenSource,
                               String[] icdCodes,
@@ -367,9 +497,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         billing.createNewPatient (TestHelper.newInsurancePatient ());
         for (String icdCode : icdCodes)
             billing.enterPatientICD_Codes (icdCode);
-
-        List <Assay> assayTests = Arrays.asList (ID_BCell2_IVD, ID_BCell2_CLIA);
-        billing.clickAssayTest (assayTests.get (new Random ().nextInt (assayTests.size ())));
+        billing.clickAssayTest (assayTest);
         billing.selectBilling (InternalPharmaBilling);
         billing.clickSave ();
 
