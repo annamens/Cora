@@ -148,6 +148,8 @@ public class Billing extends Diagnostic {
         enterInsurance1GroupNumber (patient.insurance1.groupNumber);
         enterInsurance1Policy (patient.insurance1.policyNumber);
         enterInsurance1Relationship (patient.insurance1.insuredRelationship);
+        if (!patient.insurance1.policyholder.equalsIgnoreCase ("self"))
+            enterInsurance1PolicyHolder (patient.insurance1.policyholder);
         enterInsurance1PatientStatus (patient.insurance1.hospitalizationStatus);
         enterInsurance1Hospital (patient.insurance1.billingInstitution);
         enterInsurance1Discharge (patient.insurance1.dischargeDate);
@@ -156,6 +158,8 @@ public class Billing extends Diagnostic {
         enterInsurance2GroupNumber (patient.insurance2.groupNumber);
         enterInsurance2Policy (patient.insurance2.policyNumber);
         enterInsurance2Relationship (patient.insurance2.insuredRelationship);
+        if (!patient.insurance2.policyholder.equalsIgnoreCase ("self"))
+            enterInsurance2PolicyHolder (patient.insurance2.policyholder);
     }
 
     public void enterBill (Patient patient) {
