@@ -2,6 +2,8 @@ package com.adaptivebiotech.cora.test.order;
 
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestPass;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUser;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_IVD;
@@ -30,11 +32,13 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.io.FileInputStream;
-import java.util.ArrayList;
 import java.util.Base64;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.apache.http.message.BasicHeader;
+import org.json.JSONArray;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Physician;
@@ -52,9 +56,6 @@ import com.adaptivebiotech.cora.ui.workflow.FeatureFlags;
 import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
-import com.adaptivebiotech.pipeline.dto.Flowcells.Flowcell;
-import com.adaptivebiotech.pipeline.dto.Status;
-import com.adaptivebiotech.pipeline.utils.PageHelper.JobStatus;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -65,12 +66,18 @@ import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.seleniumfy.test.utils.HttpClientHelper;
-import com.seleniumfy.test.utils.Timeout;
 
 public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     private Physician    IgHVPhysician;
     private Physician    NYPhysician;
+    private Billing      billing                       = new Billing ();
+    private Specimen     specimen                      = new Specimen ();
+    private Shipment     shipment                      = new Shipment ();
+    private Accession    accession                     = new Accession ();
+    private Diagnostic   diagnostic                    = new Diagnostic ();
+    private History      history                       = new History ();
+    private FeatureFlags featureFlagsPage              = new FeatureFlags ();
 
     private final String c91_10                        = "C91.10";
     private final String c83_00                        = "C83.00";
@@ -85,6 +92,8 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     private final String sampleNameO3O4                = "96633-08MC-UA001BM";
 
     private boolean      isIgHVFlag;
+    private final byte[] authBytes                     = (pipelinePortalTestUser + ":" + pipelinePortalTestPass).getBytes ();
+    private final String portalTestAuth                = "Basic " + Base64.getEncoder ().encodeToString (authBytes);
 
     @BeforeMethod
     public void beforeMethod () {
@@ -101,17 +110,22 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
         new Login ().doLogin ();
         new OrdersList ().isCorrectPage ();
-        FeatureFlags featureFlagsPage = new FeatureFlags ();
         featureFlagsPage.navigateToFeatureFlagsPage ();
         Map <String, String> featureFlags = featureFlagsPage.getFeatureFlags ();
         isIgHVFlag = Boolean.valueOf (featureFlags.get ("IgHV"));
 
+        HttpClientHelper.headers.get ().add (new BasicHeader ("Authorization", portalTestAuth));
     }
-
+    
+    @AfterMethod
+    public void afterMEthod () {
+        HttpClientHelper.headers.get ().remove (new BasicHeader ("Authorization", portalTestAuth));
+    }
+    
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -133,15 +147,15 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      PBMC,
                      new String[] { c83_00, c91_10 },
                      "Order 1 Flag On");
-        List <Stage> stages = forceStatusUpdate (tsvOverridePathO1O2,
-                                                 lastFinishedPipelineJobIdO1O2,
-                                                 sampleNameO1O2,
-                                                 "true",
-                                                 "true");
+        forceStatusUpdate (tsvOverridePathO1O2,
+                           lastFinishedPipelineJobIdO1O2,
+                           sampleNameO1O2,
+                           "true",
+                           "true");
         testLog ("step 1 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 2 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        waitForPipelineStatusToComplete (stages);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 2 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
         releaseReport (true, true);
@@ -152,7 +166,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -163,7 +177,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -180,15 +194,15 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      PBMC,
                      new String[] { c83_00 },
                      "Order 2 Flag On");
-        List <Stage> stages = forceStatusUpdate (tsvOverridePathO1O2,
-                                                 lastFinishedPipelineJobIdO1O2,
-                                                 sampleNameO1O2,
-                                                 "false",
-                                                 "true");
+        forceStatusUpdate (tsvOverridePathO1O2,
+                           lastFinishedPipelineJobIdO1O2,
+                           sampleNameO1O2,
+                           "false",
+                           "true");
         testLog ("step 5 - ighvAnalysisEnabled is true, ighvReportEnabled is false (or absent)");
         testLog ("step 6 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        waitForPipelineStatusToComplete (stages);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 6 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
         releaseReport (false, false);
@@ -199,7 +213,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -210,7 +224,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -227,15 +241,15 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      BoneMarrow,
                      new String[] { c91_10 },
                      "Order 3 Flag On");
-        List <Stage> stages = forceStatusUpdate (tsvOverridePathO3O4,
-                                                 lastFinishedPipelineJobIdO3O4,
-                                                 sampleNameO3O4,
-                                                 "true",
-                                                 "true");
+        forceStatusUpdate (tsvOverridePathO3O4,
+                           lastFinishedPipelineJobIdO3O4,
+                           sampleNameO3O4,
+                           "true",
+                           "true");
         testLog ("step 9, order3 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 10 - 1 - order3 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        waitForPipelineStatusToComplete (stages);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 10 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
         releaseReport (true, true);
@@ -246,7 +260,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -257,7 +271,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -274,15 +288,15 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      null,
                      new String[] { c91_10 },
                      "Order 4 Flag On");
-        List <Stage> stages = forceStatusUpdate (tsvOverridePathO3O4,
-                                                 lastFinishedPipelineJobIdO3O4,
-                                                 sampleNameO3O4,
-                                                 "true",
-                                                 "true");
+        forceStatusUpdate (tsvOverridePathO3O4,
+                           lastFinishedPipelineJobIdO3O4,
+                           sampleNameO3O4,
+                           "true",
+                           "true");
         testLog ("step 9, order4 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 10 - 1 - order4 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        waitForPipelineStatusToComplete (stages);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 10 - 2 - order4 - An eos.shm analysis job was spawned and Completed in portal");
 
         releaseReport (true, true);
@@ -293,7 +307,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -304,7 +318,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -321,22 +335,22 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      LymphNode,
                      new String[] { c83_00, c91_10 },
                      "Order 6 Flag On");
-        List <Stage> stages = forceStatusUpdate (tsvOverridePathO5O6O7O8,
-                                                 null,
-                                                 null,
-                                                 null,
-                                                 null);
+        forceStatusUpdate (tsvOverridePathO5O6O7O8,
+                           null,
+                           null,
+                           null,
+                           null);
         testLog ("step 13, order5 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateShmAnalysisNotEnabled (stages);
-        testLog ("step 14 - 1 - order5 - ​ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
+        validateShmAnalysisNotEnabled ();
+        testLog ("step 14 - 1 - order5 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order5 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
     }
 
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -347,7 +361,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -364,14 +378,14 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      BCells,
                      new String[] { c83_00, c91_10 },
                      "Order 6 Flag On");
-        List <Stage> stages = forceStatusUpdate (tsvOverridePathO5O6O7O8,
-                                                 null,
-                                                 null,
-                                                 null,
-                                                 null);
+        forceStatusUpdate (tsvOverridePathO5O6O7O8,
+                           null,
+                           null,
+                           null,
+                           null);
         testLog ("step 13, order6 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateShmAnalysisNotEnabled (stages);
+        validateShmAnalysisNotEnabled ();
         testLog ("step 14 - 1 - order6 - ​ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order6 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
     }
@@ -379,7 +393,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -390,7 +404,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
-     * @sdlc_requirements SR-6656:R1, SR-6656:R3, SR-6656:R4, SR-6656:R5, SR-6656:R6
+     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
      *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
@@ -407,14 +421,14 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      PBMC,
                      new String[] { c90_00 },
                      "Order 7 Flag On");
-        List <Stage> stages = forceStatusUpdate (tsvOverridePathO5O6O7O8,
-                                                 null,
-                                                 null,
-                                                 null,
-                                                 null);
+        forceStatusUpdate (tsvOverridePathO5O6O7O8,
+                           null,
+                           null,
+                           null,
+                           null);
         testLog ("step 13, order7 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateShmAnalysisNotEnabled (stages);
+        validateShmAnalysisNotEnabled ();
         testLog ("step 14 - 1 - order7 - ​ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order7 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
     }
@@ -450,14 +464,14 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      PBMC,
                      new String[] { c83_00, c91_10 },
                      "Order 8 Flag Off");
-        List <Stage> stages = forceStatusUpdate (tsvOverridePathO5O6O7O8,
-                                                 null,
-                                                 null,
-                                                 "false",
-                                                 "false");
+        forceStatusUpdate (tsvOverridePathO5O6O7O8,
+                           null,
+                           null,
+                           "false",
+                           "false");
         testLog ("step 15 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateShmAnalysisNotEnabled (stages);
+        validateShmAnalysisNotEnabled ();
         testLog ("step 16 - 1 - ​ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 16 - 2 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
 
@@ -489,7 +503,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                               String[] icdCodes,
                               String orderNotes) {
         // create clonoSEQ diagnostic order
-        Billing billing = new Billing ();
         billing.selectNewClonoSEQDiagnosticOrder ();
         billing.isCorrectPage ();
 
@@ -502,7 +515,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         billing.clickSave ();
 
         // add specimen details for order
-        Specimen specimen = new Specimen ();
         specimen.enterSpecimenDelivery (CustomerShipment);
         specimen.clickEnterSpecimenDetails ();
         specimen.enterSpecimenType (specimenType);
@@ -518,7 +530,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         Logging.info ("Order Number: " + orderNum);
 
         // add diagnostic shipment
-        Shipment shipment = new Shipment ();
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
         shipment.enterShippingCondition (Ambient);
@@ -528,7 +539,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         shipment.gotoAccession ();
 
         // accession complete
-        Accession accession = new Accession ();
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
         accession.labelingComplete ();
@@ -537,7 +547,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         accession.gotoOrderDetail ();
 
         // activate order
-        Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
         doWait (2000);
         diagnostic.activateOrder ();
@@ -552,16 +561,14 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      * @param sampleName
      * @param expectedIghvReportEnabled
      * @param expectedIghvAnalysisEnabled
-     * @return
      */
-    private List <Stage> forceStatusUpdate (String tsvOverridePath,
-                                            String lastFinishedPipelineJobId,
-                                            String sampleName,
-                                            String expectedIghvReportEnabled,
-                                            String expectedIghvAnalysisEnabled) {
+    private void forceStatusUpdate (String tsvOverridePath,
+                                    String lastFinishedPipelineJobId,
+                                    String sampleName,
+                                    String expectedIghvReportEnabled,
+                                    String expectedIghvAnalysisEnabled) {
         // debug page - get workflow properties
-        History history = new History ();
-        history.gotoOrderDebug (new Diagnostic ().getSampleName ());
+        history.gotoOrderDebug (diagnostic.getSampleName ());
         Map <String, String> workflowProperties = history.getWorkflowProperties ();
 
         assertEquals (workflowProperties.getOrDefault ("ighvReportEnabled", null),
@@ -590,18 +597,16 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
         assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
 
-        return history.parseStatusHistory ();
-
     }
 
     /**
      * validate that ShmAnalysis stage contains Ready and Finished stage status, and pipeline-portal
      * job is not created
      * 
-     * @param stages
      */
-    private void validateShmAnalysisNotEnabled (List <Stage> stages) {
-        List <Stage> shmAnalysisStages = new ArrayList <> ();
+    private void validateShmAnalysisNotEnabled () {
+        List <Stage> stages = history.parseStatusHistory ();
+        List <Stage> shmAnalysisStages = new LinkedList <> ();
         for (Stage stage : stages) {
             if (stage.stageName.equals (StageName.ShmAnalysis))
                 shmAnalysisStages.add (stage);
@@ -621,12 +626,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      * @param expectedShmReportKey
      */
     private void releaseReport (boolean expectedCLIAIGHVFlag, boolean expectedShmReportKey) {
-        History history = new History ();
         history.isCorrectPage ();
         history.clickOrderTest ();
 
         // navigate to order status page
-        Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isOrderStatusPage ();
         diagnostic.clickReportTab (ID_BCell2_CLIA);
         assertEquals (diagnostic.isCLIAIGHVBtnPresent (),
@@ -651,57 +654,28 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * Wait for pipeline portal job to complete and validate job is completed
+     * validate pipeline portal job is completed
      * 
-     * @param stages
+     * @param sampleName
+     * @param assayTest
      */
-    private void waitForPipelineStatusToComplete (List <Stage> stages) {
-        // get flowCellId from drillDown link, next to shmAnalysis stage
-        String drillDownUrl = null;
-        for (Stage stage : stages) {
-            testLog ("Checking Stage: " + stage.toString ());
-            if (stage.drilldownUrl != null && stage.drilldownUrl.contains ("qcsummary")) {
-                testLog ("ShmAnalysis stage found: " + stage.toString ());
-                drillDownUrl = stage.drilldownUrl;
-            }
-        }
+    private void validatePipelineStatusToComplete (String sampleName, Assay assayTest) {
+        // pipeline portal url and end-point
+        String url = assayTest.equals (ID_BCell2_IVD) ? portalIvdTestUrl : portalCliaTestUrl;
+        String endpoint = "/flowcells?page=0&pageSize=1&select=id&samples.reactions.configuration.name=eos.shm&samples.name=" + sampleName + "&job.statuses.status=COMPLETED";
+        testLog ("URL: " + url + ", endpoint: " + endpoint);
 
-        String flowCellId = drillDownUrl.replace ("/qcsummary", "").split ("flowcells/", 2)[1];
-        testLog ("flow cell id: " + flowCellId);
-
-        // check every 30 seconds for max 30 minutes
-        Timeout timer = new Timeout (1800000, 30000);
-
-        // pipeline portal header and end-point
-        byte[] authBytes = (pipelinePortalTestUser + ":" + pipelinePortalTestPass).getBytes ();
-        String portalTestAuth = "Basic " + Base64.getEncoder ().encodeToString (authBytes);
-
-        HttpClientHelper.headers.get ().add (new BasicHeader ("Authorization", portalTestAuth));
-
-        String jobId;
+        JSONArray response;
         try {
-            jobId = mapper.readValue (get (CoraEnvironment.pipelinePortalTestUrl + "/flowcells?id=" + flowCellId),
-                                      Flowcell[].class)[0].jobId;
-            testLog ("Job Id: " + jobId);
+            String getString = get (url + endpoint);
+            testLog ("Get Response: " + getString);
+            response = new JSONArray (getString);
+            testLog ("Response: " + response);
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
 
-        String jobIdEndpoint = "/statuses?sort=-serialNum&select=status%2Cstarted%2CcreatedBy%2CserialNum&pageSize=2&job.id=" + jobId;
-        Status status;
-        do {
-            try {
-                status = mapper.readValue (HttpClientHelper.get (CoraEnvironment.pipelinePortalTestUrl + jobIdEndpoint),
-                                           Status[].class)[0];
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
-            timer.Wait ();
-        } while (!timer.Timedout () && status.status != JobStatus.COMPLETED);
-
-        HttpClientHelper.headers.get ().remove (new BasicHeader ("Authorization", portalTestAuth));
-        testLog ("Last status: " + status.status + " for job ID: " + jobId);
-
-        assertEquals (status.status, JobStatus.COMPLETED, "Validate pipeline portal job is completed");
+        assertEquals (response.length (), 1, "Validate pipeline portal job is completed");
     }
+
 }

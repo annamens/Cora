@@ -12,7 +12,8 @@ public class CoraEnvironment extends BaseEnvironment {
     public static String NYphysicianLastName;
     public static String NYphysicianFirstName;
 
-    public static String pipelinePortalTestUrl;
+    public static String portalCliaTestUrl;
+    public static String portalIvdTestUrl;
     public static String pipelinePortalTestUser;
     public static String pipelinePortalTestPass;
 
@@ -29,7 +30,8 @@ public class CoraEnvironment extends BaseEnvironment {
             NYphysicianLastName = "IgHV";
             NYphysicianFirstName = "Selenium";
 
-            pipelinePortalTestUrl = format (appConfig.getProperty ("portal.test.url"), env);
+            portalCliaTestUrl = format (appConfig.getProperty ("portal.clia.test.url"), env);
+            portalIvdTestUrl = format (appConfig.getProperty ("portal.ivd.test.url"), env);
             pipelinePortalTestUser = appConfig.getProperty ("portal.test.user");
             pipelinePortalTestPass = decrypt (appConfig.getProperty ("portal.test.pass"));
 

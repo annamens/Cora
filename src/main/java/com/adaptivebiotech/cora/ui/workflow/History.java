@@ -25,7 +25,7 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class History extends CoraPage {
 
-    private final long millisRetry = 9000000l; // 50mins
+    private final long millisRetry = 3000000l; // 50mins
     private final long waitRetry   = 60000l;   // 60sec
 
     public History () {
