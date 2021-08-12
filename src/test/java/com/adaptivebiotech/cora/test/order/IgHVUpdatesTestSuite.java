@@ -386,7 +386,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         testLog ("step 13, order6 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         validateShmAnalysisNotEnabled ();
-        testLog ("step 14 - 1 - order6 - ​ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
+        testLog ("step 14 - 1 - order6 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order6 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
     }
 
@@ -429,7 +429,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         testLog ("step 13, order7 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         validateShmAnalysisNotEnabled ();
-        testLog ("step 14 - 1 - order7 - ​ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
+        testLog ("step 14 - 1 - order7 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order7 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
     }
 
@@ -640,6 +640,8 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         diagnostic.releaseReport ();
 
         // validate reportData.json file
+        diagnostic.clickOrderDetailsTab ();
+        diagnostic.isCorrectPage ();
         history.gotoOrderDebug (diagnostic.getSampleName ());
 
         Map <String, Object> reportData = null;
@@ -667,9 +669,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
         JSONArray response;
         try {
-            String getString = get (url + endpoint);
-            testLog ("Get Response: " + getString);
-            response = new JSONArray (getString);
+            response = new JSONArray (get (url + endpoint));
             testLog ("Response: " + response);
         } catch (Exception e) {
             throw new RuntimeException (e);

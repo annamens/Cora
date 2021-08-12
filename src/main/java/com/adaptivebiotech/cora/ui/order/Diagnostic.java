@@ -119,7 +119,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickOrderDetailsTab () {
-        String css = "[ng-click=\"ctrl.tab='detail';\"]";
+        String css = "[role='tablist'] li:nth-child(2)";
         assertTrue (click (css));
         pageLoading ();
     }
