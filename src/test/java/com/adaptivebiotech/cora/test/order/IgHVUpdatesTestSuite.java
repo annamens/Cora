@@ -116,7 +116,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
         HttpClientHelper.headers.get ().add (new BasicHeader ("Authorization", portalTestAuth));
     }
-    
+
     @AfterMethod
     public void afterMEthod () {
         HttpClientHelper.headers.get ().remove (new BasicHeader ("Authorization", portalTestAuth));
@@ -124,12 +124,9 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder1CLIAFeatureFlagOn () {
-        order1 (ID_BCell2_CLIA);
-    }
-
-    private void order1 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 1
+        Assay assayTest = ID_BCell2_CLIA;
         createOrder (IgHVPhysician,
                      assayTest,
                      CellPellet,
@@ -151,7 +148,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         testLog ("step 3 - CLIA-IGHV flag appears just below the Report tab ");
         testLog ("step 4 - SHM analysis results are included in reportData.json within shmReportResult property");
     }
-    
+
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
@@ -160,14 +157,11 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder2CLIAFeatureFlagOn () {
-        order2 (ID_BCell2_CLIA);
-    }
-
-    private void order2 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 2
+        Assay assayTest = ID_BCell2_CLIA;
         createOrder (NYPhysician,
-                     assayTest,
+                     ID_BCell2_CLIA,
                      CellPellet,
                      PBMC,
                      new String[] { c83_00 },
@@ -196,12 +190,9 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder3IVDFeatureFlagOn () {
-        order3 (ID_BCell2_IVD);
-    }
-
-    private void order3 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 3
+        Assay assayTest = ID_BCell2_IVD;
         createOrder (IgHVPhysician,
                      assayTest,
                      gDNA,
@@ -232,12 +223,9 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder4IVDFeatureFlagOn () {
-        order4 (ID_BCell2_IVD);
-    }
-
-    private void order4 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 4
+        Assay assayTest = ID_BCell2_IVD;
         createOrder (IgHVPhysician,
                      assayTest,
                      Blood,
@@ -268,14 +256,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder5CLIAFeatureFlagOn () {
-        order5 (ID_BCell2_CLIA);
-    }
-
-    private void order5 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 5
         createOrder (IgHVPhysician,
-                     assayTest,
+                     ID_BCell2_CLIA,
                      FFPEScrolls,
                      LymphNode,
                      new String[] { c83_00, c91_10 },
@@ -300,14 +284,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder6IVDFeatureFlagOn () {
-        order6 (ID_BCell2_IVD);
-    }
-
-    private void order6 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 6
         createOrder (IgHVPhysician,
-                     assayTest,
+                     ID_BCell2_IVD,
                      CellSuspension,
                      BCells,
                      new String[] { c83_00, c91_10 },
@@ -332,14 +312,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder7IVDFeatureFlagOn () {
-        order7 (ID_BCell2_IVD);
-    }
-
-    private void order7 (Assay assayTest) {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 7
         createOrder (IgHVPhysician,
-                     assayTest,
+                     ID_BCell2_IVD,
                      CellPellet,
                      PBMC,
                      new String[] { c90_00 },
@@ -364,14 +340,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "featureFlagOff")
     public void verifyIgHVStageAndReportCLIAFeatureFlagOff () {
-        order8 (ID_BCell2_CLIA);
-    }
-
-    private void order8 (Assay assayTest) {
         assertFalse (isIgHVFlag, "Validate IgHV flag is false before test starts");
         // order 8
         createOrder (IgHVPhysician,
-                     assayTest,
+                     ID_BCell2_CLIA,
                      CellPellet,
                      PBMC,
                      new String[] { c83_00, c91_10 },
@@ -422,7 +394,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         billing.createNewPatient (TestHelper.newInsurancePatient ());
         for (String icdCode : icdCodes)
             billing.enterPatientICD_Codes (icdCode);
-        billing.clickAssayTest (assayTest);
         billing.selectBilling (InternalPharmaBilling);
         billing.clickSave ();
 
@@ -460,7 +431,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
         // activate order
         diagnostic.isCorrectPage ();
-        doWait (2000);
+        diagnostic.clickAssayTest (assayTest);
         diagnostic.activateOrder ();
     }
 
