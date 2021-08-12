@@ -8,11 +8,13 @@ import static com.adaptivebiotech.test.BaseEnvironment.version;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.seleniumfy.test.utils.HttpClientHelper.formPost;
+import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import com.adaptivebiotech.test.TestBase;
@@ -22,6 +24,7 @@ public class CoraBaseBrowser extends TestBase {
     static {
         initialization ();
         testLog ("Current branch: " + version);
+        headers.get ().add (new BasicHeader ("X-Api-UserName", coraTestUser));
     }
 
     @BeforeClass (alwaysRun = true)
