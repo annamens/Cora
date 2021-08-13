@@ -4,6 +4,7 @@ import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestPa
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUser;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_IVD;
@@ -31,7 +32,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import java.io.FileInputStream;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
@@ -113,13 +113,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         featureFlagsPage.navigateToFeatureFlagsPage ();
         Map <String, String> featureFlags = featureFlagsPage.getFeatureFlags ();
         isIgHVFlag = Boolean.valueOf (featureFlags.get ("IgHV"));
-
-        HttpClientHelper.headers.get ().add (new BasicHeader ("Authorization", portalTestAuth));
-    }
-
-    @AfterMethod
-    public void afterMEthod () {
-        HttpClientHelper.headers.get ().remove (new BasicHeader ("Authorization", portalTestAuth));
     }
 
     @Test (groups = "featureFlagOn")
@@ -531,14 +524,17 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         diagnostic.isCorrectPage ();
         history.gotoOrderDebug (diagnostic.getSampleName ());
 
+        // get file using get request
+        doCoraLogin ();
         Map <String, Object> reportData = null;
         try {
-            reportData = mapper.readValue (new FileInputStream (history.downloadFile ("reportData.json")),
+            reportData = mapper.readValue (get (history.getFileUrl ("reportData.json")),
                                            new TypeReference <Map <String, Object>> () {});
         } catch (Exception e) {
             e.printStackTrace ();
         }
         testLog ("Json File Data " + reportData.toString ());
+        HttpClientHelper.headers.get ().remove (new BasicHeader ("X-Api-UserName", coraTestUser));
         assertEquals (reportData.containsKey ("shmReportResult"), expectedShmReportKey);
     }
 
@@ -549,10 +545,11 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      * @param assayTest
      */
     private void validatePipelineStatusToComplete (String sampleName, Assay assayTest) {
+        HttpClientHelper.headers.get ().add (new BasicHeader ("Authorization", portalTestAuth));
         // pipeline portal url and end-point
         String url = assayTest.equals (ID_BCell2_IVD) ? portalIvdTestUrl : portalCliaTestUrl;
         String endpoint = "/flowcells?page=0&pageSize=1&select=id&samples.reactions.configuration.name=eos.shm&samples.name=" + sampleName + "&job.statuses.status=COMPLETED";
-        testLog ("URL: " + url + ", endpoint: " + endpoint);
+        testLog ("URL: " + url + endpoint);
 
         JSONArray response;
         try {
@@ -561,7 +558,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
-
+        HttpClientHelper.headers.get ().remove (new BasicHeader ("Authorization", portalTestAuth));
         assertEquals (response.length (), 1, "Validate pipeline portal job is completed");
     }
 
