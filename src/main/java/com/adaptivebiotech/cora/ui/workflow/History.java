@@ -73,8 +73,8 @@ public class History extends CoraPage {
         getDriver ().navigate ().back ();
         return report;
     }
-    
-    public String getFileUrl(String fileName) {
+
+    public String getFileUrl (String fileName) {
         assertTrue (isElementVisible (format ("//a[text()='%s']", fileName)));
         return getAttribute (format ("//a[text()='%s']", fileName), "href");
     }
