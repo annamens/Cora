@@ -144,7 +144,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 2 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
-        releaseReport (true, true);
+        releaseReport (assayTest, true, true);
         testLog ("step 3 - CLIA-IGHV flag appears just below the Report tab ");
         testLog ("step 4 - SHM analysis results are included in reportData.json within shmReportResult property");
     }
@@ -161,7 +161,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         // order 2
         Assay assayTest = ID_BCell2_CLIA;
         createOrder (NYPhysician,
-                     ID_BCell2_CLIA,
+                     assayTest,
                      CellPellet,
                      PBMC,
                      new String[] { c83_00 },
@@ -177,7 +177,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 6 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
-        releaseReport (false, false);
+        releaseReport (assayTest, false, false);
         testLog ("step 7 - CLIA-IGHV flag does not appear below the Report tab ");
         testLog ("step 8 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
@@ -210,7 +210,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 10 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
-        releaseReport (true, true);
+        releaseReport (assayTest, true, true);
         testLog ("step 11, order3 - CLIA-IGHV flag does not appear below the Report tab ");
         testLog ("step 12, order3 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
@@ -243,7 +243,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 10 - 2 - order4 - An eos.shm analysis job was spawned and Completed in portal");
 
-        releaseReport (true, true);
+        releaseReport (assayTest, true, true);
         testLog ("step 11, order3 - CLIA-IGHV flag does not appear below the Report tab ");
         testLog ("step 12, order3 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
@@ -287,10 +287,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 6
         createOrder (IgHVPhysician,
-                     ID_BCell2_IVD,
+                     ID_BCell2_CLIA,
                      CellSuspension,
                      BCells,
-                     new String[] { c83_00, c91_10 },
+                     new String[] { c91_10 },
                      "Order 6 Flag On");
         forceStatusUpdate (tsvOverridePathO5O6O7O8,
                            null,
@@ -315,7 +315,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
         // order 7
         createOrder (IgHVPhysician,
-                     ID_BCell2_IVD,
+                     ID_BCell2_CLIA,
                      CellPellet,
                      PBMC,
                      new String[] { c90_00 },
@@ -342,8 +342,9 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     public void verifyIgHVStageAndReportCLIAFeatureFlagOff () {
         assertFalse (isIgHVFlag, "Validate IgHV flag is false before test starts");
         // order 8
+        Assay assayTest = ID_BCell2_CLIA;
         createOrder (IgHVPhysician,
-                     ID_BCell2_CLIA,
+                     assayTest,
                      CellPellet,
                      PBMC,
                      new String[] { c83_00, c91_10 },
@@ -356,10 +357,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         testLog ("step 15 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         validateShmAnalysisNotEnabled ();
-        testLog ("step 16 - 1 - ​ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
+        testLog ("step 16 - 1 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 16 - 2 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
 
-        releaseReport (false, false);
+        releaseReport (assayTest, false, false);
         testLog ("step 17 - CLIA-IGHV flag did not appear below the Report tab");
         testLog ("step 18 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
@@ -505,17 +506,20 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     /**
      * Validate CLIA-IGHV flag on Report page and shmReportResult property on reportData.json file
      * 
+     * @param assayTest
      * @param expectedCLIAIGHVFlag
      * @param expectedShmReportKey
      */
-    private void releaseReport (boolean expectedCLIAIGHVFlag, boolean expectedShmReportKey) {
+    private void releaseReport (Assay assayTest,
+                                boolean expectedCLIAIGHVFlag,
+                                boolean expectedShmReportKey) {
         history.isCorrectPage ();
         history.clickOrderTest ();
 
         // navigate to order status page
         diagnostic.isOrderStatusPage ();
-        diagnostic.clickReportTab (ID_BCell2_CLIA);
-        assertEquals (diagnostic.isCLIAIGHVBtnPresent (),
+        diagnostic.clickReportTab (assayTest);
+        assertEquals (diagnostic.isCLIAIGHVBtnVisible (),
                       expectedCLIAIGHVFlag,
                       "Validate CLIA-IGHV flag");
 

@@ -930,8 +930,8 @@ public class Diagnostic extends CoraPage {
         String amendedRadio = "input#amended";
         assertTrue (click (amendedRadio));
     }
-    
-    public boolean isCLIAIGHVBtnPresent() {
-        return isElementPresent (btnCLIAIGHV);
+
+    public boolean isCLIAIGHVBtnVisible () {
+        return isElementVisible (btnCLIAIGHV);
     }
 }
