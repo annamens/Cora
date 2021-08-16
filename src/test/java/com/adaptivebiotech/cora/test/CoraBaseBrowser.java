@@ -4,6 +4,7 @@ import static com.adaptivebiotech.cora.test.CoraEnvironment.initialization;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.BaseEnvironment.gitcommitId;
 import static com.adaptivebiotech.test.BaseEnvironment.version;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -27,7 +28,7 @@ public class CoraBaseBrowser extends TestBase {
 
     static {
         initialization ();
-        testLog ("Current branch: " + version);
+        testLog (format ("Current branch: %s - %s", version, gitcommitId));
     }
 
     @BeforeClass (alwaysRun = true)
