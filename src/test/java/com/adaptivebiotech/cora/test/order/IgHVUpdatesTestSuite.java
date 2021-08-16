@@ -527,12 +527,16 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         doCoraLogin ();
         Map <String, Object> reportData = null;
         try {
-            reportData = mapper.readValue (get (history.getFileUrl ("reportData.json")),
+            String fileUrl = history.getFileUrl ("reportData.json");
+            testLog ("File URL: " + fileUrl);
+            String getResponse = get (fileUrl);
+            testLog ("File URL Response: " + getResponse);
+            reportData = mapper.readValue (getResponse,
                                            new TypeReference <Map <String, Object>> () {});
         } catch (Exception e) {
             e.printStackTrace ();
         }
-        testLog ("Json File Data " + reportData.toString ());
+        testLog ("Json File Data " + reportData);
         HttpClientHelper.headers.get ().remove (new BasicHeader ("X-Api-UserName", coraTestUser));
         assertEquals (reportData.containsKey ("shmReportResult"), expectedShmReportKey);
     }
