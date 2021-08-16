@@ -222,8 +222,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
 
         List <String> utilities = asList ("Alerts",
                                           "Audit Tool",
-                                          "Barcode Comparison Tool",
-                                          "Patient Merge Tool");
+                                          "Barcode Comparison Tool");
         pList.clickUtilities ();
         assertEquals (pList.getUtilitiesMenu (), utilities);
         pList.clickUtilities ();
