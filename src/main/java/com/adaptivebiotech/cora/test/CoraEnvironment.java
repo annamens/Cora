@@ -42,13 +42,6 @@ public class CoraEnvironment extends BaseEnvironment {
             pipelinePortalTestUser = getProperty ("portal.test.user");
             pipelinePortalTestPass = decrypt (getProperty ("portal.test.pass"));
             
-            coraDBHost = format (getProperty ("cora.db.host"), env);
-            coraDBUser = getProperty ("cora.db.user");
-            coraDBPass = getProperty ("cora.db.pass");
-            coraJumpBox = getProperty ("cora.db.jumpbox");
-
-            coraDBPass = getProperty ("ssh.user");
-            coraJumpBox = getProperty ("ssh.pass");
 
         } catch (Exception e) {
             error ("failed to parse the config file", e);
