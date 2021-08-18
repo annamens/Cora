@@ -37,6 +37,7 @@ public final class Workflow {
         public Boolean disableHiFreqSave;
         public Boolean disableHiFreqSharing;
         public Boolean skipNorthQCToContam;
+        public String  shmDataSourcePath;
     }
 
     public static final class Stage {
