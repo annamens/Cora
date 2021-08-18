@@ -378,7 +378,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         testLog ("step 18 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
-    @Test
+    @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder1 () {
         Assay assayTest = ID_BCell2_CLIA;
         createOrder (IgHVPhysician,
@@ -410,7 +410,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     }
 
-    @Test
+    @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder2 () {
         Assay assayTest = ID_BCell2_IVD;
         createOrder (IgHVPhysician,
@@ -439,7 +439,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     }
 
-    @Test
+    @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder3 () {
         Assay assayTest = ID_BCell2_IVD;
         createOrder (IgHVPhysician,
@@ -468,7 +468,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     }
 
-    @Test
+    @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder4 () {
         Assay assayTest = ID_BCell2_CLIA;
         createOrder (IgHVPhysician,
@@ -497,7 +497,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     }
 
-    @Test
+    @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder5 () {
         Assay assayTest = ID_BCell2_IVD;
         createOrder (IgHVPhysician,
@@ -528,7 +528,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     }
 
-    @Test
+    @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder6 () {
         Assay assayTest = ID_BCell2_IVD;
         createOrder (IgHVPhysician,
@@ -559,7 +559,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     }
 
-    @Test
+    @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder7 () {
         Assay assayTest = ID_BCell2_IVD;
         createOrder (IgHVPhysician,
@@ -603,7 +603,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         // TODO skip step 15, 16
     }
 
-    @Test
+    @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder8 () {
         Assay assayTest = ID_BCell2_CLIA;
         createOrder (IgHVPhysician,
@@ -633,7 +633,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         // TODO skip step 18, 19
     }
 
-    @Test
+    @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder9 () {
         Assay assayTest = ID_BCell2_CLIA;
         createOrder (IgHVPhysician,
