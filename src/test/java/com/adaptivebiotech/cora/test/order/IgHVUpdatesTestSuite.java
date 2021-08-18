@@ -4,7 +4,6 @@ import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestPa
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUser;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_IVD;
@@ -521,7 +520,9 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         // validate reportData.json file
         diagnostic.clickOrderDetailsTab ();
         diagnostic.isCorrectPage ();
-        history.gotoOrderDebug (diagnostic.getSampleName ());
+        String sampleName = diagnostic.getSampleName ();
+        testLog ("Sample Name: " + sampleName);
+        history.gotoOrderDebug (sampleName);
 
         // get file using get request
         doCoraLogin ();
@@ -537,7 +538,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
             e.printStackTrace ();
         }
         testLog ("Json File Data " + reportData);
-        HttpClientHelper.headers.get ().remove (new BasicHeader ("X-Api-UserName", coraTestUser));
+        HttpClientHelper.resetheaders ();
         assertEquals (reportData.containsKey ("shmReportResult"), expectedShmReportKey);
     }
 
@@ -561,7 +562,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
-        HttpClientHelper.headers.get ().remove (new BasicHeader ("Authorization", portalTestAuth));
+        HttpClientHelper.resetheaders ();
         assertEquals (response.length (), 1, "Validate pipeline portal job is completed");
     }
 
