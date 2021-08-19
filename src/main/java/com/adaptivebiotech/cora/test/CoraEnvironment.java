@@ -20,9 +20,9 @@ public class CoraEnvironment extends BaseEnvironment {
     public static void initialization () {
         try {
             BaseEnvironment.initialization ();
-            coraTestUrl = format (appConfig.getProperty ("cora.test.url"), env);
-            coraTestUser = appConfig.getProperty ("cora.test.user");
-            coraTestPass = decrypt (appConfig.getProperty ("cora.test.pass"));
+            coraTestUrl = format (getProperty ("cora.test.url"), env);
+            coraTestUser = getProperty ("cora.test.user");
+            coraTestPass = decrypt (getProperty ("cora.test.pass"));
 
             physicianLastName = "Tests";
             physicianFirstName = "Automated";
@@ -30,10 +30,10 @@ public class CoraEnvironment extends BaseEnvironment {
             NYphysicianLastName = "IgHV";
             NYphysicianFirstName = "Selenium";
 
-            portalCliaTestUrl = format (appConfig.getProperty ("portal.clia.test.url"), env);
-            portalIvdTestUrl = format (appConfig.getProperty ("portal.ivd.test.url"), env);
-            pipelinePortalTestUser = appConfig.getProperty ("portal.test.user");
-            pipelinePortalTestPass = decrypt (appConfig.getProperty ("portal.test.pass"));
+            portalCliaTestUrl = format (getProperty ("portal.clia.test.url"), env);
+            portalIvdTestUrl = format (getProperty ("portal.ivd.test.url"), env);
+            pipelinePortalTestUser = getProperty ("portal.test.user");
+            pipelinePortalTestPass = decrypt (getProperty ("portal.test.pass"));
 
         } catch (Exception e) {
             error ("failed to parse the config file", e);
