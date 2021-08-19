@@ -220,4 +220,8 @@ public class PageHelper {
         }
     }
 
+    public enum MutationStatus {
+        MUTATED, UNMUTATED, INDETERMINATE, QC_FAILURE, NO_CLONES
+    }
+
 }

@@ -29,17 +29,30 @@ import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.http.message.BasicHeader;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.db.CoraDBClient;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.ReportDataJson;
+import com.adaptivebiotech.cora.dto.ReportDataJson.ShmSequenceList;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
@@ -54,7 +67,9 @@ import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.workflow.FeatureFlags;
 import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.DateUtils;
+import com.adaptivebiotech.cora.utils.PageHelper.MutationStatus;
 import com.adaptivebiotech.cora.utils.TestHelper;
+import com.adaptivebiotech.cora.utils.Tunnel;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -62,6 +77,7 @@ import com.adaptivebiotech.test.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
+import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.seleniumfy.test.utils.HttpClientHelper;
@@ -114,6 +130,29 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     private boolean      isIgHVFlag;
     private final byte[] authBytes                        = (pipelinePortalTestUser + ":" + pipelinePortalTestPass).getBytes ();
     private final String portalTestAuth                   = "Basic " + Base64.getEncoder ().encodeToString (authBytes);
+
+    private Tunnel       tunnel;
+    private CoraDBClient coraDBClient;
+    private final String orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
+
+    @BeforeClass (alwaysRun = true)
+    public void beforeClass () {
+        tunnel = Tunnel.getTunnel ();
+        Thread t = new Thread (tunnel);
+        t.start ();
+        tunnel.waitForConnection ();
+
+        coraDBClient = new CoraDBClient (CoraEnvironment.coraDBUser, CoraEnvironment.coraDBPass);
+
+        assertTrue (coraDBClient.openConnection ());
+
+    }
+
+    @AfterClass (alwaysRun = true)
+    public void afterClass () throws Exception {
+        coraDBClient.closeConnection ();
+        tunnel.close ();
+    }
 
     @BeforeMethod
     public void beforeMethod () {
@@ -378,6 +417,9 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         testLog ("step 18 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
+    /**
+     * 
+     */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder1 () {
         Assay assayTest = ID_BCell2_CLIA;
@@ -388,25 +430,29 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      new String[] { c83_00 },
                      "Order 1 Orca Work");
 
-        String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
+        Map <String, String> orderDetails = getSampleNameOrderTestId ();
 
-        orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
-        orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
-
-        forceStatusUpdateOrcaIgHV (sampleName,
+        forceStatusUpdateOrcaIgHV (orderDetails.get ("sampleName"),
                                    tsvOverridePathOrcaIgHVO1O8,
                                    lastFinishedPipelineOrcaIgHVO1O8,
                                    sampleNameOrcaIgHVO1O8,
                                    null,
                                    null);
 
-        releaseReport (assayTest, true);
+        ReportDataJson reportData = releaseReport (assayTest, true);
 
-        // TODO skip step 3
-        // TODO skip step 4
+        assertTrue (Arrays.stream (MutationStatus.values ())
+                          .anyMatch ( (t) -> t.equals (reportData.shmReportResult.mutationStatus)));
+        assertTrue (reportData.shmReportResult.shmSequenceList.size () >= 1);
+        ShmSequenceList shmSequenceList = reportData.shmReportResult.shmSequenceList.get (0);
+        assertNotNull (shmSequenceList.locus);
+        assertNotNull (shmSequenceList.sequence);
+        assertNotNull (shmSequenceList.percentMutation);
+        assertNotNull (shmSequenceList.productive);
+        assertNotNull (shmSequenceList.vSegment);
+
+        String mutationStatus = reportData.shmReportResult.mutationStatus.toString ();
+        validateShmResultReportType (orderDetails.get ("orderTestId"), mutationStatus);
 
     }
 
@@ -420,22 +466,16 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      new String[] { c91_10 },
                      "Order 2 Orca Work");
 
-        String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
+        Map <String, String> orderDetails = getSampleNameOrderTestId ();
 
-        orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
-        orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
-
-        forceStatusUpdateOrcaIgHV (sampleName,
+        forceStatusUpdateOrcaIgHV (orderDetails.get ("sampleName"),
                                    tsvOverridePathOrcaIgHVO2O6O7,
                                    lastFinishedPipelineOrcaIgHVO2O7,
                                    sampleNameOrcaIgHVO2O6O7,
                                    null,
                                    null);
 
-        // TODO skip step 5.7
+        validateShmResultReportType (orderDetails.get ("orderTestId"), MutationStatus.UNMUTATED.toString ());
 
     }
 
@@ -449,22 +489,16 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      new String[] { c91_10 },
                      "Order 3 Orca Work");
 
-        String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
+        Map <String, String> orderDetails = getSampleNameOrderTestId ();
 
-        orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
-        orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
-
-        forceStatusUpdateOrcaIgHV (sampleName,
+        forceStatusUpdateOrcaIgHV (orderDetails.get ("sampleName"),
                                    tsvOverridePathOrcaIgHVO3,
                                    lastFinishedPipelineOrcaIgHVO3,
                                    sampleNameOrcaIgHVO3,
                                    null,
                                    null);
 
-        // TODO skip step 6.7
+        validateShmResultReportType (orderDetails.get ("orderTestId"), MutationStatus.INDETERMINATE.toString ());
 
     }
 
@@ -478,22 +512,16 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      new String[] { c83_00 },
                      "Order 4 Orca Work");
 
-        String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
+        Map <String, String> orderDetails = getSampleNameOrderTestId ();
 
-        orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
-        orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
-
-        forceStatusUpdateOrcaIgHV (sampleName,
+        forceStatusUpdateOrcaIgHV (orderDetails.get ("sampleName"),
                                    tsvOverridePathOrcaIgHVO4,
                                    lastFinishedPipelineOrcaIgHVO4,
                                    sampleNameOrcaIgHVO4,
                                    null,
                                    null);
 
-        // TODO skip step 4.7
+        validateShmResultReportType (orderDetails.get ("orderTestId"), MutationStatus.NO_CLONES.toString ());
 
     }
 
@@ -507,25 +535,22 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      new String[] { c91_10 },
                      "Order 5 Orca Work");
 
-        String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
+        Map <String, String> orderDetails = getSampleNameOrderTestId ();
 
-        orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
-        orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
-
-        forceStatusUpdateOrcaIgHV (sampleName,
+        forceStatusUpdateOrcaIgHV (orderDetails.get ("sampleName"),
                                    tsvOverridePathOrcaIgHVO5,
                                    lastFinishedPipelineOrcaIgHVO5,
                                    sampleNameOrcaIgHVO5,
                                    null,
                                    null);
 
-        releaseReport (assayTest, false);
+        ReportDataJson reportData = releaseReport (assayTest, false);
 
-        // TODO skip step 10
-
+        // TODO can't validate pdf preview info
+        assertEquals (reportData.shmReportResult.mutationStatus, MutationStatus.QC_FAILURE);
+        validateShmResultReportType (orderDetails.get ("orderTestId"),
+                                     MutationStatus.QC_FAILURE.toString (),
+                                     MutationStatus.INDETERMINATE.toString ());
     }
 
     @Test (groups = "orcaighv")
@@ -538,24 +563,27 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      new String[] { c91_10 },
                      "Order 6 Orca Work");
 
-        String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
+        Map <String, String> orderDetails = getSampleNameOrderTestId ();
 
-        orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
-        orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
+        // debug page - get workflow properties
+        history.gotoOrderDebug (orderDetails.get ("sampleName"));
 
-        forceStatusUpdateOrcaIgHV (sampleName,
-                                   tsvOverridePathOrcaIgHVO2O6O7,
-                                   lastFinishedPipelineOrcaIgHVO6,
-                                   sampleNameOrcaIgHVO2O6O7,
-                                   null,
-                                   null);
+        // set workflow property and force status update
+        history.setWorkflowProperty (lastAcceptedTsvPath, tsvOverridePathOrcaIgHVO2O6O7);
+
+        history.setWorkflowProperty (WorkflowProperty.lastFinishedPipelineJobId,
+                                     lastFinishedPipelineOrcaIgHVO6);
+
+        history.setWorkflowProperty (WorkflowProperty.sampleName, sampleNameOrcaIgHVO2O6O7);
+
+        history.forceStatusUpdate (StageName.NorthQC, StageStatus.Failed);
+
+        history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
+        assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
 
         releaseReport (assayTest, false);
 
-        // TODO skip step 9, 10
+        validateQueryReturnsZeroRow (orderDetails.get ("orderTestId"));
 
     }
 
@@ -569,15 +597,9 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      new String[] { c91_10 },
                      "Order 7 Orca Work");
 
-        String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
+        Map <String, String> orderDetails = getSampleNameOrderTestId ();
 
-        orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
-        orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
-
-        forceStatusUpdateOrcaIgHV (sampleName,
+        forceStatusUpdateOrcaIgHV (orderDetails.get ("sampleName"),
                                    tsvOverridePathOrcaIgHVO2O6O7,
                                    lastFinishedPipelineOrcaIgHVO2O7,
                                    sampleNameOrcaIgHVO2O6O7,
@@ -593,14 +615,16 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
         diagnostic.setQCstatus (QC.Fail);
 
-        history.gotoOrderDebug (sampleName);
+        history.gotoOrderDebug (orderDetails.get ("sampleName"));
 
         history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
         assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
 
-        releaseReport (assayTest, true);
+        ReportDataJson reportData = releaseReport (assayTest, true);
 
-        // TODO skip step 15, 16
+        assertEquals (reportData.shmReportResult.mutationStatus, MutationStatus.QC_FAILURE);
+        validateShmResultReportType (orderDetails.get ("orderTestId"),
+                                     MutationStatus.UNMUTATED.toString ());
     }
 
     @Test (groups = "orcaighv")
@@ -613,29 +637,27 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      new String[] { c90_00 },
                      "Order 8 Orca Work");
 
-        String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
+        Map <String, String> orderDetails = getSampleNameOrderTestId ();
 
-        orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
-        orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
-
-        forceStatusUpdateOrcaIgHV (sampleName,
+        forceStatusUpdateOrcaIgHV (orderDetails.get ("sampleName"),
                                    tsvOverridePathOrcaIgHVO1O8,
                                    lastFinishedPipelineOrcaIgHVO1O8,
                                    sampleNameOrcaIgHVO1O8,
                                    null,
                                    null);
+        validateShmAnalysisStages (null);
+        ReportDataJson reportData = releaseReport (assayTest, true);
+        assertNull (reportData.shmReportResult);
 
-        releaseReport (assayTest, true);
+        validateQueryReturnsZeroRow (orderDetails.get ("orderTestId"));
 
-        // TODO skip step 18, 19
     }
 
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder9 () {
         Assay assayTest = ID_BCell2_CLIA;
+        String passConsesusSeq = "TTCAGTAGACACGTCCATGAACCGCTTCTCCCTGCACATGACCTCTATGACTGCCGCAGACACGGCCCTGTATTATTGTGTCAGAGATGGACCCCCGGCGTTTTGGGGCCAGGGAACC";
+        String lowBaseConsesusSeq = "CGGCCCAGTTTCATTGTGCGACAGACCCTTAATTTACATTGTGGTGGTGACTCCTATTGCGACTCTTGGGGCCTTGGAACC";
         createOrder (IgHVPhysician,
                      assayTest,
                      Blood,
@@ -643,24 +665,47 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                      new String[] { c83_00 },
                      "Order 9 Orca Work");
 
-        String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
+        Map <String, String> orderDetails = getSampleNameOrderTestId ();
 
-        orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
-        orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
-
-        forceStatusUpdateOrcaIgHV (sampleName,
+        forceStatusUpdateOrcaIgHV (orderDetails.get ("sampleName"),
                                    tsvOverridePathOrcaIgHVO9,
                                    null,
                                    sampleNameOrcaIgHVO9,
                                    shmDataSourcePathOrcaIgHVO9,
                                    workSpaceNameOrcaIgHVO9);
 
-        releaseReport (assayTest, true);
+        validateShmAnalysisStages ("present");
 
-        // TODO skip step 18, 19
+        ReportDataJson reportData = releaseReport (assayTest, true);
+        assertEquals (reportData.shmReportResult.shmSequenceList.get (0).sequence,
+                      passConsesusSeq);
+        assertTrue (reportData.shmReportResult.shmSequenceList.size () == 1);
+
+        List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (orderTestQuery.replace ("REPLACEORDERTESTID",
+                                                                                                         orderDetails.get ("orderTestId")));
+        testLog ("Query Data: " + queryData);
+        assertTrue (queryData.size () == 1);
+        Map <String, Object> firstRow = queryData.get (0);
+
+        try {
+            JSONObject jsonObject = new JSONObject (firstRow.get ("shm_result").toString ());
+            JSONArray jsonArray = jsonObject.getJSONArray ("clones");
+            assertTrue (jsonArray.length () == 2);
+
+            Map <String, String> expectedMap = Stream.of (new String[][] {
+                    { passConsesusSeq, "PASS" },
+                    { lowBaseConsesusSeq, "LOW_BASE_COVERAGE" },
+            }).collect (Collectors.toMap (data -> data[0], data -> data[1]));
+            Map <String, String> actualMap = new HashMap <String, String> ();
+            for (int i = 0; i < jsonArray.length (); i++) {
+                actualMap.put (jsonArray.getJSONObject (i).getString ("consensusSequence"),
+                               jsonArray.getJSONObject (i).getString ("failureFlag"));
+            }
+            assertEquals (actualMap, expectedMap);
+        } catch (JSONException e) {
+            e.printStackTrace ();
+        }
+
     }
 
     /**
@@ -732,6 +777,21 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         diagnostic.isCorrectPage ();
         diagnostic.clickAssayTest (assayTest);
         diagnostic.activateOrder ();
+    }
+
+    private Map <String, String> getSampleNameOrderTestId () {
+        Map <String, String> sampleTest = new HashMap <> ();
+        String sampleName = diagnostic.getSampleName ();
+        Logging.info (sampleName);
+        sampleTest.put ("sampleName", sampleName);
+
+        orderStatus.clickOrderStatusTab ();
+        orderStatus.isOrderStatusPage ();
+        orderStatus.expandWorkflowHistory ();
+        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
+        sampleTest.put ("orderTestId", orderTestId);
+        return sampleTest;
+
     }
 
     /**
@@ -837,6 +897,27 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         assertNull (shmAnalysisStages.get (1).drilldownUrl);
     }
 
+    private void validateShmAnalysisStages (String drilldownUrl) {
+        List <Stage> stages = history.parseStatusHistory ();
+        List <Stage> shmAnalysisStages = new LinkedList <> ();
+        for (Stage stage : stages) {
+            if (stage.stageName.equals (StageName.ShmAnalysis))
+                shmAnalysisStages.add (stage);
+        }
+        assertEquals (shmAnalysisStages.size (), 2);
+        assertEquals (shmAnalysisStages.get (1).stageStatus, Ready);
+        assertEquals (shmAnalysisStages.get (0).stageStatus, Finished);
+        assertEquals (shmAnalysisStages.get (0).subStatusMessage, "SHM Analysis is not enabled for the workflow.");
+        if (drilldownUrl == null) {
+            assertNull (shmAnalysisStages.get (0).drilldownUrl);
+            assertNull (shmAnalysisStages.get (1).drilldownUrl);
+        } else {
+            assertNotNull (shmAnalysisStages.get (0).drilldownUrl);
+            assertNotNull (shmAnalysisStages.get (1).drilldownUrl);
+        }
+
+    }
+
     /**
      * Validate CLIA-IGHV flag on Report page and shmReportResult property on reportData.json file
      * 
@@ -885,7 +966,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         assertEquals (reportData.containsKey ("shmReportResult"), expectedShmReportKey);
     }
 
-    public void releaseReport (Assay assayTest, boolean isQCStatus) {
+    public ReportDataJson releaseReport (Assay assayTest, boolean isQCStatus) {
         history.isCorrectPage ();
         history.clickOrderTest ();
 
@@ -907,19 +988,19 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
         // get file using get request
         doCoraLogin ();
-        Map <String, Object> reportData = null;
+        ReportDataJson reportData = null;
         try {
             String fileUrl = history.getFileUrl ("reportData.json");
             testLog ("File URL: " + fileUrl);
             String getResponse = get (fileUrl);
             testLog ("File URL Response: " + getResponse);
-            reportData = mapper.readValue (getResponse,
-                                           new TypeReference <Map <String, Object>> () {});
+            reportData = mapper.readValue (getResponse, ReportDataJson.class);
         } catch (Exception e) {
             e.printStackTrace ();
         }
         testLog ("Json File Data " + reportData);
         HttpClientHelper.resetheaders ();
+        return reportData;
     }
 
     /**
@@ -944,6 +1025,52 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         }
         HttpClientHelper.resetheaders ();
         assertEquals (response.length (), 1, "Validate pipeline portal job is completed");
+    }
+
+    private void validateShmResultReportType (String orderTestId, String mutationStatus) {
+        validateShmResultReportType (orderTestId, mutationStatus, null);
+    }
+
+    private void validateShmResultReportType (String orderTestId, String mutationStatus, String ericSampleCall) {
+        List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (orderTestQuery.replace ("REPLACEORDERTESTID",
+                                                                                                         orderTestId));
+        testLog ("Query Data: " + queryData);
+        assertTrue (queryData.size () == 1);
+        Map <String, Object> firstRow = queryData.get (0);
+
+        assertEquals (firstRow.keySet (),
+                      Stream.of ("id",
+                                 "order_test_id",
+                                 "report_type",
+                                 "shm_result",
+                                 "iteration",
+                                 "created",
+                                 "modified",
+                                 "created_by",
+                                 "modified_by")
+                            .collect (Collectors.toCollection (HashSet::new)));
+
+        assertEquals (mutationStatus, firstRow.get ("report_type"));
+
+        if (ericSampleCall != null) {
+            String actualEricSampleCall = null;
+            try {
+                JSONObject jsonObject = new JSONObject (firstRow.get ("shm_result").toString ());
+                actualEricSampleCall = String.valueOf (jsonObject.get ("ericSampleCall"));
+            } catch (JSONException e) {
+                e.printStackTrace ();
+            }
+            assertEquals (actualEricSampleCall, ericSampleCall);
+        }
+
+    }
+
+    private void validateQueryReturnsZeroRow (String orderTestId) {
+        List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (orderTestQuery.replace ("REPLACEORDERTESTID",
+                                                                                                         orderTestId));
+        testLog ("Query Data: " + queryData);
+        assertTrue (queryData.size () == 0);
+
     }
 
 }
