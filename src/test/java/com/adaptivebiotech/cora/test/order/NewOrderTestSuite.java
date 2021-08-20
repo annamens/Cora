@@ -14,6 +14,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.BoneMarrowA
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
@@ -21,9 +22,11 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.utils.DateUtils;
+import com.adaptivebiotech.cora.utils.TestHelper;
 
 @Test (groups = "regression", enabled = false)
-public class NewOrderTestSuite extends OrderTestBase {
+public class NewOrderTestSuite extends CoraBaseBrowser {
 
     private OrdersList oList;
     private Diagnostic diagnostic;
@@ -63,11 +66,11 @@ public class NewOrderTestSuite extends OrderTestBase {
 
     private void prep_new_order (Patient patient) {
         Billing billing = new Billing ();
-        billing.selectNewDiagnosticOrder ();
+        billing.selectNewClonoSEQDiagnosticOrder ();
         billing.isCorrectPage ();
-        billing.selectPhysician (physicianTRF);
+        billing.selectPhysician (TestHelper.physicianTRF ());
         billing.createNewPatient (patient);
-        billing.enterPatientICD_Codes (icdCode);
+        billing.enterPatientICD_Codes ("A01.02");
         billing.enterBill (patient);
         billing.clickSave (); // have to Save first before we can set Specimen info
 
@@ -75,7 +78,7 @@ public class NewOrderTestSuite extends OrderTestBase {
         specimen.enterSpecimenDelivery (CustomerShipment);
         specimen.clickEnterSpecimenDetails ();
         specimen.enterSpecimenType (BoneMarrowAspirateSlide);
-        specimen.enterCollectionDate (collectionDt);
+        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
         specimen.clickSave ();
 
         add_shipment_and_accession (specimen.getOrderNum ());

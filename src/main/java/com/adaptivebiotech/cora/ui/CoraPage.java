@@ -11,6 +11,7 @@ import java.util.function.Function;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
+import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.seleniumfy.test.utils.BasePage;
 
@@ -52,13 +53,19 @@ public class CoraPage extends BasePage {
     }
 
     public List <String> getNewPopupMenu () {
-        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> li != null).collect (toList ());
+        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li)).collect (toList ());
     }
-
-    public void selectNewDiagnosticOrder () {
+    
+    public void selectNewClonoSEQDiagnosticOrder () {
         assertTrue (click (newmenu));
         assertTrue (waitUntilVisible (".dropdown.new-order.open"));
-        assertTrue (click ("//a[text()='Diagnostic Order']"));
+        assertTrue (click ("//a[text()='clonoSEQ Diagnostic Order']"));
+    }
+    
+    public void selectNewTDetectDiagnosticOrder () {
+        assertTrue (click (newmenu));
+        assertTrue (waitUntilVisible (".dropdown.new-order.open"));
+        assertTrue (click ("//a[text()='T-Detect Diagnostic Order']"));
     }
 
     public void selectNewDiagnosticShipment () {

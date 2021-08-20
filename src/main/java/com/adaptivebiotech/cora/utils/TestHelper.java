@@ -86,7 +86,7 @@ public class TestHelper {
     }
 
     // AllowInternalOrderUpload flag enabled in SalesForce
-    public static Physician physician2 () {
+    public static Physician physicianTRF () {
         Physician physician = new Physician ();
         physician.id = "a1461f9d-29e0-464c-8bf6-a383079f1d62";
         physician.firstName = "Automated";
@@ -240,4 +240,23 @@ public class TestHelper {
         data.put ("AB039003_num", "CO-166946");
         return data;
     };
+
+    /**
+     * Set Physician object with given properties
+     * 
+     * @param lastName
+     *            last name
+     * @param firstName
+     *            first name
+     * @param accountName
+     *            account name
+     * @return Physician
+     */
+    public static Physician setPhysician (String lastName, String firstName, String accountName) {
+        Physician physician = new Physician ();
+        physician.lastName = lastName;
+        physician.firstName = firstName;
+        physician.accountName = accountName;
+        return physician;
+    }
 }

@@ -25,17 +25,19 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.test.order.OrderTestBase;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.Specimen;
+import com.adaptivebiotech.cora.utils.DateUtils;
+import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 @Test (groups = "regression")
-public class AdaptiveAssistsTestSuite extends OrderTestBase {
+public class AdaptiveAssistsTestSuite extends CoraBaseBrowser {
 
     private OrdersList oList;
     private Specimen   specimen;
@@ -45,13 +47,13 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
         new Login ().doLogin ();
         oList = new OrdersList ();
         oList.isCorrectPage ();
-        oList.selectNewDiagnosticOrder ();
+        oList.selectNewClonoSEQDiagnosticOrder ();
 
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
-        diagnostic.selectPhysician (physicianTRF);
+        diagnostic.selectPhysician (TestHelper.physicianTRF ());
         diagnostic.createNewPatient (newPatient ());
-        diagnostic.enterPatientICD_Codes (icdCode);
+        diagnostic.enterPatientICD_Codes ("A01.02");
         diagnostic.clickSave (); // have to Save first before we can set Specimen info
 
         specimen = new Specimen ();
@@ -271,7 +273,7 @@ public class AdaptiveAssistsTestSuite extends OrderTestBase {
     }
 
     private void saveOrder () {
-        specimen.enterCollectionDate (collectionDt);
+        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
         Billing billing = new Billing ();
         billing.selectBilling (NoCharge);
         billing.clickSave ();
