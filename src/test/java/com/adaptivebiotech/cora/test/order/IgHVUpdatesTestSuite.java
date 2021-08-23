@@ -979,10 +979,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         history.gotoOrderDebug (sampleName);
         Map <String, String> workflowProperties = history.getWorkflowProperties ();
 
-        assertEquals (workflowProperties.getOrDefault ("ighvReportEnabled", null),
+        assertEquals (workflowProperties.get ("ighvReportEnabled"),
                       expectedIghvReportEnabled,
                       "Validate ighvReportEnabled property");
-        assertEquals (workflowProperties.getOrDefault ("ighvAnalysisEnabled", null),
+        assertEquals (workflowProperties.get ("ighvAnalysisEnabled"),
                       expectedIghvAnalysisEnabled,
                       "Validate ighvAnalysisEnabled property");
 
