@@ -32,8 +32,8 @@ public class CoraDBClient {
             connection = DriverManager.getConnection (url, username, password);
             return true;
         } catch (SQLException e) {
-            e.printStackTrace ();
-            return false;
+            Logging.error ("Failed to access Database or Timeout error", e);
+            throw new RuntimeException (e);
         }
     }
 
@@ -43,8 +43,8 @@ public class CoraDBClient {
                 connection.close ();
                 connection = null;
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace ();
+                Logging.error ("Failed to access Database or Timeout error", e);
+                throw new RuntimeException (e);
             }
         }
     }
@@ -75,7 +75,8 @@ public class CoraDBClient {
             resultSet.close ();
             statement.close ();
         } catch (SQLException e) {
-            e.printStackTrace ();
+            Logging.error ("Failed to access Database: " + e);
+            throw new RuntimeException (e);
         }
         return tableData;
     }
