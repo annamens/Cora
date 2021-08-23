@@ -22,13 +22,11 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.util.Strings;
 import com.adaptivebiotech.test.TestBase;
-import com.seleniumfy.test.utils.Environment;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
 public class CoraBaseBrowser extends TestBase {
 
     static {
-        Environment.useSauceLabs = true;
         initialization ();
         testLog (format ("Current branch: %s - %s", version, gitcommitId));
     }
