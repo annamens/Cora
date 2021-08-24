@@ -58,8 +58,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.db.CoraDBClient;
 import com.adaptivebiotech.cora.dto.Physician;
-import com.adaptivebiotech.cora.dto.ReportDataJson;
-import com.adaptivebiotech.cora.dto.ReportDataJson.ShmSequenceList;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
@@ -74,9 +72,11 @@ import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.workflow.FeatureFlags;
 import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.DateUtils;
-import com.adaptivebiotech.cora.utils.PageHelper.MutationStatus;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.cora.utils.Tunnel;
+import com.adaptivebiotech.picasso.dto.ReportRender;
+import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
+import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -90,6 +90,7 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
+@Test (groups = { "regression", "nutmeg" })
 public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     private Physician    IgHVPhysician;
@@ -214,10 +215,12 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 2 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
-        releaseReport (assayTest, "true", true);
-        ReportDataJson reportData = getReportDataJsonFile ();
-        assertNotNull (reportData.shmReportResult);
+        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
+        assertTrue (isCLIAIGHVFlagPresent);
         testLog ("step 3 - CLIA-IGHV flag appears just below the Report tab ");
+
+        ReportRender reportData = getReportDataJsonFile ();
+        assertNotNull (reportData.shmReportResult);
         testLog ("step 4 - SHM analysis results are included in reportData.json within shmReportResult property");
     }
 
@@ -253,10 +256,12 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 6 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
-        releaseReport (assayTest, "false", true);
-        ReportDataJson reportData = getReportDataJsonFile ();
-        assertNotNull (reportData.shmReportResult);
+        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
+        assertFalse (isCLIAIGHVFlagPresent);
         testLog ("step 7 - CLIA-IGHV flag does not appear below the Report tab ");
+
+        ReportRender reportData = getReportDataJsonFile ();
+        assertNotNull (reportData.shmReportResult);
         testLog ("step 8 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
@@ -292,10 +297,12 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 10 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
-        releaseReport (assayTest, "true", true);
-        ReportDataJson reportData = getReportDataJsonFile ();
+        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
+        assertTrue (isCLIAIGHVFlagPresent);
+        testLog ("step 11, order3 - CLIA-IGHV flag appears below the Report tab ");
+
+        ReportRender reportData = getReportDataJsonFile ();
         assertNotNull (reportData.shmReportResult);
-        testLog ("step 11, order3 - CLIA-IGHV flag does not appear below the Report tab ");
         testLog ("step 12, order3 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
@@ -331,10 +338,12 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 10 - 2 - order4 - An eos.shm analysis job was spawned and Completed in portal");
 
-        releaseReport (assayTest, "true", true);
-        ReportDataJson reportData = getReportDataJsonFile ();
+        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
+        assertTrue (isCLIAIGHVFlagPresent);
+        testLog ("step 11, order3 - CLIA-IGHV flag appears below the Report tab ");
+
+        ReportRender reportData = getReportDataJsonFile ();
         assertNotNull (reportData.shmReportResult);
-        testLog ("step 11, order3 - CLIA-IGHV flag does not appear below the Report tab ");
         testLog ("step 12, order3 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
@@ -365,7 +374,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            null);
         testLog ("step 13, order5 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateShmAnalysisStagesDrillDownUrl (null);
+        validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order5 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order5 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
     }
@@ -397,7 +406,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            null);
         testLog ("step 13, order6 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateShmAnalysisStagesDrillDownUrl (null);
+        validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order6 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order6 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
     }
@@ -429,7 +438,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            null);
         testLog ("step 13, order7 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateShmAnalysisStagesDrillDownUrl (null);
+        validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order7 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order7 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
     }
@@ -462,14 +471,16 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            null);
         testLog ("step 15 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateShmAnalysisStagesDrillDownUrl (null);
+        validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 16 - 1 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 16 - 2 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
 
-        releaseReport (assayTest, "false", true);
-        ReportDataJson reportData = getReportDataJsonFile ();
-        assertNull (reportData.shmReportResult);
+        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
+        assertFalse (isCLIAIGHVFlagPresent);
         testLog ("step 17 - CLIA-IGHV flag did not appear below the Report tab");
+
+        ReportRender reportData = getReportDataJsonFile ();
+        assertNull (reportData.shmReportResult);
         testLog ("step 18 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
@@ -495,13 +506,13 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            null);
         testLog ("step 1 - order 1 - After SecondaryAnalysis stage, the workflow moved to the ShmAnalysis stage prior to ClonoSEQReport stage");
 
-        releaseReport (assayTest, null, true);
-        ReportDataJson reportData = getReportDataJsonFile ();
+        releaseReport (assayTest, true);
+        ReportRender reportData = getReportDataJsonFile ();
 
-        assertTrue (Arrays.stream (MutationStatus.values ())
+        assertTrue (Arrays.stream (ShmMutationStatus.values ())
                           .anyMatch ( (t) -> t.equals (reportData.shmReportResult.mutationStatus)));
         assertTrue (reportData.shmReportResult.shmSequenceList.size () >= 1);
-        ShmSequenceList shmSequenceList = reportData.shmReportResult.shmSequenceList.get (0);
+        ShmSequence shmSequenceList = reportData.shmReportResult.shmSequenceList.get (0);
         assertNotNull (shmSequenceList.locus);
         assertNotNull (shmSequenceList.sequence);
         assertNotNull (shmSequenceList.percentMutation);
@@ -539,7 +550,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            null,
                            null);
 
-        validateShmResultReportType (orderDetails.get ("orderTestId"), MutationStatus.UNMUTATED.toString ());
+        validateShmResultReportType (orderDetails.get ("orderTestId"), ShmMutationStatus.UNMUTATED.toString ());
         testLog ("step 5 - order 2 - Value for orca.shm_results.report_type is UNMUTATED");
     }
 
@@ -564,7 +575,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            null,
                            null);
 
-        validateShmResultReportType (orderDetails.get ("orderTestId"), MutationStatus.INDETERMINATE.toString ());
+        validateShmResultReportType (orderDetails.get ("orderTestId"), ShmMutationStatus.INDETERMINATE.toString ());
         testLog ("step 6 - order 3 - Value for orca.shm_results.report_type is INDETERMINATE");
     }
 
@@ -589,7 +600,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            null,
                            null);
 
-        validateShmResultReportType (orderDetails.get ("orderTestId"), MutationStatus.NO_CLONES.toString ());
+        validateShmResultReportType (orderDetails.get ("orderTestId"), ShmMutationStatus.NO_CLONES.toString ());
         testLog ("step 7 - order 4 - Value for orca.shm_results.report_type is NO_CLONES");
     }
 
@@ -614,7 +625,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            null,
                            null);
 
-        releaseReport (assayTest, null, false);
+        releaseReport (assayTest, false);
 
         String pdfUrl = diagnostic.getPreviewReportPdfUrl ();
         testLog ("PDF File URL: " + pdfUrl);
@@ -622,13 +633,13 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 8 - order 5 - In SHM report of the pdf report, it is showing No Result Available for the IGHV Mutation Status");
 
-        ReportDataJson reportData = getReportDataJsonFile ();
-        assertEquals (reportData.shmReportResult.mutationStatus, MutationStatus.QC_FAILURE);
+        ReportRender reportData = getReportDataJsonFile ();
+        assertEquals (reportData.shmReportResult.mutationStatus, ShmMutationStatus.QC_FAILURE);
         testLog ("step 9 - order 5 - mutationStatus property contains the value QC_FAILURE");
 
         validateShmResultReportType (orderDetails.get ("orderTestId"),
-                                     MutationStatus.QC_FAILURE.toString (),
-                                     MutationStatus.INDETERMINATE.toString ());
+                                     ShmMutationStatus.QC_FAILURE.toString (),
+                                     ShmMutationStatus.INDETERMINATE.toString ());
         testLog ("step 10.1 - order 5 - 1 DB record with orca.shm_results.report_type is QC_FAILURE");
         testLog ("step 10.2 - order 5 - 1 DB record with value of 'ericSampleCall' in orca.shm_results.shm_result is INDETERMINATE");
     }
@@ -663,15 +674,15 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
         assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
 
-        releaseReport (assayTest, null, false);
+        releaseReport (assayTest, false);
         String pdfUrl = diagnostic.getPreviewReportPdfUrl ();
         testLog ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 11 - order 6 - Clonality Result for workflow with failed Primary Analysis (NorthQC) displays No Result Available");
 
-        ReportDataJson reportData = getReportDataJsonFile ();
-        assertEquals (reportData.shmReportResult.mutationStatus, MutationStatus.QC_FAILURE);
+        ReportRender reportData = getReportDataJsonFile ();
+        assertEquals (reportData.shmReportResult.mutationStatus, ShmMutationStatus.QC_FAILURE);
         testLog ("step 12 - order 6 - mutationStatus property contains the value QC_FAILURE");
 
         validateQueryReturnsZeroRow (orderDetails.get ("orderTestId"));
@@ -714,19 +725,19 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
         assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
 
-        releaseReport (assayTest, null, true);
+        releaseReport (assayTest, true);
         String pdfUrl = diagnostic.getReleasedReportPdfUrl ();
         testLog ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 14 - order 7 - Clonality Result for workflow with failed Clinical QC displays No Result Available");
 
-        ReportDataJson reportData = getReportDataJsonFile ();
-        assertEquals (reportData.shmReportResult.mutationStatus, MutationStatus.QC_FAILURE);
+        ReportRender reportData = getReportDataJsonFile ();
+        assertEquals (reportData.shmReportResult.mutationStatus, ShmMutationStatus.QC_FAILURE);
         testLog ("step 15 - order 7 - mutationStatus property contains the value QC_FAILURE");
 
         validateShmResultReportType (orderDetails.get ("orderTestId"),
-                                     MutationStatus.UNMUTATED.toString ());
+                                     ShmMutationStatus.UNMUTATED.toString ());
         testLog ("step 16 - order 7 - Value for orca.shm_results.report_type is UNMUTATED");
     }
 
@@ -750,12 +761,12 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            sampleNameOrcaIgHVO1O8,
                            null,
                            null);
-        validateShmAnalysisStagesDrillDownUrl (null);
+        validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 17.1 - order 8 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 17.2 - order 8 - SHM Finished stage contains a message that SHM Analysis is not enabled for the workflow");
 
-        releaseReport (assayTest, null, true);
-        ReportDataJson reportData = getReportDataJsonFile ();
+        releaseReport (assayTest, true);
+        ReportRender reportData = getReportDataJsonFile ();
         assertNull (reportData.shmReportResult);
         testLog ("step 18 - order 8 - There is no shmReportResult, mutationStatus, or shmSequenceList properties in reportData.json");
 
@@ -786,11 +797,11 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                            shmDataSourcePathOrcaIgHVO9,
                            workSpaceNameOrcaIgHVO9);
 
-        validateShmAnalysisStagesDrillDownUrl ("present");
+        validateShmAnalysisStagesDrillDownUrl (false);
         testLog ("step 20 - order 9 - ShmAnalysis moved from Ready to Finished status, with SHM Analysis job spawned in portal");
 
-        releaseReport (assayTest, null, true);
-        ReportDataJson reportData = getReportDataJsonFile ();
+        releaseReport (assayTest, true);
+        ReportRender reportData = getReportDataJsonFile ();
         assertEquals (reportData.shmReportResult.shmSequenceList.get (0).sequence,
                       passConsesusSeq);
         assertTrue (reportData.shmReportResult.shmSequenceList.size () == 1);
@@ -969,8 +980,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     /**
      * validate ighvReportEnabled and ighvAnalysisEnabled properties
-     * 
-     * @return
      */
     private void validateFlagsOnDebugPage (String sampleName,
                                            String expectedIghvReportEnabled,
@@ -1038,11 +1047,12 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     /**
      * validate that ShmAnalysis stage contains Ready and Finished stage status, and pipeline-portal
-     * job is created or not depending on drilldownUrl (if null, drilldownUrl is not present, else
-     * contains some value)
+     * job is created or not depending on isDrilldownUrlNull (if true, drilldownUrl is not present,
+     * else contains some value)
      * 
+     * @param isDrilldownUrlNull
      */
-    private void validateShmAnalysisStagesDrillDownUrl (String drilldownUrl) {
+    private void validateShmAnalysisStagesDrillDownUrl (boolean isDrilldownUrlNull) {
         List <Stage> stages = history.parseStatusHistory ();
         List <Stage> shmAnalysisStages = new LinkedList <> ();
         for (Stage stage : stages) {
@@ -1050,7 +1060,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                 shmAnalysisStages.add (stage);
         }
 
-        if (drilldownUrl == null) {
+        if (isDrilldownUrlNull) {
             assertEquals (shmAnalysisStages.size (), 2);
             assertEquals (shmAnalysisStages.get (1).stageStatus, Ready);
             assertEquals (shmAnalysisStages.get (0).stageStatus, Finished);
@@ -1074,36 +1084,32 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      * 
      * @param assayTest
      * @param expectedCLIAIGHVFlag
-     * @param expectedShmReportKey
+     * @param setQCStatus
+     * @return
      */
-    private void releaseReport (Assay assayTest,
-                                String expectedCLIAIGHVFlag,
-                                boolean setQCStatus) {
+    private boolean releaseReport (Assay assayTest,
+                                   boolean setQCStatus) {
         history.isCorrectPage ();
         history.clickOrderTest ();
 
         // navigate to order status page
         diagnostic.isOrderStatusPage ();
         diagnostic.clickReportTab (assayTest);
-        if (expectedCLIAIGHVFlag != null) {
-            assertEquals (String.valueOf (diagnostic.isCLIAIGHVBtnVisible ()),
-                          expectedCLIAIGHVFlag,
-                          "Validate CLIA-IGHV flag");
-        }
+        boolean isCLIAIGHVFlagPresent = diagnostic.isCLIAIGHVBtnVisible ();
 
         if (setQCStatus) {
             diagnostic.setQCstatus (QC.Pass);
             diagnostic.releaseReport ();
         }
-
+        return isCLIAIGHVFlagPresent;
     }
 
     /**
      * go to debug page, parse reportData.json file
      * 
-     * @return ReportDataJson object for reportData.json file
+     * @return ReportRender object for reportData.json file
      */
-    private ReportDataJson getReportDataJsonFile () {
+    private ReportRender getReportDataJsonFile () {
         // validate reportData.json file
         diagnostic.clickOrderDetailsTab ();
         diagnostic.isCorrectPage ();
@@ -1113,13 +1119,13 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
         // get file using get request
         doCoraLogin ();
-        ReportDataJson reportDataJson = null;
+        ReportRender reportDataJson = null;
         try {
             String fileUrl = history.getFileUrl ("reportData.json");
             testLog ("File URL: " + fileUrl);
             String getResponse = get (fileUrl);
             testLog ("File URL Response: " + getResponse);
-            reportDataJson = mapper.readValue (getResponse, ReportDataJson.class);
+            reportDataJson = mapper.readValue (getResponse, ReportRender.class);
         } catch (Exception e) {
             throw new RuntimeException (e);
         }

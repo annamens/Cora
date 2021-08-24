@@ -32,7 +32,7 @@ public class CoraDBClient {
             connection = DriverManager.getConnection (url, username, password);
             return true;
         } catch (SQLException e) {
-            Logging.error ("Failed to access Database or Timeout error", e);
+            Logging.error ("Failed to open database connection: ", e);
             throw new RuntimeException (e);
         }
     }
@@ -43,7 +43,7 @@ public class CoraDBClient {
                 connection.close ();
                 connection = null;
             } catch (SQLException e) {
-                Logging.error ("Failed to access Database or Timeout error", e);
+                Logging.error ("Failed to close Database connection: ", e);
                 throw new RuntimeException (e);
             }
         }
