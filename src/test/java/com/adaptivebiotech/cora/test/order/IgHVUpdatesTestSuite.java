@@ -152,10 +152,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        tunnel = Tunnel.getTunnel ();
-        Thread t = new Thread (tunnel);
-        t.start ();
-        tunnel.waitForConnection ();
+//        tunnel = Tunnel.getTunnel ();
+//        Thread t = new Thread (tunnel);
+//        t.start ();
+//        tunnel.waitForConnection ();
 
         coraDBClient = new CoraDBClient (CoraEnvironment.coraDBUser, CoraEnvironment.coraDBPass);
 
@@ -166,10 +166,10 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     @AfterClass (alwaysRun = true)
     public void afterClass () throws Exception {
         coraDBClient.closeConnection ();
-        tunnel.close ();
+//        tunnel.close ();
     }
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir = artifacts (this.getClass ().getName (), test.getName ());
         // IgHVPhysician Physician

@@ -10,11 +10,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.test.utils.Logging;
 
 public class CoraDBClient {
 
     private String     url        = "jdbc:postgresql://localhost:6000/coradb";
+    private final String dbUrl = "jdbc:postgresql://" + CoraEnvironment.coraDBHost + ":5432/coradb";
 
     private String     username;
     private String     password;
@@ -29,7 +31,7 @@ public class CoraDBClient {
     public boolean openConnection () {
         closeConnection ();
         try {
-            connection = DriverManager.getConnection (url, username, password);
+            connection = DriverManager.getConnection (dbUrl, username, password);
             return true;
         } catch (SQLException e) {
             Logging.error ("Failed to open database connection: ", e);
