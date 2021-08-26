@@ -16,7 +16,7 @@ public class CoraEnvironment extends BaseEnvironment {
     public static String portalIvdTestUrl;
     public static String pipelinePortalTestUser;
     public static String pipelinePortalTestPass;
-    
+
     public static String coraDBHost;
     public static String coraDBUser;
     public static String coraDBPass;
@@ -44,7 +44,7 @@ public class CoraEnvironment extends BaseEnvironment {
 
             coraDBHost = format (getProperty ("cora.db.host"), env);
             coraDBUser = getProperty ("cora.db.user");
-            coraDBPass = getProperty ("cora.db.pass");
+            coraDBPass = decrypt (getProperty ("cora.db.pass"));
             coraJumpBox = getProperty ("cora.db.jumpbox");
 
             sshUser = getProperty ("ssh.user");
