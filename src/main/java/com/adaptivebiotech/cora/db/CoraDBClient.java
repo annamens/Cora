@@ -15,13 +15,13 @@ import com.adaptivebiotech.test.utils.Logging;
 
 public class CoraDBClient {
 
-    private String     url        = "jdbc:postgresql://localhost:6000/coradb";
-    private final String dbUrl = "jdbc:postgresql://" + CoraEnvironment.coraDBHost + ":5432/coradb";
+    private final String sshUrl     = "jdbc:postgresql://localhost:6000/coradb";
+    private final String dbUrl      = "jdbc:postgresql://" + CoraEnvironment.coraDBHost + ":5432/coradb";
 
-    private String     username;
-    private String     password;
+    private String       username;
+    private String       password;
 
-    private Connection connection = null;
+    private Connection   connection = null;
 
     public CoraDBClient (String username, String pw) {
         this.username = username;
@@ -31,7 +31,8 @@ public class CoraDBClient {
     public boolean openConnection () {
         closeConnection ();
         try {
-            connection = DriverManager.getConnection (dbUrl, username, password);
+            String url = Boolean.parseBoolean (System.getProperty ("db.tunnel")) ? sshUrl : dbUrl;
+            connection = DriverManager.getConnection (url, username, password);
             return true;
         } catch (SQLException e) {
             Logging.error ("Failed to open database connection: ", e);

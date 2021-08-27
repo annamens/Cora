@@ -42,11 +42,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -154,10 +152,14 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-//        tunnel = Tunnel.getTunnel ();
-//        Thread t = new Thread (tunnel);
-//        t.start ();
-//        tunnel.waitForConnection ();
+        testLog ("Should connect to DB using tunnel? " + System.getProperty ("db.tunnel"));
+        if (Boolean.parseBoolean (System.getProperty ("db.tunnel"))) {
+            testLog ("Creating a DB connection using tunnel");
+            tunnel = Tunnel.getTunnel ();
+            Thread t = new Thread (tunnel);
+            t.start ();
+            tunnel.waitForConnection ();
+        }
 
         coraDBClient = new CoraDBClient (CoraEnvironment.coraDBUser, CoraEnvironment.coraDBPass);
 
@@ -168,7 +170,8 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     @AfterClass (alwaysRun = true)
     public void afterClass () throws Exception {
         coraDBClient.closeConnection ();
-//        tunnel.close ();
+        if (Boolean.parseBoolean (System.getProperty ("db.tunnel")))
+            tunnel.close ();
     }
 
     @BeforeMethod (alwaysRun = true)
@@ -1280,48 +1283,5 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         }
         return extractedText;
     }
-    
-    @Test (groups = "regression")
-    public void validateAuditTableEntries () {
 
-
-        String        timeStampQuery   = "SELECT * FROM audit.logged_actions ORDER BY logged_actions.action_tstamp_clk DESC LIMIT 1";
-        String        auditActionQuery = "select schema_name, table_name, action, action_tstamp_clk, app_user_name, audit.jsonb_minus(row_curr, row_prev), row_curr from audit.logged_actions where action_tstamp_clk > timestamp 'REPLACETIMESTAMP' order by action_tstamp_clk desc limit 100";
-
-
-        String timeStamp = "2021-08-27 10:02:37.800278";
-
-        Logging.testLog ("Audit table last entry action_tstamp_clk: " + timeStamp);
-
-        List <Map <String, Object>> tableData = coraDBClient.executeSelectQuery (auditActionQuery.replace ("REPLACETIMESTAMP",
-                                                                                                           timeStamp));
-
-        Map <String, Set <String>> actualAuditActions = new HashMap <> ();
-        for (Map <String, Object> map : tableData) {
-            Set <String> mapSet = new HashSet <String> ();
-            if (actualAuditActions.containsKey (map.get ("action").toString ()))
-                mapSet = actualAuditActions.get (map.get ("action").toString ());
-
-            mapSet.add (map.get ("table_name").toString ());
-            actualAuditActions.put (map.get ("action").toString (), mapSet);
-        }
-        Logging.testLog ("Audit Actions: " + actualAuditActions);
-        Logging.testLog ("Audit Actions, Insert Tables: " + actualAuditActions.get ("I"));
-        Logging.testLog ("Audit Actions, Update Tables: " + actualAuditActions.get ("U"));
-
-        Set <String> expInsertTables = new HashSet <> (Arrays.asList ("patients",
-                                                                      "orders",
-                                                                      "specimens",
-                                                                      "specimen_order_xref",
-                                                                      "order_billing",
-                                                                      "providers_patients",
-                                                                      "order_tests"));
-        Set <String> expUpdateTables = new HashSet <> (Arrays.asList ("orders"));
-        assert (actualAuditActions.get ("I").containsAll (expInsertTables));
-        testLog ("step1.1 - Insert entries are logged in patients, orders, specimens, ");
-        testLog ("specimen_order_xref, order_billing and providers_patients table");
-
-        assertTrue (actualAuditActions.get ("U").containsAll (expUpdateTables));
-        testLog ("step1.2 - Update entries are logged in external_users and orders table");
-    }
 }
