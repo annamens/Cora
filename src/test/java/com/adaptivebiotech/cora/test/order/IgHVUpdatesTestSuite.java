@@ -546,8 +546,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                                                          new String[] { c91_10 },
                                                          "Order 2 Orca Work");
 
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), null, null);
-
         forceStatusUpdate (orderDetails.get ("sampleName"),
                            tsvOverridePathOrcaIgHVO2O6O7,
                            lastFinishedPipelineOrcaIgHVO2O7,
