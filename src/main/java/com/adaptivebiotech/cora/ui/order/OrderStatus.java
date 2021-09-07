@@ -101,4 +101,12 @@ public class OrderStatus extends Diagnostic {
         return waitUntilVisible (css);
     }
 
+    public String getOrderTestIdFromUrl () {
+        String orderTestId = null;
+        String url = getCurrentUrl ();
+        if (url.contains ("ordertestid")) {
+            orderTestId = url.split ("ordertestid=")[1];
+        }
+        return orderTestId;
+    }
 }

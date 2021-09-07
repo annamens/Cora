@@ -52,6 +52,8 @@ public class Diagnostic extends CoraPage {
     private final String   reportNotes        = "[ng-model=\"ctrl.reportEntry.notes\"]";
     private final String   additionalComments = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
     private final String   btnCLIAIGHV        = "//li//div[text()='CLIA-IGHV']";
+    private final String   previewReportPdf   = ".report-preview ng-pdf";
+    private final String   releasedReportPdf  = ".released-report-table tr td:nth-child(3) a";
 
     protected final String specimenNumber     = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
     protected final String tabBase            = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
@@ -933,5 +935,13 @@ public class Diagnostic extends CoraPage {
 
     public boolean isCLIAIGHVBtnVisible () {
         return isElementVisible (btnCLIAIGHV);
+    }
+
+    public String getPreviewReportPdfUrl () {
+        return getAttribute (previewReportPdf, "pdf-url");
+    }
+
+    public String getReleasedReportPdfUrl () {
+        return getAttribute (releasedReportPdf, "href");
     }
 }
