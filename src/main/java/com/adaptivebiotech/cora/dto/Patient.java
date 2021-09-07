@@ -1,9 +1,9 @@
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
@@ -54,11 +54,7 @@ public final class Patient {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
     public static final class Address {
@@ -76,34 +72,12 @@ public final class Patient {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
 
         @Override
         public boolean equals (Object o) {
-
-            if (o == this)
-                return true;
-
-            if (! (o instanceof Address))
-                return false;
-
-            Address a = (Address) o;
-            return new EqualsBuilder ().append (use, a.use)
-                                       .append (line1, a.line1)
-                                       .append (line2, a.line2)
-                                       .append (line, a.line)
-                                       .append (phone, a.phone)
-                                       .append (email, a.email)
-                                       .append (city, a.city)
-                                       .append (state, a.state)
-                                       .append (postalCode, a.postalCode)
-                                       .append (country, a.country)
-                                       .isEquals ();
+            return equalsOverride (this, (Address) o);
         }
     }
 }
