@@ -1,9 +1,9 @@
 package com.adaptivebiotech.cora.ui.mira;
 
-import static org.testng.Assert.assertEquals;
-import static org.openqa.selenium.Keys.RETURN;
-import static org.testng.Assert.assertTrue;
 import static com.seleniumfy.test.utils.Logging.info;
+import static org.openqa.selenium.Keys.RETURN;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +28,7 @@ import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
  */
 public class MirasList extends MirasListBase {
 
-    private Set <String> knownPanels              = new HashSet <String> ();
+    private Set <String> knownPanels = new HashSet <String> ();
 
     public MirasList () {
         staticNavBarHeight = 90;
@@ -44,7 +44,7 @@ public class MirasList extends MirasListBase {
     }
 
     public void searchMira (String miraId) {
-        assertTrue (setText (".search-orders input", miraId));
+        assertTrue (setText (searchBox, miraId));
         assertTrue (pressKey (RETURN));
     }
 
@@ -64,11 +64,9 @@ public class MirasList extends MirasListBase {
     }
 
     public void searchForMira (String miraId) {
-        String searchField = "input[type='search']";
         String firstResult = "//table[contains(@class, 'mira-table')]/tbody/tr[1]/td[1]/a/span";
 
-        assertTrue (setText (searchField, miraId));
-        assertTrue (pressKey (RETURN));
+        searchMira (miraId);
         pageLoading ();
 
         waitForFirstMiraId (miraId, firstResult);

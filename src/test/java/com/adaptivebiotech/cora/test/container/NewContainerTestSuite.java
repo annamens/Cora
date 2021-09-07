@@ -149,6 +149,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         Container c2 = containers.list.get (1);
         add.searchContainer (c1);
         ContainerList list = new ContainerList ();
+        list.searchContainerIdOrName (c1.containerNumber);
         list.setCurrentLocationFilter (freezerAB018055.name);
         list.clickFilter ();
 

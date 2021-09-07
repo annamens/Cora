@@ -253,6 +253,7 @@ public final class Orders {
 
         public String           href;
         public String           linkText;
+        public String           color;
         public Order            order;
         public Physician        physician;
         public Patient          patient;

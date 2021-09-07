@@ -51,8 +51,12 @@ public class Diagnostic extends CoraPage {
     private final String   assayEl            = "//span[@ng-bind='test.name' and text()='%s']";
     private final String   reportNotes        = "[ng-model=\"ctrl.reportEntry.notes\"]";
     private final String   additionalComments = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
+    private final String   btnCLIAIGHV        = "//li//div[text()='CLIA-IGHV']";
+    private final String   previewReportPdf   = ".report-preview ng-pdf";
+    private final String   releasedReportPdf  = ".released-report-table tr td:nth-child(3) a";
 
     protected final String specimenNumber     = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
+    protected final String tabBase            = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
 
     public Diagnostic () {
         staticNavBarHeight = 200;
@@ -118,8 +122,8 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickOrderDetailsTab () {
-        String css = "[ng-click=\"ctrl.tab='detail';\"]";
-        assertTrue (click (css));
+        String tab = String.format (tabBase, "Order Details");
+        assertTrue (click (tab));
         pageLoading ();
     }
 
@@ -153,8 +157,8 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickOrderStatusTab () {
-        String css = "[ng-click=\"ctrl.tab='status';\"]";
-        assertTrue (click (css));
+        String tab = String.format (tabBase, "Order Status");
+        assertTrue (click (tab));
         pageLoading ();
     }
 
@@ -280,7 +284,7 @@ public class Diagnostic extends CoraPage {
         waitUntilActivated ();
     }
 
-    void clickSaveAndActivate () {
+    public void clickSaveAndActivate () {
         String css = "#order-entry-save-and-activate";
         assertTrue (click (css));
     }
@@ -929,4 +933,15 @@ public class Diagnostic extends CoraPage {
         assertTrue (click (amendedRadio));
     }
 
+    public boolean isCLIAIGHVBtnVisible () {
+        return isElementVisible (btnCLIAIGHV);
+    }
+
+    public String getPreviewReportPdfUrl () {
+        return getAttribute (previewReportPdf, "pdf-url");
+    }
+
+    public String getReleasedReportPdfUrl () {
+        return getAttribute (releasedReportPdf, "href");
+    }
 }

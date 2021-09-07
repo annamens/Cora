@@ -127,7 +127,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         my.gotoContainerDetail (testContainer);
         detail.isCorrectPage ();
         List <String> detailHistories2 = detail.getDetailHistory ();
-        assertEquals (detailHistories2, detailHistories1);
+        assertTrue (detailHistories2.get (1).contains ("Last modified by " + coraTestUser));
         ContainerHistory activity2 = new ContainerHistory ();
         activity2.activityDate = detailHistories2.get (1).replace (" Last modified by " + coraTestUser, "");
         activity2.activity = "Moved to Location";
