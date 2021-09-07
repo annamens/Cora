@@ -52,7 +52,7 @@ public class CoraEnvironment extends BaseEnvironment {
             sshUser = getProperty ("ssh.user");
             sshPass = getProperty ("ssh.pass");
 
-            isDbTunnel = Boolean.parseBoolean (getProperty ("db.tunnel"));
+            isDbTunnel = Boolean.parseBoolean (System.getProperty ("db.tunnel"));
 
         } catch (Exception e) {
             error ("failed to parse the config file", e);
