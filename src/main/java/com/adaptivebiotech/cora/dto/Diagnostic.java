@@ -128,5 +128,11 @@ public final class Diagnostic {
     public static final class Panel {
 
         public String id;
+
+        public Panel () {}
+
+        public Panel (String id) {
+            this.id = id;
+        }
     }
 }
