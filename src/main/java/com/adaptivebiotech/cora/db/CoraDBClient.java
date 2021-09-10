@@ -31,7 +31,7 @@ public class CoraDBClient {
     public boolean openConnection () {
         closeConnection ();
         try {
-            String url = Boolean.parseBoolean (System.getProperty ("db.tunnel")) ? sshUrl : dbUrl;
+            String url = CoraEnvironment.isDbTunnel ? sshUrl : dbUrl;
             connection = DriverManager.getConnection (url, username, password);
             return true;
         } catch (SQLException e) {

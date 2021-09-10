@@ -152,8 +152,8 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        testLog ("Should connect to DB using tunnel? " + System.getProperty ("db.tunnel"));
-        if (Boolean.parseBoolean (System.getProperty ("db.tunnel"))) {
+        testLog ("Should connect to DB using tunnel? " + CoraEnvironment.isDbTunnel);
+        if (CoraEnvironment.isDbTunnel) {
             testLog ("Creating a DB connection using tunnel");
             tunnel = Tunnel.getTunnel ();
             Thread t = new Thread (tunnel);
@@ -170,7 +170,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     @AfterClass (alwaysRun = true)
     public void afterClass () throws Exception {
         coraDBClient.closeConnection ();
-        if (Boolean.parseBoolean (System.getProperty ("db.tunnel")))
+        if (CoraEnvironment.isDbTunnel)
             tunnel.close ();
     }
 
