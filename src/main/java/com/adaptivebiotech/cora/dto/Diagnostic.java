@@ -110,7 +110,6 @@ public final class Diagnostic {
         public ChargeType      billingType;
         public DeliveryType    specimenDeliveryType;
         public Specimen        specimenDto;
-        public String          expectedTestType;
         public List <Panel>    panels;
     }
 
