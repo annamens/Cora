@@ -3,6 +3,7 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
+import static com.adaptivebiotech.test.utils.PageHelper.Assay.LYME_DX_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
@@ -257,6 +258,7 @@ public class Diagnostic extends CoraPage {
     public void clickReportTab (Assay assay) {
         assertTrue (click ("//a[text()='Report | " + assay.test + "']"));
         pageLoading ();
+        assertTrue (waitForElementInvisible (".report-loading"));
         assertTrue (waitForElementInvisible ("[ng-show='ctrl.isLoadingPDF']"));
         assertTrue (waitUntilVisible (".order-test-report"));
     }
@@ -324,7 +326,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void releaseReport () {
-        assertTrue (click ("[ng-click='ctrl.releaseReport()']"));
+        assertTrue (click ("//*[text()='Release Report']"));
         assertTrue (isTextInElement (popupTitle, "Release Report"));
         clickPopupOK ();
     }
@@ -334,8 +336,8 @@ public class Diagnostic extends CoraPage {
         clickReportTab (assay);
 
         // for TCell
-        if (!COVID19_DX_IVD.equals (assay) && isElementVisible (".report-blocked-msg")) {
-            assertTrue (click ("[ng-click='ctrl.generateReport()']"));
+        if (!COVID19_DX_IVD.equals (assay) && !LYME_DX_IVD.equals (assay) && isElementVisible (".report-blocked-msg")) {
+            assertTrue (click ("//*[text()='Generate Report']"));
             pageLoading ();
         }
 
