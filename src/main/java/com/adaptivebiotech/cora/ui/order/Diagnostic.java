@@ -258,6 +258,7 @@ public class Diagnostic extends CoraPage {
     public void clickReportTab (Assay assay) {
         assertTrue (click ("//a[text()='Report | " + assay.test + "']"));
         pageLoading ();
+        assertTrue (waitForElementInvisible (".report-loading"));
         assertTrue (waitForElementInvisible ("[ng-show='ctrl.isLoadingPDF']"));
         assertTrue (waitUntilVisible (".order-test-report"));
     }
