@@ -63,7 +63,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
     private MirasList     mList;
     private ContainerList cList;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         openBrowser (coraTestUrl);
         login = new Login ();

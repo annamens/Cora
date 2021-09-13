@@ -24,7 +24,7 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
     private OrdersList list;
     private Diagnostic diagnostic;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         list = new OrdersList ();
         diagnostic = new Diagnostic ();
