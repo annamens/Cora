@@ -55,7 +55,7 @@ public class Diagnostic extends CoraPage {
     private final String   btnCLIAIGHV        = "//li//div[text()='CLIA-IGHV']";
     private final String   previewReportPdf   = ".report-preview ng-pdf";
     private final String   releasedReportPdf  = ".released-report-table tr td:nth-child(3) a";
-
+    private final String   patientMrdStatus   = ".patient-status";
     protected final String specimenNumber     = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
     protected final String tabBase            = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
 
@@ -302,13 +302,13 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickCancelOrder () {
-        assertTrue (click ("[ng-click='ctrl.cancelOrder()']"));
+        assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
-        assertTrue (clickAndSelectValue ("#cancellationReason", "string:Other"));
-        assertTrue (clickAndSelectValue ("#cancellationReason2", "string:Specimen - Not Rejected"));
-        assertTrue (clickAndSelectValue ("#cancellationReason3", "string:Other"));
+        assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
+        assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
+        assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
         assertTrue (setText ("#cancellationNotes", "this is a test"));
-        assertTrue (click ("[ng-click='ctrl.ok()']"));
+        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
         pageLoading ();
         moduleLoading ();
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
@@ -945,5 +945,9 @@ public class Diagnostic extends CoraPage {
 
     public String getReleasedReportPdfUrl () {
         return getAttribute (releasedReportPdf, "href");
+    }
+
+    public String getPatientMRDStatus () {
+        return getText (patientMrdStatus);
     }
 }

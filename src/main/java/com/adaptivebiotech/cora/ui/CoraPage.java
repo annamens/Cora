@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import java.time.Duration;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import org.openqa.selenium.By;
@@ -13,10 +14,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.test.utils.Logging;
 import com.seleniumfy.test.utils.BasePage;
 
 /**
@@ -57,15 +60,16 @@ public class CoraPage extends BasePage {
     }
 
     public List <String> getNewPopupMenu () {
-        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li)).collect (toList ());
+        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li))
+                                                    .collect (toList ());
     }
-    
+
     public void selectNewClonoSEQDiagnosticOrder () {
         assertTrue (click (newmenu));
         assertTrue (waitUntilVisible (".dropdown.new-order.open"));
         assertTrue (click ("//a[text()='clonoSEQ Diagnostic Order']"));
     }
-    
+
     public void selectNewTDetectDiagnosticOrder () {
         assertTrue (click (newmenu));
         assertTrue (waitUntilVisible (".dropdown.new-order.open"));
@@ -259,13 +263,9 @@ public class CoraPage extends BasePage {
     }
 
     protected void closeNotification (String msg) {
-        if (isElementPresent (format ("//*[@ng-bind-html='notification.msg' and text()='%s']", msg))) {
-            String notification = ".alert";
-            if (isElementPresent (notification)) {
-                assertTrue (click (notification + " .close"));
-                moduleLoading ();
-            }
-        }
+        String xpath = format ("//*[@ng-bind-html='notification.msg' and text()='%s']", msg);
+        if (isElementPresent (xpath))
+            waitForElementInvisible (xpath);
     }
 
     public void ignoredUnsavedChanges () {
@@ -299,5 +299,26 @@ public class CoraPage extends BasePage {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Wrapper for {@link Select}.getOptions()
+     * 
+     * @param select
+     *            &lt;select&gt; element (css or xpath)
+     * @return drop down option values
+     */
+    public List <String> getDropdownOptions (String select) {
+        List <String> dropDownOptions = new LinkedList <String> ();
+        try {
+            Select dropdown = new Select (scrollTo (waitForElementClickable (locateBy (select))));
+
+            for (WebElement element : dropdown.getOptions ()) {
+                dropDownOptions.add (element.getText ());
+            }
+        } catch (Exception e) {
+            Logging.error (e.getMessage (), e);
+        }
+        return dropDownOptions;
     }
 }

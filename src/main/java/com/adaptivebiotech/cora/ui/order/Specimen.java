@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
+import java.util.List;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
@@ -14,8 +15,10 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
  */
 public class Specimen extends Diagnostic {
 
+    private final String specimenDelivery = "[name='specimenType']";
+
     public void enterSpecimenDelivery (DeliveryType type) {
-        assertTrue (clickAndSelectValue ("[ng-model$='specimenDeliveryType']", "string:" + type));
+        assertTrue (clickAndSelectValue (specimenDelivery, "string:" + type));
     }
 
     public void findSpecimenId (String id) {
@@ -62,7 +65,7 @@ public class Specimen extends Diagnostic {
     public void enterCollectionDate (String date) {
         assertTrue (setText ("[name='collectionDate']", date));
     }
-    
+
     public void enterRetrievalDate (String date) {
         String cssRetrievalDate = "#specimen-entry-retrieval-date";
         assertTrue (setText (cssRetrievalDate, date));
@@ -88,5 +91,9 @@ public class Specimen extends Diagnostic {
         String modalHeader = "[ng-bind-html=\"ctrl.dialogOptions.headerText\"]";
         assertTrue (isTextInElement (modalHeader, expectedModalTitle));
         clickPopupOK ();
+    }
+
+    public List <String> getSpecimenDeliveryOptions () {
+        return getDropdownOptions (specimenDelivery);
     }
 }
