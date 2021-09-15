@@ -110,7 +110,7 @@ public final class Diagnostic {
         public ChargeType      billingType;
         public DeliveryType    specimenDeliveryType;
         public Specimen        specimenDto;
-        public String          expectedTestType;
+        public List <Panel>    panels;
     }
 
     public static final class Task {
@@ -122,5 +122,16 @@ public final class Diagnostic {
         public StageStatus stageStatus;
         public String      configId;
         public String      configName;
+    }
+
+    public static final class Panel {
+
+        public String id;
+
+        public Panel () {}
+
+        public Panel (String id) {
+            this.id = id;
+        }
     }
 }
