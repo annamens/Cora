@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Cora Api Stress Tests" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Cora Auto QC Tests" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
@@ -15,13 +15,13 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="host" elementType="Argument">
             <stringProp name="Argument.name">host</stringProp>
-            <stringProp name="Argument.value">cora-test.dna.corp.adaptivebiotech.com</stringProp>
+            <stringProp name="Argument.value">localhost</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Host of Webservice</stringProp>
           </elementProp>
           <elementProp name="port" elementType="Argument">
             <stringProp name="Argument.name">port</stringProp>
-            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.value">9000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="apiUsername" elementType="Argument">
@@ -36,7 +36,7 @@
           </elementProp>
           <elementProp name="protocol" elementType="Argument">
             <stringProp name="Argument.name">protocol</stringProp>
-            <stringProp name="Argument.value">https</stringProp>
+            <stringProp name="Argument.value">http</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">http or https</stringProp>
           </elementProp>
@@ -125,13 +125,13 @@ JMeterUtils.setProperty(&quot;apiToken&quot;, accessToken);</stringProp>
         </BeanShellPostProcessor>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Stress Tests" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Auto QC Tests" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">10</stringProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">10</stringProp>
         <longProp name="ThreadGroup.start_time">1375525852000</longProp>
         <longProp name="ThreadGroup.end_time">1375525852000</longProp>
@@ -153,6 +153,10 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
               <stringProp name="Header.name">x-api-token</stringProp>
               <stringProp name="Header.value">${apiToken}</stringProp>
             </elementProp>
@@ -160,22 +164,18 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
               <stringProp name="Header.name">x-api-username</stringProp>
               <stringProp name="Header.value">${apiUsername}</stringProp>
             </elementProp>
-            <elementProp name="" elementType="Header">
-              <stringProp name="Header.name">Content-Type</stringProp>
-              <stringProp name="Header.value">application/json</stringProp>
-            </elementProp>
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET v1/orders/search" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="find test account" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
             <collectionProp name="Arguments.arguments">
-              <elementProp name="limit" elementType="HTTPArgument">
+              <elementProp name="name" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">10</stringProp>
+                <stringProp name="Argument.value">${accountName}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">limit</stringProp>
+                <stringProp name="Argument.name">name</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
@@ -183,7 +183,7 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/cora/api/v1/orders/search</stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/accounts</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -193,16 +193,24 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET v1/containers/search" enabled="true">
+        <hashTree>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="set test_account_id" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">test_account_id</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.objects[:1].id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+            <stringProp name="Scope.variable"></stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="find test provider" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
             <collectionProp name="Arguments.arguments">
-              <elementProp name="limit" elementType="HTTPArgument">
+              <elementProp name="accountName" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">10</stringProp>
+                <stringProp name="Argument.value">${accountName}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">limit</stringProp>
+                <stringProp name="Argument.name">accountName</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
@@ -210,7 +218,7 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/cora/api/v1/containers/search</stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/providers</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -220,23 +228,110 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET v1/tasks/search" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
+        <hashTree>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="set test_provider_id" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">test_provider_id</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.objects[:1].id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Simulate Covid order with NorthQC ACCEPTED-AUTO" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
-              <elementProp name="status" elementType="HTTPArgument">
+              <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">Active</stringProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;account&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_account_id}&quot;&#xd;
+	},&#xd;
+	&quot;patient&quot;: {&#xd;
+		&quot;id&quot;: &quot;b5f264af-6f25-40bb-808c-bd4d4333a6bf&quot;,&#xd;
+		&quot;firstName&quot;: &quot;Jane&quot;,&#xd;
+		&quot;middleName&quot;: &quot;Selenium&quot;,&#xd;
+		&quot;lastName&quot;: &quot;ClonoSeq&quot;,&#xd;
+		&quot;fullname&quot;: &quot;Jane Selenium ClonoSeq&quot;,&#xd;
+		&quot;gender&quot;: &quot;Female&quot;,&#xd;
+		&quot;dateOfBirth&quot;: &quot;1999-01-01&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;race&quot;: &quot;American Indian or Alaska Native&quot;,&#xd;
+		&quot;ethnicity&quot;: &quot;Asked, but unknown&quot;,&#xd;
+		&quot;address&quot;: &quot;1551 Eastlake Ave E&quot;,&#xd;
+		&quot;address2&quot;: &quot;Ste 200&quot;,&#xd;
+		&quot;locality&quot;: &quot;Seattle&quot;,&#xd;
+		&quot;region&quot;: &quot;WA&quot;,&#xd;
+		&quot;postCode&quot;: &quot;98104&quot;,&#xd;
+		&quot;phone&quot;: &quot;206-201-1868&quot;,&#xd;
+		&quot;patientCode&quot;: 0,&#xd;
+		&quot;externalPatientCode&quot;: 0,&#xd;
+		&quot;calibrationPatientCode&quot;: 0,&#xd;
+		&quot;deceased&quot;: false,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;&#xd;
+	},&#xd;
+	&quot;provider&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_provider_id}&quot;&#xd;
+	},&#xd;
+	&quot;order&quot;: {&#xd;
+		&quot;name&quot;: &quot;Selenium Test Order&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;tests&quot;: [{&quot;testId&quot; : &quot;1d298f94-74ed-474f-b12c-89e07295b1b4&quot;,&#xd;
+ &quot;tsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;,&#xd;
+			&quot;workflowProperties&quot;: {&#xd;
+				&quot;sampleName&quot;: &quot;119164-SN-9817&quot;,&#xd;
+				&quot;workspaceName&quot;: &quot;CLINICAL-CLINICAL&quot;,&#xd;
+				&quot;lastAcceptedTsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;&#xd;
+			}}],&#xd;
+		&quot;orderType&quot;: &quot;TDx&quot;,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;,&#xd;
+		&quot;specimenDeliveryType&quot;: &quot;CustomerShipment&quot;,&#xd;
+		&quot;specimenDto&quot;: {&#xd;
+			&quot;name&quot;: &quot;860011348&quot;,&#xd;
+			&quot;sampleType&quot;: &quot;Blood&quot;,&#xd;
+			&quot;collectionDate&quot;: [2021, 8, 29, 14, 14, 29, 559],&#xd;
+			&quot;reconciliationDate&quot;: [2021, 8, 29, 14, 14, 29, 566]&#xd;
+		},&#xd;
+		&quot;panels&quot;: [{&#xd;
+			&quot;id&quot;: &quot;132d9440-8f75-46b8-b084-efe06346dfd4&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;shipment&quot;: {&#xd;
+		&quot;category&quot;: &quot;Diagnostic&quot;,&#xd;
+		&quot;status&quot;: &quot;IntakeComplete&quot;,&#xd;
+		&quot;arrivalDate&quot;: [2021, 8, 24, 14, 14, 29, 566],&#xd;
+		&quot;condition&quot;: &quot;Ambient&quot;,&#xd;
+		&quot;carrier&quot;: &quot;UPS&quot;,&#xd;
+		&quot;trackingNumber&quot;: &quot;&quot;,&#xd;
+		&quot;expectedRecordType&quot;: &quot;Order&quot;,&#xd;
+		&quot;containers&quot;: [{&#xd;
+			&quot;containerType&quot;: &quot;Tube&quot;,&#xd;
+			&quot;contentsLocked&quot;: true,&#xd;
+			&quot;integrity&quot;: &quot;Pass&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;fastForwardStatus&quot;: {&#xd;
+		&quot;stageName&quot;: &quot;NorthQC&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Finished&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;ACCEPTED-AUTO&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;&#xd;
+	},&#xd;
+	&quot;waitForResults&quot;: true,&#xd;
+	&quot;dxResults&quot;: {&#xd;
+		&quot;disease&quot;: &quot;COVID19&quot;, &#xd;
+		&quot;dxScore&quot;: 57.03804484025608, &#xd;
+		&quot;qcFlags&quot;: [], &#xd;
+		&quot;dxStatus&quot;: &quot;POSITIVE&quot;, &#xd;
+		&quot;configVersion&quot;: &quot;dx.covid19.rev1&quot;, &#xd;
+		&quot;pipelineVersion&quot;: &quot;v3.1-385-g1340003&quot;, &#xd;
+		&quot;containerVersion&quot;: &quot;dx-classifiers/covid-19:d23228f&quot;, &#xd;
+		&quot;countEnhancedSeq&quot;: 118, &#xd;
+		&quot;classifierVersion&quot;: &quot;v1.0&quot;, &#xd;
+		&quot;posteriorProbability&quot;: 1.0, &#xd;
+		&quot;uniqueProductiveTemplates&quot;: 15775}&#xd;
+}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
-                <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">status</stringProp>
-              </elementProp>
-              <elementProp name="limit" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">10</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-                <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">limit</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
@@ -244,70 +339,8 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/cora/api/v1/tasks/search</stringProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET v1/ordertests/search TDx" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="category" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">Diagnostic</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-                <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">category</stringProp>
-              </elementProp>
-              <elementProp name="diagnosticOrderType" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">TDx</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-                <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">diagnosticOrderType</stringProp>
-              </elementProp>
-              <elementProp name="status" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">Active</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-                <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">status</stringProp>
-              </elementProp>
-              <elementProp name="sort" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">DueDate</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-                <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">sort</stringProp>
-              </elementProp>
-              <elementProp name="ascending" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">true</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-                <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">ascending</stringProp>
-              </elementProp>
-              <elementProp name="limit" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">10</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-                <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">limit</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain"></stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/cora/api/v1/orderTests/search</stringProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/test/scenarios/diagnosticDx</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
