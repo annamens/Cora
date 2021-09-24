@@ -322,7 +322,8 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
 		&quot;subStatusCode&quot;: &quot;&quot;,&#xd;
 		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
 		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
-		&quot;actor&quot;: &quot;selenium test&quot;&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;,&#xd;
+		&quot;skipFastforwardMessage&quot;: &quot;true&quot;&#xd;
 	}],&#xd;
 	&quot;waitForResults&quot;: true,&#xd;
 	&quot;dxResults&quot;: {&#xd;
