@@ -572,7 +572,6 @@ public class Diagnostic extends CoraPage {
         assertTrue (setText ("[name='dateOfBirth']", patient.dateOfBirth));
         assertTrue (clickAndSelectValue ("[name='gender']", "string:" + patient.gender));
         assertTrue (click ("[ng-click='ctrl.save(orderEntryForm)']"));
-        closeNotification ("Patient saved");
         assertTrue (setText ("[name='mrn']", patient.mrn));
     }
 

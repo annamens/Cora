@@ -167,7 +167,7 @@ public class PatientDetail extends CoraPage {
         assertTrue (isTextInElement (".modal-content" + " " + ".modal-title", "Link ID Sequences"));
         assertTrue (setText ("#linkedPatientCode", patientCode));
         assertTrue (click ("//button[text()='Find']"));
-        assertTrue (isElementPresent ("//button[text()='Remove']"));
+        assertTrue (waitUntilVisible ("//button[text()='Remove']"));
         assertTrue (click ("//button[text()='Link Patients']"));
         assertTrue (isTextInElement (".modal-content" + " " + ".modal-title", "Link ID Sequences Confirmation"));
         assertTrue (click ("//button[text()='Yes, Link Patients']"));

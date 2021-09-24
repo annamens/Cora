@@ -222,7 +222,8 @@ public class SmokeTestSuite extends CoraBaseBrowser {
 
         List <String> utilities = asList ("Alerts",
                                           "Audit Tool",
-                                          "Barcode Comparison Tool");
+                                          "Barcode Comparison Tool",
+                                          "Patient Merge Tool");
         pList.clickUtilities ();
         assertEquals (pList.getUtilitiesMenu (), utilities);
         pList.clickUtilities ();
@@ -415,7 +416,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         addContainer.clickContainers ();
         cList.isCorrectPage ();
         cList.searchContainerIdOrName (test.containerNumber);
-        cList.setCategory (ContainerList.Category.All);
+        cList.setCategory (ContainerList.Category.Any);
         cList.setCurrentLocationFilter (freezer);
         cList.setContainerType (TubeBox5x5);
         cList.setGroupBy (ContainerList.GroupBy.None);
@@ -430,6 +431,8 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         cList.takeCustody (test);
         testLog (format ("message displayed indicating %s is in my custody", test.containerNumber));
 
+        // it takes few seconds to reflect the updated Custody Size
+        doWait (1000);
         int CUSTODYEND = cList.getMyCustodySize ();
         assertEquals (CUSTODYEND - CUSTODYBEGIN, 1);
         testLog ("the delta between before and after scan for My Custody size is 1");

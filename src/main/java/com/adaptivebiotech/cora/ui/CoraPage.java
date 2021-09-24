@@ -262,12 +262,6 @@ public class CoraPage extends BasePage {
         moduleLoading ();
     }
 
-    protected void closeNotification (String msg) {
-        String xpath = format ("//*[@ng-bind-html='notification.msg' and text()='%s']", msg);
-        if (isElementPresent (xpath))
-            waitForElementInvisible (xpath);
-    }
-
     public void ignoredUnsavedChanges () {
         assertTrue (isTextInElement (popupTitle, "Unsaved Changes"));
         clickPopupOK ();
