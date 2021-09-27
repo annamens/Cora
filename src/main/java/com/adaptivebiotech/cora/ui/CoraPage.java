@@ -19,7 +19,6 @@ import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.test.utils.Logging;
 import com.seleniumfy.test.utils.BasePage;
 
 /**
@@ -311,7 +310,7 @@ public class CoraPage extends BasePage {
                 dropDownOptions.add (element.getText ());
             }
         } catch (Exception e) {
-            Logging.error (e.getMessage (), e);
+            throw new RuntimeException (e);
         }
         return dropDownOptions;
     }
