@@ -26,7 +26,7 @@
           </elementProp>
           <elementProp name="apiUsername" elementType="Argument">
             <stringProp name="Argument.name">apiUsername</stringProp>
-            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.value">svc_test_orca</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="apiPassword" elementType="Argument">
@@ -323,7 +323,7 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
 		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
 		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
 		&quot;actor&quot;: &quot;selenium test&quot;,&#xd;
-		&quot;skipFastforwardMessage&quot;: &quot;true&quot;&#xd;
+		&quot;skipFastforwardMessage&quot;: true&#xd;
 	}],&#xd;
 	&quot;waitForResults&quot;: true,&#xd;
 	&quot;dxResults&quot;: {&#xd;
