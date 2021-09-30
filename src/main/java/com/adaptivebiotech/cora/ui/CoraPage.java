@@ -57,15 +57,16 @@ public class CoraPage extends BasePage {
     }
 
     public List <String> getNewPopupMenu () {
-        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li)).collect (toList ());
+        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li))
+                                                    .collect (toList ());
     }
-    
+
     public void selectNewClonoSEQDiagnosticOrder () {
         assertTrue (click (newmenu));
         assertTrue (waitUntilVisible (".dropdown.new-order.open"));
         assertTrue (click ("//a[text()='clonoSEQ Diagnostic Order']"));
     }
-    
+
     public void selectNewTDetectDiagnosticOrder () {
         assertTrue (click (newmenu));
         assertTrue (waitUntilVisible (".dropdown.new-order.open"));
@@ -299,5 +300,59 @@ public class CoraPage extends BasePage {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param target
+     *            HTML DOM element (css or xpath)
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (String target, String propertyName) {
+        return getCssProperty (locateBy (target), propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param by
+     *            {@link By}
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (By by, String propertyName) {
+        return getCssProperty (waitForElement (by), propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param element
+     *            {@link WebElement}
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (WebElement element, String propertyName) {
+        return element.getCssValue (propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param element
+     *            {@link WebElement}
+     * @param target
+     *            HTML DOM child element (css or xpath)
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (WebElement element, String target, String propertyName) {
+        return element.findElement (locateBy (target)).getCssValue (propertyName);
     }
 }
