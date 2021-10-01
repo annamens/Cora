@@ -152,26 +152,26 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-//        testLog ("Should connect to DB using tunnel? " + CoraEnvironment.isDbTunnel);
-//        if (CoraEnvironment.isDbTunnel) {
-//            testLog ("Creating a DB connection using tunnel");
-//            tunnel = Tunnel.getTunnel ();
-//            Thread t = new Thread (tunnel);
-//            t.start ();
-//            tunnel.waitForConnection ();
-//        }
-//
-//        coraDBClient = new CoraDBClient (CoraEnvironment.coraDBUser, CoraEnvironment.coraDBPass);
-//
-//        assertTrue (coraDBClient.openConnection ());
+        testLog ("Should connect to DB using tunnel? " + CoraEnvironment.isDbTunnel);
+        if (CoraEnvironment.isDbTunnel) {
+            testLog ("Creating a DB connection using tunnel");
+            tunnel = Tunnel.getTunnel ();
+            Thread t = new Thread (tunnel);
+            t.start ();
+            tunnel.waitForConnection ();
+        }
+
+        coraDBClient = new CoraDBClient (CoraEnvironment.coraDBUser, CoraEnvironment.coraDBPass);
+
+        assertTrue (coraDBClient.openConnection ());
 
     }
 
     @AfterClass (alwaysRun = true)
     public void afterClass () throws Exception {
-//        coraDBClient.closeConnection ();
-//        if (CoraEnvironment.isDbTunnel)
-//            tunnel.close ();
+        coraDBClient.closeConnection ();
+        if (CoraEnvironment.isDbTunnel)
+            tunnel.close ();
     }
 
     @BeforeMethod (alwaysRun = true)
@@ -1282,68 +1282,4 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         return extractedText;
     }
 
-    @Test (groups = "featureFlagOn")
-    public void verifyIgHVProd () {
-        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
-        // order 1
-        Assay assayTest = ID_BCell2_CLIA;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         CellPellet,
-                                                         PBMC,
-                                                         new String[] { c83_00 },
-                                                         "Order Test Prod");
-        Logging.info ("Order Details: " + orderDetails);
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), "true", "true");
-
-        String lastAcceptedTsvPath = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e/HF23MBGX2_0_Janssen-Chiu-HOLDING_650009502008.adap.txt.results.tsv.gz";
-        String lastFinishedPipelineJobId = "8a848a2359fb22d4015a8cfdc4a75e9b";
-        String sampleName = "650009502008";
-        String shmDataSourcePath = "s3://pipeline-north-production-archive:us-west-2/170214_NB501642_0122_AHF23MBGX2/v3.0/20170304_0407";
-        String disableHiFreqSave = "true";
-        String disableHiFreqSharing = "true";
-        String workspaceName = "Janssen-Chiu-HOLDING";
-        // go to debug page
-        history.gotoOrderDebug (orderDetails.get ("sampleName"));
-
-        // set workflow property and force status update
-        history.setWorkflowProperty (WorkflowProperty.lastAcceptedTsvPath, lastAcceptedTsvPath);
-
-        history.setWorkflowProperty (WorkflowProperty.lastFinishedPipelineJobId,
-                                     lastFinishedPipelineJobId);
-
-        history.setWorkflowProperty (WorkflowProperty.sampleName, sampleName);
-
-        history.setWorkflowProperty (WorkflowProperty.shmDataSourcePath,
-                                     shmDataSourcePath);
-
-        history.setWorkflowProperty (WorkflowProperty.disableHiFreqSave, disableHiFreqSave);
-        history.setWorkflowProperty (WorkflowProperty.disableHiFreqSharing, disableHiFreqSharing);
-
-        history.setWorkflowProperty (WorkflowProperty.workspaceName, workspaceName);
-
-        history.forceStatusUpdate (StageName.SecondaryAnalysis, Ready);
-
-        history.waitFor (StageName.SecondaryAnalysis, Finished);
-        assertTrue (history.isStagePresent (StageName.SecondaryAnalysis, Finished));
-
-        history.waitFor (StageName.ShmAnalysis, Finished);
-        assertTrue (history.isStagePresent (StageName.ShmAnalysis, Finished));
-
-        history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
-        assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
-        testLog ("step 1 - ighvAnalysisEnabled and ighvReportEnabled are true");
-        testLog ("step 2 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
-
-//        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
-//        testLog ("step 2 - 2 - An eos.shm analysis job was spawned and Completed in portal");
-
-        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
-        assertTrue (isCLIAIGHVFlagPresent);
-        testLog ("step 3 - CLIA-IGHV flag appears just below the Report tab ");
-
-        ReportRender reportData = getReportDataJsonFile ();
-        assertNotNull (reportData.shmReportResult);
-        testLog ("step 4 - SHM analysis results are included in reportData.json within shmReportResult property");
-    }
 }
