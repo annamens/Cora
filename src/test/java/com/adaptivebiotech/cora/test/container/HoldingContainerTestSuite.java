@@ -43,7 +43,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     private Container    child;
     private Containers   containers;
 
-    @BeforeTest
+    @BeforeTest (alwaysRun = true)
     public void beforeTest () {
         doCoraLogin ();
         containers = addContainers (new Containers (
@@ -51,7 +51,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                                            .map (ct -> container (ct)).collect (toList ())));
     }
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         doCoraLogin ();
         login = new Login ();

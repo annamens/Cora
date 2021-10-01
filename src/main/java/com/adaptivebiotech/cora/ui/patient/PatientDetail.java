@@ -162,4 +162,14 @@ public class PatientDetail extends CoraPage {
         assertTrue (setText (css, address));
     }
 
+    public void linkPatient (String patientCode) {
+        assertTrue (click (".glyphicon-link"));
+        assertTrue (isTextInElement (".modal-content" + " " + ".modal-title", "Link ID Sequences"));
+        assertTrue (setText ("#linkedPatientCode", patientCode));
+        assertTrue (click ("//button[text()='Find']"));
+        assertTrue (waitUntilVisible ("//button[text()='Remove']"));
+        assertTrue (click ("//button[text()='Link Patients']"));
+        assertTrue (isTextInElement (".modal-content" + " " + ".modal-title", "Link ID Sequences Confirmation"));
+        assertTrue (click ("//button[text()='Yes, Link Patients']"));
+    }
 }

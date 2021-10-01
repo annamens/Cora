@@ -23,6 +23,8 @@ import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
+import com.adaptivebiotech.cora.utils.PageHelper.Race;
 
 public class TestHelper {
 
@@ -115,6 +117,8 @@ public class TestHelper {
         patient.dateOfBirth = "01/01/1999";
         patient.gender = "Male";
         patient.mrn = randomString (30);
+        patient.race = Race.ASKED;
+        patient.ethnicity = Ethnicity.ASKED;
         return patient;
     }
 

@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import java.time.Duration;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import org.openqa.selenium.By;
@@ -13,6 +14,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.util.Strings;
@@ -259,16 +261,6 @@ public class CoraPage extends BasePage {
         moduleLoading ();
     }
 
-    protected void closeNotification (String msg) {
-        if (isElementPresent (format ("//*[@ng-bind-html='notification.msg' and text()='%s']", msg))) {
-            String notification = ".alert";
-            if (isElementPresent (notification)) {
-                assertTrue (click (notification + " .close"));
-                moduleLoading ();
-            }
-        }
-    }
-
     public void ignoredUnsavedChanges () {
         assertTrue (isTextInElement (popupTitle, "Unsaved Changes"));
         clickPopupOK ();
@@ -300,6 +292,27 @@ public class CoraPage extends BasePage {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Wrapper for {@link Select}.getOptions()
+     * 
+     * @param select
+     *            &lt;select&gt; element (css or xpath)
+     * @return drop down option values
+     */
+    public List <String> getDropdownOptions (String select) {
+        List <String> dropDownOptions = new LinkedList <String> ();
+        try {
+            Select dropdown = new Select (scrollTo (waitForElementClickable (locateBy (select))));
+
+            for (WebElement element : dropdown.getOptions ()) {
+                dropDownOptions.add (element.getText ());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+        return dropDownOptions;
     }
 
     /**

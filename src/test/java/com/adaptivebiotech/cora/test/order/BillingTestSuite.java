@@ -39,7 +39,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     private Diagnostic diagnostic;
     private Billing    billing;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         new Login ().doLogin ();
         oList = new OrdersList ();

@@ -46,7 +46,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     private Container     freezer;
     private Containers    containers;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir = artifacts (this.getClass ().getName (), test.getName ());
         doCoraLogin ();
