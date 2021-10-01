@@ -36,8 +36,11 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
     private EmrConfigDetails emrConfigDetails = new EmrConfigDetails ();
 
     private final String     accountAddedMsg  = "Accounts successfully added.";
+    private final String     newEmrSavedMsg   = "New EMR Config successfully saved.";
     private final String     emrUpdatedMsg    = "EMR Config successfully updated.";
+    private final String     emrEditedMsg     = "EMR Config Edited Test Suite will be cloned";
     private final String     fixErrorsMsg     = "Please fix the highlighted errors.";
+    private final String     notValidJsonMsg  = "Not valid JSON format.";
 
     private final String     createEmrQuery   = "select * from cora.emr_configs where id = '%s'";
     private final String     emrAccountsQuery = "select * from cora.accounts where id in (select account_id from cora.emr_config_account_xref where emr_config_id = '%s') ORDER BY name DESC";
@@ -46,11 +49,9 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
     /**
      * Note: SR-T3684
      * 
-     * @throws JSONException
-     * 
      * @sdlc.requirements SR-6757:R1, R2, R3, R4
      */
-    public void verifyEmrConfigEditPage () throws JSONException {
+    public void verifyEmrConfigEditPage () {
         login.doLogin ();
         ordersList.isCorrectPage ();
 
@@ -129,7 +130,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         createEmrConfig.enterIss (iss);
         createEmrConfig.enterClientSecret (clientSecret);
         createEmrConfig.clickSave ();
-        assertEquals (createEmrConfig.getOverlayMessage (), "New EMR Config successfully saved.");
+        assertEquals (createEmrConfig.getOverlayMessage (), newEmrSavedMsg);
         Logging.testLog ("STEP 5.1 - Message displays indicating EMR config was saved");
         assertTrue (emrConfigDetails.isCloneVisible ());
         Logging.testLog ("STEP 5.2 - Clone button displays");
@@ -266,14 +267,14 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         emrConfigDetails.clearTransforms ();
         emrConfigDetails.enterTransforms (updateTransforms.substring (0, updateTransforms.lastIndexOf ("}")));
         emrConfigDetails.clickShowTransformsAsJson ();
-        assertEquals (emrConfigDetails.getOverlayMessage (), "Not valid JSON format.");
+        assertEquals (emrConfigDetails.getOverlayMessage (), notValidJsonMsg);
         Logging.testLog ("STEP 13 - Error message displays indicating JSON format is not valid.");
 
         emrConfigDetails.clickSave ();
         Logging.testLog ("STEP 14 - EMR config is not saved.");
 
         emrConfigDetails.clickClone ();
-        assertEquals (emrConfigDetails.getOverlayMessage (), "EMR Config Edited Test Suite will be cloned");
+        assertEquals (emrConfigDetails.getOverlayMessage (), emrEditedMsg);
         createEmrConfig.isCorrectPage ();
 
         assertTrue (createEmrConfig.getEmrConfigId ().isEmpty ());
@@ -303,14 +304,15 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         createEmrConfig.clickSave ();
         createEmrConfig.clickSave ();
         assertEquals (emrConfigDetails.getOverlayMessage (), fixErrorsMsg);
-        Logging.testLog ("STEP 13 - Error message displays indicating JSON format is not valid.");
+        Logging.testLog ("STEP 16 - Error message displays indicating JSON format is not valid.");
 
         String clonedEmrConfigId = UUID.randomUUID ().toString ();
         createEmrConfig.clearEmrConfigId ();
         createEmrConfig.enterEmrConfigId (clonedEmrConfigId);
         createEmrConfig.clickSave ();
         assertEquals (emrConfigDetails.getOverlayMessages (),
-                      Arrays.asList (accountAddedMsg, emrUpdatedMsg));
+                      Arrays.asList (accountAddedMsg, newEmrSavedMsg));
+        Logging.testLog ("STEP 17 - Messages display indicating EMR config was saved and account was added.");
 
         emrConfigDetails.clickCancel ();
         emrConfigTable = emrConfig.getEmrConfigTable ();
