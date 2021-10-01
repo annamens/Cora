@@ -11,6 +11,7 @@ import java.util.Map;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.test.utils.Logging;
 
 /**
  * @author jpatel
@@ -222,13 +223,23 @@ public class CreateEmrConfig extends CoraPage {
         assertTrue (click (selectAccountsBtn));
         assertEquals (getCssProperty (selectAccountsDropDown, "display"), "block");
 
-        for (String account : accounts) {
+        String previousFirstResult = null;
+        for (int i = 0; i < accounts.length; i++) {
             assertTrue (clear (accountSearch));
-            assertTrue (setText (accountSearch, account));
-            doWait (2000);
+            assertTrue (setText (accountSearch, accounts[i]));
+
+            if (i != 0) {
+                String currentFirstResult = null;
+                do {
+                    currentFirstResult = getText (waitForElements (accountSearchResults).get (0), "label");
+                    Logging.info ("waiting for dropdown results to change from previousFirstResult to currentFirstResult");
+                    Logging.info ("previousFirstResult: " + previousFirstResult + ", currentFirstResult: " + currentFirstResult);
+                } while (currentFirstResult.equals (previousFirstResult));
+            }
 
             for (WebElement element : waitForElements (accountSearchResults)) {
-                if (getText (element, "label").trim ().equals (account)) {
+                previousFirstResult = getText (waitForElements (accountSearchResults).get (0), "label");
+                if (getText (element, "label").trim ().equals (accounts[i])) {
                     click (element, "input");
                     break;
                 }

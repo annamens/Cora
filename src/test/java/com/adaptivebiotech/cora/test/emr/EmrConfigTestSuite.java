@@ -29,22 +29,23 @@ import com.adaptivebiotech.test.utils.Logging;
 @Test (groups = "regression")
 public class EmrConfigTestSuite extends CoraDbTestBase {
 
-    private Login            login            = new Login ();
-    private OrdersList       ordersList       = new OrdersList ();
-    private EmrConfig        emrConfig        = new EmrConfig ();
-    private CreateEmrConfig  createEmrConfig  = new CreateEmrConfig ();
-    private EmrConfigDetails emrConfigDetails = new EmrConfigDetails ();
+    private Login            login             = new Login ();
+    private OrdersList       ordersList        = new OrdersList ();
+    private EmrConfig        emrConfig         = new EmrConfig ();
+    private CreateEmrConfig  createEmrConfig   = new CreateEmrConfig ();
+    private EmrConfigDetails emrConfigDetails  = new EmrConfigDetails ();
 
-    private final String     accountAddedMsg  = "Accounts successfully added.";
-    private final String     newEmrSavedMsg   = "New EMR Config successfully saved.";
-    private final String     emrUpdatedMsg    = "EMR Config successfully updated.";
-    private final String     emrEditedMsg     = "EMR Config Edited Test Suite will be cloned";
-    private final String     fixErrorsMsg     = "Please fix the highlighted errors.";
-    private final String     notValidJsonMsg  = "Not valid JSON format.";
+    private final String     accountAddedMsg   = "Accounts successfully added.";
+    private final String     accountDeletedMsg = "Accounts successfully deleted.";
+    private final String     newEmrSavedMsg    = "New EMR Config successfully saved.";
+    private final String     emrUpdatedMsg     = "EMR Config successfully updated.";
+    private final String     emrEditedMsg      = "EMR Config Edited Test Suite will be cloned";
+    private final String     fixErrorsMsg      = "Please fix the highlighted errors.";
+    private final String     notValidJsonMsg   = "Not valid JSON format.";
 
-    private final String     createEmrQuery   = "select * from cora.emr_configs where id = '%s'";
-    private final String     emrAccountsQuery = "select * from cora.accounts where id in (select account_id from cora.emr_config_account_xref where emr_config_id = '%s') ORDER BY name DESC";
-    private final String     emrAuditQuery    = "select schema_name, table_name, action, action_tstamp_clk, app_user_name, audit.jsonb_minus(row_curr, row_prev), row_curr from audit.logged_actions where app_user_name = '%s' order by action_tstamp_clk desc limit 20";
+    private final String     createEmrQuery    = "select * from cora.emr_configs where id = '%s'";
+    private final String     emrAccountsQuery  = "select * from cora.accounts where id in (select account_id from cora.emr_config_account_xref where emr_config_id = '%s') ORDER BY name DESC";
+    private final String     emrAuditQuery     = "select schema_name, table_name, action, action_tstamp_clk, app_user_name, audit.jsonb_minus(row_curr, row_prev), row_curr from audit.logged_actions where app_user_name = '%s' order by action_tstamp_clk desc limit 20";
 
     /**
      * Note: SR-T3684
@@ -108,7 +109,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         Logging.info ("EMR Id: " + emrConfigId);
         createEmrConfig.enterEmrConfigId (emrConfigId);
         createEmrConfig.clickSave ();
-        assertEquals (createEmrConfig.getOverlayMessage (), "Please fix the highlighted errors.");
+        assertEquals (createEmrConfig.getOverlayMessage (), fixErrorsMsg);
 
         Map <String, String> fieldErrors = createEmrConfig.getFieldErrors ();
         String mandatoryFieldError = "Mandatory field.";
@@ -223,7 +224,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         emrConfigDetails.deleteAttachedAccounts (accounts[0]);
         emrConfigDetails.clickSave ();
         assertEquals (emrConfigDetails.getOverlayMessages (),
-                      Arrays.asList ("Accounts successfully deleted.", "EMR Config successfully updated."));
+                      Arrays.asList (accountDeletedMsg, emrUpdatedMsg));
         Logging.testLog ("STEP 10 - Messages display indicating EMR config was updated and account was deleted.");
 
         queryResults = coraDBClient.executeSelectQuery (String.format (createEmrQuery,
