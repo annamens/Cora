@@ -30,7 +30,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     private Container  child;
     private Container  holding;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         doCoraLogin ();
         Containers testContainers = addContainers (new Containers (asList (container (Tube), container (TubeBox5x5))));

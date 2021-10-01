@@ -90,7 +90,7 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
-@Test (groups = { "regression", "nutmeg" })
+@Test (groups = { "nutmeg" })
 public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     private Physician    IgHVPhysician;

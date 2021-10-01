@@ -40,7 +40,7 @@ public class ContainerList extends CoraPage {
     }
     
     public static enum Category {
-        All, Diagnostic, Batch
+        Any, Diagnostic, Batch
     }
     
     public static enum GroupBy {

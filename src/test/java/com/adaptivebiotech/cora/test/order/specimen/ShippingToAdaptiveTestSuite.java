@@ -39,7 +39,7 @@ public class ShippingToAdaptiveTestSuite extends CoraBaseBrowser {
     private OrdersList oList;
     private Specimen   specimen;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         new Login ().doLogin ();
         oList = new OrdersList ();

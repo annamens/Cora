@@ -31,7 +31,7 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
     private OrdersList oList;
     private Diagnostic diagnostic;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         new Login ().doLogin ();
         oList = new OrdersList ();

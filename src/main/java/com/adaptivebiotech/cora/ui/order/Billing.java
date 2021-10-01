@@ -2,6 +2,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static org.testng.Assert.assertTrue;
+import java.util.List;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
@@ -14,24 +15,29 @@ import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 public class Billing extends Diagnostic {
-    
-    private String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
 
-    public void waitForBillingMismatchWarningVisible() {
+    private final String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
+    private final String billing                = "#billing-type";
+
+    public void waitForBillingMismatchWarningVisible () {
         assertTrue (waitUntilVisible (billingMismatchWarning));
     }
-    
-    public String getBillingMismatchWarningText() {
-        return getText(billingMismatchWarning);
+
+    public String getBillingMismatchWarningText () {
+        return getText (billingMismatchWarning);
     }
 
     public void selectBilling (ChargeType type) {
-        assertTrue (clickAndSelectValue ("[name='billingType']", "string:" + type));
+        assertTrue (clickAndSelectValue (billing, "string:" + type));
     }
 
     public ChargeType getBilling () {
-        String type = getFirstSelectedValue ("[name='billingType']");
+        String type = getFirstSelectedValue (billing);
         return type != null && !type.equals ("?") ? ChargeType.valueOf (type.replace ("string:", "")) : null;
+    }
+
+    public List <String> getBillingDropDownOptions () {
+        return getDropdownOptions (billing);
     }
 
     public void enterABNstatus (AbnStatus status) {
@@ -170,7 +176,7 @@ public class Billing extends Diagnostic {
             enterInsurance1Discharge (patient.insurance1.dischargeDate);
         }
     }
-    
+
     public void clickCompareAndSelectBilling () {
         String css = "[ng-click=\"ctrl.showCompareBillingModal()\"";
         assertTrue (click (css));

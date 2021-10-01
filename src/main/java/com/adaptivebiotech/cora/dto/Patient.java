@@ -51,6 +51,7 @@ public final class Patient {
     @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime created;
     public String        createdBy;
+    public String        testStatus;
 
     @Override
     public String toString () {
