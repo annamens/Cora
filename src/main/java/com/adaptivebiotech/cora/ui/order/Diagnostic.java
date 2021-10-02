@@ -29,6 +29,7 @@ import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
+import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -55,7 +56,7 @@ public class Diagnostic extends CoraPage {
     private final String   btnCLIAIGHV        = "//li//div[text()='CLIA-IGHV']";
     private final String   previewReportPdf   = ".report-preview ng-pdf";
     private final String   releasedReportPdf  = ".released-report-table tr td:nth-child(3) a";
-
+    private final String   patientMrdStatus   = ".patient-status";
     protected final String specimenNumber     = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
     protected final String tabBase            = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
 
@@ -67,6 +68,11 @@ public class Diagnostic extends CoraPage {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
         pageLoading ();
+    }
+
+    public void navigateToOrderDetailsPage (String orderId) {
+        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/auto?id=" + orderId));
+        isCorrectPage ();
     }
 
     public void clickReportNotesIcon () {
@@ -302,13 +308,13 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickCancelOrder () {
-        assertTrue (click ("[ng-click='ctrl.cancelOrder()']"));
+        assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
-        assertTrue (clickAndSelectValue ("#cancellationReason", "string:Other"));
-        assertTrue (clickAndSelectValue ("#cancellationReason2", "string:Specimen - Not Rejected"));
-        assertTrue (clickAndSelectValue ("#cancellationReason3", "string:Other"));
+        assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
+        assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
+        assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
         assertTrue (setText ("#cancellationNotes", "this is a test"));
-        assertTrue (click ("[ng-click='ctrl.ok()']"));
+        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
         pageLoading ();
         moduleLoading ();
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
@@ -572,7 +578,6 @@ public class Diagnostic extends CoraPage {
         assertTrue (setText ("[name='dateOfBirth']", patient.dateOfBirth));
         assertTrue (clickAndSelectValue ("[name='gender']", "string:" + patient.gender));
         assertTrue (click ("[ng-click='ctrl.save(orderEntryForm)']"));
-        closeNotification ("Patient saved");
         assertTrue (setText ("[name='mrn']", patient.mrn));
     }
 
@@ -652,6 +657,34 @@ public class Diagnostic extends CoraPage {
     public String getPatientNotes (OrderStatus state) {
         String css = "[" + (Pending.equals (state) ? "ng-model" : "notes") + "='ctrl.orderEntry.order.patient.notes']";
         return Pending.equals (state) ? readInput (css) : getText (css);
+    }
+
+    public String getPatientBillingAddress1 () {
+        return getAttribute ("[formcontrolname='address1']", "value");
+    }
+
+    public String getPatientBillingAddress2 () {
+        return getAttribute ("[formcontrolname='address2']", "value");
+    }
+
+    public String getPatientBillingCity () {
+        return getAttribute ("[formcontrolname='locality']", "value");
+    }
+
+    public String getPatientBillingState () {
+        return getFirstSelectedText ("[formcontrolname='region']");
+    }
+
+    public String getPatientBillingZipCode () {
+        return getAttribute ("[formcontrolname='postCode']", "value");
+    }
+
+    public String getPatientBillingPhone () {
+        return getAttribute ("[formcontrolname='phone']", "value");
+    }
+
+    public String getPatientBillingEmail () {
+        return getAttribute ("[formcontrolname='email']", "value");
     }
 
     public void enterPatientICD_Codes (String codes) {
@@ -945,5 +978,9 @@ public class Diagnostic extends CoraPage {
 
     public String getReleasedReportPdfUrl () {
         return getAttribute (releasedReportPdf, "href");
+    }
+
+    public String getPatientMRDStatus () {
+        return getText (patientMrdStatus);
     }
 }

@@ -44,7 +44,7 @@ public class ScanTestSuite extends ContainerTestBase {
     private Containers   containers1;
     private Containers   containers2;
 
-    @BeforeTest
+    @BeforeTest (alwaysRun = true)
     public void beforeTest () {
         doCoraLogin ();
         Containers mytestContainers = addContainers (new Containers (
@@ -74,7 +74,7 @@ public class ScanTestSuite extends ContainerTestBase {
         my = new MyCustody ();
     }
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         doCoraLogin ();
         login.doLogin ();

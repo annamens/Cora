@@ -33,7 +33,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     private AddContainer add;
     private MyCustody    my;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         doCoraLogin ();
         login = new Login ();

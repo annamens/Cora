@@ -22,7 +22,7 @@ public class DoubleClickSaveTest extends CoraBaseBrowser {
     private Shipment     shipment;
     private ShipmentList shipmentList;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         new Login ().doLogin ();
         new OrdersList ().isCorrectPage ();
