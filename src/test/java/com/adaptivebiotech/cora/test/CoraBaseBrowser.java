@@ -61,4 +61,11 @@ public class CoraBaseBrowser extends TestBase {
         HttpClientHelper.headers.get ().add (new BasicHeader ("X-Api-UserName", coraTestUser));
     }
 
+    protected void doCoraApiLogin () {
+        Map <String, String> forms = new HashMap <> ();
+        forms.put ("userName", coraTestUser);
+        forms.put ("password", coraTestPass);
+        formPost (coraTestUrl + "/cora/login", forms);
+    }
+
 }
