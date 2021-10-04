@@ -28,6 +28,12 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_R
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.workspaceName;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+import com.adaptivebiotech.cora.ui.task.Task;
+import com.adaptivebiotech.cora.ui.task.TaskDetail;
+import com.adaptivebiotech.cora.ui.task.TaskList;
+import com.adaptivebiotech.cora.ui.task.TaskStatus;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse;
@@ -51,6 +57,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private Orders.OrderTest                             orderTest;
     private History                                      history;
     private com.adaptivebiotech.cora.ui.order.Diagnostic order;
+    private TaskList taskList;
+    private TaskStatus taskStatus;
+    private TaskDetail task;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -58,6 +67,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         new Login ().doLogin ();
         history = new History ();
         order = new com.adaptivebiotech.cora.ui.order.Diagnostic ();
+        taskList = new TaskList();
+        taskStatus = new TaskStatus();
+        task = new TaskDetail();
     }
 
     /**
@@ -92,9 +104,10 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         order.clickCorrectReportSaveAndUpdate ();
         order.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
-        history.gotoOrderDebug (orderTest.sampleName);
-        history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent ("gatewayMessage.json");
+
+        taskList.searchAndClickFirstTask("ClonoSEQ 2.0 Corrected Report");
+        taskStatus.waitFor(ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        assertTrue(task.taskFiles().containsKey("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
@@ -102,7 +115,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         order.releaseReport (MRD_BCell2_CLIA, Pass);
-        testLog ("released ID report");
+        testLog ("released MRD report");
 
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
@@ -117,8 +130,10 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         order.clickCorrectReportSaveAndUpdate ();
         order.releaseReportWithSignatureRequired ();
         testLog ("released amended report");
-        history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent ("gatewayMessage.json");
+
+        taskList.searchAndClickFirstTask("ClonoSEQ 2.0 Corrected Report");
+        taskStatus.waitFor(ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        assertTrue(task.taskFiles().containsKey("gatewayMessage.json"));
         testLog ("gateway message with amended report sent");
     }
 
@@ -154,9 +169,10 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         order.clickCorrectReportSaveAndUpdate ();
         order.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
-        history.gotoOrderDebug (orderTest.sampleName);
-        history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent ("gatewayMessage.json");
+
+        taskList.searchAndClickFirstTask("ClonoSEQ 2.0 Corrected Report");
+        taskStatus.waitFor(ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        assertTrue(task.taskFiles().containsKey("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
 
         orderTest = diagnostic.findOrderTest (MRD_TCRB);
@@ -164,7 +180,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.waitFor (DxReport, Awaiting, CLINICAL_CONSULTANT);
         history.clickOrderTest ();
         order.releaseReport ();
-        testLog ("released ID report");
+        testLog ("released MRD report");
 
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
@@ -179,9 +195,10 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         order.clickCorrectReportSaveAndUpdate ();
         order.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
-        history.gotoOrderDebug (orderTest.sampleName);
-        history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent ("gatewayMessage.json");
+
+        taskList.searchAndClickFirstTask("ClonoSEQ 2.0 Corrected Report");
+        taskStatus.waitFor(ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        assertTrue(task.taskFiles().containsKey("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
     }
 
