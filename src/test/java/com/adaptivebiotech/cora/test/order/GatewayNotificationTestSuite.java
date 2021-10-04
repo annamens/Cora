@@ -63,7 +63,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        doCoraApiLogin ();
+        doCoraLogin ();
         new Login ().doLogin ();
         history = new History ();
         order = new com.adaptivebiotech.cora.ui.order.Diagnostic ();
@@ -73,8 +73,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     }
 
     /**
-     * @sdlc_requirements SR-7287
-     * @sdlc_requirements SR-7369
+     * @sdlc_requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqBcellGatewayMessageUpdate () {
         diagnostic = buildDiagnosticOrder (scenarioBuilderPatient (),
@@ -138,8 +137,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     }
 
     /**
-     * @sdlc_requirements SR-7287
-     * @sdlc_requirements SR-7369
+     * @sdlc_requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqTcellGatewayMessageUpdate () {
         diagnostic = buildDiagnosticOrder (scenarioBuilderPatient (),
