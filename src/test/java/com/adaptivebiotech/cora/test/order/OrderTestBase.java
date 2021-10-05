@@ -11,6 +11,7 @@ import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.shipment;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.specimen;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.POSITIVE;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
+import static java.util.Arrays.asList;
 import java.util.ArrayList;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.Diagnostic;
@@ -45,7 +46,7 @@ public class OrderTestBase extends CoraBaseBrowser {
     }
 
     protected AssayResponse.CoraTest genTcrTest (PageHelper.Assay assay, String flowcell, String tsvPath) {
-        AssayResponse.CoraTest test = new AssayResponse.CoraTest();
+        AssayResponse.CoraTest test = new AssayResponse.CoraTest ();
         test.testId = getCDxTest (assay).id;
         test.flowcell = flowcell;
         test.pipelineConfigOverride = "classic.calib";
@@ -72,13 +73,14 @@ public class OrderTestBase extends CoraBaseBrowser {
         diagnostic.order.specimenDto = specimen ();
         diagnostic.order.specimenDto.name = test.workflowProperties.sampleName;
         diagnostic.order.specimenDto.properties = null;
+        diagnostic.order.panels = asList (new Diagnostic.Panel ("132d9440-8f75-46b8-b084-efe06346dfd4"));
         diagnostic.fastForwardStatus = stage;
         diagnostic.task = null;
         diagnostic.dxResults = positiveDxResult ();
         return diagnostic;
     }
 
-    protected Diagnostic buildDiagnosticOrder(Patient patient, Workflow.Stage stage, AssayResponse.CoraTest... tests) {
+    protected Diagnostic buildDiagnosticOrder (Patient patient, Workflow.Stage stage, AssayResponse.CoraTest... tests) {
         Diagnostic.Account account = getAccounts (testAccount);
         Diagnostic diagnostic = diagnosticOrder (account, physician (), patient, specimen (), shipment ());
         diagnostic.order = order (new Orders.OrderProperties (patient.billingType, CustomerShipment, "C91.00"), tests);

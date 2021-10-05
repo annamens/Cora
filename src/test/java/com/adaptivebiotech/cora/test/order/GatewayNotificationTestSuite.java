@@ -13,6 +13,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.MRD_TCRB;
 import static com.adaptivebiotech.test.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxContamination;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
@@ -78,10 +79,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         Patient patient = scenarioBuilderPatient ();
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (SecondaryAnalysis, Ready),
-                                           genCDxTest (ID_BCell2_CLIA, bcellIdTsv),
-                                           genCDxTest (MRD_BCell2_CLIA, bcellMrdTsv));
+                                           genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
         assertEquals (newDiagnosticOrder (diagnostic).patientId, patient.id);
-        testLog ("submitted new BCell Id and MRD order");
+        testLog ("submitted new BCell ID order");
 
         orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
@@ -90,11 +90,12 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         order.releaseReport (ID_BCell2_CLIA, Pass);
         testLog ("released ID report");
 
-        history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.isFilePresent ("gatewayMessage.json");
         testLog ("gateway message sent");
 
+        history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
         order.clickReportTab (ID_BCell2_CLIA);
         order.clickCorrectReport ();
@@ -105,9 +106,16 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("released updated report");
 
         taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
+        task.clickTaskStatus ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
+
+        diagnostic = buildDiagnosticOrder (patient,
+                                           stage (SecondaryAnalysis, Ready),
+                                           genCDxTest (MRD_BCell2_CLIA, bcellMrdTsv));
+        assertEquals (newDiagnosticOrder (diagnostic).patientId, patient.id);
+        testLog ("submitted new BCell MRD order");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
@@ -121,6 +129,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.isFilePresent ("gatewayMessage.json");
         testLog ("gateway message sent");
 
+        history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
         order.clickReportTab (MRD_BCell2_CLIA);
         order.clickCorrectReport ();
@@ -131,6 +140,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("released amended report");
 
         taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
+        task.clickTaskStatus ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
         testLog ("gateway message with amended report sent");
@@ -143,23 +153,23 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         Patient patient = scenarioBuilderPatient ();
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (NorthQC, Ready),
-                                           genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv),
-                                           genTcrTest (MRD_TCRB, lastFlowcellId, tcellTsv));
+                                           genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
         assertEquals (createPortalJob (diagnostic).patientId, patient.id);
-        testLog ("submitted new TCell Id and MRD order");
+        testLog ("submitted new TCell ID order");
         orderTest = diagnostic.findOrderTest (ID_TCRB);
         history.gotoOrderDebug (orderTest.workflowName);
-        history.waitFor (DxReport, Awaiting, CLINICAL_CONSULTANT);
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        order.releaseReport ();
+        order.releaseReport (ID_TCRB, Pass);
         testLog ("released ID report");
 
+        history.gotoOrderDebug (orderTest.workflowName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.gotoOrderDebug (orderTest.sampleName);
         history.isFilePresent ("gatewayMessage.json");
         testLog ("gateway message sent");
 
+        history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
         order.clickReportTab (ID_TCRB);
         order.clickCorrectReport ();
@@ -170,15 +180,22 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("released updated report");
 
         taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
+        task.clickTaskStatus ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
+        // assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
 
+        diagnostic = buildDiagnosticOrder (patient,
+                                           stage (NorthQC, Ready),
+                                           genTcrTest (MRD_TCRB, lastFlowcellId, tcellTsv));
+        diagnostic.order.postToImmunoSEQ = true;
+        assertEquals (createPortalJob (diagnostic).patientId, patient.id);
+        testLog ("submitted new TCell MRD order");
         orderTest = diagnostic.findOrderTest (MRD_TCRB);
         history.gotoOrderDebug (orderTest.workflowName);
-        history.waitFor (DxReport, Awaiting, CLINICAL_CONSULTANT);
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_CONSULTANT);
         history.clickOrderTest ();
-        order.releaseReport ();
+        order.releaseReport (MRD_TCRB, Pass);
         testLog ("released MRD report");
 
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
@@ -186,6 +203,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.isFilePresent ("gatewayMessage.json");
         testLog ("gateway message sent");
 
+        history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
         order.clickReportTab (MRD_TCRB);
         order.clickCorrectReport ();
@@ -196,6 +214,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("released updated report");
 
         taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
+        task.clickTaskStatus ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
@@ -205,10 +224,11 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
      * @sdlc_requirements SR-7370
      */
     public void verifyCovidGatewayMessageUpdate () {
+        Patient patient = scenarioBuilderPatient ();
         AssayResponse.CoraTest test = genTDxTest (COVID19_DX_IVD);
         test.tsvPath = covidTsv;
-        diagnostic = buildCovidOrder (scenarioBuilderPatient (), stage (DxReport, Ready), test);
-        assertEquals (newCovidOrder (diagnostic).patientId, diagnostic.patient.id);
+        diagnostic = buildCovidOrder (patient, stage (DxAnalysis, Ready), test);
+        assertEquals (newCovidOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
 
         orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
@@ -219,11 +239,12 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.forceStatusUpdate (DxContamination, Finished);
         history.waitFor (DxReport, Awaiting, CLINICAL_CONSULTANT);
         history.clickOrderTest ();
+        order.clickReportTab (COVID19_DX_IVD);
         order.releaseReport ();
         testLog ("released the Covid report");
 
-        history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.isFilePresent ("gatewayMessage.json");
         testLog ("gateway message sent");
     }
