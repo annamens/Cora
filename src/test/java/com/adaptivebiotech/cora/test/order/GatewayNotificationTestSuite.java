@@ -26,8 +26,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_CONSULTANT;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_REPORT_NOTIFICATION;
-import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
-import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.workspaceName;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
@@ -85,6 +84,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
+        history.setWorkflowProperty(notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         order.releaseReport (ID_BCell2_CLIA, Pass);
@@ -110,6 +110,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
+        taskStatus.waitFor(ReportDelivery, Finished);
 
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (SecondaryAnalysis, Ready),
@@ -119,6 +120,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
+        history.setWorkflowProperty(notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         order.releaseReport (MRD_BCell2_CLIA, Pass);
@@ -159,6 +161,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("submitted new TCell ID order");
         orderTest = diagnostic.findOrderTest (ID_TCRB);
         history.gotoOrderDebug (orderTest.workflowName);
+        history.setWorkflowProperty(notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         order.releaseReport (ID_TCRB, Pass);
@@ -182,8 +185,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
         task.clickTaskStatus ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        // assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
+        assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
+        taskStatus.waitFor(ReportDelivery, Finished);
 
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (NorthQC, Ready),
@@ -193,6 +197,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("submitted new TCell MRD order");
         orderTest = diagnostic.findOrderTest (MRD_TCRB);
         history.gotoOrderDebug (orderTest.workflowName);
+        history.setWorkflowProperty(notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_CONSULTANT);
         history.clickOrderTest ();
         order.releaseReport (MRD_TCRB, Pass);
@@ -232,7 +237,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("submitted a new Covid19 order in Cora");
 
         orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
-        history.gotoOrderDebug (orderTest.sampleName);
+        history.gotoOrderDebug (orderTest.workflowName);
         history.setWorkflowProperty (workspaceName, covidWorkspaceName);
         history.setWorkflowProperty (sampleName, covidSampleName);
         history.waitFor (DxContamination, Stuck);
