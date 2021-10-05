@@ -75,6 +75,8 @@ public class Detail extends CoraPage {
             container.barcode = getText (top + " [ng-bind*='barcode']");
         if (isElementVisible (top + " [ng-bind*='depleted']"))
             container.depleted = toBoolean (getText (top + " [ng-bind*='depleted']"));
+        else
+            container.depleted = false;
         container.location = getText (top + " [ng-bind*='location']");
         return container;
     }

@@ -96,10 +96,25 @@ public class ContainerTestBase extends CoraBaseBrowser {
         assertEquals (actual.location, expected.location);
     }
 
+    protected void verifyDetailsChild (Container actual, Container expected) {
+        assertEquals (actual.containerNumber, expected.containerNumber);
+        assertEquals (actual.containerType, expected.containerType);
+        assertEquals (actual.name, expected.name);
+        assertEquals (actual.depleted, expected.depleted);
+        assertEquals (actual.location, String.join (" : ", expected.location, actual.containerNumber));
+    }
+
     protected void verifyMovedTo (ContainerHistory history, Container actual) {
         assertEquals (history.activity, "Moved to Location");
         assertEquals (history.comment, actual.comment);
         assertEquals (history.location, actual.location);
+        assertEquals (history.activityBy, coraTestUser);
+    }
+    
+    protected void verifyMovedToContainer (ContainerHistory history, Container actual) {
+        assertEquals (history.activity, "Moved to Location");
+        assertEquals (history.comment, actual.comment);
+        assertEquals (String.join (" : ", history.location, actual.containerNumber), actual.location);
         assertEquals (history.activityBy, coraTestUser);
     }
 

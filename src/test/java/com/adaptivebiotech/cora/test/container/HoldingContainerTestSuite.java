@@ -205,7 +205,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
         child.depleted = false; // no successful move, depletion is not set
-        verifyDetails (actual, child);
+        verifyDetailsChild (actual, child);
 
         // test: go to child history page to verify comment
         detail.gotoHistory ();
@@ -307,13 +307,25 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 detail.isCorrectPage ();
                 Container actual = detail.parsePrimaryDetail ();
                 actual.comment = child.comment;
-                verifyDetails (actual, child);
 
                 // test: go to child history page to verify comment
                 detail.gotoHistory ();
                 history.isCorrectPage ();
                 List <ContainerHistory> histories = history.getHistories ();
-                verifyMovedTo (histories.get (0), actual);
+                ContainerHistory historyRow = histories.get (0);
+
+                switch (holding.containerType) {
+                case SlideBox5:
+                case SlideTube:
+                case OtherSlideBox:
+                    verifyDetailsChild (actual, child);
+                    verifyMovedToContainer (historyRow, actual);
+                    break;
+                default:
+                    verifyDetails (actual, child);
+                    verifyMovedTo (historyRow, actual);
+                    break;
+                }
                 verifyTookCustody (histories.get (1), pass == 0 ? null : actual);
 
                 history.gotoMyCustody ();
@@ -358,15 +370,34 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 detail.isCorrectPage ();
                 Container actual = detail.parsePrimaryDetail ();
                 actual.comment = child.comment;
-                verifyDetails (actual, child);
+                switch (holding.containerType) {
+                case SlideBox5CS:
+                case SlideTubeCS:
+                case OtherSlideBoxCS:
+                    verifyDetailsChild (actual, child);
+                    break;
+                default:
+                    verifyDetails (actual, child);
+                    break;
+                }
 
                 // test: go to child history page to verify comment
                 detail.gotoHistory ();
                 history.isCorrectPage ();
                 List <ContainerHistory> histories = history.getHistories ();
-                verifyMovedTo (histories.get (0), actual);
-                verifyTookCustody (histories.get (1), pass == 0 ? null : actual);
+                ContainerHistory historyRow = histories.get (0);
+                switch (holding.containerType) {
+                case SlideBox5CS:
+                case SlideTubeCS:
+                case OtherSlideBoxCS:
+                    verifyMovedToContainer (historyRow, actual);
+                    break;
+                default:
+                    verifyMovedTo (historyRow, actual);
+                    break;
+                }
 
+                verifyTookCustody (histories.get (1), pass == 0 ? null : actual);
                 history.gotoMyCustody ();
                 ++pass;
             }

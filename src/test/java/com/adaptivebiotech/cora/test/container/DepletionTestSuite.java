@@ -131,15 +131,15 @@ public class DepletionTestSuite extends ContainerTestBase {
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         assertEquals (histories.size (), 2);
-        verifyMovedTo (histories.get (0), actual);
+        verifyMovedToContainer (histories.get (0), actual);
         verifyTookCustody (histories.get (1));
 
         // test: go to child detail page to verify depletion
         history.gotoContainerDetail (child);
         detail.isCorrectPage ();
-        actual = detail.parseChildDetail ();
-        assertTrue (actual.location.startsWith (freezerAB018078.name));
-        verifyDetails (actual, child);
+        Container childUI = detail.parseChildDetail ();
+        assertTrue (childUI.location.startsWith (freezerAB018078.name));
+        verifyDetails (childUI, child);
 
         // test: go to child history page to verify comment
         detail.gotoHistory ();
@@ -147,10 +147,16 @@ public class DepletionTestSuite extends ContainerTestBase {
         histories = history.getHistories ();
         actual.comment = comment;
         assertEquals (histories.size (), 3);
-        verifyMovedTo (histories.get (0), actual);
-        actual.location = String.join (" : ", coraTestUser, child.root.containerNumber, "Position A:1");
-        actual.comment = null;
-        verifyMovedTo (histories.get (1), actual);
+        ContainerHistory historyRow = histories.get (0);
+        assertEquals (historyRow.activity, "Moved to Location");
+        assertEquals (historyRow.comment, childUI.comment);
+        String[] locationSplit = childUI.location.split (actual.containerNumber);
+        assertTrue (historyRow.location.startsWith (locationSplit[0]));
+        assertTrue (historyRow.location.endsWith (locationSplit[1]));
+        assertEquals (historyRow.activityBy, coraTestUser);
+        childUI.location = String.join (" : ", coraTestUser, child.root.containerNumber, "Position A:1");
+        childUI.comment = null;
+        verifyMovedTo (histories.get (1), childUI);
         verifyTookCustody (histories.get (2));
     }
 
@@ -197,7 +203,7 @@ public class DepletionTestSuite extends ContainerTestBase {
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
         actual.comment = child.comment;
-        verifyDetails (actual, child);
+        verifyDetailsChild (actual, child);
 
         // test: go to primary history page to verify comment
         detail.gotoHistory ();
