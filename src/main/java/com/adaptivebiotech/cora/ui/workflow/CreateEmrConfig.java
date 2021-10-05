@@ -229,12 +229,19 @@ public class CreateEmrConfig extends CoraPage {
             assertTrue (setText (accountSearch, accounts[i]));
 
             if (i != 0) {
-                String currentFirstResult = null;
-                do {
-                    currentFirstResult = getText (waitForElements (accountSearchResults).get (0), "label");
+                for (int j = 0; j < 10; j++) {
+                    doWait (1000);
+                    String currentFirstResult = getText (waitForElements (accountSearchResults).get (0), "label");
                     Logging.info ("waiting for dropdown results to change from previousFirstResult to currentFirstResult");
                     Logging.info ("previousFirstResult: " + previousFirstResult + ", currentFirstResult: " + currentFirstResult);
-                } while (currentFirstResult.equals (previousFirstResult));
+                    if (!currentFirstResult.equals (previousFirstResult)) {
+                        break;
+                    }
+                    if (j == 0) {
+                        throw new RuntimeException (
+                                "previousFirstResult and currentFirstResult are the same after 10 attempts");
+                    }
+                }
             }
 
             for (WebElement element : waitForElements (accountSearchResults)) {
