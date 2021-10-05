@@ -8,7 +8,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.Logging;
@@ -229,19 +231,7 @@ public class CreateEmrConfig extends CoraPage {
             assertTrue (setText (accountSearch, accounts[i]));
 
             if (i != 0) {
-                for (int j = 0; j < 10; j++) {
-                    doWait (1000);
-                    String currentFirstResult = getText (waitForElements (accountSearchResults).get (0), "label");
-                    Logging.info ("waiting for dropdown results to change from previousFirstResult to currentFirstResult");
-                    Logging.info ("previousFirstResult: " + previousFirstResult + ", currentFirstResult: " + currentFirstResult);
-                    if (!currentFirstResult.equals (previousFirstResult)) {
-                        break;
-                    }
-                    if (j == 0) {
-                        throw new RuntimeException (
-                                "previousFirstResult and currentFirstResult are the same after 10 attempts");
-                    }
-                }
+                waitForDropdownToChange (previousFirstResult);
             }
 
             for (WebElement element : waitForElements (accountSearchResults)) {
@@ -254,6 +244,25 @@ public class CreateEmrConfig extends CoraPage {
         }
         assertTrue (click (selectAccountsBtn));
         assertEquals (getCssProperty (selectAccountsDropDown, "display"), "none");
+    }
+
+    private void waitForDropdownToChange (String previousFirstResult) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                String currentFirstResult = getText (waitForElements (accountSearchResults).get (0), "label");
+                Logging.testLog ("waiting for dropdown results to change from previousFirstResult to currentFirstResult");
+                Logging.testLog ("previousFirstResult: " + previousFirstResult + ", currentFirstResult: " + currentFirstResult);
+                if (!previousFirstResult.equals (currentFirstResult)) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        try {
+            waitForBooleanCondition (10, 1, func);
+        } catch (Exception e) {
+            throw new RuntimeException ("Current dropdown doesn't change after 10 seconds", e);
+        }
     }
 
     public List <String> getNewAccounts () {
