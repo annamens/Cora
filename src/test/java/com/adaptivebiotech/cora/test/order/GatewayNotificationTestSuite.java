@@ -84,7 +84,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.setWorkflowProperty(notifyGateway, "true");
+        history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         order.releaseReport (ID_BCell2_CLIA, Pass);
@@ -110,7 +110,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
-        taskStatus.waitFor(ReportDelivery, Finished);
+        taskStatus.waitFor (ReportDelivery, Finished);
 
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (SecondaryAnalysis, Ready),
@@ -120,7 +120,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.setWorkflowProperty(notifyGateway, "true");
+        history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         order.releaseReport (MRD_BCell2_CLIA, Pass);
@@ -161,7 +161,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("submitted new TCell ID order");
         orderTest = diagnostic.findOrderTest (ID_TCRB);
         history.gotoOrderDebug (orderTest.workflowName);
-        history.setWorkflowProperty(notifyGateway, "true");
+        history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         order.releaseReport (ID_TCRB, Pass);
@@ -187,7 +187,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
         testLog ("gateway message with corrected report sent");
-        taskStatus.waitFor(ReportDelivery, Finished);
+        taskStatus.waitFor (ReportDelivery, Finished);
 
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (NorthQC, Ready),
@@ -197,7 +197,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("submitted new TCell MRD order");
         orderTest = diagnostic.findOrderTest (MRD_TCRB);
         history.gotoOrderDebug (orderTest.workflowName);
-        history.setWorkflowProperty(notifyGateway, "true");
+        history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_CONSULTANT);
         history.clickOrderTest ();
         order.releaseReport (MRD_TCRB, Pass);
