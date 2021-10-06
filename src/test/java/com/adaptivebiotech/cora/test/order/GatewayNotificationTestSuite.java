@@ -42,7 +42,7 @@ import com.adaptivebiotech.cora.ui.task.TaskList;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
 import com.adaptivebiotech.cora.ui.workflow.History;
 
-@Test (groups = "akita")
+@Test (groups = {"akita", "regression"} )
 public class GatewayNotificationTestSuite extends OrderTestBase {
 
     private final String                                 bcellIdTsv         = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.id.tsv.gz";
