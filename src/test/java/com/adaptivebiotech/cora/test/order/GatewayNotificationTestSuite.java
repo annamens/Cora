@@ -23,7 +23,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
-import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_CONSULTANT;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_REPORT_NOTIFICATION;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.*;
@@ -248,10 +247,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (sampleName, covidSampleName);
         history.waitFor (DxContamination, Stuck);
         history.forceStatusUpdate (DxContamination, Finished);
-        history.waitFor (DxReport, Awaiting, CLINICAL_CONSULTANT);
+        history.waitFor (DxReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        order.clickReportTab (COVID19_DX_IVD);
-        order.releaseReport ();
+        order.releaseReport(COVID19_DX_IVD, Pass);
         testLog ("released the Covid report");
 
         history.gotoOrderDebug (orderTest.sampleName);
