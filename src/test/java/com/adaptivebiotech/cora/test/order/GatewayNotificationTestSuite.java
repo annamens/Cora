@@ -207,7 +207,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         order.releaseReport (MRD_TCRB, Pass);
         testLog ("released MRD report");
 
-        history.gotoOrderDebug (orderTest.sampleName);
+        history.gotoOrderDebug (orderTest.workflowName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.isFilePresent ("gatewayMessage.json");
         testLog ("gateway message sent");
