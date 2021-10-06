@@ -250,7 +250,7 @@ public class History extends CoraPage {
         assertTrue (click ("form[action*='forceWorkflowProperty'] input[type='submit']"));
     }
 
-    public void isFilePresent(String fileName){
-        assertTrue(isElementPresent("//h3[text()='Files']/following-sibling::ul//a[text()='" + fileName + "']"));
+    public void isFilePresent (String fileName) {
+        assertTrue (isElementPresent ("//h3[text()='Files']/following-sibling::ul//a[text()='" + fileName + "']"));
     }
 }
