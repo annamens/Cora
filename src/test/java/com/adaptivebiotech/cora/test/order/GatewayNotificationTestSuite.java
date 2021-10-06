@@ -30,6 +30,8 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleN
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.workspaceName;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+
+import com.seleniumfy.test.utils.HttpClientHelper;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse;
@@ -80,6 +82,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (SecondaryAnalysis, Ready),
                                            genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
+        HttpClientHelper.resetheaders ();
         assertEquals (newDiagnosticOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new BCell ID order");
 
