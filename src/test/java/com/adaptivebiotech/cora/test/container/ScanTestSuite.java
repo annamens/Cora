@@ -20,7 +20,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
-@Test (groups = "regression")
+@Test (groups = "regression", enabled = false)
 public class ScanTestSuite extends ContainerTestBase {
 
     private final String error1   = "Cannot find container %s";

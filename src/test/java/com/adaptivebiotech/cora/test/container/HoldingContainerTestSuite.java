@@ -31,7 +31,7 @@ import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
-@Test (groups = "regression")
+@Test (groups = "regression", enabled = false)
 public class HoldingContainerTestSuite extends ContainerTestBase {
 
     private Login        login;
