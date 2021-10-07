@@ -40,6 +40,11 @@
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">http or https</stringProp>
           </elementProp>
+          <elementProp name="accountName" elementType="Argument">
+            <stringProp name="Argument.name">accountName</stringProp>
+            <stringProp name="Argument.value">SEA_QA%20Test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -124,10 +129,10 @@ JMeterUtils.setProperty(&quot;apiToken&quot;, accessToken);</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">2</stringProp>
+          <stringProp name="LoopController.loops">10</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">5</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
         <longProp name="ThreadGroup.start_time">1375525852000</longProp>
         <longProp name="ThreadGroup.end_time">1375525852000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -312,123 +317,8 @@ vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST v1/test/scenarios/diagnosticDX" enabled="false">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
- &quot;account&quot;: {&#xd;
- &quot;id&quot;: &quot;95517a7a-e622-4e0d-a6c9-35e0d612a640&quot;&#xd;
- },&#xd;
- &quot;patient&quot;: {&#xd;
- &quot;firstName&quot;: &quot;Dx&quot;,&#xd;
- &quot;middleName&quot;: &quot;Foo&quot;,&#xd;
- &quot;lastName&quot;: &quot;Patient&quot;,&#xd;
- &quot;gender&quot;: &quot;Female&quot;,&#xd;
- &quot;dateOfBirth&quot;: &quot;1980-01-05&quot;&#xd;
- },&#xd;
- &quot;provider&quot;: {&#xd;
- &quot;id&quot;: &quot;3050f1a0-2773-44c2-87a0-e5da2d566b71&quot;&#xd;
- },&#xd;
- &quot;order&quot;: {&#xd;
- &quot;orderType&quot;:&quot;TDx&quot;,&#xd;
- &quot;expectedTestType&quot;:&quot;Covid19&quot;,&#xd;
- &quot;name&quot;: &quot;Dre-DX1&quot;,&#xd;
- &quot;status&quot;: &quot;Pending&quot;,&#xd;
- &quot;salesforceOrderId&quot;: &quot;&quot;,&#xd;
- &quot;salesforceOrderNumber&quot;: &quot;&quot;,&#xd;
- &quot;mrn&quot;: 1111111111,&#xd;
- &quot;postToImmunoSEQ&quot;: true,&#xd;
- &quot;billingType&quot;:&quot;NoCharge&quot;,&#xd;
- &quot;specimenDeliveryType&quot;:&quot;CustomerShipment&quot;,&#xd;
- &quot;specimenDto&quot;: {&#xd;
- &quot;name&quot;: &quot;DRE1-SP&quot;,&#xd;
- &quot;sampleType&quot;: &quot;Blood&quot;,&#xd;
- &quot;tests&quot;: [&#xd;
- {&quot;testId&quot; : &quot;1d298f94-74ed-474f-b12c-89e07295b1b4&quot;,&#xd;
- &quot;tsvPath&quot;: &quot;s3://pipeline-north-production-archive/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz&quot;&#xd;
- ,&quot;workflowProperties&quot; : {&#xd;
- &quot;workspaceName&quot;:&quot;Hospital12deOctubre-MartinezLopez&quot;,&#xd;
- &quot;sampleName&quot;:&quot;860011348&quot;,&#xd;
- &quot;lastAcceptedTsvPath&quot;:&quot;s3://pipeline-north-production-archive/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz&quot;&#xd;
- }}&#xd;
- ],&#xd;
- &quot;collectionDate&quot;: [&#xd;
- 2020,&#xd;
- 8,&#xd;
- 20,&#xd;
- 18,&#xd;
- 6,&#xd;
- 59,&#xd;
- 639&#xd;
- ],&#xd;
- &quot;reconciliationDate&quot;: [&#xd;
- 2020,&#xd;
- 8,&#xd;
- 20,&#xd;
- 18,&#xd;
- 6,&#xd;
- 59,&#xd;
- 639&#xd;
- ]&#xd;
- }&#xd;
- },&#xd;
- &quot;shipment&quot;: {&#xd;
- &quot;category&quot;: &quot;Diagnostic&quot;,&#xd;
- &quot;status&quot;: &quot;IntakeComplete&quot;,&#xd;
- &quot;arrivalDate&quot;: [&#xd;
- 2020,&#xd;
- 8,&#xd;
- 20,&#xd;
- 11,&#xd;
- 11,&#xd;
- 59,&#xd;
- 639&#xd;
- ],&#xd;
- &quot;carrier&quot;: &quot;UPS&quot;,&#xd;
- &quot;trackingNumber&quot;: &quot;&quot;,&#xd;
- &quot;condition&quot;: &quot;Ambient&quot;,&#xd;
- &quot;expectedRecordType&quot;: &quot;Order&quot;,&#xd;
- &quot;containers&quot;: [&#xd;
- {&#xd;
- &quot;containerType&quot;: &quot;Tube&quot;,&#xd;
- &quot;contentsLocked&quot;: true,&#xd;
- &quot;integrity&quot;: &quot;Pass&quot;&#xd;
- }&#xd;
- ]&#xd;
- },&#xd;
- &quot;fastForwardStatus&quot;: {&#xd;
- &quot;stageName&quot;: &quot;DxAnalysis&quot;,&#xd;
- &quot;stageStatus&quot;: &quot;Ready&quot;,&#xd;
- &quot;subStatusCode&quot;: &quot;&quot;,&#xd;
- &quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
- &quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
- &quot;actor&quot;: &quot;tester&quot;&#xd;
- }&#xd;
-}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">9000</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/cora/api/v1/test/scenarios/diagnosticDx</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
