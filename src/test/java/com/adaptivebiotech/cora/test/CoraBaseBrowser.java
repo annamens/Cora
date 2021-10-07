@@ -55,7 +55,6 @@ public class CoraBaseBrowser extends TestBase {
 
     protected void doCoraLogin () {
         Map <String, String> forms = new HashMap <> ();
-        HttpClientHelper.resetheaders ();
         forms.put ("userName", coraTestUser);
         forms.put ("password", coraTestPass);
         formPost (coraTestUrl + "/cora/login", forms);
