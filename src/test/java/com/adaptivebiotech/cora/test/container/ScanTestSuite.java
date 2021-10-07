@@ -8,6 +8,8 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
+
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -20,7 +22,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 
-@Test (groups = "regression", enabled = false)
+@Test (groups = "regression")
 public class ScanTestSuite extends ContainerTestBase {
 
     private final String error1   = "Cannot find container %s";
@@ -44,8 +46,8 @@ public class ScanTestSuite extends ContainerTestBase {
     private Containers   containers1;
     private Containers   containers2;
 
-    @BeforeTest (alwaysRun = true)
-    public void beforeTest () {
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass () {
         doCoraLogin ();
         Containers mytestContainers = addContainers (new Containers (
                 asList (container (Slide), container (Slide), container (SlideBox5))));

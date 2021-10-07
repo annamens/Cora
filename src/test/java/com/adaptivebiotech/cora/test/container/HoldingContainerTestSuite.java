@@ -17,6 +17,8 @@ import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
+
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -31,7 +33,7 @@ import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
-@Test (groups = "regression", enabled = false)
+@Test (groups = "regression")
 public class HoldingContainerTestSuite extends ContainerTestBase {
 
     private Login        login;
@@ -43,8 +45,8 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     private Container    child;
     private Containers   containers;
 
-    @BeforeTest (alwaysRun = true)
-    public void beforeTest () {
+    @BeforeClass(alwaysRun = true)
+    public void beforeClass () {
         doCoraLogin ();
         containers = addContainers (new Containers (
                 allOf (ContainerType.class).parallelStream ().filter (ct -> !ct.equals (Freezer))
