@@ -17,8 +17,8 @@ import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -43,7 +43,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     private Container    child;
     private Containers   containers;
 
-    @BeforeTest (alwaysRun = true)
+    @BeforeClass (alwaysRun = true)
     public void beforeTest () {
         doCoraLogin ();
         containers = addContainers (new Containers (

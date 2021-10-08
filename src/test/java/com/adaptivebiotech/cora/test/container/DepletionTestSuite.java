@@ -8,6 +8,7 @@ import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
@@ -30,9 +31,13 @@ public class DepletionTestSuite extends ContainerTestBase {
     private Container  child;
     private Container  holding;
 
+    @BeforeClass (alwaysRun = true)
+    public void beforeClass () {
+        doCoraLogin ();
+    }
+
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        doCoraLogin ();
         Containers testContainers = addContainers (new Containers (asList (container (Tube), container (TubeBox5x5))));
         child = testContainers.list.get (0);
         holding = testContainers.list.get (1);
@@ -145,7 +150,7 @@ public class DepletionTestSuite extends ContainerTestBase {
         detail.gotoHistory ();
         history.isCorrectPage ();
         histories = history.getHistories ();
-        actual.comment = comment;
+        childUI.comment = comment;
         assertEquals (histories.size (), 3);
         ContainerHistory historyRow = histories.get (0);
         assertEquals (historyRow.activity, "Moved to Location");
