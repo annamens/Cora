@@ -34,7 +34,7 @@ public class ContainerTestBase extends CoraBaseBrowser {
     protected final Container freezerAB018078  = freezerAB018078 ();
     protected final Container freezerAB039003  = freezerAB039003 ();
 
-    @AfterSuite (groups = "regression", alwaysRun = true)
+    @AfterSuite (groups = "regression")
     public void containerAfterSuite () {
         new Login ().doLogin ();
         OrdersList oList = new OrdersList ();

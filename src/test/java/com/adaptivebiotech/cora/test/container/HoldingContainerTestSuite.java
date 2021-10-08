@@ -44,7 +44,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     private Containers   containers;
 
     @BeforeClass (alwaysRun = true)
-    public void beforeTest () {
+    public void beforeClass () {
         doCoraLogin ();
         containers = addContainers (new Containers (
                 allOf (ContainerType.class).parallelStream ().filter (ct -> !ct.equals (Freezer))
