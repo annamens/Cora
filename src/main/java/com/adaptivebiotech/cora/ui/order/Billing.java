@@ -101,24 +101,24 @@ public class Billing extends Diagnostic {
     }
 
     public void enterPatientAddress1 (String address1) {
-        assertTrue (setText ("[name='guarantorAddress']", address1));
+        assertTrue (setText ("//*[text()='Address 1']/..//input", address1));
     }
 
     public void enterPatientPhone (String phone) {
-        assertTrue (setText ("[name='guarantorPhone']", phone));
+        assertTrue (setText ("//*[text()='Phone']/..//input", phone));
     }
 
     public void enterPatientCity (String city) {
-        assertTrue (setText ("[name='guarantorLocality']", city));
+        assertTrue (setText ("//*[text()='City']/..//input", city));
     }
 
     public void enterPatientState (String state) {
-        assertTrue (clickAndSelectValue ("[name='guarantorRegion']",
-                                         state == null ? "undefined:undefined" : "string:" + state));
+        assertTrue (clickAndSelectText ("//*[text()='State']/..//select",
+                                        state == null ? "" : state));
     }
 
     public void enterPatientZipcode (String zipcode) {
-        assertTrue (setText ("[name='guarantorPostCode']", zipcode));
+        assertTrue (setText ("//*[text()='Zip Code']/..//input", zipcode));
     }
 
     public void enterPatientAddress (Address address) {

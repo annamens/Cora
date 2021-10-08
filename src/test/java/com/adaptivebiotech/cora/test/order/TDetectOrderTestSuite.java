@@ -7,10 +7,10 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.TDetectBilling;
+import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.order.TDetectDiagnostic;
-import com.adaptivebiotech.cora.ui.order.TDetectSpecimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
@@ -28,8 +28,8 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 public class TDetectOrderTestSuite extends CoraBaseBrowser {
 
     private TDetectDiagnostic tDetectDiagnostic = new TDetectDiagnostic ();
-    private TDetectBilling    tDetectbilling    = new TDetectBilling ();
-    private TDetectSpecimen   tDetectSpecimen   = new TDetectSpecimen ();
+    private Billing           billing           = new Billing ();
+    private Specimen          Specimen          = new Specimen ();
     private Shipment          shipment          = new Shipment ();
     private Accession         accession         = new Accession ();
 
@@ -47,11 +47,11 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
         tDetectDiagnostic.createNewPatient (TestHelper.newPatient ());
         tDetectDiagnostic.clickSave ();
 
-        tDetectSpecimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
+        Specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
         tDetectDiagnostic.clickAssayTest (Assay.COVID19_DX_IVD);
-        tDetectbilling.selectBilling (ChargeType.Client);
-        tDetectbilling.enterPatientAddress (TestHelper.address ());
-        tDetectbilling.clickSave ();
+        billing.selectBilling (ChargeType.Client);
+        billing.enterPatientAddress (TestHelper.address ());
+        billing.clickSave ();
 
         String orderNum = tDetectDiagnostic.getOrderNum ();
         Logging.info ("Order Number: " + orderNum);
@@ -85,7 +85,7 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
         accession.gotoOrderDetail ();
 
         // activate order
-        tDetectbilling.isCorrectPage ();
+        billing.isCorrectPage ();
         tDetectDiagnostic.activateOrder ();
         Logging.testLog ("STEP 2 - Order is Active.");
     }
