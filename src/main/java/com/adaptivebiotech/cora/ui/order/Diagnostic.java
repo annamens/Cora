@@ -48,7 +48,7 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class Diagnostic extends CoraPage {
 
-    private final String   oEntry             = ".order-entry";
+    protected final String   oEntry             = ".order-entry";
     private final String   oDetail            = ".detail-sections";
     private final String   assayEl            = "//span[@ng-bind='test.name' and text()='%s']";
     private final String   reportNotes        = "[ng-model=\"ctrl.reportEntry.notes\"]";
@@ -275,7 +275,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void waitUntilActivated () {
-        String status = "[ng-bind='ctrl.orderEntry.order.status']";
+        String status = "//*[text()='Status']/..//span";
         Timeout timer = new Timeout (millisRetry, waitRetry);
         while (!timer.Timedout () && ! (isTextInElement (status, "Active"))) {
             refresh ();
@@ -485,12 +485,12 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickPickPhysician () {
-        assertTrue (click ("#pick-physician"));
+        assertTrue (click ("//button[text()='Pick Physician...']"));
         assertTrue (waitUntilVisible (".modal-open"));
     }
 
     public void enterPhysicianFirstname (String firstName) {
-        assertTrue (setText ("[name='firstName']", firstName));
+        assertTrue (setText ("#provider-firstname", firstName));
     }
 
     public void enterPhysicianLastname (String lastName) {
@@ -569,7 +569,7 @@ public class Diagnostic extends CoraPage {
 
     public void createNewPatient (Patient patient) {
         clickPickPatient ();
-        assertTrue (click ("[ng-click='ctrl.createNewPatient()']"));
+        assertTrue (click ("#new-patient"));
         assertTrue (waitForElementInvisible (".ab-panel.matches"));
         assertTrue (isTextInElement (popupTitle, "Create New Patient"));
         assertTrue (setText ("[name='firstName']", patient.firstName));
@@ -577,12 +577,12 @@ public class Diagnostic extends CoraPage {
         assertTrue (setText ("[name='lastName']", patient.lastName));
         assertTrue (setText ("[name='dateOfBirth']", patient.dateOfBirth));
         assertTrue (clickAndSelectValue ("[name='gender']", "string:" + patient.gender));
-        assertTrue (click ("[ng-click='ctrl.save(orderEntryForm)']"));
+        assertTrue (click ("//button[text()='Save']"));
         assertTrue (setText ("[name='mrn']", patient.mrn));
     }
 
     public void clickPickPatient () {
-        assertTrue (click ("[ng-click='ctrl.findPatient()']"));
+        assertTrue (click ("//button[text()='Pick Patient...']"));
         assertTrue (isTextInElement (popupTitle, "Pick Patient"));
     }
 

@@ -28,7 +28,7 @@ public class Billing extends Diagnostic {
     }
 
     public void selectBilling (ChargeType type) {
-        assertTrue (clickAndSelectValue (billing, "string:" + type));
+        assertTrue (clickAndSelectText (billing, type.label));
     }
 
     public ChargeType getBilling () {
