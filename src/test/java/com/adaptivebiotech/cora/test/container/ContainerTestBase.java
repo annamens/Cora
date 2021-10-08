@@ -15,7 +15,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import java.util.stream.IntStream;
 import org.apache.http.message.BasicHeader;
-import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterClass;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -34,8 +34,8 @@ public class ContainerTestBase extends CoraBaseBrowser {
     protected final Container freezerAB018078  = freezerAB018078 ();
     protected final Container freezerAB039003  = freezerAB039003 ();
 
-    @AfterSuite (groups = "regression")
-    public void containerAfterSuite () {
+    @AfterClass (groups = "regression", alwaysRun = true)
+    public void containerAfterClass () {
         new Login ().doLogin ();
         OrdersList oList = new OrdersList ();
         oList.isCorrectPage ();
