@@ -17,10 +17,8 @@ import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
-
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -45,7 +43,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     private Container    child;
     private Containers   containers;
 
-    @BeforeClass(alwaysRun = true)
+    @BeforeClass (alwaysRun = true)
     public void beforeClass () {
         doCoraLogin ();
         containers = addContainers (new Containers (
@@ -207,7 +205,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
         child.depleted = false; // no successful move, depletion is not set
-        verifyDetails (actual, child);
+        verifyDetailsChild (actual, child);
 
         // test: go to child history page to verify comment
         detail.gotoHistory ();
@@ -309,13 +307,25 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 detail.isCorrectPage ();
                 Container actual = detail.parsePrimaryDetail ();
                 actual.comment = child.comment;
-                verifyDetails (actual, child);
 
                 // test: go to child history page to verify comment
                 detail.gotoHistory ();
                 history.isCorrectPage ();
                 List <ContainerHistory> histories = history.getHistories ();
-                verifyMovedTo (histories.get (0), actual);
+                ContainerHistory historyRow = histories.get (0);
+
+                switch (holding.containerType) {
+                case SlideBox5:
+                case SlideTube:
+                case OtherSlideBox:
+                    verifyDetailsChild (actual, child);
+                    verifyMovedToContainer (historyRow, actual);
+                    break;
+                default:
+                    verifyDetails (actual, child);
+                    verifyMovedTo (historyRow, actual);
+                    break;
+                }
                 verifyTookCustody (histories.get (1), pass == 0 ? null : actual);
 
                 history.gotoMyCustody ();
@@ -360,15 +370,34 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 detail.isCorrectPage ();
                 Container actual = detail.parsePrimaryDetail ();
                 actual.comment = child.comment;
-                verifyDetails (actual, child);
+                switch (holding.containerType) {
+                case SlideBox5CS:
+                case SlideTubeCS:
+                case OtherSlideBoxCS:
+                    verifyDetailsChild (actual, child);
+                    break;
+                default:
+                    verifyDetails (actual, child);
+                    break;
+                }
 
                 // test: go to child history page to verify comment
                 detail.gotoHistory ();
                 history.isCorrectPage ();
                 List <ContainerHistory> histories = history.getHistories ();
-                verifyMovedTo (histories.get (0), actual);
-                verifyTookCustody (histories.get (1), pass == 0 ? null : actual);
+                ContainerHistory historyRow = histories.get (0);
+                switch (holding.containerType) {
+                case SlideBox5CS:
+                case SlideTubeCS:
+                case OtherSlideBoxCS:
+                    verifyMovedToContainer (historyRow, actual);
+                    break;
+                default:
+                    verifyMovedTo (historyRow, actual);
+                    break;
+                }
 
+                verifyTookCustody (histories.get (1), pass == 0 ? null : actual);
                 history.gotoMyCustody ();
                 ++pass;
             }

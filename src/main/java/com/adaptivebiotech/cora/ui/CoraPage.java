@@ -208,13 +208,8 @@ public class CoraPage extends BasePage {
         assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&search=" + container.containerNumber));
     }
 
-    public void showFreezerContents (Container freezer) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&rootContainerId=" + freezer.id));
-    }
-
-    public void showFreezerContents (Container freezer, String createdBy) {
-        String url = "/cora/containers/list?arrivalDate=all&rootContainerId=%s&createdBy=%s";
-        assertTrue (navigateTo (coraTestUrl + format (url, freezer.id, createdBy)));
+    public void searchContainerByContainerId (Container container) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber));
     }
 
     public void showTodayFreezerContents (Container freezer) {
