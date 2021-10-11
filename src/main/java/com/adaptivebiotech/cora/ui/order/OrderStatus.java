@@ -9,6 +9,12 @@ import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 
 public class OrderStatus extends Diagnostic {
 
+    @Override
+    public void isCorrectPage () {
+        assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER STATUS"));
+        pageLoading ();
+    }
+
     public String getOrderNum () {
         return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
     }

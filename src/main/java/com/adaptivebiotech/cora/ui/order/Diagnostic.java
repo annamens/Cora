@@ -48,7 +48,7 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class Diagnostic extends CoraPage {
 
-    protected final String   oEntry             = ".order-entry";
+    protected final String oEntry             = ".order-entry";
     private final String   oDetail            = ".detail-sections";
     private final String   assayEl            = "//span[@ng-bind='test.name' and text()='%s']";
     private final String   reportNotes        = "[ng-model=\"ctrl.reportEntry.notes\"]";
@@ -122,8 +122,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickPatientOrderHistory () {
-        String css = ".pt-order-details-link";
-        assertTrue (click (css));
+        assertTrue (click ("//a[text()='Patient Order History']"));
         pageLoading ();
         assertEquals (waitForElementVisible ("[uisref=\"main.patient.orders\"]").getText (), "PATIENT ORDER HISTORY");
     }
