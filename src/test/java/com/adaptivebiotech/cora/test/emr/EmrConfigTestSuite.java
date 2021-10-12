@@ -60,7 +60,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         emrConfig.isCorrectPage ();
 
         assertTrue (emrConfig.isCreateEmrConfigPresent ());
-        Logging.testLog ("STEP 2.1 - EMR Config page contains - Create EMR Config butto");
+        Logging.testLog ("STEP 2.1 - EMR Config page contains - Create EMR Config button.");
 
         List <Map <String, String>> emrConfigTable = emrConfig.getEmrConfigTable ();
         assertEquals (emrConfigTable.get (0).keySet (),
