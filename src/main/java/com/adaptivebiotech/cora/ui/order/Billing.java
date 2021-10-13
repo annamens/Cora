@@ -31,6 +31,12 @@ public class Billing extends Diagnostic {
         assertTrue (clickAndSelectText (billing, type.label));
     }
 
+    public void editBilling (ChargeType type) {
+        assertTrue (click ("[ng-click='ctrl.editBilling()']"));
+        assertTrue (clickAndSelectText (billing, type.label));
+        assertTrue (click ("[ng-click='ctrl.saveBilling()']"));
+    }
+
     public ChargeType getBilling () {
         String type = getFirstSelectedValue (billing);
         return type != null && !type.equals ("?") ? ChargeType.valueOf (type.replace ("string:", "")) : null;

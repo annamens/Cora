@@ -73,8 +73,13 @@ public class Diagnostic extends CoraPage {
         pageLoading ();
     }
 
-    public void navigateToOrderDetailsPage (String orderId) {
+    public void navigateToPendingOrderDetailsPage (String orderId) {
         assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/auto?id=" + orderId));
+        isCorrectPage ();
+    }
+
+    public void navigateToOrderDetailsPage (String orderId) {
+        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/details/" + orderId));
         isCorrectPage ();
     }
 
@@ -444,7 +449,8 @@ public class Diagnostic extends CoraPage {
     }
 
     private String getOrderType () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.category.name']");
+        String css = "[ng-bind='ctrl.orderEntry.order.category.name']";
+        return isElementPresent (css) ? getText (css) : null;
     }
 
     public String getOrderName (OrderStatus state) {
@@ -730,24 +736,29 @@ public class Diagnostic extends CoraPage {
         return isElementVisible (css) ? getText (css) : null;
     }
 
+    public String getSpecimenIdUrlAttribute (String attribute) {
+        String xpath = "//*[text()='Adaptive Specimen ID']/..//a";
+        return isElementPresent (xpath) && isElementVisible (xpath) ? getAttribute (xpath, attribute) : null;
+    }
+
     public SpecimenType getSpecimenType (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.sampleType']";
-        return isElementVisible (css) ? SpecimenType.getSpecimenType (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
+        return isElementPresent (css) && isElementVisible (css) ? SpecimenType.getSpecimenType (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
     }
 
     public SpecimenSource getSpecimenSource (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.sourceType']";
-        return isElementVisible (css) ? SpecimenSource.valueOf (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
+        return isElementPresent (css) && isElementVisible (css) ? SpecimenSource.valueOf (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
     }
 
     public Anticoagulant getAnticoagulant (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen | specimenAnticoagulant']";
-        return isElementVisible (css) ? Anticoagulant.valueOf (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
+        return isElementPresent (css) && isElementVisible (css) ? Anticoagulant.valueOf (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
     }
 
     private String getCollectionDt (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.collectionDate']";
-        return isElementVisible (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
+        return isElementPresent (css) && isElementVisible (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
     }
 
     private String getReconciliationDt () {
@@ -757,6 +768,10 @@ public class Diagnostic extends CoraPage {
 
     public String getShipmentArrivalDate () {
         return getText ("[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']");
+    }
+
+    public void clickShipmentArrivalDate () {
+        assertTrue (click ("[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']"));
     }
 
     public String getIntakeCompleteDate () {
@@ -785,17 +800,24 @@ public class Diagnostic extends CoraPage {
 
     private OrderTest getTestState (OrderStatus state, Assay assay) {
         boolean selected;
+        String sampleName = null;
         if (Pending.equals (state)) {
-            String labelPath = String.format (assayEl, assay.test);
+            String labelPath = String.format ("//*[contains(@ng-bind,'%s')]", assay.type);
             if (isElementPresent (labelPath)) {
                 selected = waitForElement (labelPath + "/../input").isSelected ();
             } else {
                 selected = false;
             }
         } else {
-            selected = isElementPresent ("//*[@ng-bind='orderTest.test.name' and text()='" + assay.test + "']");
+            String xpath = "//*[@ng-bind='orderTest.test.name' and text()='" + assay.test + "']";
+            boolean isTestPresent = isElementPresent (xpath);
+            selected = isTestPresent;
+            sampleName = isTestPresent ? getText (xpath + "/..//*[@ng-bind='orderTest.sampleName']") : null;
+
         }
-        return new OrderTest (assay, selected);
+        OrderTest orderTest = new OrderTest (assay, selected);
+        orderTest.sampleName = sampleName;
+        return orderTest;
     }
 
     public String getSampleName () {
