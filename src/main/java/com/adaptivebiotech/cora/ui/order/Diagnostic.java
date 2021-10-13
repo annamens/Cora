@@ -486,7 +486,7 @@ public class Diagnostic extends CoraPage {
 
     public String getDateSigned (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.order.dateSigned']";
-        return isElementPresent (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
+        return isElementPresent (css) && isElementVisible (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
     }
 
     public String getDueDate () {
