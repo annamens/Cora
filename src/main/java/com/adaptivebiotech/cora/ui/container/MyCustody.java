@@ -41,7 +41,7 @@ public class MyCustody extends ContainerList {
     public void sendAllMyCustody (Container destination) {
         if (getMyCustodySize () > 0)
             getContainers ().list.stream ()
-                                 .filter (container -> (container.contents == null || !container.contents.contains ("SP-")))
+                                 .filter (container -> (container.contents == null && !container.specimenId.contains ("SP-")))
                                  .forEach (container -> moveToFreezer (container, destination));
     }
 }

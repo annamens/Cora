@@ -1,7 +1,11 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
+import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
+import java.util.List;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
@@ -65,5 +69,43 @@ public class TDetectDiagnostic extends Diagnostic {
     @Override
     public void clickActivateOrder () {
         clickSaveAndActivate ();
+    }
+
+    public void clickShipment () {
+        assertTrue (click ("//*[text()='Shipment']"));
+    }
+
+    @Override
+    public void clickShowContainers () {
+        assertTrue (click ("//*[@class='row']//*[contains(text(),'Containers')]"));
+    }
+
+    @Override
+    public Containers getContainers () {
+        String rows = "//specimen-containers//*[@class='row']/..";
+        return new Containers (waitForElements (rows).stream ().map (row -> {
+            Container c = new Container ();
+            c.id = getConId (getAttribute (row, "//*[text()='Adaptive Container ID']/..//a", "href"));
+            c.containerNumber = getText (row, "//*[text()='Adaptive Container ID']/..//a");
+            c.location = getText (row, "//*[text()='Current Storage Location']/..//div");
+
+            if (isElementPresent (row, ".container-table")) {
+                String css = "tbody tr";
+                List <Container> children = row.findElements (locateBy (css)).stream ().map (childRow -> {
+                    Container childContainer = new Container ();
+                    childContainer.id = getConId (getAttribute (childRow,
+                                                                "td:nth-child(1) a",
+                                                                "href"));
+                    childContainer.containerNumber = getText (childRow,
+                                                              "td:nth-child(1) a");
+                    childContainer.name = getText (childRow, "td:nth-child(2)");
+                    childContainer.integrity = getText (childRow, "td:nth-child(3)");
+                    childContainer.root = c;
+                    return childContainer;
+                }).collect (toList ());
+                c.children = children;
+            }
+            return c;
+        }).collect (toList ()));
     }
 }

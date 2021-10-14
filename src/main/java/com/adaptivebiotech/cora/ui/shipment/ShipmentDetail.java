@@ -17,16 +17,20 @@ import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
  */
 public class ShipmentDetail extends CoraPage {
 
-    private final String orderNo           = "[data-ng-bind='ctrl.entry.order.orderNumber']";
-    private final String activeTab         = "[role='tablist'] .active a";
-    private final String arrivalDateTime   = "[data-ng-bind='ctrl.entry.shipment.arrivalDate | localDateTime']";
-    private final String category          = "[data-ng-bind='ctrl.entry.shipment.category']";
-    private final String shipmentNo        = "[data-ng-bind='ctrl.entry.shipment.shipmentNumber']";
-    private final String shippingCondition = "[data-ng-bind='ctrl.entry.shipment.condition']";
-    private final String carrier           = "[data-ng-bind='ctrl.entry.shipment.carrier']";
-    private final String trackingNo        = "[data-ng-bind='ctrl.entry.shipment.trackingNumber']";
-    private final String status            = "[ng-bind='ctrl.entry | shipmentEntryStatus']";
-    private final String specimenId        = "[data-ng-bind='ctrl.entry.specimen.specimenNumber']";
+    private final String orderNo                  = "[data-ng-bind='ctrl.entry.order.orderNumber']";
+    private final String activeTab                = "[role='tablist'] .active a";
+    private final String arrivalDateTime          = "[data-ng-bind='ctrl.entry.shipment.arrivalDate | localDateTime']";
+    private final String category                 = "[data-ng-bind='ctrl.entry.shipment.category']";
+    private final String shipmentNo               = "[data-ng-bind='ctrl.entry.shipment.shipmentNumber']";
+    private final String shippingCondition        = "[data-ng-bind='ctrl.entry.shipment.condition']";
+    private final String carrier                  = "[data-ng-bind='ctrl.entry.shipment.carrier']";
+    private final String trackingNo               = "[data-ng-bind='ctrl.entry.shipment.trackingNumber']";
+    private final String status                   = "[ng-bind='ctrl.entry | shipmentEntryStatus']";
+    private final String specimenId               = "[data-ng-bind='ctrl.entry.specimen.specimenNumber']";
+    private final String containerType            = "[data-ng-bind$='containerTypeDisplayName']";
+    private final String containerQuantity        = "[data-ng-bind='ctrl.entry.containers.length']";
+    private final String specimenApprovalStatus   = "[data-ng-bind='ctrl.entry.specimen.approvalStatus']";
+    private final String specimenApprovalDateTime = "[data-ng-bind^='ctrl.entry.specimen.approvedDate']";
 
     @Override
     public void isCorrectPage () {
@@ -48,14 +52,30 @@ public class ShipmentDetail extends CoraPage {
         shipment.category = OrderCategory.valueOf (getText (category).trim ());
         shipment.shipmentNumber = getText (shipmentNo);
         shipment.condition = ShippingCondition.valueOf (getText (shippingCondition));
-        shipment.carrier = getText (carrier);
-        shipment.trackingNumber = getText (trackingNo);
+        shipment.carrier = isElementPresent (carrier) && isElementVisible (carrier) ? getText (carrier) : null;
+        shipment.trackingNumber = isElementPresent (trackingNo) && isElementVisible (trackingNo) ? getText (trackingNo) : null;
         shipment.status = getText (status);
         return shipment;
     }
 
     public String getSpecimenId () {
         return getText (specimenId);
+    }
+
+    public String getContainerType () {
+        return getText (containerType);
+    }
+
+    public String getContainerQuantity () {
+        return getText (containerQuantity);
+    }
+
+    public String getSpecimenApprovalStatus () {
+        return getText (specimenApprovalStatus);
+    }
+
+    public String getSpecimenApprovalDateTime () {
+        return getText (specimenApprovalDateTime);
     }
 
     public Containers getPrimaryContainers (ContainerType type) {
@@ -67,10 +87,12 @@ public class ShipmentDetail extends CoraPage {
             c.containerNumber = getText (el, "[data-ng-bind$='container.containerNumber']");
             c.containerType = type;
             c.location = getText (el, "[data-ng-bind='container | intakeLocation']");
-            c.name = isElementPresent ("[data-ng-bind='container.displayName']") ? getText (el,
-                                                                                            "[data-ng-bind='container.displayName']") : null;
-            c.integrity = isElementPresent ("[data-ng-bind='container.integrity']") ? getText (el,
-                                                                                               "[data-ng-bind='container.integrity']") : null;
+            String displayNameCss = "[data-ng-bind='container.displayName']";
+            c.name = isElementPresent (displayNameCss) && isElementVisible (displayNameCss) ? getText (el,
+                                                                                                       displayNameCss) : null;
+            String integrityCss = "[data-ng-bind='container.integrity']";
+            c.integrity = isElementPresent (integrityCss) && isElementVisible (integrityCss) ? getText (el,
+                                                                                                        integrityCss) : null;;
             c.shipmentNumber = shipmentNum;
 
             if (isElementPresent (el, ".container-table")) {

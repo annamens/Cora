@@ -22,6 +22,8 @@ import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
@@ -59,7 +61,7 @@ public class Diagnostic extends CoraPage {
     private final String   previewReportPdf   = ".report-preview ng-pdf";
     private final String   releasedReportPdf  = ".released-report-table tr td:nth-child(3) a";
     private final String   patientMrdStatus   = ".patient-status";
-    protected final String specimenNumber     = "div[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
+    protected final String specimenNumber     = "//*[text()='Adaptive Specimen ID']/..//div";
     protected final String tabBase            = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
 
     public Diagnostic () {
@@ -756,31 +758,63 @@ public class Diagnostic extends CoraPage {
     }
 
     public String getShipmentArrivalDate () {
-        return getText ("[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']");
+        return getText ("//*[text()='Shipment Arrival']/..//span");
     }
 
     public void clickShipmentArrivalDate () {
-        assertTrue (click ("[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']"));
+        assertTrue (click ("//*[text()='Shipment Arrival']/..//span"));
     }
 
     public String getIntakeCompleteDate () {
-        return getText ("[ng-bind^='ctrl.orderEntry.intakeCompletedDate']");
+        return getText ("//*[text()='Intake Complete']/..//div");
     }
 
     public String getSpecimenApprovalDate () {
-        return getText ("[ng-bind^='ctrl.orderEntry.specimen.approvedDate']");
+        return getText ("//*[text()='Specimen Approval']/..//span[2]");
     }
 
     public String getSpecimenApprovalStatus () {
-        return getText ("[ng-bind^='ctrl.orderEntry.specimen.approvalStatus']");
+        return getText ("//*[text()='Specimen Approval']/..//span[1]");
     }
 
     public ContainerType getSpecimenContainerType () {
-        return ContainerType.getContainerType (getText ("[ng-bind^='ctrl.orderEntry.specimenDisplayContainerType']"));
+        return ContainerType.getContainerType (getText ("//*[text()='Specimen Container Type']/..//div"));
     }
 
     public String getSpecimenContainerQuantity () {
-        return getText ("[ng-bind^='ctrl.orderEntry.specimenDisplayContainerCount']");
+        return getText ("//*[text()='Quantity']/..//div");
+    }
+
+    public void clickShowContainers () {
+        assertTrue (click ("[ng-click^='ctrl.showContainers']"));
+    }
+
+    public Containers getContainers () {
+        String rows = "[ng-repeat='group in ctrl.groupContainers()']";
+        return new Containers (waitForElements (rows).stream ().map (row -> {
+            Container c = new Container ();
+            c.id = getConId (getAttribute (row, "[data-ng-bind='group.holdingContainer.containerNumber']", "href"));
+            c.containerNumber = getText (row, "[data-ng-bind='group.holdingContainer.containerNumber']");
+            c.location = getText (row, "[ng-bind='group.holdingContainer.location']");
+
+            if (isElementPresent (row, ".container-table")) {
+                String css = "[ng-repeat='child in group.containers']";
+                List <Container> children = row.findElements (locateBy (css)).stream ().map (childRow -> {
+                    Container childContainer = new Container ();
+                    childContainer.id = getConId (getAttribute (childRow,
+                                                                "[data-ng-bind='child.container.containerNumber']",
+                                                                "href"));
+                    childContainer.containerNumber = getText (childRow,
+                                                              "[data-ng-bind='child.container.containerNumber']");
+                    childContainer.name = getText (childRow, "[ng-bind^='child.container.displayName']");
+                    childContainer.integrity = getText (childRow, "[ng-bind='child.container.integrity']");
+                    childContainer.root = c;
+                    return childContainer;
+                }).collect (toList ());
+                c.children = children;
+            }
+            return c;
+        }).collect (toList ()));
     }
 
     private String getExpectedTest () {
