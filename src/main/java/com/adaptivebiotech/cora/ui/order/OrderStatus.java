@@ -4,7 +4,6 @@ import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
-import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
@@ -15,16 +14,6 @@ public class OrderStatus extends Diagnostic {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER STATUS"));
         pageLoading ();
-    }
-
-    public void navigateToActiveOrderDetailsPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/auto?id=" + orderId));
-        isCorrectPage ();
-    }
-
-    public void navigateToOrderStatusPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/status/" + orderId));
-        isCorrectPage ();
     }
 
     public List <String> getCancelOrderMessages () {
@@ -54,7 +43,7 @@ public class OrderStatus extends Diagnostic {
     }
 
     public String getLastActivity () {
-        return getText ("//*[@ng-bind=\"::orderTest.lastActivity | date:'MM/dd/yyyy'\"]/..");
+        return getText ("//*[contains(@ng-bind,'::orderTest.lastActivity')]/..");
     }
 
     public boolean kitClonoSEQReportStageDisplayed () {

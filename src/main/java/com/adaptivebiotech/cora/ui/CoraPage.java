@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -19,6 +20,7 @@ import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.seleniumfy.test.utils.BasePage;
 
 /**
@@ -203,7 +205,7 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//table//*[text()='" + orderNum + "']"));
         pageLoading ();
     }
-    
+
     public void clickOrderName (String orderName) {
         assertTrue (click ("//table//*[text()='" + orderName + "']"));
         pageLoading ();
@@ -237,6 +239,16 @@ public class CoraPage extends BasePage {
 
     public void gotoContainerHistory (Container container) {
         assertTrue (navigateTo (coraTestUrl + "/cora/container/details/" + container.id + "/history"));
+        pageLoading ();
+    }
+
+    public void navigateToOrderDetailsPage (String orderId) {
+        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/details/" + orderId));
+        pageLoading ();
+    }
+
+    public void navigateToOrderStatusPage (String orderId) {
+        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/status/" + orderId));
         pageLoading ();
     }
 
@@ -318,5 +330,10 @@ public class CoraPage extends BasePage {
             throw new RuntimeException (e);
         }
         return dropDownOptions;
+    }
+
+    public void navigateToTab (int tabIndex) {
+        getDriver ().switchTo ()
+                    .window (new ArrayList <String> (getDriver ().getWindowHandles ()).get (tabIndex));
     }
 }

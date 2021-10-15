@@ -4,7 +4,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertEquals;
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -117,8 +116,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         shipment.clickContainerNo (containers.list.get (0).containerNumber);
         containerDetail.isCorrectPage ();
         containerDetail.clickAccessionedOrderNo (order1);
-        diagnostic.getDriver ().switchTo ()
-                  .window (new ArrayList <String> (diagnostic.getDriver ().getWindowHandles ()).get (1));
+        diagnostic.navigateToTab (1);
         diagnostic.isCorrectPage ();
         assertEquals (diagnostic.getOrderNum (), order1);
         Logging.testLog ("STEP 7 - clonoSEQ Order Form is displayed");
@@ -198,9 +196,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         shipmentDetail.clickContainerNo (containers.list.get (0).containerNumber);
         containerDetail.isCorrectPage ();
         containerDetail.clickAccessionedOrderNo (order2);
-        diagnostic.getDriver ().switchTo ()
-                  .window (new ArrayList <String> (diagnostic.getDriver ().getWindowHandles ()).get (1));
-        System.out.println (diagnostic.getText ("[role='tablist'] .active a"));
+        diagnostic.navigateToTab (1);
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getOrderNum (), order2);
         Logging.testLog ("STEP 14 - The generic order status page is displayed");

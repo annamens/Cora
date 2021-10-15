@@ -33,7 +33,7 @@ public class Billing extends Diagnostic {
 
     public void editBilling (ChargeType type) {
         assertTrue (click ("[ng-click='ctrl.editBilling()']"));
-        assertTrue (clickAndSelectText (billing, type.label));
+        selectBilling (type);
         assertTrue (click ("[ng-click='ctrl.saveBilling()']"));
     }
 

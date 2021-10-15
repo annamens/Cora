@@ -7,7 +7,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -68,7 +67,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
     /**
      * NOTE: SR-T2166
      */
-    public void verifyPendingOrderLinkRedirect () {
+    public void verifyOrderDetailsPage () {
 
         // create clonoSEQ diagnostic order
         billing.selectNewClonoSEQDiagnosticOrder ();
@@ -204,10 +203,11 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         patientDetail.isCorrectPage ();
         Logging.testLog ("STEP 4 - Patient details page is opened in a new tab for Patient1");
 
-        getDriver ().switchTo ().window (new ArrayList <> (getDriver ().getWindowHandles ()).get (0));
+        diagnostic.navigateToTab (0);
         diagnostic.isCorrectPage ();
         diagnostic.clickPatientOrderHistory ();
         diagnostic.navigateToOrderDetailsPage (activeOrder.id);
+        diagnostic.isCorrectPage ();
         Logging.testLog ("STEP 5 - Patient order history page is opened");
 
         String expectedLimsUrl = CoraEnvironment.coraTestUrl.replace ("cora",
@@ -230,6 +230,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         Logging.testLog ("STEP 8 - The file is attached to the order");
 
         orderStatus.navigateToOrderStatusPage (editOrder.id);
+        orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getSpecimenNumber (), specimenId);
         assertEquals (orderStatus.getDueDate (), expectedDueDate);
         assertEquals (orderStatus.getTestName (), orderTest.test);

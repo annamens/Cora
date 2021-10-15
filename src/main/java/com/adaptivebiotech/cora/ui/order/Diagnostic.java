@@ -29,7 +29,6 @@ import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
-import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
@@ -71,16 +70,6 @@ public class Diagnostic extends CoraPage {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
         pageLoading ();
-    }
-
-    public void navigateToPendingOrderDetailsPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/auto?id=" + orderId));
-        isCorrectPage ();
-    }
-
-    public void navigateToOrderDetailsPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/details/" + orderId));
-        isCorrectPage ();
     }
 
     public void clickReportNotesIcon () {
@@ -293,8 +282,8 @@ public class Diagnostic extends CoraPage {
         waitUntilActivated ();
     }
 
-    public String getOrderStatus () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.status']");
+    public OrderStatus getOrderStatus () {
+        return OrderStatus.valueOf (getText ("[ng-bind='ctrl.orderEntry.order.status']"));
     }
 
     public void clickSaveAndActivate () {
@@ -387,7 +376,7 @@ public class Diagnostic extends CoraPage {
         order.id = getOrderId ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName (state);
-        order.status = OrderStatus.valueOf (getOrderStatus ());
+        order.status = getOrderStatus ();
         order.order_number = getOrderNum (state);
         order.data_analysis_group = getDataAnalysisGroup (state);
         order.isTrfAttached = toBoolean (isTrfAttached ());
@@ -674,7 +663,7 @@ public class Diagnostic extends CoraPage {
 
     public String getPatientNotes (OrderStatus state) {
         String css = "[" + (Pending.equals (state) ? "ng-model" : "notes") + "='ctrl.orderEntry.order.patient.notes']";
-        return isElementPresent (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
+        return isElementPresent (css) ? (Pending.equals (state) ? readInput (css) : getText (css)) : null;
     }
 
     public String getPatientBillingAddress1 () {
@@ -1054,7 +1043,6 @@ public class Diagnostic extends CoraPage {
 
     public List <String> getHistory (OrderStatus state) {
         String xpath = Pending.equals (state) ? "//*[text()='History']/..//li" : "//*[text()='History']/ancestor::div[@class='row']//li";
-        doWait (2000);
         return getTextList (xpath);
     }
 
