@@ -1,12 +1,9 @@
 package com.adaptivebiotech.cora.ui;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.seleniumfy.test.utils.Environment.webdriverWait;
-import static com.seleniumfy.test.utils.Logging.debug;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
-import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated;
 import static org.testng.Assert.assertTrue;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -339,17 +336,4 @@ public class CoraPage extends BasePage {
         getDriver ().switchTo ()
                     .window (new ArrayList <String> (getDriver ().getWindowHandles ()).get (tabIndex));
     }
-
-    @Override
-    public boolean isElementHidden (String target) {
-        waitForAjaxCalls ();
-        try {
-            return new WebDriverWait (getDriver (), webdriverWait,
-                    sleepInMillis).until (invisibilityOfElementLocated (locateBy (target)));
-        } catch (Exception e) {
-            debug (String.valueOf (e));
-            return false;
-        }
-    }
-
 }
