@@ -141,6 +141,8 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         // activate order
         diagnostic.isCorrectPage ();
         diagnostic.activateOrder ();
+        diagnostic.refresh ();
+        diagnostic.isCorrectPage ();
         List <String> activeHistory = specimen.getHistory (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
         String activateDateTime = activeHistory.get (2).split ("Activated by")[0].trim ();
         Logging.info ("Order Activated Date and Time: " + activateDateTime);

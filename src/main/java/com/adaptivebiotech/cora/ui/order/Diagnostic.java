@@ -475,7 +475,7 @@ public class Diagnostic extends CoraPage {
 
     public String getDateSigned (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.order.dateSigned']";
-        return isElementPresent (css) && isElementVisible (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
+        return !isElementHidden (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
     }
 
     public String getDueDate () {
@@ -727,32 +727,32 @@ public class Diagnostic extends CoraPage {
 
     public String getSpecimenIdUrlAttribute (String attribute) {
         String xpath = "//*[text()='Adaptive Specimen ID']/..//a";
-        return isElementPresent (xpath) && isElementVisible (xpath) ? getAttribute (xpath, attribute) : null;
+        return !isElementHidden (xpath) ? getAttribute (xpath, attribute) : null;
     }
 
     public SpecimenType getSpecimenType (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.sampleType']";
-        return isElementPresent (css) && isElementVisible (css) ? SpecimenType.getSpecimenType (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
+        return !isElementHidden (css) ? SpecimenType.getSpecimenType (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
     }
 
     public SpecimenSource getSpecimenSource (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.sourceType']";
-        return isElementPresent (css) && isElementVisible (css) ? SpecimenSource.valueOf (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
+        return !isElementHidden (css) ? SpecimenSource.valueOf (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
     }
 
     public Anticoagulant getAnticoagulant (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen | specimenAnticoagulant']";
-        return isElementPresent (css) && isElementVisible (css) ? Anticoagulant.valueOf (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
+        return !isElementHidden (css) ? Anticoagulant.valueOf (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
     }
 
     private String getCollectionDt (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.collectionDate']";
-        return isElementPresent (css) && isElementVisible (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
+        return !isElementHidden (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
     }
 
     private String getReconciliationDt () {
         String rDate = "[ng-bind*='ctrl.orderEntry.specimen.reconciliationDate']";
-        return isElementPresent (rDate) && isElementVisible (rDate) ? getText (rDate) : null;
+        return !isElementHidden (rDate) ? getText (rDate) : null;
     }
 
     public String getShipmentArrivalDate () {
