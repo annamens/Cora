@@ -436,7 +436,8 @@ public class Diagnostic extends CoraPage {
     }
 
     public String getOrderId () {
-        return getCurrentUrl ().replaceFirst (".*order/entry/diagnostic/", "").replaceFirst (".*order/details/", "");
+        String[] splitUrl = getCurrentUrl ().split ("/");
+        return splitUrl[splitUrl.length - 1];
     }
 
     private String getOrderType () {
@@ -635,7 +636,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickPatientCode (OrderStatus state) {
-        String css = (Pending.equals (state) ? oEntry : oDetail) + " [ng-bind='ctrl.orderEntry.order.patient.patientCode']";
+        String css = "//*[text()='Patient Code']/parent::div//a";
         assertTrue (click (css));
         assertTrue (waitForChildWindows (2));
         List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
@@ -697,11 +698,11 @@ public class Diagnostic extends CoraPage {
     }
 
     public void enterPatientICD_Codes (String codes) {
-        String css = "[ng-click='ctrl.showSearchBox()']";
-        if (isElementVisible (css))
+        String css = "//button[text()='Add Code']";
+        if (isElementPresent (css) && isElementVisible (css))
             assertTrue (click (css));
-        assertTrue (setText ("[ng-show='ctrl.searchBoxVisible'] input", codes));
-        assertTrue (waitUntilVisible ("[name='icdcodes'] .matches-icdcode"));
+        assertTrue (setText ("//*[text()='ICD Codes']/..//input", codes));
+        assertTrue (waitUntilVisible ("//*[text()='ICD Codes']/..//ul"));
         assertTrue (click ("//*[contains(text(),'" + codes + "')]"));
     }
 

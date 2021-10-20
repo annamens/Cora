@@ -144,6 +144,10 @@ public class History extends CoraPage {
         }
     }
 
+    public String getOrderTestId () {
+        return getAttribute ("a[href*='/cora/order/status']", "href");
+    }
+
     public void clickOrderTest () {
         String url = getAttribute ("a[href*='/cora/order/status']", "href");
         assertTrue (navigateTo (url));

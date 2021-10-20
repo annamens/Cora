@@ -9,6 +9,7 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author jpatel
@@ -107,5 +108,11 @@ public class TDetectDiagnostic extends Diagnostic {
             }
             return c;
         }).collect (toList ()));
+    }
+    
+    @Override
+    public String getOrderName (OrderStatus state) {
+        String locator = Pending.equals (state) ? "//*[@label='Order Name']/parent::div//span" : "[ng-bind='ctrl.orderEntry.order.name']";
+        return getText (locator);
     }
 }
