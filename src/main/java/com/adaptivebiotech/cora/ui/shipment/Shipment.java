@@ -306,4 +306,8 @@ public class Shipment extends CoraPage {
         assertTrue (isTextInElement (status, "Discontinued"));
     }
 
+    public void clickContainerNo (String containerNo) {
+        assertTrue (click ("//table//a[text()='" + containerNo + "']"));
+    }
+
 }

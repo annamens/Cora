@@ -24,6 +24,10 @@ public class Accession extends CoraPage {
         pageLoading ();
     }
 
+    public void clickOrderNo () {
+        assertTrue (click ("#order-link"));
+    }
+
     public void uploadIntakeManifest (String file) {
         waitForElement ("input[data-ng-model='ctrl.intakeManifestFiles']").sendKeys (file);
         moduleLoading ();

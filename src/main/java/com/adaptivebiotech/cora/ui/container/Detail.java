@@ -112,4 +112,8 @@ public class Detail extends CoraPage {
     public List <String> getDetailHistory () {
         return getTextList ("//h2[text()='History']/ancestor::div[@class='container']//li");
     }
+
+    public void clickAccessionedOrderNo (String orderNo) {
+        assertTrue (click ("//*[text()='" + orderNo + "']"));
+    }
 }

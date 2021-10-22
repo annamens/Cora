@@ -203,6 +203,11 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//table//*[text()='" + orderNum + "']"));
         pageLoading ();
     }
+    
+    public void clickOrderName (String orderName) {
+        assertTrue (click ("//table//*[text()='" + orderName + "']"));
+        pageLoading ();
+    }
 
     public void searchContainer (Container container) {
         assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&search=" + container.containerNumber));
