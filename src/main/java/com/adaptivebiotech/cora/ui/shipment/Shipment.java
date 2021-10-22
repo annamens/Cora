@@ -57,6 +57,14 @@ public class Shipment extends CoraPage {
         pageLoading ();
     }
 
+    public String getArrivalDate () {
+        return getAttribute ("#arrivalDate", "value");
+    }
+
+    public String getArrivalTime () {
+        return getAttribute ("#arrivalTime", "value");
+    }
+
     public void enterShippingCondition (ShippingCondition condition) {
         assertTrue (clickAndSelectValue ("[ng-model='ctrl.entry.shipment.condition']", "string:" + condition));
     }

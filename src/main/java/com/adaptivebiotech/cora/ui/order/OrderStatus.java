@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -15,6 +16,16 @@ public class OrderStatus extends Diagnostic {
         pageLoading ();
     }
 
+    public List <String> getCancelOrderMessages () {
+        String css = "[ng-if='ctrl.orderEntry.order | orderIsCancelled']";
+        List <String> cancellationMsgs = new ArrayList <String> ();
+        if (isElementPresent (css)) {
+            cancellationMsgs.add (getText (css + " h2"));
+            cancellationMsgs.add (getText (css + " p"));
+        }
+        return cancellationMsgs;
+    }
+
     public String getOrderNum () {
         return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
     }
@@ -23,8 +34,16 @@ public class OrderStatus extends Diagnostic {
         return getText ("[ng-bind='ctrl.orderEntry.order.name']");
     }
 
+    public String getSpecimenNumber () {
+        return getText ("[ng-bind='::orderTest.specimenNumber']");
+    }
+
     public String getTestName () {
         return getText ("[ng-bind='::orderTest.testName']");
+    }
+
+    public String getLastActivity () {
+        return getText ("//*[contains(@ng-bind,'::orderTest.lastActivity')]/..");
     }
 
     public boolean kitClonoSEQReportStageDisplayed () {
@@ -102,6 +121,10 @@ public class OrderStatus extends Diagnostic {
         return StageStatus.valueOf (trimmedStatusText);
     }
 
+    public List <String> getStageStatusUrls () {
+        return getAttributeList (".details-url", "href");
+    }
+
     public boolean isStageSubstatusVisible () {
         String css = "span.ng-binding.ng-scope";
         return waitUntilVisible (css);
@@ -115,4 +138,5 @@ public class OrderStatus extends Diagnostic {
         }
         return orderTestId;
     }
+
 }

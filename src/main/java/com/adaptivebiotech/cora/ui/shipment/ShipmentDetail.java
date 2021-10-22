@@ -5,8 +5,11 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.test.utils.PageHelper.OrderCategory;
+import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 
 /**
  * @author jpatel
@@ -14,8 +17,16 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
  */
 public class ShipmentDetail extends CoraPage {
 
-    private final String orderNo   = "[data-ng-bind='ctrl.entry.order.orderNumber']";
-    private final String activeTab = "[role='tablist'] .active a";
+    private final String orderNo           = "[data-ng-bind='ctrl.entry.order.orderNumber']";
+    private final String activeTab         = "[role='tablist'] .active a";
+    private final String arrivalDateTime   = "[data-ng-bind='ctrl.entry.shipment.arrivalDate | localDateTime']";
+    private final String category          = "[data-ng-bind='ctrl.entry.shipment.category']";
+    private final String shipmentNo        = "[data-ng-bind='ctrl.entry.shipment.shipmentNumber']";
+    private final String shippingCondition = "[data-ng-bind='ctrl.entry.shipment.condition']";
+    private final String carrier           = "[data-ng-bind='ctrl.entry.shipment.carrier']";
+    private final String trackingNo        = "[data-ng-bind='ctrl.entry.shipment.trackingNumber']";
+    private final String status            = "[ng-bind='ctrl.entry | shipmentEntryStatus']";
+    private final String specimenId        = "[data-ng-bind='ctrl.entry.specimen.specimenNumber']";
 
     @Override
     public void isCorrectPage () {
@@ -29,6 +40,22 @@ public class ShipmentDetail extends CoraPage {
 
     public void clickOrderNo () {
         assertTrue (click (orderNo));
+    }
+
+    public Shipment getShipmentDetails () {
+        Shipment shipment = new Shipment ();
+        shipment.arrivalDate = getText (arrivalDateTime);
+        shipment.category = OrderCategory.valueOf (getText (category).trim ());
+        shipment.shipmentNumber = getText (shipmentNo);
+        shipment.condition = ShippingCondition.valueOf (getText (shippingCondition));
+        shipment.carrier = getText (carrier);
+        shipment.trackingNumber = getText (trackingNo);
+        shipment.status = getText (status);
+        return shipment;
+    }
+
+    public String getSpecimenId () {
+        return getText (specimenId);
     }
 
     public Containers getPrimaryContainers (ContainerType type) {
