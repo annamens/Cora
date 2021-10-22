@@ -11,6 +11,9 @@ import java.util.Date;
 
 public class DateUtils {
 
+    public static ZoneId utcZoneId = ZoneId.of ("UTC");
+    public static ZoneId pstZoneId = ZoneId.of (ZoneId.SHORT_IDS.get ("PST"));
+
     /**
      * Get date from current date in MM/dd/uuuu format
      * 

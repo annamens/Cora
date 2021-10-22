@@ -254,7 +254,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickReportTab (Assay assay) {
-        assertTrue (click ("//a[text()='Report | " + assay.test + "']"));
+        assertTrue (click ("//a[text()='REPORT | " + assay.test + "']"));
         pageLoading ();
         assertTrue (waitForElementInvisible (".report-loading"));
         assertTrue (waitForElementInvisible ("[ng-show='ctrl.isLoadingPDF']"));
@@ -410,6 +410,7 @@ public class Diagnostic extends CoraPage {
         order.specimenDto.anticoagulant = getAnticoagulant (state);
         order.specimenDto.collectionDate = getCollectionDt (state);
         order.specimenDto.reconciliationDate = getReconciliationDt ();
+        order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         order.expectedTestType = getExpectedTest ();
         order.tests = allOf (Assay.class).stream ().map (a -> getTestState (state, a)).collect (toList ())
                                          .parallelStream ().filter (t -> t.selected).collect (toList ());
@@ -763,7 +764,8 @@ public class Diagnostic extends CoraPage {
     }
 
     public String getShipmentArrivalDate () {
-        return getText ("//*[text()='Shipment Arrival']/..//span");
+        String xpath = "//*[text()='Shipment Arrival']/..//span";
+        return isElementPresent (xpath) && isElementVisible (xpath) ? getText (xpath) : null;
     }
 
     public void clickShipmentArrivalDate () {
