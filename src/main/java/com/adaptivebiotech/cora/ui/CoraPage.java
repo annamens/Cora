@@ -213,13 +213,8 @@ public class CoraPage extends BasePage {
         assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&search=" + container.containerNumber));
     }
 
-    public void showFreezerContents (Container freezer) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&rootContainerId=" + freezer.id));
-    }
-
-    public void showFreezerContents (Container freezer, String createdBy) {
-        String url = "/cora/containers/list?arrivalDate=all&rootContainerId=%s&createdBy=%s";
-        assertTrue (navigateTo (coraTestUrl + format (url, freezer.id, createdBy)));
+    public void searchContainerByContainerId (Container container) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber));
     }
 
     public void showTodayFreezerContents (Container freezer) {
@@ -318,5 +313,59 @@ public class CoraPage extends BasePage {
             throw new RuntimeException (e);
         }
         return dropDownOptions;
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param target
+     *            HTML DOM element (css or xpath)
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (String target, String propertyName) {
+        return getCssProperty (locateBy (target), propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param by
+     *            {@link By}
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (By by, String propertyName) {
+        return getCssProperty (waitForElement (by), propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param element
+     *            {@link WebElement}
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (WebElement element, String propertyName) {
+        return element.getCssValue (propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param element
+     *            {@link WebElement}
+     * @param target
+     *            HTML DOM child element (css or xpath)
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (WebElement element, String target, String propertyName) {
+        return element.findElement (locateBy (target)).getCssValue (propertyName);
     }
 }

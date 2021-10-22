@@ -11,6 +11,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.WebElement;
+import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -144,7 +145,7 @@ public class Shipment extends CoraPage {
                     c.barcode = getText (el1, "[data-ng-bind*='specimen.barcode']");
                     c.specimenId = getText (el1, "[data-ng-bind*='specimen.specimen.specimenNumber']");
                     c.specimenName = getText (el1, "[data-ng-bind*='specimen.specimen.name']");
-                    if (c.specimenName != null) {
+                    if (Strings.isNotNullAndNotEmpty (c.specimenName)) {
                         c.containerType = ContainerType.getContainerType (c.specimenName.split ("-")[0]);
                     }
                     c.root = container;
