@@ -8,9 +8,9 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
+import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.Specimen;
-import com.adaptivebiotech.cora.ui.order.TDetectDiagnostic;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
@@ -27,11 +27,11 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 @Test (groups = { "regression", "tDetectOrder" })
 public class TDetectOrderTestSuite extends CoraBaseBrowser {
 
-    private TDetectDiagnostic tDetectDiagnostic = new TDetectDiagnostic ();
-    private Billing           billing           = new Billing ();
-    private Specimen          Specimen          = new Specimen ();
-    private Shipment          shipment          = new Shipment ();
-    private Accession         accession         = new Accession ();
+    private OrderDetailTDetect orderDetailTDetect = new OrderDetailTDetect ();
+    private Billing            billing            = new Billing ();
+    private Specimen           Specimen           = new Specimen ();
+    private Shipment           shipment           = new Shipment ();
+    private Accession          accession          = new Accession ();
 
     /**
      * NOTE: SR-T3243
@@ -40,20 +40,20 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
         new Login ().doLogin ();
         new OrdersList ().isCorrectPage ();
         // create T-Detect diagnostic order
-        tDetectDiagnostic.selectNewTDetectDiagnosticOrder ();
-        tDetectDiagnostic.isCorrectPage ();
+        orderDetailTDetect.selectNewTDetectDiagnosticOrder ();
+        orderDetailTDetect.isCorrectPage ();
 
-        tDetectDiagnostic.selectPhysician (TestHelper.physicianTRF ());
-        tDetectDiagnostic.createNewPatient (TestHelper.newPatient ());
-        tDetectDiagnostic.clickSave ();
+        orderDetailTDetect.selectPhysician (TestHelper.physicianTRF ());
+        orderDetailTDetect.createNewPatient (TestHelper.newPatient ());
+        orderDetailTDetect.clickSave ();
 
         Specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        tDetectDiagnostic.clickAssayTest (Assay.COVID19_DX_IVD);
+        orderDetailTDetect.clickAssayTest (Assay.COVID19_DX_IVD);
         billing.selectBilling (ChargeType.Client);
         billing.enterPatientAddress (TestHelper.address ());
         billing.clickSave ();
 
-        String orderNum = tDetectDiagnostic.getOrderNum ();
+        String orderNum = orderDetailTDetect.getOrderNum ();
         Logging.info ("Order Number: " + orderNum);
 
         // add diagnostic shipment
@@ -86,7 +86,7 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
 
         // activate order
         billing.isCorrectPage ();
-        tDetectDiagnostic.activateOrder ();
+        orderDetailTDetect.activateOrder ();
         Logging.testLog ("STEP 2 - Order is Active.");
     }
 

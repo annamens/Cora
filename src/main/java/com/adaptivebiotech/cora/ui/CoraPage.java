@@ -1,12 +1,9 @@
 package com.adaptivebiotech.cora.ui;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.seleniumfy.test.utils.Environment.webdriverWait;
-import static com.seleniumfy.test.utils.Logging.debug;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
-import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated;
 import static org.testng.Assert.assertTrue;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -218,13 +215,8 @@ public class CoraPage extends BasePage {
         assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&search=" + container.containerNumber));
     }
 
-    public void showFreezerContents (Container freezer) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&rootContainerId=" + freezer.id));
-    }
-
-    public void showFreezerContents (Container freezer, String createdBy) {
-        String url = "/cora/containers/list?arrivalDate=all&rootContainerId=%s&createdBy=%s";
-        assertTrue (navigateTo (coraTestUrl + format (url, freezer.id, createdBy)));
+    public void searchContainerByContainerId (Container container) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber));
     }
 
     public void showTodayFreezerContents (Container freezer) {
@@ -335,21 +327,62 @@ public class CoraPage extends BasePage {
         return dropDownOptions;
     }
 
+    /**
+     * Get CSS property value
+     * 
+     * @param target
+     *            HTML DOM element (css or xpath)
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (String target, String propertyName) {
+        return getCssProperty (locateBy (target), propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param by
+     *            {@link By}
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (By by, String propertyName) {
+        return getCssProperty (waitForElement (by), propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param element
+     *            {@link WebElement}
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (WebElement element, String propertyName) {
+        return element.getCssValue (propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param element
+     *            {@link WebElement}
+     * @param target
+     *            HTML DOM child element (css or xpath)
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (WebElement element, String target, String propertyName) {
+        return element.findElement (locateBy (target)).getCssValue (propertyName);
+    }
+
     public void navigateToTab (int tabIndex) {
         getDriver ().switchTo ()
                     .window (new ArrayList <String> (getDriver ().getWindowHandles ()).get (tabIndex));
     }
-
-    @Override
-    public boolean isElementHidden (String target) {
-        waitForAjaxCalls ();
-        try {
-            return new WebDriverWait (getDriver (), webdriverWait,
-                    sleepInMillis).until (invisibilityOfElementLocated (locateBy (target)));
-        } catch (Exception e) {
-            debug (String.valueOf (e));
-            return false;
-        }
-    }
-
 }

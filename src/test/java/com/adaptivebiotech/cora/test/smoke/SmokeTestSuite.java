@@ -47,6 +47,7 @@ import com.adaptivebiotech.cora.ui.task.TaskStatus;
 import com.adaptivebiotech.cora.ui.utilities.AuditTool;
 import com.adaptivebiotech.cora.ui.utilities.BarcodeComparisonTool;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
+import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 
 @Test (groups = "smoke")
 public class SmokeTestSuite extends CoraBaseBrowser {
@@ -284,7 +285,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         Patient patient = newPatient ();
         diagnostic.createNewPatient (patient);
         diagnostic.clickSave ();
-        assertEquals (diagnostic.getPatientName (), patient.fullname);
+        assertEquals (diagnostic.getPatientName (OrderStatus.Pending), patient.fullname);
         testLog ("Patient Information section displayed " + patient.fullname);
 
         diagnostic.clickPatientCode (Pending);
