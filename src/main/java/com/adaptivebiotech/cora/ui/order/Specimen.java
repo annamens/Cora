@@ -83,7 +83,7 @@ public class Specimen extends Diagnostic {
     }
 
     public void enterCollectionDate (String date) {
-        assertTrue (setText ("[name='collectionDate']", date));
+        assertTrue (setText ("//*[text()='Collection Date']/..//input", date));
     }
 
     public void enterRetrievalDate (String date) {

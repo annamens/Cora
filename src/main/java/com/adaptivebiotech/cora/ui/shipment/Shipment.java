@@ -95,7 +95,7 @@ public class Shipment extends CoraPage {
     }
 
     public Containers getPrimaryContainers (ContainerType type) {
-        String lines = ".container-table [ng-repeat='container in ctrl.entry.containers']";
+        String lines = "[class='container-section'] [ng-repeat='container in ctrl.entry.containers']";
         String shipmentNum = getText ("[ng-bind='ctrl.entry.shipment.shipmentNumber']");
         return new Containers (waitForElements (lines).stream ().map (el -> {
             Container c = new Container ();
@@ -105,6 +105,21 @@ public class Shipment extends CoraPage {
             c.location = getText (el, "[ng-bind='container.location']");
             c.name = readInput (el, "[ng-model='container.externalId']");
             c.shipmentNumber = shipmentNum;
+
+            if (isElementPresent (el, ".container-table")) {
+                String css = "[ng-repeat='child in container.children']";
+                List <Container> children = el.findElements (locateBy (css)).stream ().map (childRow -> {
+                    Container childContainer = new Container ();
+                    childContainer.id = getConId (getAttribute (childRow,
+                                                                "[data-ng-bind='child.containerNumber']",
+                                                                "href"));
+                    childContainer.containerNumber = getText (childRow, "[data-ng-bind='child.containerNumber']");
+                    childContainer.name = getAttribute (childRow, " [name*='trackingNumber']", "value");
+                    childContainer.root = c;
+                    return childContainer;
+                }).collect (toList ());
+                c.children = children;
+            }
             return c;
         }).collect (toList ()));
     }
