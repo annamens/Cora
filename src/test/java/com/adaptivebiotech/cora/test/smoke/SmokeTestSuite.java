@@ -389,8 +389,6 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         addContainer.isCorrectPage ();
         testLog ("add new container page was displayed");
 
-        System.out.println (addContainer.isAddContainersVisible ());
-
         addContainer.pickContainerType (TubeBox5x5);
         addContainer.enterQuantity (1);
         addContainer.clickAdd ();
@@ -402,7 +400,10 @@ public class SmokeTestSuite extends CoraBaseBrowser {
 
         addContainer.setContainerLocation (1, freezer);
         addContainer.clickSave ();
-        assertFalse (addContainer.isAddContainersVisible ());
+        assertFalse (addContainer.isAddContainerHeaderVisible ());
+        assertFalse (addContainer.isContainerTypeVisible ());
+        assertFalse (addContainer.isQuantityVisible ());
+        assertFalse (addContainer.isAddBtnVisible ());
         testLog ("Add Container(s) section did not displayed");
 
         assertTrue (addContainer.isGenerateContainerLabelsVisible ());
