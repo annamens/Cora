@@ -14,7 +14,8 @@ import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import java.util.stream.IntStream;
-import org.testng.annotations.AfterSuite;
+import org.apache.http.message.BasicHeader;
+import org.testng.annotations.AfterClass;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -24,6 +25,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.seleniumfy.test.utils.HttpClientHelper;
 
 public class ContainerTestBase extends CoraBaseBrowser {
 
@@ -32,8 +34,8 @@ public class ContainerTestBase extends CoraBaseBrowser {
     protected final Container freezerAB018078  = freezerAB018078 ();
     protected final Container freezerAB039003  = freezerAB039003 ();
 
-    @AfterSuite (groups = "regression")
-    public void containerAfterSuite () {
+    @AfterClass (groups = "regression", alwaysRun = true)
+    public void containerAfterClass () {
         new Login ().doLogin ();
         OrdersList oList = new OrdersList ();
         oList.isCorrectPage ();
@@ -66,7 +68,10 @@ public class ContainerTestBase extends CoraBaseBrowser {
     protected Containers addContainers (Containers containers) {
         try {
             String url = coraTestUrl + "/cora/api/v1/containers/addEntries";
+            HttpClientHelper.resetheaders ();
+            HttpClientHelper.headers.get ().add (new BasicHeader ("X-Api-UserName", coraTestUser));
             String result = post (url, body (mapper.writeValueAsString (containers.list)));
+            HttpClientHelper.resetheaders ();
             return new Containers (
                     mapper.readValue (result, HttpResponse.class).containers.parallelStream ().map (c -> {
                         c.location = coraTestUser;
@@ -81,7 +86,10 @@ public class ContainerTestBase extends CoraBaseBrowser {
         try {
             containers.list.parallelStream ().forEach (c -> c.isActive = false);
             String url = coraTestUrl + "/cora/api/v1/containers/updateEntries";
+            HttpClientHelper.resetheaders ();
+            HttpClientHelper.headers.get ().add (new BasicHeader ("X-Api-UserName", coraTestUser));
             String result = put (url, body (mapper.writeValueAsString (containers.list)));
+            HttpClientHelper.resetheaders ();
             return new Containers (mapper.readValue (result, HttpResponse.class).containers);
         } catch (Exception e) {
             throw new RuntimeException (e);
@@ -96,10 +104,37 @@ public class ContainerTestBase extends CoraBaseBrowser {
         assertEquals (actual.location, expected.location);
     }
 
+    /**
+     * When child container is moved to holding container
+     * 
+     * @param actual
+     * @param expected
+     */
+    protected void verifyDetailsChild (Container actual, Container expected) {
+        assertEquals (actual.containerNumber, expected.containerNumber);
+        assertEquals (actual.containerType, expected.containerType);
+        assertEquals (actual.name, expected.name);
+        assertEquals (actual.depleted, expected.depleted);
+        assertEquals (actual.location, String.join (" : ", expected.location, actual.containerNumber));
+    }
+
     protected void verifyMovedTo (ContainerHistory history, Container actual) {
         assertEquals (history.activity, "Moved to Location");
         assertEquals (history.comment, actual.comment);
         assertEquals (history.location, actual.location);
+        assertEquals (history.activityBy, coraTestUser);
+    }
+
+    /**
+     * When holding container is moved to freezer
+     * 
+     * @param history
+     * @param actual
+     */
+    protected void verifyMovedToContainer (ContainerHistory history, Container actual) {
+        assertEquals (history.activity, "Moved to Location");
+        assertEquals (history.comment, actual.comment);
+        assertEquals (String.join (" : ", history.location, actual.containerNumber), actual.location);
         assertEquals (history.activityBy, coraTestUser);
     }
 

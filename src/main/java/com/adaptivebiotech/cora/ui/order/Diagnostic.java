@@ -264,10 +264,14 @@ public class Diagnostic extends CoraPage {
         pageLoading ();
     }
 
+    public String getStatusText () {
+        String xpath = "//*[text()='Status']/..//span";
+        return getText (xpath);
+    }
+
     public void waitUntilActivated () {
-        String status = "//*[text()='Status']/..//span";
         Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout () && ! (isTextInElement (status, "Active"))) {
+        while (!timer.Timedout () && ! (getStatusText ().equals ("Active"))) {
             refresh ();
             timer.Wait ();
         }
@@ -386,10 +390,10 @@ public class Diagnostic extends CoraPage {
         order.physician.providerFullName = getProviderName ();
         order.physician.accountName = getProviderAccount ();
         order.patient = new Patient ();
-        order.patient.fullname = getPatientName ();
-        order.patient.dateOfBirth = getPatientDOB ();
-        order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode (state));
+        order.patient.fullname = getPatientName (state);
+        order.patient.dateOfBirth = getPatientDOB (state);
+        order.patient.gender = getPatientGender (state);
+        order.patient.patientCode = Integer.valueOf (getPatientCode ());
         order.patient.mrn = getPatientMRN (state);
         order.patient.notes = getPatientNotes (state);
         ChargeType chargeType = getBillingType (state);
@@ -620,15 +624,15 @@ public class Diagnostic extends CoraPage {
         assertTrue (click ("[ng-click='ctrl.removePatient()']"));
     }
 
-    public String getPatientName () {
+    public String getPatientName (OrderStatus state) {
         return getText ("[ng-bind$='patientFullName']");
     }
 
-    public String getPatientDOB () {
+    public String getPatientDOB (OrderStatus state) {
         return getText ("[ng-bind^='ctrl.orderEntry.order.patient.dateOfBirth']");
     }
 
-    private String getPatientGender () {
+    public String getPatientGender (OrderStatus state) {
         return getText ("[ng-bind='ctrl.orderEntry.order.patient.gender']");
     }
 
@@ -640,9 +644,9 @@ public class Diagnostic extends CoraPage {
         getDriver ().switchTo ().window (windows.get (1));
     }
 
-    public String getPatientCode (OrderStatus state) {
-        String css = (Pending.equals (state) ? oEntry : oDetail) + " [ng-bind='ctrl.orderEntry.order.patient.patientCode']";
-        return getText (css);
+    public String getPatientCode () {
+        String xpath = "//label[text()='Patient Code']/../div/a[1]/span";
+        return getText (xpath);
     }
 
     private String getPatientMRN (OrderStatus state) {
@@ -745,7 +749,7 @@ public class Diagnostic extends CoraPage {
         return isElementPresent (css) && isElementVisible (css) ? Anticoagulant.valueOf (Pending.equals (state) ? getFirstSelectedText (css) : getText (css)) : null;
     }
 
-    private String getCollectionDt (OrderStatus state) {
+    public String getCollectionDt (OrderStatus state) {
         String css = "[ng-" + (Pending.equals (state) ? "model" : "bind") + "^='ctrl.orderEntry.specimen.collectionDate']";
         return isElementPresent (css) && isElementVisible (css) ? Pending.equals (state) ? readInput (css) : getText (css) : null;
     }
