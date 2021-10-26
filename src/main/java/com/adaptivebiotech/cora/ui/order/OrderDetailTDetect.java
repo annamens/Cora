@@ -9,9 +9,13 @@ import org.openqa.selenium.StaleElementReferenceException;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Patient.Address;
+import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
+import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
+import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 import com.seleniumfy.test.utils.Timeout;
 
@@ -188,6 +192,12 @@ public class OrderDetailTDetect extends Diagnostic {
         return getText (xpath);
     }
 
+    @Override
+    public String getOrderNum (OrderStatus state) {
+        String xpath = "//label[@id='order-number-text']/../div[1]/span";
+        return getText (xpath);
+    }
+
     public String getBillingAddressLine1 () {
         String xpath = "input[formcontrolname='address1']";
         return readInput (xpath);
@@ -244,7 +254,7 @@ public class OrderDetailTDetect extends Diagnostic {
         String locator = Pending.equals (state) ? "//label[text()='Birth Date']/../div[1]" : "[ng-bind^='ctrl.orderEntry.order.patient.dateOfBirth']";
         return getText (locator);
     }
-    
+
     public void clickShipment () {
         assertTrue (click ("//*[text()='Shipment']"));
     }
@@ -283,4 +293,34 @@ public class OrderDetailTDetect extends Diagnostic {
         }).collect (toList ()));
     }
 
+    public String createTDetectOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      String collectionDate,
+                                      Assay assayTest,
+                                      ChargeType chargeType,
+                                      Address patientAddress) {
+        selectNewTDetectDiagnosticOrder ();
+        isCorrectPage ();
+
+        selectPhysician (physician);
+        createNewPatient (patient);
+        for (String icdCode : icdCodes) {
+            enterPatientICD_Codes (icdCode);
+        }
+        clickSave ();
+
+        com.adaptivebiotech.cora.ui.order.Specimen specimen = new com.adaptivebiotech.cora.ui.order.Specimen ();
+        specimen.enterCollectionDate (collectionDate);
+
+        clickAssayTest (assayTest);
+        Billing billing = new Billing ();
+        billing.selectBilling (chargeType);
+        billing.enterPatientAddress (patientAddress);
+        billing.clickSave ();
+
+        String orderNum = getOrderNum ();
+        Logging.info ("T-Detect Order Number: " + orderNum);
+        return orderNum;
+    }
 }
