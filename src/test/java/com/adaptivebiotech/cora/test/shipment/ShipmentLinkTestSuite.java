@@ -106,6 +106,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
 
         assertEquals (diagnostic.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (diagnostic.getSpecimenId (), expSpecimenId);
+        // TODO make changes as per https://sdlc.dna.corp.adaptivebiotech.com:8443/browse/SR-7887
         // assertEquals (diagnostic.getSpecimenContainerType ().label, expContainerType);
         assertEquals (diagnostic.getSpecimenContainerQuantity (), expContainerQuantity);
         assertEquals (diagnostic.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
@@ -174,6 +175,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         orderDetailTDetect.clickShowContainers ();
         assertEquals (diagnostic.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (diagnostic.getSpecimenId (), expSpecimenId);
+        // TODO make changes as per https://sdlc.dna.corp.adaptivebiotech.com:8443/browse/SR-7887
         // assertEquals (diagnostic.getSpecimenContainerType ().label, expContainerType);
         assertEquals (diagnostic.getSpecimenContainerQuantity (), expContainerQuantity);
         assertEquals (diagnostic.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
