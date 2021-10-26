@@ -139,7 +139,7 @@ public class AddContainer extends CoraPage {
         return getText (notificationMsg);
     }
 
-    public void clicContainerNo (String containerNo) {
+    public void clickContainerNo (String containerNo) {
         assertTrue (click (format ("//*[text()='%s']", containerNo)));
     }
 

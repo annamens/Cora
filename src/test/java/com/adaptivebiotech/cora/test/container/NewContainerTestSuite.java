@@ -245,7 +245,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         Logging.testLog ("STEP 5 - Validate Copy to Clipboard");
 
         generateContainerLabels.clickClose ();
-        add.clicContainerNo (newContainerNo);
+        add.clickContainerNo (newContainerNo);
         containerDetails.isCorrectPage ();
         Logging.testLog ("STEP 6.1 - Container details page for Container1 is displayed");
 
