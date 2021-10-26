@@ -33,6 +33,7 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
+import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -415,6 +416,7 @@ public class Diagnostic extends CoraPage {
         order.specimenDto.collectionDate = getCollectionDt (state);
         order.specimenDto.reconciliationDate = getReconciliationDt ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
+        Logging.testLog ("DTO Shipment Arrival Date: " + order.specimenDto.arrivalDate);
         order.expectedTestType = getExpectedTest ();
         order.tests = allOf (Assay.class).stream ().map (a -> getTestState (state, a)).collect (toList ())
                                          .parallelStream ().filter (t -> t.selected).collect (toList ());
@@ -770,7 +772,9 @@ public class Diagnostic extends CoraPage {
 
     public String getShipmentArrivalDate () {
         String xpath = "//*[text()='Shipment Arrival']/..//span";
-        return isElementPresent (xpath) && isElementVisible (xpath) ? getText (xpath) : null;
+        String arrivalDate = isElementPresent (xpath) && isElementVisible (xpath) ? getText (xpath) : null;
+        Logging.testLog ("Shipment Arrival Date from UI: " + arrivalDate);
+        return arrivalDate;
     }
 
     public void clickShipmentArrivalDate () {

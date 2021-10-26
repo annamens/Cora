@@ -376,6 +376,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         assertEquals (reportDataJson.patientInfo.name, order.patient.fullname);
         assertEquals (reportDataJson.patientInfo.dob.toString (),
                       DateUtils.convertDateFormat (order.patient.dateOfBirth, "MM/dd/yyyy", "yyyy-MM-dd"));
+        Logging.testLog ("Date stored with Dash: " + reportDataJson.patientInfo.dob);
         assertEquals (reportDataJson.patientInfo.mrn, order.patient.mrn);
         assertEquals (reportDataJson.patientInfo.gender, order.patient.gender);
 
