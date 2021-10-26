@@ -1,10 +1,13 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
+import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.List;
 import org.openqa.selenium.StaleElementReferenceException;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
@@ -240,6 +243,44 @@ public class OrderDetailTDetect extends Diagnostic {
     public String getPatientDOB (OrderStatus state) {
         String locator = Pending.equals (state) ? "//label[text()='Birth Date']/../div[1]" : "[ng-bind^='ctrl.orderEntry.order.patient.dateOfBirth']";
         return getText (locator);
+    }
+    
+    public void clickShipment () {
+        assertTrue (click ("//*[text()='Shipment']"));
+    }
+
+    @Override
+    public void clickShowContainers () {
+        assertTrue (click ("//*[@class='row']//*[contains(text(),'Containers')]"));
+    }
+
+    @Override
+    public Containers getContainers () {
+        String rows = "//specimen-containers//*[@class='row']/..";
+        return new Containers (waitForElements (rows).stream ().map (row -> {
+            Container c = new Container ();
+            c.id = getConId (getAttribute (row, "//*[text()='Adaptive Container ID']/..//a", "href"));
+            c.containerNumber = getText (row, "//*[text()='Adaptive Container ID']/..//a");
+            c.location = getText (row, "//*[text()='Current Storage Location']/..//div");
+
+            if (isElementPresent (row, ".container-table")) {
+                String css = "tbody tr";
+                List <Container> children = row.findElements (locateBy (css)).stream ().map (childRow -> {
+                    Container childContainer = new Container ();
+                    childContainer.id = getConId (getAttribute (childRow,
+                                                                "td:nth-child(1) a",
+                                                                "href"));
+                    childContainer.containerNumber = getText (childRow,
+                                                              "td:nth-child(1) a");
+                    childContainer.name = getText (childRow, "td:nth-child(2)");
+                    childContainer.integrity = getText (childRow, "td:nth-child(3)");
+                    childContainer.root = c;
+                    return childContainer;
+                }).collect (toList ());
+                c.children = children;
+            }
+            return c;
+        }).collect (toList ()));
     }
 
 }

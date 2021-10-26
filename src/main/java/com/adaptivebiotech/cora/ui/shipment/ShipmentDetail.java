@@ -52,8 +52,8 @@ public class ShipmentDetail extends CoraPage {
         shipment.category = OrderCategory.valueOf (getText (category).trim ());
         shipment.shipmentNumber = getText (shipmentNo);
         shipment.condition = ShippingCondition.valueOf (getText (shippingCondition));
-        shipment.carrier = isElementPresent (carrier) && isElementVisible (carrier) ? getText (carrier) : null;
-        shipment.trackingNumber = isElementPresent (trackingNo) && isElementVisible (trackingNo) ? getText (trackingNo) : null;
+        shipment.carrier = getAttribute (carrier, "value");
+        shipment.trackingNumber = getAttribute (trackingNo, "value");
         shipment.status = getText (status);
         return shipment;
     }

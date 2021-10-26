@@ -10,9 +10,9 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
+import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.Specimen;
-import com.adaptivebiotech.cora.ui.order.TDetectDiagnostic;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
@@ -32,14 +32,14 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 @Test (groups = "regression")
 public class ShipmentLinkTestSuite extends CoraBaseBrowser {
 
-    private OrdersList        ordersList        = new OrdersList ();
-    private Diagnostic        diagnostic        = new Diagnostic ();
-    private Billing           billing           = new Billing ();
-    private Specimen          specimen          = new Specimen ();
-    private Shipment          shipment          = new Shipment ();
-    private ShipmentDetail    shipmentDetail    = new ShipmentDetail ();
-    private Accession         accession         = new Accession ();
-    private TDetectDiagnostic tDetectDiagnostic = new TDetectDiagnostic ();
+    private OrdersList         ordersList         = new OrdersList ();
+    private Diagnostic         diagnostic         = new Diagnostic ();
+    private Billing            billing            = new Billing ();
+    private Specimen           specimen           = new Specimen ();
+    private Shipment           shipment           = new Shipment ();
+    private ShipmentDetail     shipmentDetail     = new ShipmentDetail ();
+    private Accession          accession          = new Accession ();
+    private OrderDetailTDetect orderDetailTDetect = new OrderDetailTDetect ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -106,6 +106,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
 
         assertEquals (diagnostic.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (diagnostic.getSpecimenId (), expSpecimenId);
+        // TODO make changes as per https://sdlc.dna.corp.adaptivebiotech.com:8443/browse/SR-7887
         // assertEquals (diagnostic.getSpecimenContainerType ().label, expContainerType);
         assertEquals (diagnostic.getSpecimenContainerQuantity (), expContainerQuantity);
         assertEquals (diagnostic.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
@@ -124,20 +125,20 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      */
     public void verifyTDetectShipmentLink () {
         // create T-Detect diagnostic order
-        tDetectDiagnostic.selectNewTDetectDiagnosticOrder ();
-        tDetectDiagnostic.isCorrectPage ();
+        orderDetailTDetect.selectNewTDetectDiagnosticOrder ();
+        orderDetailTDetect.isCorrectPage ();
 
-        tDetectDiagnostic.selectPhysician (TestHelper.physicianTRF ());
-        tDetectDiagnostic.createNewPatient (TestHelper.newPatient ());
-        tDetectDiagnostic.clickSave ();
+        orderDetailTDetect.selectPhysician (TestHelper.physicianTRF ());
+        orderDetailTDetect.createNewPatient (TestHelper.newPatient ());
+        orderDetailTDetect.clickSave ();
 
         specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        tDetectDiagnostic.clickAssayTest (Assay.COVID19_DX_IVD);
+        orderDetailTDetect.clickAssayTest (Assay.COVID19_DX_IVD);
         billing.selectBilling (ChargeType.Client);
         billing.enterPatientAddress (TestHelper.address ());
         billing.clickSave ();
 
-        String orderNum = tDetectDiagnostic.getOrderNum ();
+        String orderNum = orderDetailTDetect.getOrderNum ();
         Logging.info ("Order Number: " + orderNum);
 
         // add diagnostic shipment
@@ -170,17 +171,18 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         shipmentDetail.clickOrderNo ();
         diagnostic.isCorrectPage ();
 
-        tDetectDiagnostic.clickShipment ();
-        tDetectDiagnostic.clickShowContainers ();
+        orderDetailTDetect.clickShipment ();
+        orderDetailTDetect.clickShowContainers ();
         assertEquals (diagnostic.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (diagnostic.getSpecimenId (), expSpecimenId);
+        // TODO make changes as per https://sdlc.dna.corp.adaptivebiotech.com:8443/browse/SR-7887
         // assertEquals (diagnostic.getSpecimenContainerType ().label, expContainerType);
         assertEquals (diagnostic.getSpecimenContainerQuantity (), expContainerQuantity);
         assertEquals (diagnostic.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
         assertEquals (diagnostic.getSpecimenApprovalStatus (), expSpecimenApprovalStatus.toUpperCase ());
         assertEquals (diagnostic.getSpecimenApprovalDate (), expSpecimenApprovalDateTime);
 
-        Containers actualContainers = tDetectDiagnostic.getContainers ();
+        Containers actualContainers = orderDetailTDetect.getContainers ();
         assertEquals (actualContainers.list.size (), expContainers.list.size ());
         assertEquals (actualContainers.list.get (0).containerNumber, expContainers.list.get (0).containerNumber);
 
