@@ -32,6 +32,8 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
+import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -63,6 +65,9 @@ public class Diagnostic extends CoraPage {
     private final String   patientMrdStatus   = ".patient-status";
     protected final String specimenNumber     = "//*[text()='Adaptive Specimen ID']/..//div";
     protected final String tabBase            = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
+    private final String   editJson           = "[ng-click='ctrl.editReportData()']";
+    private final String   reportDataJson     = "[ng-model='ctrl.reportDataJSON']";
+    private final String   modalOk            = "[data-ng-click='ctrl.ok();']";
 
     public Diagnostic () {
         staticNavBarHeight = 200;
@@ -133,7 +138,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickSaveAndUpdate () {
-        String css = "[ng-click=\"canEditReport ? ctrl.update() : ctrl.updateNotes()\"]";
+        String css = "//button[text()='Save & Update']";
         assertTrue (click (css));
         pageLoading ();
     }
@@ -410,6 +415,8 @@ public class Diagnostic extends CoraPage {
         order.specimenDto.anticoagulant = getAnticoagulant (state);
         order.specimenDto.collectionDate = getCollectionDt (state);
         order.specimenDto.reconciliationDate = getReconciliationDt ();
+        order.specimenDto.arrivalDate = getShipmentArrivalDate ();
+        Logging.testLog ("DTO Shipment Arrival Date: " + order.specimenDto.arrivalDate);
         order.expectedTestType = getExpectedTest ();
         order.tests = allOf (Assay.class).stream ().map (a -> getTestState (state, a)).collect (toList ())
                                          .parallelStream ().filter (t -> t.selected).collect (toList ());
@@ -440,7 +447,8 @@ public class Diagnostic extends CoraPage {
     }
 
     public String getOrderId () {
-        return getCurrentUrl ().replaceFirst (".*order/entry/diagnostic/", "").replaceFirst (".*order/details/", "");
+        String[] splitUrl = getCurrentUrl ().split ("/");
+        return splitUrl[splitUrl.length - 1];
     }
 
     private String getOrderType () {
@@ -639,7 +647,7 @@ public class Diagnostic extends CoraPage {
     }
 
     public void clickPatientCode (OrderStatus state) {
-        String css = (Pending.equals (state) ? oEntry : oDetail) + " [ng-bind='ctrl.orderEntry.order.patient.patientCode']";
+        String css = "//*[text()='Patient Code']/parent::div//a";
         assertTrue (click (css));
         assertTrue (waitForChildWindows (2));
         List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
@@ -701,12 +709,13 @@ public class Diagnostic extends CoraPage {
     }
 
     public void enterPatientICD_Codes (String codes) {
-        String css = "[ng-click='ctrl.showSearchBox()']";
-        if (isElementVisible (css))
+        String css = "//button[text()='Add Code']";
+        if (isElementPresent (css) && isElementVisible (css))
             assertTrue (click (css));
-        assertTrue (setText ("[ng-show='ctrl.searchBoxVisible'] input", codes));
-        assertTrue (waitUntilVisible ("[name='icdcodes'] .matches-icdcode"));
+        assertTrue (setText ("//*[text()='ICD Codes']/..//input", codes));
+        assertTrue (waitUntilVisible ("//*[text()='ICD Codes']/..//ul"));
         assertTrue (click ("//*[contains(text(),'" + codes + "')]"));
+        assertTrue (waitForElementInvisible ("//*[text()='ICD Codes']/..//ul"));
     }
 
     public List <String> getPatientICD_Codes (OrderStatus state) {
@@ -762,7 +771,10 @@ public class Diagnostic extends CoraPage {
     }
 
     public String getShipmentArrivalDate () {
-        return getText ("//*[text()='Shipment Arrival']/..//span");
+        String xpath = "//*[text()='Shipment Arrival']/..//span";
+        String arrivalDate = isElementPresent (xpath) && isElementVisible (xpath) ? getText (xpath) : null;
+        Logging.testLog ("Shipment Arrival Date from UI: " + arrivalDate);
+        return arrivalDate;
     }
 
     public void clickShipmentArrivalDate () {
@@ -1015,6 +1027,10 @@ public class Diagnostic extends CoraPage {
         pageLoading ();
     }
 
+    public void selectCorrectionType (CorrectionType correctionType) {
+        assertTrue (click ("#" + correctionType.name ().toLowerCase () + "[name='correctionType']"));
+    }
+
     public void enterReasonForCorrection (String text) {
         String reasonTextArea = "[ng-model='ctrl.reportEntry.report.commentInfo.correctionReason']";
         assertTrue (setText (reasonTextArea, text));
@@ -1082,6 +1098,22 @@ public class Diagnostic extends CoraPage {
     public List <String> getHistory (OrderStatus state) {
         String xpath = Pending.equals (state) ? "//*[text()='History']/..//li" : "//*[text()='History']/ancestor::div[@class='row']//li";
         return getTextList (xpath);
+    }
+
+    public void clickEditJson () {
+        assertTrue (click (editJson));
+        assertTrue (isTextInElement (popupTitle, "Edit JSON"));
+    }
+
+    public String getReportDataJson () {
+        return getAttribute (reportDataJson, "value");
+    }
+
+    public void setReportDataJson (String jsonData) {
+        assertTrue (clear (reportDataJson));
+        assertTrue (setText (reportDataJson, jsonData));
+        assertTrue (click (modalOk));
+        pageLoading ();
     }
 
 }

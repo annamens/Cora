@@ -10,6 +10,15 @@ import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 
 public class OrderStatus extends Diagnostic {
 
+    private final String historyLink          = ".history-link";
+    private final String stageActionDots      = "#stageActionsDropdown";
+    private final String stageActionsDropdown = "[aria-labelledby='stageActionsDropdown']";
+    private final String failworkflowAction   = "//*[@aria-labelledby='stageActionsDropdown']//a[text()='Fail workflow']";
+    private final String subStatusMsg         = "[ng-model='ctrl.subStatusMessage']";
+    private final String submit               = "//button[text()='Submit']";
+    private final String actionConfirm        = ".action-confirm";
+    private final String confirmYes           = "//button[text()='Yes']";
+
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER STATUS"));
@@ -137,6 +146,19 @@ public class OrderStatus extends Diagnostic {
             orderTestId = url.split ("ordertestid=")[1];
         }
         return orderTestId;
+    }
+
+    public void failWorkflow (String message) {
+        assertTrue (isTextInElement (historyLink, "History"));
+        assertTrue (click (historyLink));
+        assertTrue (isTextInElement (historyLink, "Hide"));
+        assertTrue (click (stageActionDots));
+        assertTrue (waitUntilVisible (stageActionsDropdown));
+        assertTrue (click (failworkflowAction));
+        assertTrue (setText (subStatusMsg, message));
+        assertTrue (click (submit));
+        assertTrue (isTextInElement (actionConfirm, "Are you sure you want to fail the workflow?"));
+        assertTrue (click (confirmYes));
     }
 
 }

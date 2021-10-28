@@ -220,4 +220,8 @@ public class PageHelper {
         }
     }
 
+    public enum CorrectionType {
+        Updated, Amended;
+    }
+
 }

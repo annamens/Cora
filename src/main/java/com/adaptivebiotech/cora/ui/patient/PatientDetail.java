@@ -18,6 +18,10 @@ public class PatientDetail extends CoraPage {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "PATIENT DETAILS"));
     }
 
+    public String getPatientId () {
+        return getDriver ().getCurrentUrl ().split ("patient/")[1];
+    }
+
     public String getFirstName () {
         return getText ("[label='First Name']").replace ("First Name", "").trim ();
     }
