@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -8,6 +9,31 @@ import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 
 public class OrderStatus extends Diagnostic {
+
+    private final String historyLink          = ".history-link";
+    private final String stageActionDots      = "#stageActionsDropdown";
+    private final String stageActionsDropdown = "[aria-labelledby='stageActionsDropdown']";
+    private final String failworkflowAction   = "//*[@aria-labelledby='stageActionsDropdown']//a[text()='Fail workflow']";
+    private final String subStatusMsg         = "[ng-model='ctrl.subStatusMessage']";
+    private final String submit               = "//button[text()='Submit']";
+    private final String actionConfirm        = ".action-confirm";
+    private final String confirmYes           = "//button[text()='Yes']";
+
+    @Override
+    public void isCorrectPage () {
+        assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER STATUS"));
+        pageLoading ();
+    }
+
+    public List <String> getCancelOrderMessages () {
+        String css = "[ng-if='ctrl.orderEntry.order | orderIsCancelled']";
+        List <String> cancellationMsgs = new ArrayList <String> ();
+        if (isElementPresent (css)) {
+            cancellationMsgs.add (getText (css + " h2"));
+            cancellationMsgs.add (getText (css + " p"));
+        }
+        return cancellationMsgs;
+    }
 
     public String getOrderNum () {
         return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
@@ -17,8 +43,16 @@ public class OrderStatus extends Diagnostic {
         return getText ("[ng-bind='ctrl.orderEntry.order.name']");
     }
 
+    public String getSpecimenNumber () {
+        return getText ("[ng-bind='::orderTest.specimenNumber']");
+    }
+
     public String getTestName () {
         return getText ("[ng-bind='::orderTest.testName']");
+    }
+
+    public String getLastActivity () {
+        return getText ("//*[contains(@ng-bind,'::orderTest.lastActivity')]/..");
     }
 
     public boolean kitClonoSEQReportStageDisplayed () {
@@ -96,6 +130,10 @@ public class OrderStatus extends Diagnostic {
         return StageStatus.valueOf (trimmedStatusText);
     }
 
+    public List <String> getStageStatusUrls () {
+        return getAttributeList (".details-url", "href");
+    }
+
     public boolean isStageSubstatusVisible () {
         String css = "span.ng-binding.ng-scope";
         return waitUntilVisible (css);
@@ -109,4 +147,18 @@ public class OrderStatus extends Diagnostic {
         }
         return orderTestId;
     }
+
+    public void failWorkflow (String message) {
+        assertTrue (isTextInElement (historyLink, "History"));
+        assertTrue (click (historyLink));
+        assertTrue (isTextInElement (historyLink, "Hide"));
+        assertTrue (click (stageActionDots));
+        assertTrue (waitUntilVisible (stageActionsDropdown));
+        assertTrue (click (failworkflowAction));
+        assertTrue (setText (subStatusMsg, message));
+        assertTrue (click (submit));
+        assertTrue (isTextInElement (actionConfirm, "Are you sure you want to fail the workflow?"));
+        assertTrue (click (confirmYes));
+    }
+
 }

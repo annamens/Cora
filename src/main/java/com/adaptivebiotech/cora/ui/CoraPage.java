@@ -6,6 +6,8 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import org.openqa.selenium.By;
@@ -13,10 +15,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.seleniumfy.test.utils.BasePage;
 
 /**
@@ -57,15 +61,16 @@ public class CoraPage extends BasePage {
     }
 
     public List <String> getNewPopupMenu () {
-        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li)).collect (toList ());
+        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li))
+                                                    .collect (toList ());
     }
-    
+
     public void selectNewClonoSEQDiagnosticOrder () {
         assertTrue (click (newmenu));
         assertTrue (waitUntilVisible (".dropdown.new-order.open"));
         assertTrue (click ("//a[text()='clonoSEQ Diagnostic Order']"));
     }
-    
+
     public void selectNewTDetectDiagnosticOrder () {
         assertTrue (click (newmenu));
         assertTrue (waitUntilVisible (".dropdown.new-order.open"));
@@ -201,17 +206,17 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
+    public void clickOrderName (String orderName) {
+        assertTrue (click ("//table//*[text()='" + orderName + "']"));
+        pageLoading ();
+    }
+
     public void searchContainer (Container container) {
         assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&search=" + container.containerNumber));
     }
 
-    public void showFreezerContents (Container freezer) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&rootContainerId=" + freezer.id));
-    }
-
-    public void showFreezerContents (Container freezer, String createdBy) {
-        String url = "/cora/containers/list?arrivalDate=all&rootContainerId=%s&createdBy=%s";
-        assertTrue (navigateTo (coraTestUrl + format (url, freezer.id, createdBy)));
+    public void searchContainerByContainerId (Container container) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber));
     }
 
     public void showTodayFreezerContents (Container freezer) {
@@ -229,6 +234,16 @@ public class CoraPage extends BasePage {
 
     public void gotoContainerHistory (Container container) {
         assertTrue (navigateTo (coraTestUrl + "/cora/container/details/" + container.id + "/history"));
+        pageLoading ();
+    }
+
+    public void navigateToOrderDetailsPage (String orderId) {
+        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/details/" + orderId));
+        pageLoading ();
+    }
+
+    public void navigateToOrderStatusPage (String orderId) {
+        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/status/" + orderId));
         pageLoading ();
     }
 
@@ -256,16 +271,6 @@ public class CoraPage extends BasePage {
     protected void clickPopupOK () {
         assertTrue (click ("[data-ng-click='ctrl.ok();']"));
         moduleLoading ();
-    }
-
-    protected void closeNotification (String msg) {
-        if (isElementPresent (format ("//*[@ng-bind-html='notification.msg' and text()='%s']", msg))) {
-            String notification = ".alert";
-            if (isElementPresent (notification)) {
-                assertTrue (click (notification + " .close"));
-                moduleLoading ();
-            }
-        }
     }
 
     public void ignoredUnsavedChanges () {
@@ -299,5 +304,85 @@ public class CoraPage extends BasePage {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Wrapper for {@link Select}.getOptions()
+     * 
+     * @param select
+     *            &lt;select&gt; element (css or xpath)
+     * @return drop down option values
+     */
+    public List <String> getDropdownOptions (String select) {
+        List <String> dropDownOptions = new LinkedList <String> ();
+        try {
+            Select dropdown = new Select (scrollTo (waitForElementClickable (locateBy (select))));
+
+            for (WebElement element : dropdown.getOptions ()) {
+                dropDownOptions.add (element.getText ());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+        return dropDownOptions;
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param target
+     *            HTML DOM element (css or xpath)
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (String target, String propertyName) {
+        return getCssProperty (locateBy (target), propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param by
+     *            {@link By}
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (By by, String propertyName) {
+        return getCssProperty (waitForElement (by), propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param element
+     *            {@link WebElement}
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (WebElement element, String propertyName) {
+        return element.getCssValue (propertyName);
+    }
+
+    /**
+     * Get CSS property value
+     * 
+     * @param element
+     *            {@link WebElement}
+     * @param target
+     *            HTML DOM child element (css or xpath)
+     * @param propertyName
+     *            css property name
+     * @return css property value
+     */
+    public String getCssProperty (WebElement element, String target, String propertyName) {
+        return element.findElement (locateBy (target)).getCssValue (propertyName);
+    }
+
+    public void navigateToTab (int tabIndex) {
+        getDriver ().switchTo ()
+                    .window (new ArrayList <String> (getDriver ().getWindowHandles ()).get (tabIndex));
     }
 }

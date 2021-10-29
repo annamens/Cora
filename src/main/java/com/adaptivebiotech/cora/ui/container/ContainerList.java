@@ -10,6 +10,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -38,11 +39,11 @@ public class ContainerList extends CoraPage {
         assertTrue (waitUntilVisible ("[uisref='main.containers.list']"));
         assertTrue (waitUntilVisible ("[uisref='main.containers.custody']"));
     }
-    
+
     public static enum Category {
-        All, Diagnostic, Batch
+        Any, Diagnostic, Batch
     }
-    
+
     public static enum GroupBy {
         None, HoldingContainer
     }
@@ -70,7 +71,7 @@ public class ContainerList extends CoraPage {
         assertTrue (click ("//*[contains (p,'Container Type')]//button"));
         assertTrue (click (format ("//*[contains (p,'Container Type')]//a[text()='%s']", type.label)));
     }
-    
+
     public void setGroupBy (GroupBy groupBy) {
         assertTrue (click ("//*[contains (p,'Group By')]//button"));
         assertTrue (click (format ("//*[contains (p,'Group By')]//a[text()='%s']", groupBy.name ())));
@@ -87,7 +88,8 @@ public class ContainerList extends CoraPage {
             c.specimenId = getText (columns.get (3));
             c.name = getText (columns.get (4));
             c.location = getText (columns.get (5));
-            c.capacity = Integer.parseInt (getText (columns.get (6)));
+            String capacity = getText (columns.get (6));
+            c.capacity = Integer.parseInt (Strings.isNotNullAndNotEmpty (capacity) ? capacity : "0");
             return c;
         }).collect (toList ()));
     }

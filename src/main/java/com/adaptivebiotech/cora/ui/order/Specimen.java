@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
+import java.util.List;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
@@ -14,8 +15,30 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
  */
 public class Specimen extends Diagnostic {
 
+    private final String specimenDeliveryTDx = "[formcontrolname='specimenDeliveryType']";
+    private final String specimenDeliveryCDx = "[name='specimenType']";
+
     public void enterSpecimenDelivery (DeliveryType type) {
-        assertTrue (clickAndSelectValue ("[ng-model$='specimenDeliveryType']", "string:" + type));
+        String locator = getCurrentUrl ().contains ("/dx/") ? specimenDeliveryTDx : specimenDeliveryCDx;
+        assertTrue (clickAndSelectValue (locator, "string:" + type));
+    }
+
+    public List <String> getSpecimenDeliveryOptions () {
+        String css = getCurrentUrl ().contains ("/dx/") ? specimenDeliveryTDx : specimenDeliveryCDx;
+        return getDropdownOptions (css);
+    }
+
+    public String getSpecimenDeliverySelectedOption (OrderStatus orderStatus) {
+        String css = "[ng-" + (OrderStatus.Pending.equals (orderStatus) ? "model" : "bind") + "^='ctrl.orderEntry.order.specimenDeliveryType']";
+        css = getCurrentUrl ().contains ("/dx/") && OrderStatus.Pending.equals (orderStatus) ? "[formcontrolname='specimenDeliveryType']" : css;
+        if (isElementVisible (css)) {
+            if (OrderStatus.Pending.equals (orderStatus)) {
+                return getFirstSelectedText (css);
+            } else {
+                return getText (css);
+            }
+        }
+        return null;
     }
 
     public void findSpecimenId (String id) {
@@ -60,9 +83,9 @@ public class Specimen extends Diagnostic {
     }
 
     public void enterCollectionDate (String date) {
-        assertTrue (setText ("[name='collectionDate']", date));
+        assertTrue (setText ("//*[text()='Collection Date']/..//input", date));
     }
-    
+
     public void enterRetrievalDate (String date) {
         String cssRetrievalDate = "#specimen-entry-retrieval-date";
         assertTrue (setText (cssRetrievalDate, date));
@@ -89,4 +112,5 @@ public class Specimen extends Diagnostic {
         assertTrue (isTextInElement (modalHeader, expectedModalTitle));
         clickPopupOK ();
     }
+
 }

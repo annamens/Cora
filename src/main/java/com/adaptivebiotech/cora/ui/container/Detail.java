@@ -75,6 +75,8 @@ public class Detail extends CoraPage {
             container.barcode = getText (top + " [ng-bind*='barcode']");
         if (isElementVisible (top + " [ng-bind*='depleted']"))
             container.depleted = toBoolean (getText (top + " [ng-bind*='depleted']"));
+        else
+            container.depleted = false;
         container.location = getText (top + " [ng-bind*='location']");
         return container;
     }
@@ -109,5 +111,9 @@ public class Detail extends CoraPage {
 
     public List <String> getDetailHistory () {
         return getTextList ("//h2[text()='History']/ancestor::div[@class='container']//li");
+    }
+
+    public void clickAccessionedOrderNo (String orderNo) {
+        assertTrue (click ("//*[text()='" + orderNo + "']"));
     }
 }

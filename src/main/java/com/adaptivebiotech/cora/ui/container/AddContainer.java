@@ -17,7 +17,13 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
  */
 public class AddContainer extends CoraPage {
 
-    private final String lines = "[data-ng-repeat='container in ctrl.containers']";
+    private final String lines              = "[data-ng-repeat='container in ctrl.containers']";
+    private final String addContainerHeader = ".container h2";
+    private final String containerType      = "[ng-model='selectedContainerId']";
+    private final String quantity           = "#containerQty";
+    private final String add                = "[ng-click*='ctrl.addContainer']";
+    private final String notificationMsg    = "[ng-bind-html='notification.msg']";
+    private final String generateLabels     = "[ng-click='ctrl.generateLabels()']";
 
     public AddContainer () {
         staticNavBarHeight = 90;
@@ -29,18 +35,19 @@ public class AddContainer extends CoraPage {
     }
 
     public boolean isGenerateContainerLabelsVisible () {
-        return isElementPresent ("[ng-click='ctrl.generateLabels()']");
+        return isElementPresent (generateLabels);
     }
 
-    public boolean isAddContainersVisible () {
-        boolean visible = isElementVisible (".container h2");
-        visible &= isElementVisible ("[ng-model='selectedContainerId']");
-        visible &= isElementVisible ("[ng-click*='ctrl.addContainer']");
-        return visible;
+    public void clickGenerateContainerLabels () {
+        assertTrue (click (generateLabels));
+    }
+
+    public boolean isAddContainerHeaderVisible () {
+        return isElementVisible (addContainerHeader);
     }
 
     public void clickAdd () {
-        assertTrue (click ("[ng-click*='ctrl.addContainer']"));
+        assertTrue (click (add));
     }
 
     public void clickSave () {
@@ -48,7 +55,6 @@ public class AddContainer extends CoraPage {
         assertTrue (isTextInElement (popupTitle, "New Container Confirmation"));
         clickPopupOK ();
         assertTrue (waitUntilVisible ("[ng-click='ctrl.generateLabels()']"));
-        closeNotification ("Container(s) updated");
     }
 
     public void isFailedValidation (String error) {
@@ -59,16 +65,28 @@ public class AddContainer extends CoraPage {
         return getText ("[ng-bind-html='ctrl.scanResult.msg']");
     }
 
+    public boolean isContainerTypeVisible () {
+        return isElementVisible (containerType);
+    }
+
     public void pickContainerType (ContainerType type) {
-        assertTrue (clickAndSelectValue ("[ng-model='selectedContainerId']", "string:" + type));
+        assertTrue (clickAndSelectValue (containerType, "string:" + type));
+    }
+
+    public boolean isQuantityVisible () {
+        return isElementVisible (quantity);
     }
 
     public void enterQuantity (int num) {
-        assertTrue (setText ("#containerQty", String.valueOf (num)));
+        assertTrue (setText (quantity, String.valueOf (num)));
     }
 
     public void clearQuantity () {
-        assertTrue (clear ("#containerQty"));
+        assertTrue (clear (quantity));
+    }
+
+    public boolean isAddBtnVisible () {
+        return isElementVisible (add);
     }
 
     public void addContainer (ContainerType type, int num) {
@@ -116,4 +134,13 @@ public class AddContainer extends CoraPage {
             return c;
         }).collect (toList ()));
     }
+
+    public String getContainerSavedMsg () {
+        return getText (notificationMsg);
+    }
+
+    public void clickContainerNo (String containerNo) {
+        assertTrue (click (format ("//*[text()='%s']", containerNo)));
+    }
+
 }

@@ -14,14 +14,31 @@ import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
  */
 public class Accession extends CoraPage {
 
-    private String accessionNotes       = "#accession-notes";
-    private String specimenApprovalPass = "#specimen-pass-button";
-    private String specimenApprovalFail = "#specimen-fail-button";
+    private final String orderNo              = "#order-link";
+    private String       accessionNotes       = "#accession-notes";
+    private String       specimenApprovalPass = "#specimen-pass-button";
+    private String       specimenApprovalFail = "#specimen-fail-button";
 
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(2)", "ACCESSION"));
         pageLoading ();
+    }
+
+    public void clickOrderNo () {
+        assertTrue (click (orderNo));
+    }
+
+    public String getOrderNo () {
+        return getText (orderNo);
+    }
+
+    public String getIntakeCompleteDate () {
+        return getText ("[ng-bind='ctrl.entry.shipment.intakeCompleted | localDateTime']") + ", " + getText ("[ng-bind='ctrl.entry.shipment.intakeCompletedBy']");
+    }
+
+    public String getSpecimenApprovedDate () {
+        return getText ("[ng-bind='ctrl.entry.specimen.approvedDate | localDateTime']") + ", " + getText ("[ng-bind='ctrl.entry.specimen.approvedBy']");
     }
 
     public void uploadIntakeManifest (String file) {

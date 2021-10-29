@@ -46,7 +46,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     private Container     freezer;
     private Containers    containers;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir = artifacts (this.getClass ().getName (), test.getName ());
         doCoraLogin ();
@@ -85,6 +85,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 freezer = freezerAB018078;
                 break;
             }
+
             primary.depleted = true;
             primary.comment = comment;
             cList.moveToFreezer (primary, freezer);
@@ -102,21 +103,19 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             history.isCorrectPage ();
             List <ContainerHistory> histories = history.getHistories ();
             assertEquals (histories.size (), 2);
-            verifyMovedTo (histories.get (0), actual);
+            verifyMovedToContainer (histories.get (0), actual);
             verifyTookCustody (histories.get (1));
 
             history.clickContainers ();
         }
 
         // test: go to containers list for the given freezer and verify
-        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
-            // have to use this approach, Arrival Date is null
-            oList.showFreezerContents (freezer, coraTestUser);
+        for (Container primary : containers.list) {
+            oList.searchContainerByContainerId (primary);
             Containers listContainers = cList.getContainers ();
-            for (Container primary : containers.list)
-                if (primary.location.startsWith (freezer.name))
-                    assertEquals (listContainers.findContainerByNumber (primary).location, primary.location);
+            assertEquals (listContainers.findContainerByNumber (primary).location, primary.location);
         }
+
     }
 
     /**
@@ -219,11 +218,11 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             List <ContainerHistory> histories = history.getHistories ();
             if (ContainerType.Plate.equals (actual.containerType)) {
                 assertEquals (histories.size (), 2);
-                verifyMovedTo (histories.get (0), actual);
+                verifyMovedToContainer (histories.get (0), actual);
                 verifyTookCustody (histories.get (1));
             } else {
                 assertEquals (histories.size (), 3);
-                verifyMovedTo (histories.get (0), actual);
+                verifyMovedToContainer (histories.get (0), actual);
                 verifyTookCustody (histories.get (1), actual);
 
                 actual.location = location;
@@ -238,7 +237,8 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 actual = detail.parseHoldingDetail ();
                 holding.location = coraTestUser;
                 assertEquals (actual.children.size (), holding.children.size () - 1);
-                verifyDetails (actual, holding);
+                holding.depleted = holding.depleted == null ? false : holding.depleted;
+                verifyDetailsChild (actual, holding);
 
                 // test: go to holding history page to verify location
                 detail.gotoHistory ();
@@ -250,14 +250,13 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         }
 
         // test: go to containers list for the given freezer and verify
-        for (Container freezer : new Container[] { freezerAB018055, freezerAB018078, freezerAB039003 }) {
-            history.showTodayFreezerContents (freezer);
+        for (Container c : containers.list) {
+            oList.searchContainerByContainerId (c);
             Containers listContainers = cList.getContainers ();
-            for (Container c : containers.list) {
-                Container child = c.containerType.equals (ContainerType.Plate) ? c : c.children.get (0);
-                if (child.location.startsWith (freezer.name))
-                    assertEquals (listContainers.findContainerByNumber (child).location, child.location);
-            }
+            String location = c.containerType.equals (ContainerType.Plate) ? c.location : String.join (" : ",
+                                                                                                       c.location,
+                                                                                                       c.containerNumber);
+            assertEquals (listContainers.findContainerByNumber (c).location, location);
         }
     }
 }

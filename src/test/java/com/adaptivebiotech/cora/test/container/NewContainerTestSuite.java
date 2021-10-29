@@ -7,44 +7,52 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox10x
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.Detail;
+import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.shipment.GenerateContainerLabels;
+import com.adaptivebiotech.cora.utils.DateUtils;
+import com.adaptivebiotech.test.utils.Logging;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 @Test (groups = "regression")
 public class NewContainerTestSuite extends ContainerTestBase {
 
-    private final String testFreezer1 = "[Destroyed – xAMPL]";
-    private final String error1       = "Please select a container type.";
-    private final String error2       = "Quantity must be between 1 and 50.";
-    private final String error3       = "Unable to find a location in %s. Choose another storage location.";
-    private final String error4       = "Container name is not unique. Enter another name.";
-    private Login        login;
-    private OrdersList   oList;
-    private AddContainer add;
-    private MyCustody    my;
+    private final String            testFreezer1            = "[Destroyed – xAMPL]";
+    private final String            error1                  = "Please select a container type.";
+    private final String            error2                  = "Quantity must be between 1 and 50.";
+    private final String            error3                  = "Unable to find a location in %s. Choose another storage location.";
+    private final String            error4                  = "Container name is not unique. Enter another name.";
+    private Login                   login                   = new Login ();
+    private OrdersList              oList                   = new OrdersList ();
+    private AddContainer            add                     = new AddContainer ();
+    private MyCustody               my                      = new MyCustody ();
+    private GenerateContainerLabels generateContainerLabels = new GenerateContainerLabels ();
+    private Detail                  containerDetails        = new Detail ();
+    private History                 history                 = new History ();
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         doCoraLogin ();
-        login = new Login ();
         login.doLogin ();
 
-        oList = new OrdersList ();
         oList.isCorrectPage ();
         oList.selectNewContainer ();
-
-        add = new AddContainer ();
-        my = new MyCustody ();
     }
 
     /**
@@ -173,4 +181,98 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertEquals (myContainers.list.get (0).name, name33.substring (0, 32));
         assertEquals (myContainers.list.get (0).location, coraTestUser);
     }
+
+    /**
+     * NOTE: SR-T2155
+     */
+    public void createContainer () {
+        assertTrue (add.isAddContainerHeaderVisible ());
+        assertTrue (add.isContainerTypeVisible ());
+        assertTrue (add.isQuantityVisible ());
+        assertTrue (add.isAddBtnVisible ());
+        Logging.testLog ("STEP 1 - Add Container form is displayed");
+
+        ContainerType newContainerType = ContainerType.TubeBox9x9;
+        add.addContainer (newContainerType, 1);
+
+        Containers emptyContainers = add.getContainers ();
+        assertTrue (emptyContainers.list.size () == 1);
+        assertTrue (emptyContainers.list.get (0).containerNumber.isEmpty ());
+        assertTrue (emptyContainers.list.get (0).name.isEmpty ());
+        assertTrue (emptyContainers.list.get (0).location.isEmpty ());
+        assertEquals (emptyContainers.list.get (0).containerType, newContainerType);
+        Logging.testLog ("STEP 2 - Tube box (9x9) is displayed below the Add Container(s) form with the following fields: Adaptive Container ID, Barcode, Initial Storage Location. All fields are blank");
+
+        add.clickSave ();
+        assertEquals (add.getContainerSavedMsg (), "Container(s) saved");
+        Logging.testLog ("STEP 3.1 - Success message is displayed with text Containers Saved");
+        assertFalse (add.isAddContainerHeaderVisible ());
+        assertFalse (add.isContainerTypeVisible ());
+        assertFalse (add.isQuantityVisible ());
+        assertFalse (add.isAddBtnVisible ());
+        Logging.testLog ("STEP 3.2 - Add Container(s) field is not displayed");
+
+        assertTrue (add.isGenerateContainerLabelsVisible ());
+        Logging.testLog ("STEP 3.3 - Generate Container Labels button is displayed");
+
+        Containers newContainers = add.getContainers ();
+        String newContainerNo = newContainers.list.get (0).containerNumber;
+        assertTrue (newContainers.list.size () == 1);
+        assertTrue (newContainerNo.matches ("CO-\\d{6}"));
+        Logging.testLog ("STEP 3.4 - Adaptive Container ID is populated");
+
+        add.clickGenerateContainerLabels ();
+        generateContainerLabels.isCorrectPage ();
+        List <Map <String, String>> tableData = generateContainerLabels.getGenerateContainerLabelDetails ();
+        assertTrue (tableData.size () == 1);
+        Map <String, String> firstRowData = tableData.get (0);
+        assertTrue (firstRowData.containsKey ("Holding Container Type"));
+        assertTrue (firstRowData.containsKey ("Holding Container Name"));
+        assertTrue (firstRowData.containsKey ("Holding CO#"));
+        assertTrue (firstRowData.containsKey ("Container Type"));
+        assertTrue (firstRowData.containsKey ("Container Name"));
+        assertTrue (firstRowData.containsKey ("Loc"));
+        assertTrue (firstRowData.containsKey ("ASID (SP#)"));
+        assertTrue (firstRowData.containsKey ("ACID (CO#)"));
+        assertTrue (generateContainerLabels.isPrintersVisible ());
+        assertTrue (generateContainerLabels.isPrintVisible ());
+        assertTrue (generateContainerLabels.isCloseVisible ());
+        assertEquals (firstRowData.get ("Container Type"), newContainerType.label);
+        assertEquals (firstRowData.get ("ACID (CO#)"), newContainerNo);
+        Logging.testLog ("STEP 4 - Validate Generate Container Labels modal");
+
+        assertTrue (generateContainerLabels.isCopyToClipboardVisible ());
+        Logging.testLog ("STEP 5 - Validate Copy to Clipboard");
+
+        generateContainerLabels.clickClose ();
+        add.clickContainerNo (newContainerNo);
+        containerDetails.isCorrectPage ();
+        Logging.testLog ("STEP 6.1 - Container details page for Container1 is displayed");
+
+        Container uiContainerDetails = containerDetails.parsePrimaryDetail ();
+        assertEquals (uiContainerDetails.containerNumber, newContainerNo);
+        assertEquals (uiContainerDetails.containerType, newContainerType);
+        assertEquals (uiContainerDetails.location, String.join (" : ", coraTestUser, newContainerNo));
+        Logging.testLog ("STEP 6.2 - verify Container details");
+
+        List <String> historyRows = containerDetails.getDetailHistory ();
+        assertTrue (historyRows.size () == 2, "UI History: " + history);
+        String todaysDate = DateUtils.getPastFutureDate (0);
+        assertTrue (historyRows.get (0).startsWith (todaysDate));
+        assertTrue (historyRows.get (0).endsWith ("Created by " + coraTestUser));
+        assertTrue (historyRows.get (1).startsWith (todaysDate));
+        assertTrue (historyRows.get (1).endsWith ("Last modified by " + coraTestUser));
+        Logging.testLog ("STEP 6.3 - verify Container history rows");
+
+        containerDetails.gotoHistory ();
+        history.isCorrectPage ();
+        List <ContainerHistory> containerHistory = history.getHistories ();
+        assertTrue (containerHistory.size () == 1);
+        assertTrue (containerHistory.get (0).activityDate.startsWith (todaysDate));
+        assertEquals (containerHistory.get (0).activity, "Took Custody");
+        assertEquals (containerHistory.get (0).location, coraTestUser);
+        assertEquals (containerHistory.get (0).activityBy, coraTestUser);
+        Logging.testLog ("STEP 7 - A row has been added in History Tab");
+    }
+
 }

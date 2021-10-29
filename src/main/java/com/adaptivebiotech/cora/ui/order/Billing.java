@@ -2,6 +2,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static org.testng.Assert.assertTrue;
+import java.util.List;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
@@ -14,24 +15,35 @@ import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 public class Billing extends Diagnostic {
-    
-    private String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
 
-    public void waitForBillingMismatchWarningVisible() {
+    private final String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
+    private final String billing                = "#billing-type";
+
+    public void waitForBillingMismatchWarningVisible () {
         assertTrue (waitUntilVisible (billingMismatchWarning));
     }
-    
-    public String getBillingMismatchWarningText() {
-        return getText(billingMismatchWarning);
+
+    public String getBillingMismatchWarningText () {
+        return getText (billingMismatchWarning);
     }
 
     public void selectBilling (ChargeType type) {
-        assertTrue (clickAndSelectValue ("[name='billingType']", "string:" + type));
+        assertTrue (clickAndSelectText (billing, type.label));
+    }
+
+    public void editBilling (ChargeType type) {
+        assertTrue (click ("[ng-click='ctrl.editBilling()']"));
+        selectBilling (type);
+        assertTrue (click ("[ng-click='ctrl.saveBilling()']"));
     }
 
     public ChargeType getBilling () {
-        String type = getFirstSelectedValue ("[name='billingType']");
+        String type = getFirstSelectedValue (billing);
         return type != null && !type.equals ("?") ? ChargeType.valueOf (type.replace ("string:", "")) : null;
+    }
+
+    public List <String> getBillingDropDownOptions () {
+        return getDropdownOptions (billing);
     }
 
     public void enterABNstatus (AbnStatus status) {
@@ -95,24 +107,24 @@ public class Billing extends Diagnostic {
     }
 
     public void enterPatientAddress1 (String address1) {
-        assertTrue (setText ("[name='guarantorAddress']", address1));
+        assertTrue (setText ("//*[text()='Address 1']/..//input", address1));
     }
 
     public void enterPatientPhone (String phone) {
-        assertTrue (setText ("[name='guarantorPhone']", phone));
+        assertTrue (setText ("//*[text()='Phone']/..//input", phone));
     }
 
     public void enterPatientCity (String city) {
-        assertTrue (setText ("[name='guarantorLocality']", city));
+        assertTrue (setText ("//*[text()='City']/..//input", city));
     }
 
     public void enterPatientState (String state) {
-        assertTrue (clickAndSelectValue ("[name='guarantorRegion']",
-                                         state == null ? "undefined:undefined" : "string:" + state));
+        assertTrue (clickAndSelectText ("//*[text()='State']/..//select",
+                                        state == null ? "" : state));
     }
 
     public void enterPatientZipcode (String zipcode) {
-        assertTrue (setText ("[name='guarantorPostCode']", zipcode));
+        assertTrue (setText ("//*[text()='Zip Code']/..//input", zipcode));
     }
 
     public void enterPatientAddress (Address address) {
@@ -170,7 +182,7 @@ public class Billing extends Diagnostic {
             enterInsurance1Discharge (patient.insurance1.dischargeDate);
         }
     }
-    
+
     public void clickCompareAndSelectBilling () {
         String css = "[ng-click=\"ctrl.showCompareBillingModal()\"";
         assertTrue (click (css));

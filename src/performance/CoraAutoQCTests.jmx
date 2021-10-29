@@ -1,0 +1,1160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Cora Auto QC Tests" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="host" elementType="Argument">
+            <stringProp name="Argument.name">host</stringProp>
+            <stringProp name="Argument.value">cora-test.dna.corp.adaptivebiotech.com</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Host of Webservice</stringProp>
+          </elementProp>
+          <elementProp name="port" elementType="Argument">
+            <stringProp name="Argument.name">port</stringProp>
+            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="apiUsername" elementType="Argument">
+            <stringProp name="Argument.name">apiUsername</stringProp>
+            <stringProp name="Argument.value">svc_test_orca</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="apiPassword" elementType="Argument">
+            <stringProp name="Argument.name">apiPassword</stringProp>
+            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="protocol" elementType="Argument">
+            <stringProp name="Argument.name">protocol</stringProp>
+            <stringProp name="Argument.value">https</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">http or https</stringProp>
+          </elementProp>
+          <elementProp name="accountName" elementType="Argument">
+            <stringProp name="Argument.name">accountName</stringProp>
+            <stringProp name="Argument.value">SEA_QA%20Test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+        <stringProp name="HTTPSampler.domain">${host}</stringProp>
+        <stringProp name="HTTPSampler.port">${port}</stringProp>
+        <stringProp name="HTTPSampler.protocol">${protocol}</stringProp>
+        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+        <stringProp name="HTTPSampler.path"></stringProp>
+        <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+        <stringProp name="HTTPSampler.response_timeout"></stringProp>
+      </ConfigTestElement>
+      <hashTree/>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="Login and get access token" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Setup Basic Auth" enabled="true">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">import org.apache.commons.codec.binary.Base64;
+byte[] encodedUsernamePassword = Base64.encodeBase64((vars.get(&quot;apiUsername&quot;) + &quot;:&quot; + vars.get(&quot;apiPassword&quot;)).getBytes());
+vars.put(&quot;base64HeaderValue&quot;,new String(encodedUsernamePassword));</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Basic ${base64HeaderValue}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get AccessToken" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/auth/apiToken</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Set AccessToken" enabled="true">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
+
+String accessToken = new String(data);
+
+JMeterUtils.setProperty(&quot;apiToken&quot;, accessToken);</stringProp>
+        </BeanShellPostProcessor>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Auto QC Tests" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+        <longProp name="ThreadGroup.start_time">1375525852000</longProp>
+        <longProp name="ThreadGroup.end_time">1375525852000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Get AccessToken" enabled="true">
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
+
+vars.put(&quot;apiToken&quot;, JMeterUtils.getProperty(&quot;apiToken&quot;));</stringProp>
+        </BeanShellPreProcessor>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">x-api-token</stringProp>
+              <stringProp name="Header.value">${apiToken}</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">x-api-username</stringProp>
+              <stringProp name="Header.value">${apiUsername}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="find test account" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="name" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">${accountName}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">name</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/accounts</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="set test_account_id" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">test_account_id</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.objects[:1].id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+            <stringProp name="Scope.variable"></stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="find test provider" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="Variables pré-définies" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="accountName" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">${accountName}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">accountName</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/providers</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="set test_provider_id" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">test_provider_id</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.objects[:1].id</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Simulate Covid order with NorthQC ACCEPTED multiple rule violations" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;account&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_account_id}&quot;&#xd;
+	},&#xd;
+	&quot;patient&quot;: {&#xd;
+		&quot;firstName&quot;: &quot;Jane&quot;,&#xd;
+		&quot;middleName&quot;: &quot;Selenium&quot;,&#xd;
+		&quot;lastName&quot;: &quot;ClonoSeq&quot;,&#xd;
+		&quot;fullname&quot;: &quot;Jane Selenium ClonoSeq&quot;,&#xd;
+		&quot;gender&quot;: &quot;Female&quot;,&#xd;
+		&quot;dateOfBirth&quot;: &quot;2010-01-01&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;race&quot;: &quot;American Indian or Alaska Native&quot;,&#xd;
+		&quot;ethnicity&quot;: &quot;Asked, but unknown&quot;,&#xd;
+		&quot;address&quot;: &quot;1551 Eastlake Ave E&quot;,&#xd;
+		&quot;address2&quot;: &quot;Ste 200&quot;,&#xd;
+		&quot;locality&quot;: &quot;Seattle&quot;,&#xd;
+		&quot;region&quot;: &quot;WA&quot;,&#xd;
+		&quot;postCode&quot;: &quot;98104&quot;,&#xd;
+		&quot;phone&quot;: &quot;206-201-1868&quot;,&#xd;
+		&quot;patientCode&quot;: 0,&#xd;
+		&quot;externalPatientCode&quot;: 0,&#xd;
+		&quot;calibrationPatientCode&quot;: 0,&#xd;
+		&quot;deceased&quot;: false,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;&#xd;
+	},&#xd;
+	&quot;provider&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_provider_id}&quot;&#xd;
+	},&#xd;
+	&quot;order&quot;: {&#xd;
+		&quot;name&quot;: &quot;Selenium Test Order&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;tests&quot;: [{&quot;testId&quot; : &quot;1d298f94-74ed-474f-b12c-89e07295b1b4&quot;,&#xd;
+ &quot;tsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;,&#xd;
+			&quot;workflowProperties&quot;: {&#xd;
+				&quot;sampleName&quot;: &quot;119164-SN-9817&quot;,&#xd;
+				&quot;workspaceName&quot;: &quot;CLINICAL-CLINICAL&quot;,&#xd;
+				&quot;lastAcceptedTsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;&#xd;
+			}}],&#xd;
+		&quot;orderType&quot;: &quot;TDx&quot;,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;,&#xd;
+		&quot;specimenDeliveryType&quot;: &quot;CustomerShipment&quot;,&#xd;
+		&quot;specimenDto&quot;: {&#xd;
+			&quot;name&quot;: &quot;860011348&quot;,&#xd;
+			&quot;sampleType&quot;: &quot;Plasma&quot;,&#xd;
+			&quot;collectionDate&quot;: [2021, 8, 29, 14, 14, 29, 559],&#xd;
+			&quot;reconciliationDate&quot;: [2021, 8, 29, 14, 14, 29, 566]&#xd;
+		},&#xd;
+		&quot;panels&quot;: [{&#xd;
+			&quot;id&quot;: &quot;132d9440-8f75-46b8-b084-efe06346dfd4&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;shipment&quot;: {&#xd;
+		&quot;category&quot;: &quot;Diagnostic&quot;,&#xd;
+		&quot;status&quot;: &quot;IntakeComplete&quot;,&#xd;
+		&quot;arrivalDate&quot;: [2021, 8, 24, 14, 14, 29, 566],&#xd;
+		&quot;condition&quot;: &quot;Ambient&quot;,&#xd;
+		&quot;carrier&quot;: &quot;UPS&quot;,&#xd;
+		&quot;trackingNumber&quot;: &quot;&quot;,&#xd;
+		&quot;expectedRecordType&quot;: &quot;Order&quot;,&#xd;
+		&quot;containers&quot;: [{&#xd;
+			&quot;containerType&quot;: &quot;Tube&quot;,&#xd;
+			&quot;contentsLocked&quot;: true,&#xd;
+			&quot;integrity&quot;: &quot;Pass&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;fastForwardStatus&quot;: [{&#xd;
+		&quot;stageName&quot;: &quot;NorthQC&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Finished&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;ACCEPTED&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;&#xd;
+	},{&#xd;
+		&quot;stageName&quot;: &quot;DxReport&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Ready&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;,&#xd;
+		&quot;skipFastforwardMessage&quot;: true&#xd;
+	}],&#xd;
+	&quot;waitForResults&quot;: true,&#xd;
+	&quot;dxResults&quot;: {&#xd;
+		&quot;disease&quot;: &quot;COVID19&quot;, &#xd;
+		&quot;dxScore&quot;: 57.03804484025608, &#xd;
+		&quot;dxStatus&quot;: &quot;POSITIVE&quot;,&#xd;
+		&quot;qcFlags&quot;: [&quot;UPR_ANOTHER_THRESHOLD&quot;],&#xd;
+		&quot;configVersion&quot;: &quot;dx.covid19.rev1&quot;, &#xd;
+		&quot;pipelineVersion&quot;: &quot;v3.1-385-g1340003&quot;, &#xd;
+		&quot;containerVersion&quot;: &quot;dx-classifiers/covid-19:d23228f&quot;, &#xd;
+		&quot;countEnhancedSeq&quot;: 118, &#xd;
+		&quot;classifierVersion&quot;: &quot;v1.0&quot;, &#xd;
+		&quot;posteriorProbability&quot;: 1.0, &#xd;
+		&quot;uniqueProductiveTemplates&quot;: 15775}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/test/scenarios/diagnosticDx</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Simulate Covid order with NorthQC ACCEPTED-AUTO under 18" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;account&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_account_id}&quot;&#xd;
+	},&#xd;
+	&quot;patient&quot;: {&#xd;
+		&quot;firstName&quot;: &quot;Janey&quot;,&#xd;
+		&quot;middleName&quot;: &quot;Selenium&quot;,&#xd;
+		&quot;lastName&quot;: &quot;ClonoSeq&quot;,&#xd;
+		&quot;fullname&quot;: &quot;Jane Selenium ClonoSeq&quot;,&#xd;
+		&quot;gender&quot;: &quot;Female&quot;,&#xd;
+		&quot;dateOfBirth&quot;: &quot;1980-01-01&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;race&quot;: &quot;American Indian or Alaska Native&quot;,&#xd;
+		&quot;ethnicity&quot;: &quot;Asked, but unknown&quot;,&#xd;
+		&quot;address&quot;: &quot;1551 Eastlake Ave E&quot;,&#xd;
+		&quot;address2&quot;: &quot;Ste 200&quot;,&#xd;
+		&quot;locality&quot;: &quot;Seattle&quot;,&#xd;
+		&quot;region&quot;: &quot;WA&quot;,&#xd;
+		&quot;postCode&quot;: &quot;98104&quot;,&#xd;
+		&quot;phone&quot;: &quot;206-201-1868&quot;,&#xd;
+		&quot;patientCode&quot;: 0,&#xd;
+		&quot;externalPatientCode&quot;: 0,&#xd;
+		&quot;calibrationPatientCode&quot;: 0,&#xd;
+		&quot;deceased&quot;: false,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;&#xd;
+	},&#xd;
+	&quot;provider&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_provider_id}&quot;&#xd;
+	},&#xd;
+	&quot;order&quot;: {&#xd;
+		&quot;name&quot;: &quot;Selenium Test Order&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;tests&quot;: [{&quot;testId&quot; : &quot;1d298f94-74ed-474f-b12c-89e07295b1b4&quot;,&#xd;
+ &quot;tsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;,&#xd;
+			&quot;workflowProperties&quot;: {&#xd;
+				&quot;sampleName&quot;: &quot;119164-SN-9817&quot;,&#xd;
+				&quot;workspaceName&quot;: &quot;CLINICAL-CLINICAL&quot;,&#xd;
+				&quot;lastAcceptedTsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;&#xd;
+			}}],&#xd;
+		&quot;orderType&quot;: &quot;TDx&quot;,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;,&#xd;
+		&quot;specimenDeliveryType&quot;: &quot;CustomerShipment&quot;,&#xd;
+		&quot;specimenDto&quot;: {&#xd;
+			&quot;name&quot;: &quot;860011348&quot;,&#xd;
+			&quot;sampleType&quot;: &quot;Blood&quot;,&#xd;
+			&quot;collectionDate&quot;: [2021, 8, 29, 14, 14, 29, 559],&#xd;
+			&quot;reconciliationDate&quot;: [2021, 8, 29, 14, 14, 29, 566]&#xd;
+		},&#xd;
+		&quot;panels&quot;: [{&#xd;
+			&quot;id&quot;: &quot;132d9440-8f75-46b8-b084-efe06346dfd4&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;shipment&quot;: {&#xd;
+		&quot;category&quot;: &quot;Diagnostic&quot;,&#xd;
+		&quot;status&quot;: &quot;IntakeComplete&quot;,&#xd;
+		&quot;arrivalDate&quot;: [2021, 8, 24, 14, 14, 29, 566],&#xd;
+		&quot;condition&quot;: &quot;Ambient&quot;,&#xd;
+		&quot;carrier&quot;: &quot;UPS&quot;,&#xd;
+		&quot;trackingNumber&quot;: &quot;&quot;,&#xd;
+		&quot;expectedRecordType&quot;: &quot;Order&quot;,&#xd;
+		&quot;containers&quot;: [{&#xd;
+			&quot;containerType&quot;: &quot;Tube&quot;,&#xd;
+			&quot;contentsLocked&quot;: true,&#xd;
+			&quot;integrity&quot;: &quot;Pass&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;fastForwardStatus&quot;: [{&#xd;
+		&quot;stageName&quot;: &quot;NorthQC&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Finished&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;ACCEPTED-AUTO&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;&#xd;
+	},{&#xd;
+		&quot;stageName&quot;: &quot;DxReport&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Ready&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;,&#xd;
+		&quot;skipFastforwardMessage&quot;: true&#xd;
+	}],&#xd;
+	&quot;waitForResults&quot;: true,&#xd;
+	&quot;dxResults&quot;: {&#xd;
+		&quot;disease&quot;: &quot;COVID19&quot;, &#xd;
+		&quot;dxScore&quot;: 57.03804484025608, &#xd;
+		&quot;qcFlags&quot;: [], &#xd;
+		&quot;dxStatus&quot;: &quot;POSITIVE&quot;, &#xd;
+		&quot;configVersion&quot;: &quot;dx.covid19.rev1&quot;, &#xd;
+		&quot;pipelineVersion&quot;: &quot;v3.1-385-g1340003&quot;, &#xd;
+		&quot;containerVersion&quot;: &quot;dx-classifiers/covid-19:d23228f&quot;, &#xd;
+		&quot;countEnhancedSeq&quot;: 118, &#xd;
+		&quot;classifierVersion&quot;: &quot;v1.0&quot;, &#xd;
+		&quot;posteriorProbability&quot;: 1.0, &#xd;
+		&quot;uniqueProductiveTemplates&quot;: 15775}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/test/scenarios/diagnosticDx</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Simulate Covid order with NorthQC ACCEPTED-AUTO with qcFlags" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;account&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_account_id}&quot;&#xd;
+	},&#xd;
+	&quot;patient&quot;: {&#xd;
+		&quot;id&quot;: &quot;b5f264af-6f25-40bb-808c-bd4d4333a6bf&quot;,&#xd;
+		&quot;firstName&quot;: &quot;Jane&quot;,&#xd;
+		&quot;middleName&quot;: &quot;Selenium&quot;,&#xd;
+		&quot;lastName&quot;: &quot;ClonoSeq&quot;,&#xd;
+		&quot;fullname&quot;: &quot;Jane Selenium ClonoSeq&quot;,&#xd;
+		&quot;gender&quot;: &quot;Female&quot;,&#xd;
+		&quot;dateOfBirth&quot;: &quot;1999-01-01&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;race&quot;: &quot;American Indian or Alaska Native&quot;,&#xd;
+		&quot;ethnicity&quot;: &quot;Asked, but unknown&quot;,&#xd;
+		&quot;address&quot;: &quot;1551 Eastlake Ave E&quot;,&#xd;
+		&quot;address2&quot;: &quot;Ste 200&quot;,&#xd;
+		&quot;locality&quot;: &quot;Seattle&quot;,&#xd;
+		&quot;region&quot;: &quot;WA&quot;,&#xd;
+		&quot;postCode&quot;: &quot;98104&quot;,&#xd;
+		&quot;phone&quot;: &quot;206-201-1868&quot;,&#xd;
+		&quot;patientCode&quot;: 0,&#xd;
+		&quot;externalPatientCode&quot;: 0,&#xd;
+		&quot;calibrationPatientCode&quot;: 0,&#xd;
+		&quot;deceased&quot;: false,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;&#xd;
+	},&#xd;
+	&quot;provider&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_provider_id}&quot;&#xd;
+	},&#xd;
+	&quot;order&quot;: {&#xd;
+		&quot;name&quot;: &quot;Selenium Test Order&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;tests&quot;: [{&quot;testId&quot; : &quot;1d298f94-74ed-474f-b12c-89e07295b1b4&quot;,&#xd;
+ &quot;tsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;,&#xd;
+			&quot;workflowProperties&quot;: {&#xd;
+				&quot;sampleName&quot;: &quot;119164-SN-9817&quot;,&#xd;
+				&quot;workspaceName&quot;: &quot;CLINICAL-CLINICAL&quot;,&#xd;
+				&quot;lastAcceptedTsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;&#xd;
+			}}],&#xd;
+		&quot;orderType&quot;: &quot;TDx&quot;,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;,&#xd;
+		&quot;specimenDeliveryType&quot;: &quot;CustomerShipment&quot;,&#xd;
+		&quot;specimenDto&quot;: {&#xd;
+			&quot;name&quot;: &quot;860011348&quot;,&#xd;
+			&quot;sampleType&quot;: &quot;Blood&quot;,&#xd;
+			&quot;collectionDate&quot;: [2021, 8, 29, 14, 14, 29, 559],&#xd;
+			&quot;reconciliationDate&quot;: [2021, 8, 29, 14, 14, 29, 566]&#xd;
+		},&#xd;
+		&quot;panels&quot;: [{&#xd;
+			&quot;id&quot;: &quot;132d9440-8f75-46b8-b084-efe06346dfd4&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;shipment&quot;: {&#xd;
+		&quot;category&quot;: &quot;Diagnostic&quot;,&#xd;
+		&quot;status&quot;: &quot;IntakeComplete&quot;,&#xd;
+		&quot;arrivalDate&quot;: [2021, 8, 24, 14, 14, 29, 566],&#xd;
+		&quot;condition&quot;: &quot;Ambient&quot;,&#xd;
+		&quot;carrier&quot;: &quot;UPS&quot;,&#xd;
+		&quot;trackingNumber&quot;: &quot;&quot;,&#xd;
+		&quot;expectedRecordType&quot;: &quot;Order&quot;,&#xd;
+		&quot;containers&quot;: [{&#xd;
+			&quot;containerType&quot;: &quot;Tube&quot;,&#xd;
+			&quot;contentsLocked&quot;: true,&#xd;
+			&quot;integrity&quot;: &quot;Pass&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;fastForwardStatus&quot;: [{&#xd;
+		&quot;stageName&quot;: &quot;NorthQC&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Finished&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;ACCEPTED-AUTO&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;&#xd;
+	},{&#xd;
+		&quot;stageName&quot;: &quot;DxReport&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Ready&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;,&#xd;
+		&quot;skipFastforwardMessage&quot;: true&#xd;
+	}],&#xd;
+	&quot;waitForResults&quot;: true,&#xd;
+	&quot;dxResults&quot;: {&#xd;
+		&quot;disease&quot;: &quot;COVID19&quot;, &#xd;
+		&quot;dxScore&quot;: 57.03804484025608, &#xd;
+		&quot;qcFlags&quot;: [&quot;COVID_PERFORMANCE_UPR_THRESHOLD&quot;], &#xd;
+		&quot;dxStatus&quot;: &quot;POSITIVE&quot;, &#xd;
+		&quot;configVersion&quot;: &quot;dx.covid19.rev1&quot;, &#xd;
+		&quot;pipelineVersion&quot;: &quot;v3.1-385-g1340003&quot;, &#xd;
+		&quot;containerVersion&quot;: &quot;dx-classifiers/covid-19:d23228f&quot;, &#xd;
+		&quot;countEnhancedSeq&quot;: 118, &#xd;
+		&quot;classifierVersion&quot;: &quot;v1.0&quot;, &#xd;
+		&quot;posteriorProbability&quot;: 1.0, &#xd;
+		&quot;uniqueProductiveTemplates&quot;: 15775}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/test/scenarios/diagnosticDx</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Simulate Covid order with NorthQC ACCEPTED" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;account&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_account_id}&quot;&#xd;
+	},&#xd;
+	&quot;patient&quot;: {&#xd;
+		&quot;id&quot;: &quot;b5f264af-6f25-40bb-808c-bd4d4333a6bf&quot;,&#xd;
+		&quot;firstName&quot;: &quot;Jane&quot;,&#xd;
+		&quot;middleName&quot;: &quot;Selenium&quot;,&#xd;
+		&quot;lastName&quot;: &quot;ClonoSeq&quot;,&#xd;
+		&quot;fullname&quot;: &quot;Jane Selenium ClonoSeq&quot;,&#xd;
+		&quot;gender&quot;: &quot;Female&quot;,&#xd;
+		&quot;dateOfBirth&quot;: &quot;1999-01-01&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;race&quot;: &quot;American Indian or Alaska Native&quot;,&#xd;
+		&quot;ethnicity&quot;: &quot;Asked, but unknown&quot;,&#xd;
+		&quot;address&quot;: &quot;1551 Eastlake Ave E&quot;,&#xd;
+		&quot;address2&quot;: &quot;Ste 200&quot;,&#xd;
+		&quot;locality&quot;: &quot;Seattle&quot;,&#xd;
+		&quot;region&quot;: &quot;WA&quot;,&#xd;
+		&quot;postCode&quot;: &quot;98104&quot;,&#xd;
+		&quot;phone&quot;: &quot;206-201-1868&quot;,&#xd;
+		&quot;patientCode&quot;: 0,&#xd;
+		&quot;externalPatientCode&quot;: 0,&#xd;
+		&quot;calibrationPatientCode&quot;: 0,&#xd;
+		&quot;deceased&quot;: false,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;&#xd;
+	},&#xd;
+	&quot;provider&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_provider_id}&quot;&#xd;
+	},&#xd;
+	&quot;order&quot;: {&#xd;
+		&quot;name&quot;: &quot;Selenium Test Order&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;tests&quot;: [{&quot;testId&quot; : &quot;1d298f94-74ed-474f-b12c-89e07295b1b4&quot;,&#xd;
+ &quot;tsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;,&#xd;
+			&quot;workflowProperties&quot;: {&#xd;
+				&quot;sampleName&quot;: &quot;119164-SN-9817&quot;,&#xd;
+				&quot;workspaceName&quot;: &quot;CLINICAL-CLINICAL&quot;,&#xd;
+				&quot;lastAcceptedTsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;&#xd;
+			}}],&#xd;
+		&quot;orderType&quot;: &quot;TDx&quot;,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;,&#xd;
+		&quot;specimenDeliveryType&quot;: &quot;CustomerShipment&quot;,&#xd;
+		&quot;specimenDto&quot;: {&#xd;
+			&quot;name&quot;: &quot;860011348&quot;,&#xd;
+			&quot;sampleType&quot;: &quot;Blood&quot;,&#xd;
+			&quot;collectionDate&quot;: [2021, 8, 29, 14, 14, 29, 559],&#xd;
+			&quot;reconciliationDate&quot;: [2021, 8, 29, 14, 14, 29, 566]&#xd;
+		},&#xd;
+		&quot;panels&quot;: [{&#xd;
+			&quot;id&quot;: &quot;132d9440-8f75-46b8-b084-efe06346dfd4&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;shipment&quot;: {&#xd;
+		&quot;category&quot;: &quot;Diagnostic&quot;,&#xd;
+		&quot;status&quot;: &quot;IntakeComplete&quot;,&#xd;
+		&quot;arrivalDate&quot;: [2021, 8, 24, 14, 14, 29, 566],&#xd;
+		&quot;condition&quot;: &quot;Ambient&quot;,&#xd;
+		&quot;carrier&quot;: &quot;UPS&quot;,&#xd;
+		&quot;trackingNumber&quot;: &quot;&quot;,&#xd;
+		&quot;expectedRecordType&quot;: &quot;Order&quot;,&#xd;
+		&quot;containers&quot;: [{&#xd;
+			&quot;containerType&quot;: &quot;Tube&quot;,&#xd;
+			&quot;contentsLocked&quot;: true,&#xd;
+			&quot;integrity&quot;: &quot;Pass&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;fastForwardStatus&quot;: [{&#xd;
+		&quot;stageName&quot;: &quot;NorthQC&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Finished&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;ACCEPTED&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;&#xd;
+	},{&#xd;
+		&quot;stageName&quot;: &quot;DxReport&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Ready&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;,&#xd;
+		&quot;skipFastforwardMessage&quot;: true&#xd;
+	}],&#xd;
+	&quot;waitForResults&quot;: true,&#xd;
+	&quot;dxResults&quot;: {&#xd;
+		&quot;disease&quot;: &quot;COVID19&quot;, &#xd;
+		&quot;dxScore&quot;: 57.03804484025608, &#xd;
+		&quot;qcFlags&quot;: [], &#xd;
+		&quot;dxStatus&quot;: &quot;POSITIVE&quot;, &#xd;
+		&quot;configVersion&quot;: &quot;dx.covid19.rev1&quot;, &#xd;
+		&quot;pipelineVersion&quot;: &quot;v3.1-385-g1340003&quot;, &#xd;
+		&quot;containerVersion&quot;: &quot;dx-classifiers/covid-19:d23228f&quot;, &#xd;
+		&quot;countEnhancedSeq&quot;: 118, &#xd;
+		&quot;classifierVersion&quot;: &quot;v1.0&quot;, &#xd;
+		&quot;posteriorProbability&quot;: 1.0, &#xd;
+		&quot;uniqueProductiveTemplates&quot;: 15775}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/test/scenarios/diagnosticDx</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Simulate Covid order with DxReport Ready (skip NorthQC)" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;account&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_account_id}&quot;&#xd;
+	},&#xd;
+	&quot;patient&quot;: {&#xd;
+		&quot;id&quot;: &quot;b5f264af-6f25-40bb-808c-bd4d4333a6bf&quot;,&#xd;
+		&quot;firstName&quot;: &quot;Jane&quot;,&#xd;
+		&quot;middleName&quot;: &quot;Selenium&quot;,&#xd;
+		&quot;lastName&quot;: &quot;ClonoSeq&quot;,&#xd;
+		&quot;fullname&quot;: &quot;Jane Selenium ClonoSeq&quot;,&#xd;
+		&quot;gender&quot;: &quot;Female&quot;,&#xd;
+		&quot;dateOfBirth&quot;: &quot;1999-01-01&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;race&quot;: &quot;American Indian or Alaska Native&quot;,&#xd;
+		&quot;ethnicity&quot;: &quot;Asked, but unknown&quot;,&#xd;
+		&quot;address&quot;: &quot;1551 Eastlake Ave E&quot;,&#xd;
+		&quot;address2&quot;: &quot;Ste 200&quot;,&#xd;
+		&quot;locality&quot;: &quot;Seattle&quot;,&#xd;
+		&quot;region&quot;: &quot;WA&quot;,&#xd;
+		&quot;postCode&quot;: &quot;98104&quot;,&#xd;
+		&quot;phone&quot;: &quot;206-201-1868&quot;,&#xd;
+		&quot;patientCode&quot;: 0,&#xd;
+		&quot;externalPatientCode&quot;: 0,&#xd;
+		&quot;calibrationPatientCode&quot;: 0,&#xd;
+		&quot;deceased&quot;: false,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;&#xd;
+	},&#xd;
+	&quot;provider&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_provider_id}&quot;&#xd;
+	},&#xd;
+	&quot;order&quot;: {&#xd;
+		&quot;name&quot;: &quot;Selenium Test Order&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;tests&quot;: [{&quot;testId&quot; : &quot;1d298f94-74ed-474f-b12c-89e07295b1b4&quot;,&#xd;
+ &quot;tsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;,&#xd;
+			&quot;workflowProperties&quot;: {&#xd;
+				&quot;sampleName&quot;: &quot;119164-SN-9817&quot;,&#xd;
+				&quot;workspaceName&quot;: &quot;CLINICAL-CLINICAL&quot;,&#xd;
+				&quot;lastAcceptedTsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;&#xd;
+			}}],&#xd;
+		&quot;orderType&quot;: &quot;TDx&quot;,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;,&#xd;
+		&quot;specimenDeliveryType&quot;: &quot;CustomerShipment&quot;,&#xd;
+		&quot;specimenDto&quot;: {&#xd;
+			&quot;name&quot;: &quot;860011348&quot;,&#xd;
+			&quot;sampleType&quot;: &quot;Blood&quot;,&#xd;
+			&quot;collectionDate&quot;: [2021, 8, 29, 14, 14, 29, 559],&#xd;
+			&quot;reconciliationDate&quot;: [2021, 8, 29, 14, 14, 29, 566]&#xd;
+		},&#xd;
+		&quot;panels&quot;: [{&#xd;
+			&quot;id&quot;: &quot;132d9440-8f75-46b8-b084-efe06346dfd4&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;shipment&quot;: {&#xd;
+		&quot;category&quot;: &quot;Diagnostic&quot;,&#xd;
+		&quot;status&quot;: &quot;IntakeComplete&quot;,&#xd;
+		&quot;arrivalDate&quot;: [2021, 8, 24, 14, 14, 29, 566],&#xd;
+		&quot;condition&quot;: &quot;Ambient&quot;,&#xd;
+		&quot;carrier&quot;: &quot;UPS&quot;,&#xd;
+		&quot;trackingNumber&quot;: &quot;&quot;,&#xd;
+		&quot;expectedRecordType&quot;: &quot;Order&quot;,&#xd;
+		&quot;containers&quot;: [{&#xd;
+			&quot;containerType&quot;: &quot;Tube&quot;,&#xd;
+			&quot;contentsLocked&quot;: true,&#xd;
+			&quot;integrity&quot;: &quot;Pass&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;fastForwardStatus&quot;: [{&#xd;
+		&quot;stageName&quot;: &quot;DxReport&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Ready&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;&#xd;
+	}],&#xd;
+	&quot;waitForResults&quot;: true,&#xd;
+	&quot;dxResults&quot;: {&#xd;
+		&quot;disease&quot;: &quot;COVID19&quot;, &#xd;
+		&quot;dxScore&quot;: 57.03804484025608, &#xd;
+		&quot;qcFlags&quot;: [], &#xd;
+		&quot;dxStatus&quot;: &quot;POSITIVE&quot;, &#xd;
+		&quot;configVersion&quot;: &quot;dx.covid19.rev1&quot;, &#xd;
+		&quot;pipelineVersion&quot;: &quot;v3.1-385-g1340003&quot;, &#xd;
+		&quot;containerVersion&quot;: &quot;dx-classifiers/covid-19:d23228f&quot;, &#xd;
+		&quot;countEnhancedSeq&quot;: 118, &#xd;
+		&quot;classifierVersion&quot;: &quot;v1.0&quot;, &#xd;
+		&quot;posteriorProbability&quot;: 1.0, &#xd;
+		&quot;uniqueProductiveTemplates&quot;: 15775}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/test/scenarios/diagnosticDx</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Simulate Covid order with NorthQC ACCEPTED-AUTO" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;account&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_account_id}&quot;&#xd;
+	},&#xd;
+	&quot;patient&quot;: {&#xd;
+		&quot;id&quot;: &quot;b5f264af-6f25-40bb-808c-bd4d4333a6bf&quot;,&#xd;
+		&quot;firstName&quot;: &quot;Jane&quot;,&#xd;
+		&quot;middleName&quot;: &quot;Selenium&quot;,&#xd;
+		&quot;lastName&quot;: &quot;ClonoSeq&quot;,&#xd;
+		&quot;fullname&quot;: &quot;Jane Selenium ClonoSeq&quot;,&#xd;
+		&quot;gender&quot;: &quot;Female&quot;,&#xd;
+		&quot;dateOfBirth&quot;: &quot;1999-01-01&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;race&quot;: &quot;American Indian or Alaska Native&quot;,&#xd;
+		&quot;ethnicity&quot;: &quot;Asked, but unknown&quot;,&#xd;
+		&quot;address&quot;: &quot;1551 Eastlake Ave E&quot;,&#xd;
+		&quot;address2&quot;: &quot;Ste 200&quot;,&#xd;
+		&quot;locality&quot;: &quot;Seattle&quot;,&#xd;
+		&quot;region&quot;: &quot;WA&quot;,&#xd;
+		&quot;postCode&quot;: &quot;98104&quot;,&#xd;
+		&quot;phone&quot;: &quot;206-201-1868&quot;,&#xd;
+		&quot;patientCode&quot;: 0,&#xd;
+		&quot;externalPatientCode&quot;: 0,&#xd;
+		&quot;calibrationPatientCode&quot;: 0,&#xd;
+		&quot;deceased&quot;: false,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;&#xd;
+	},&#xd;
+	&quot;provider&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_provider_id}&quot;&#xd;
+	},&#xd;
+	&quot;order&quot;: {&#xd;
+		&quot;name&quot;: &quot;Selenium Test Order&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;tests&quot;: [{&quot;testId&quot; : &quot;1d298f94-74ed-474f-b12c-89e07295b1b4&quot;,&#xd;
+ &quot;tsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;,&#xd;
+			&quot;workflowProperties&quot;: {&#xd;
+				&quot;sampleName&quot;: &quot;119164-SN-9817&quot;,&#xd;
+				&quot;workspaceName&quot;: &quot;CLINICAL-CLINICAL&quot;,&#xd;
+				&quot;lastAcceptedTsvPath&quot;: &quot;s3://pipeline-cora-test-archive:us-west-2/TDETECT01SEP2021CCB5/v3.1/20210901_2007/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev5/TDETECT01SEP2021CCB5_0_CLINICAL-CLINICAL_119164-SN-9817.adap.txt.results.tsv.gz&quot;&#xd;
+			}}],&#xd;
+		&quot;orderType&quot;: &quot;TDx&quot;,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;,&#xd;
+		&quot;specimenDeliveryType&quot;: &quot;CustomerShipment&quot;,&#xd;
+		&quot;specimenDto&quot;: {&#xd;
+			&quot;name&quot;: &quot;860011348&quot;,&#xd;
+			&quot;sampleType&quot;: &quot;Blood&quot;,&#xd;
+			&quot;collectionDate&quot;: [2021, 8, 29, 14, 14, 29, 559],&#xd;
+			&quot;reconciliationDate&quot;: [2021, 8, 29, 14, 14, 29, 566]&#xd;
+		},&#xd;
+		&quot;panels&quot;: [{&#xd;
+			&quot;id&quot;: &quot;132d9440-8f75-46b8-b084-efe06346dfd4&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;shipment&quot;: {&#xd;
+		&quot;category&quot;: &quot;Diagnostic&quot;,&#xd;
+		&quot;status&quot;: &quot;IntakeComplete&quot;,&#xd;
+		&quot;arrivalDate&quot;: [2021, 8, 24, 14, 14, 29, 566],&#xd;
+		&quot;condition&quot;: &quot;Ambient&quot;,&#xd;
+		&quot;carrier&quot;: &quot;UPS&quot;,&#xd;
+		&quot;trackingNumber&quot;: &quot;&quot;,&#xd;
+		&quot;expectedRecordType&quot;: &quot;Order&quot;,&#xd;
+		&quot;containers&quot;: [{&#xd;
+			&quot;containerType&quot;: &quot;Tube&quot;,&#xd;
+			&quot;contentsLocked&quot;: true,&#xd;
+			&quot;integrity&quot;: &quot;Pass&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;fastForwardStatus&quot;: [{&#xd;
+		&quot;stageName&quot;: &quot;NorthQC&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Finished&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;ACCEPTED-AUTO&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;&#xd;
+	},{&#xd;
+		&quot;stageName&quot;: &quot;DxReport&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Ready&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;,&#xd;
+		&quot;skipFastforwardMessage&quot;: true&#xd;
+	}],&#xd;
+	&quot;waitForResults&quot;: true,&#xd;
+	&quot;dxResults&quot;: {&#xd;
+		&quot;disease&quot;: &quot;COVID19&quot;, &#xd;
+		&quot;dxScore&quot;: 57.03804484025608, &#xd;
+		&quot;qcFlags&quot;: [], &#xd;
+		&quot;dxStatus&quot;: &quot;POSITIVE&quot;, &#xd;
+		&quot;configVersion&quot;: &quot;dx.covid19.rev1&quot;, &#xd;
+		&quot;pipelineVersion&quot;: &quot;v3.1-385-g1340003&quot;, &#xd;
+		&quot;containerVersion&quot;: &quot;dx-classifiers/covid-19:d23228f&quot;, &#xd;
+		&quot;countEnhancedSeq&quot;: 118, &#xd;
+		&quot;classifierVersion&quot;: &quot;v1.0&quot;, &#xd;
+		&quot;posteriorProbability&quot;: 1.0, &#xd;
+		&quot;uniqueProductiveTemplates&quot;: 15775}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/test/scenarios/diagnosticDx</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Simulate Lyme order with NorthQC ACCEPTED-AUTO" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;account&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_account_id}&quot;&#xd;
+	},&#xd;
+	&quot;patient&quot;: {&#xd;
+		&quot;id&quot;: &quot;b5f264af-6f25-40bb-808c-bd4d4333a6bf&quot;,&#xd;
+		&quot;firstName&quot;: &quot;Jane&quot;,&#xd;
+		&quot;middleName&quot;: &quot;Selenium&quot;,&#xd;
+		&quot;lastName&quot;: &quot;ClonoSeq&quot;,&#xd;
+		&quot;fullname&quot;: &quot;Jane Selenium ClonoSeq&quot;,&#xd;
+		&quot;gender&quot;: &quot;Female&quot;,&#xd;
+		&quot;dateOfBirth&quot;: &quot;1999-01-01&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;race&quot;: &quot;American Indian or Alaska Native&quot;,&#xd;
+		&quot;ethnicity&quot;: &quot;Asked, but unknown&quot;,&#xd;
+		&quot;address&quot;: &quot;1551 Eastlake Ave E&quot;,&#xd;
+		&quot;address2&quot;: &quot;Ste 200&quot;,&#xd;
+		&quot;locality&quot;: &quot;Seattle&quot;,&#xd;
+		&quot;region&quot;: &quot;WA&quot;,&#xd;
+		&quot;postCode&quot;: &quot;98104&quot;,&#xd;
+		&quot;phone&quot;: &quot;206-201-1868&quot;,&#xd;
+		&quot;patientCode&quot;: 0,&#xd;
+		&quot;externalPatientCode&quot;: 0,&#xd;
+		&quot;calibrationPatientCode&quot;: 0,&#xd;
+		&quot;deceased&quot;: false,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;&#xd;
+	},&#xd;
+	&quot;provider&quot;: {&#xd;
+		&quot;id&quot;: &quot;${test_provider_id}&quot;&#xd;
+	},&#xd;
+	&quot;order&quot;: {&#xd;
+		&quot;name&quot;: &quot;Selenium Test Order&quot;,&#xd;
+		&quot;mrn&quot;: &quot;sel-123456&quot;,&#xd;
+		&quot;tests&quot;: [{&#xd;
+			&quot;testId&quot;: &quot;ee3ea891-5422-420e-87b0-ab2e7d1eae8a&quot;,&#xd;
+			&quot;tsvPath&quot;: &quot;https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz&quot;,&#xd;
+			&quot;workflowProperties&quot;: {&#xd;
+				&quot;flowcell&quot;: &quot;HM7N7BGXF&quot;,&#xd;
+				&quot;sampleName&quot;: &quot;860011348&quot;,&#xd;
+				&quot;workspaceName&quot;: &quot;Hospital12deOctubre-MartinezLopez&quot;&#xd;
+			}&#xd;
+		}],&#xd;
+		&quot;orderType&quot;: &quot;TDx&quot;,&#xd;
+		&quot;billingType&quot;: &quot;PatientSelfPay&quot;,&#xd;
+		&quot;specimenDeliveryType&quot;: &quot;CustomerShipment&quot;,&#xd;
+		&quot;specimenDto&quot;: {&#xd;
+			&quot;name&quot;: &quot;860011348&quot;,&#xd;
+			&quot;sampleType&quot;: &quot;Blood&quot;,&#xd;
+			&quot;collectionDate&quot;: [2021, 8, 29, 14, 14, 29, 559],&#xd;
+			&quot;reconciliationDate&quot;: [2021, 8, 29, 14, 14, 29, 566]&#xd;
+		},&#xd;
+		&quot;panels&quot;: [{&#xd;
+			&quot;id&quot;: &quot;21c3d625-4c5a-4e0b-896b-0d4f3e817d23&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;shipment&quot;: {&#xd;
+		&quot;category&quot;: &quot;Diagnostic&quot;,&#xd;
+		&quot;status&quot;: &quot;IntakeComplete&quot;,&#xd;
+		&quot;arrivalDate&quot;: [2021, 8, 24, 14, 14, 29, 566],&#xd;
+		&quot;condition&quot;: &quot;Ambient&quot;,&#xd;
+		&quot;carrier&quot;: &quot;UPS&quot;,&#xd;
+		&quot;trackingNumber&quot;: &quot;&quot;,&#xd;
+		&quot;expectedRecordType&quot;: &quot;Order&quot;,&#xd;
+		&quot;containers&quot;: [{&#xd;
+			&quot;containerType&quot;: &quot;Tube&quot;,&#xd;
+			&quot;contentsLocked&quot;: true,&#xd;
+			&quot;integrity&quot;: &quot;Pass&quot;&#xd;
+		}]&#xd;
+	},&#xd;
+	&quot;fastForwardStatus&quot;: [{&#xd;
+		&quot;stageName&quot;: &quot;NorthQC&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Finished&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;ACCEPTED-AUTO&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;&#xd;
+	},{&#xd;
+		&quot;stageName&quot;: &quot;DxReport&quot;,&#xd;
+		&quot;stageStatus&quot;: &quot;Ready&quot;,&#xd;
+		&quot;subStatusCode&quot;: &quot;&quot;,&#xd;
+		&quot;subStatusMessage&quot;: &quot;&quot;,&#xd;
+		&quot;drilldownUrl&quot;: &quot;&quot;,&#xd;
+		&quot;actor&quot;: &quot;selenium test&quot;,&#xd;
+		&quot;skipFastforwardMessage&quot;: true&#xd;
+	}],&#xd;
+	&quot;waitForResults&quot;: true,&#xd;
+	&quot;dxResults&quot;: {&#xd;
+		&quot;disease&quot;: &quot;LYME&quot;, &#xd;
+	     &quot;dxScore&quot;: 105.83867731819977, &#xd;
+	     &quot;qcFlags&quot;: [], &#xd;
+	     &quot;dxStatus&quot;: &quot;POSITIVE&quot;, &#xd;
+	     &quot;configVersion&quot;: &quot;dx.lyme.rev2&quot;, &#xd;
+	     &quot;pipelineVersion&quot;: &quot;v3.1-613-g1b391bc&quot;, &#xd;
+	     &quot;containerVersion&quot;: &quot;dx-classifiers/lyme:8532b3f&quot;, &#xd;
+	     &quot;countEnhancedSeq&quot;: 71, &#xd;
+	     &quot;classifierVersion&quot;: &quot;v2.0&quot;, &#xd;
+	     &quot;countCollapsedBioId&quot;: 0, &#xd;
+	     &quot;posteriorProbability&quot;: 0.0, &#xd;
+	     &quot;uniqueProductiveTemplates&quot;: 72905&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/cora/api/v1/test/scenarios/diagnosticDx</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>false</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>false</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>true</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <hostname>true</hostname>
+            <threadCounts>true</threadCounts>
+            <sampleCount>true</sampleCount>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="StatGraphVisualizer" testclass="ResultCollector" testname="Aggregate Graph" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>false</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>false</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>true</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <hostname>true</hostname>
+            <threadCounts>true</threadCounts>
+            <sampleCount>true</sampleCount>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

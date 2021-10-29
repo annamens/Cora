@@ -31,7 +31,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
     private Detail       detail;
     private MyCustody    my;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         doCoraLogin ();
         login = new Login ();

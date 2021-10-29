@@ -8,8 +8,8 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -44,8 +44,8 @@ public class ScanTestSuite extends ContainerTestBase {
     private Containers   containers1;
     private Containers   containers2;
 
-    @BeforeTest
-    public void beforeTest () {
+    @BeforeClass (alwaysRun = true)
+    public void beforeClass () {
         doCoraLogin ();
         Containers mytestContainers = addContainers (new Containers (
                 asList (container (Slide), container (Slide), container (SlideBox5))));
@@ -74,7 +74,7 @@ public class ScanTestSuite extends ContainerTestBase {
         my = new MyCustody ();
     }
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         doCoraLogin ();
         login.doLogin ();

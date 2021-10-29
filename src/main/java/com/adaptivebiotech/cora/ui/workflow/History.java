@@ -144,6 +144,10 @@ public class History extends CoraPage {
         }
     }
 
+    public String getOrderTestId () {
+        return getAttribute ("a[href*='/cora/order/status']", "href");
+    }
+
     public void clickOrderTest () {
         String url = getAttribute ("a[href*='/cora/order/status']", "href");
         assertTrue (navigateTo (url));
@@ -248,5 +252,9 @@ public class History extends CoraPage {
 
     private void clickForceWorkflowProperty () {
         assertTrue (click ("form[action*='forceWorkflowProperty'] input[type='submit']"));
+    }
+
+    public void isFilePresent (String fileName) {
+        assertTrue (isElementPresent ("//h3[text()='Files']/following-sibling::ul//a[text()='" + fileName + "']"));
     }
 }

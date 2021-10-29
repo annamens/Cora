@@ -47,6 +47,7 @@ import com.adaptivebiotech.cora.ui.task.TaskStatus;
 import com.adaptivebiotech.cora.ui.utilities.AuditTool;
 import com.adaptivebiotech.cora.ui.utilities.BarcodeComparisonTool;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
+import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 
 @Test (groups = "smoke")
 public class SmokeTestSuite extends CoraBaseBrowser {
@@ -63,7 +64,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
     private MirasList     mList;
     private ContainerList cList;
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         openBrowser (coraTestUrl);
         login = new Login ();
@@ -222,7 +223,8 @@ public class SmokeTestSuite extends CoraBaseBrowser {
 
         List <String> utilities = asList ("Alerts",
                                           "Audit Tool",
-                                          "Barcode Comparison Tool");
+                                          "Barcode Comparison Tool",
+                                          "Patient Merge Tool");
         pList.clickUtilities ();
         assertEquals (pList.getUtilitiesMenu (), utilities);
         pList.clickUtilities ();
@@ -283,7 +285,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         Patient patient = newPatient ();
         diagnostic.createNewPatient (patient);
         diagnostic.clickSave ();
-        assertEquals (diagnostic.getPatientName (), patient.fullname);
+        assertEquals (diagnostic.getPatientName (OrderStatus.Pending), patient.fullname);
         testLog ("Patient Information section displayed " + patient.fullname);
 
         diagnostic.clickPatientCode (Pending);
@@ -388,8 +390,6 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         addContainer.isCorrectPage ();
         testLog ("add new container page was displayed");
 
-        System.out.println (addContainer.isAddContainersVisible ());
-
         addContainer.pickContainerType (TubeBox5x5);
         addContainer.enterQuantity (1);
         addContainer.clickAdd ();
@@ -401,7 +401,10 @@ public class SmokeTestSuite extends CoraBaseBrowser {
 
         addContainer.setContainerLocation (1, freezer);
         addContainer.clickSave ();
-        assertFalse (addContainer.isAddContainersVisible ());
+        assertFalse (addContainer.isAddContainerHeaderVisible ());
+        assertFalse (addContainer.isContainerTypeVisible ());
+        assertFalse (addContainer.isQuantityVisible ());
+        assertFalse (addContainer.isAddBtnVisible ());
         testLog ("Add Container(s) section did not displayed");
 
         assertTrue (addContainer.isGenerateContainerLabelsVisible ());
@@ -415,7 +418,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         addContainer.clickContainers ();
         cList.isCorrectPage ();
         cList.searchContainerIdOrName (test.containerNumber);
-        cList.setCategory (ContainerList.Category.All);
+        cList.setCategory (ContainerList.Category.Any);
         cList.setCurrentLocationFilter (freezer);
         cList.setContainerType (TubeBox5x5);
         cList.setGroupBy (ContainerList.GroupBy.None);
@@ -430,6 +433,8 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         cList.takeCustody (test);
         testLog (format ("message displayed indicating %s is in my custody", test.containerNumber));
 
+        // it takes few seconds to reflect the updated Custody Size
+        doWait (1000);
         int CUSTODYEND = cList.getMyCustodySize ();
         assertEquals (CUSTODYEND - CUSTODYBEGIN, 1);
         testLog ("the delta between before and after scan for My Custody size is 1");
