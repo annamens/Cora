@@ -31,7 +31,7 @@ public class PatientDetail extends CoraPage {
     }
 
     public void clickEditPatientDemographics () {
-        String xpathForEditButton = "//*[@class='demographics-details']/..//button";
+        String xpathForEditButton = "//*[@class='demographics-details']/..//button//*[contains(@class,'glyphicon-pencil')]";
         assertTrue (click (xpathForEditButton));
         String expectedTitle = "Edit Patient Demographics";
         assertTrue (isTextInElement (popupTitle, expectedTitle));

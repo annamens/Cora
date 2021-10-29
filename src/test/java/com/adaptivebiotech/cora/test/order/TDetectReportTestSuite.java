@@ -121,7 +121,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                                  collectionDate,
                                                                  assayTest,
                                                                  ChargeType.Client,
-                                                                 TestHelper.address ());
+                                                                 TestHelper.getRandomAddress ());
 
         createShipment (orderNum);
 
@@ -316,7 +316,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                                  DateUtils.getPastFutureDate (-1),
                                                                  assayTest,
                                                                  ChargeType.Client,
-                                                                 TestHelper.address ());
+                                                                 TestHelper.getRandomAddress ());
 
         createShipment (orderNum);
 

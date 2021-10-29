@@ -52,14 +52,11 @@ import org.apache.http.message.BasicHeader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.db.CoraDBClient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.CoraDbTestBase;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
@@ -73,7 +70,6 @@ import com.adaptivebiotech.cora.ui.workflow.FeatureFlags;
 import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
-import com.adaptivebiotech.cora.utils.Tunnel;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
@@ -91,7 +87,7 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
 @Test (groups = { "nutmeg" })
-public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
+public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
     private Physician    IgHVPhysician;
     private Physician    NYPhysician;
@@ -140,8 +136,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     private final byte[] authBytes                        = (pipelinePortalTestUser + ":" + pipelinePortalTestPass).getBytes ();
     private final String portalTestAuth                   = "Basic " + Base64.getEncoder ().encodeToString (authBytes);
 
-    private Tunnel       tunnel;
-    private CoraDBClient coraDBClient;
     private final String orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
     private final String shmResultsSchema                 = "SELECT * FROM information_schema.columns WHERE table_name = 'shm_results' ORDER BY ordinal_position ASC";
     private final String noResultsAvailable               = "No result available";
@@ -149,30 +143,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     private final String beginClonalityResult             = "CLONALITY RESULT";
     private final String endThisSampleFailed              = "This sample failed the quality control";
     private String       downloadDir;
-
-    @BeforeClass (alwaysRun = true)
-    public void beforeClass () {
-        testLog ("Should connect to DB using tunnel? " + CoraEnvironment.isDbTunnel);
-        if (CoraEnvironment.isDbTunnel) {
-            testLog ("Creating a DB connection using tunnel");
-            tunnel = Tunnel.getTunnel ();
-            Thread t = new Thread (tunnel);
-            t.start ();
-            tunnel.waitForConnection ();
-        }
-
-        coraDBClient = new CoraDBClient (CoraEnvironment.coraDBUser, CoraEnvironment.coraDBPass);
-
-        assertTrue (coraDBClient.openConnection ());
-
-    }
-
-    @AfterClass (alwaysRun = true)
-    public void afterClass () throws Exception {
-        coraDBClient.closeConnection ();
-        if (CoraEnvironment.isDbTunnel)
-            tunnel.close ();
-    }
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {

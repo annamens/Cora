@@ -50,7 +50,7 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
         Specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
         orderDetailTDetect.clickAssayTest (Assay.COVID19_DX_IVD);
         billing.selectBilling (ChargeType.Client);
-        billing.enterPatientAddress (TestHelper.address ());
+        billing.enterPatientAddress (TestHelper.getRandomAddress ());
         billing.clickSave ();
 
         String orderNum = orderDetailTDetect.getOrderNum ();

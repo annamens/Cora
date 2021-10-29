@@ -5,6 +5,7 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.LYME_DX_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
+import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
@@ -32,6 +33,7 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
@@ -68,6 +70,7 @@ public class Diagnostic extends CoraPage {
     private final String   editJson           = "[ng-click='ctrl.editReportData()']";
     private final String   reportDataJson     = "[ng-model='ctrl.reportDataJSON']";
     private final String   modalOk            = "[data-ng-click='ctrl.ok();']";
+    private final String   newAlert           = ".new-alert";
 
     public Diagnostic () {
         staticNavBarHeight = 200;
@@ -269,6 +272,14 @@ public class Diagnostic extends CoraPage {
     public void clickSave () {
         assertTrue (click ("#order-entry-save"));
         pageLoading ();
+        waitForPageLoading ();
+    }
+
+    public void waitForPageLoading () {
+        final String pageLoadingBar = "div.loading";
+
+        waitUntilVisible (pageLoadingBar, 10, 100);
+        assertTrue (waitForElementInvisible (pageLoadingBar));
     }
 
     public String getStatusText () {
@@ -1114,6 +1125,41 @@ public class Diagnostic extends CoraPage {
         assertTrue (setText (reportDataJson, jsonData));
         assertTrue (click (modalOk));
         pageLoading ();
+    }
+
+    public void createNewAlert () {
+        assertTrue (click (newAlert));
+    }
+
+    public String createClonoSeqOrder (Physician physician,
+                                       Patient patient,
+                                       String[] icdCodes,
+                                       ChargeType chargeType) {
+
+        selectNewClonoSEQDiagnosticOrder ();
+        isCorrectPage ();
+
+        selectPhysician (physician);
+        createNewPatient (patient);
+        for (String icdCode : icdCodes) {
+            enterPatientICD_Codes (icdCode);
+        }
+        Billing billing = new Billing ();
+        billing.selectBilling (chargeType);
+        clickSave ();
+
+        com.adaptivebiotech.cora.ui.order.Specimen specimen = new com.adaptivebiotech.cora.ui.order.Specimen ();
+        specimen.enterSpecimenDelivery (CustomerShipment);
+        specimen.clickEnterSpecimenDetails ();
+        specimen.enterSpecimenType (SpecimenType.Blood);
+        specimen.enterAntiCoagulant (Anticoagulant.EDTA);
+        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
+        enterOrderNotes ("Creating Order in Cora");
+        clickSave ();
+
+        String orderNum = getOrderNum ();
+        Logging.info ("ClonoSeq Order Number: " + orderNum);
+        return orderNum;
     }
 
 }

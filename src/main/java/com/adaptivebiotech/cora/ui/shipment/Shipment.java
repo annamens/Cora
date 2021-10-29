@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -15,6 +16,7 @@ import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.Carrier;
 import com.adaptivebiotech.cora.utils.PageHelper.LinkShipment;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
@@ -254,7 +256,8 @@ public class Shipment extends CoraPage {
 
     public void enterInitialStorageLocation (String freezerName) {
         String cssInitialStorageLocation = "[ng-model='ctrl.storageLocation']";
-        assertTrue (clickAndSelectText (cssInitialStorageLocation, freezerName));
+        CoraSelect storageLocations = new CoraSelect (waitForElementClickable (cssInitialStorageLocation));
+        storageLocations.selectByVisibleText (freezerName);
     }
 
     public boolean discrepancyResolutionsTabVisible () {
@@ -316,6 +319,16 @@ public class Shipment extends CoraPage {
 
     public void clickContainerNo (String containerNo) {
         assertTrue (click ("//table//a[text()='" + containerNo + "']"));
+    }
+
+    public void createShipment (String orderNo, ContainerType containerType) {
+        selectNewDiagnosticShipment ();
+        isDiagnostic ();
+        enterShippingCondition (Ambient);
+        enterOrderNumber (orderNo);
+        selectDiagnosticSpecimenContainerType (containerType);
+        clickSave ();
+        gotoAccession ();
     }
 
 }

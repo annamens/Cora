@@ -161,4 +161,8 @@ public class OrderStatus extends Diagnostic {
         assertTrue (click (confirmYes));
     }
 
+    public String getSpecimenId () {
+        String css = "span.order-specimen-id";
+        return getText (css);
+    }
 }
