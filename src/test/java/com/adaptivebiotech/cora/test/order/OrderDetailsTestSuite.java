@@ -5,7 +5,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShi
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
@@ -154,7 +153,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (activeOrder.name, expectedName);
         String expectedDueDate = DateUtils.getPastFutureDate (7,
                                                               DateTimeFormatter.ofPattern ("MM/dd/uu"),
-                                                              ZoneId.of ("UTC"));
+                                                              DateUtils.utcZoneId);
         assertEquals (diagnostic.getDueDate (), expectedDueDate);
         assertEquals (activeOrder.data_analysis_group, "Clinical");
 
@@ -172,9 +171,9 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (activeOrder.specimenDto.collectionDate, collectionDate);
 
         assertEquals (diagnostic.getShipmentArrivalDate (),
-                      DateUtils.convertDateFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
-                                                   "MM/dd/yyyy hh:mm a",
-                                                   "MM/dd/yyyy hh:mm a"));
+                      DateUtils.convertDateTimeFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
+                                                       "MM/dd/yyyy h:mm a",
+                                                       "MM/dd/yyyy hh:mm a"));
         assertEquals (diagnostic.getIntakeCompleteDate (), intakeCompleteDate.split (",")[0]);
         assertEquals (diagnostic.getSpecimenApprovalDate (), specimenApprovalDate.split (",")[0]);
         assertEquals (activeOrder.specimenDto.specimenNumber, specimenId);

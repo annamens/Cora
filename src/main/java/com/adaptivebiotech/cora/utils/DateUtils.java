@@ -2,12 +2,11 @@ package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.setDate;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.time.format.DateTimeFormatterBuilder;
 
 public class DateUtils {
 
@@ -52,15 +51,28 @@ public class DateUtils {
      * @return String date in toPattern
      */
     public static String convertDateFormat (String dateToConvert, String fromPattern, String toPattern) {
-        DateFormat fromFormat = new SimpleDateFormat (fromPattern);
-        DateFormat toFormat = new SimpleDateFormat (toPattern);
-        Date date = null;
-        try {
-            date = fromFormat.parse (dateToConvert);
-        } catch (ParseException e) {
-            throw new RuntimeException (e);
-        }
-        return toFormat.format (date);
+        DateTimeFormatter fromFormat = new DateTimeFormatterBuilder ().appendPattern (fromPattern)
+                                                                      .toFormatter ();
+        LocalDate parsedDate = LocalDate.parse (dateToConvert, fromFormat);
+        DateTimeFormatter toFormat = DateTimeFormatter.ofPattern (toPattern);
+        return parsedDate.format (toFormat);
+    }
+
+    /**
+     * convert given date time from fromPattern to toPattern
+     * 
+     * @param dateTimeStr
+     *            String DateTime to convert
+     * @param fromPattern
+     * @param toPattern
+     * @return String date in toPattern
+     */
+    public static String convertDateTimeFormat (String dateTimeStr, String fromPattern, String toPattern) {
+        DateTimeFormatter fromFormat = new DateTimeFormatterBuilder ().appendPattern (fromPattern)
+                                                                      .toFormatter ();
+        LocalDateTime parsedDate = LocalDateTime.parse (dateTimeStr, fromFormat);
+        DateTimeFormatter toFormat = DateTimeFormatter.ofPattern (toPattern);
+        return parsedDate.format (toFormat);
     }
 
 }
