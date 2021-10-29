@@ -171,9 +171,9 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (activeOrder.specimenDto.collectionDate, collectionDate);
 
         assertEquals (diagnostic.getShipmentArrivalDate (),
-                      DateUtils.convertDateTimeFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
-                                                       "MM/dd/yyyy h:mm a",
-                                                       "MM/dd/yyyy hh:mm a"));
+                      DateUtils.convertDateFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
+                                                   "MM/dd/yyyy h:mm a",
+                                                   "MM/dd/yyyy hh:mm a"));
         assertEquals (diagnostic.getIntakeCompleteDate (), intakeCompleteDate.split (",")[0]);
         assertEquals (diagnostic.getSpecimenApprovalDate (), specimenApprovalDate.split (",")[0]);
         assertEquals (activeOrder.specimenDto.specimenNumber, specimenId);
