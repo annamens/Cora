@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.test.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -32,7 +31,6 @@ import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -68,36 +66,22 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
      */
     public void verifyOrderDetailsPage () {
 
-        // create clonoSEQ diagnostic order
-        billing.selectNewClonoSEQDiagnosticOrder ();
-        billing.isCorrectPage ();
-
         Physician physician = TestHelper.physicianTRF ();
-        billing.selectPhysician (physician);
         Patient patient = TestHelper.newPatient ();
-        billing.createNewPatient (patient);
         String icdCode = "C90.00";
-        billing.enterPatientICD_Codes (icdCode);
         Assay orderTest = Assay.ID_BCell2_CLIA;
-        billing.clickAssayTest (orderTest);
         ChargeType chargeType = ChargeType.NoCharge;
-        billing.selectBilling (chargeType);
-        billing.clickSave ();
-
-        // add specimen details for order
-        DeliveryType deliveryType = CustomerShipment;
-        specimen.enterSpecimenDelivery (deliveryType);
-        specimen.clickEnterSpecimenDetails ();
         SpecimenType specimenType = SpecimenType.Blood;
-        specimen.enterSpecimenType (specimenType);
         Anticoagulant anticoagulant = Anticoagulant.EDTA;
-        specimen.enterAntiCoagulant (anticoagulant);
         String collectionDate = DateUtils.getPastFutureDate (-3);
-        specimen.enterCollectionDate (collectionDate);
-        specimen.clickSave ();
-
-        String orderNum = specimen.getOrderNum ();
-        Logging.info ("Order Number: " + orderNum);
+        String orderNum = new Diagnostic ().createClonoSeqOrder (physician,
+                                                                 patient,
+                                                                 new String[] { icdCode },
+                                                                 Assay.ID_BCell2_CLIA,
+                                                                 chargeType,
+                                                                 SpecimenType.Blood,
+                                                                 null,
+                                                                 Anticoagulant.EDTA);
 
         List <String> history = specimen.getHistory (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending);
         String createdDateTime = history.get (0).split ("Created by")[0].trim ();

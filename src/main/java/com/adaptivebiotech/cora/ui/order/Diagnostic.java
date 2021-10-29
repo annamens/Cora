@@ -33,6 +33,8 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
 import com.adaptivebiotech.test.utils.Logging;
@@ -1134,7 +1136,11 @@ public class Diagnostic extends CoraPage {
     public String createClonoSeqOrder (Physician physician,
                                        Patient patient,
                                        String[] icdCodes,
-                                       ChargeType chargeType) {
+                                       Assay assayTest,
+                                       ChargeType chargeType,
+                                       SpecimenType specimenType,
+                                       SpecimenSource specimenSource,
+                                       Anticoagulant anticoagulant) {
 
         selectNewClonoSEQDiagnosticOrder ();
         isCorrectPage ();
@@ -1148,17 +1154,64 @@ public class Diagnostic extends CoraPage {
         billing.selectBilling (chargeType);
         clickSave ();
 
+        clickAssayTest (assayTest);
         com.adaptivebiotech.cora.ui.order.Specimen specimen = new com.adaptivebiotech.cora.ui.order.Specimen ();
         specimen.enterSpecimenDelivery (CustomerShipment);
         specimen.clickEnterSpecimenDetails ();
-        specimen.enterSpecimenType (SpecimenType.Blood);
-        specimen.enterAntiCoagulant (Anticoagulant.EDTA);
+        specimen.enterSpecimenType (specimenType);
+
+        if (specimenSource != null)
+            specimen.enterSpecimenSource (specimenSource);
+        if (anticoagulant != null)
+            specimen.enterAntiCoagulant (Anticoagulant.EDTA);
+
         specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
         enterOrderNotes ("Creating Order in Cora");
         clickSave ();
 
         String orderNum = getOrderNum ();
         Logging.info ("ClonoSeq Order Number: " + orderNum);
+        return orderNum;
+    }
+
+    public String createClonoSeqOrder (Physician physician,
+                                       Patient patient,
+                                       String[] icdCodes,
+                                       Assay assayTest,
+                                       ChargeType chargeType,
+                                       SpecimenType specimenType,
+                                       SpecimenSource specimenSource,
+                                       Anticoagulant anticoagulant,
+                                       OrderStatus orderStatus,
+                                       ContainerType containerType) {
+        // create clonoSEQ diagnostic order
+        String orderNum = createClonoSeqOrder (physician,
+                                               patient,
+                                               icdCodes,
+                                               assayTest,
+                                               chargeType,
+                                               specimenType,
+                                               specimenSource,
+                                               anticoagulant);
+
+        // add diagnostic shipment
+        new Shipment ().createShipment (orderNum, containerType);
+
+        // accession complete
+        if (orderStatus.equals (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active)) {
+            new Accession ().completeAccession ();
+
+            // activate order
+            isCorrectPage ();
+            activateOrder ();
+        }
+
+        // URL path still contains dx, change it to details page
+        // though both page looks similar, locators are different for dx and details in URL
+        // when order is activated
+        navigateToOrderDetailsPage (getOrderId ());
+        isCorrectPage ();
+
         return orderNum;
     }
 

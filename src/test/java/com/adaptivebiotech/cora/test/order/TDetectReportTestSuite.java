@@ -25,13 +25,10 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
-import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskList;
 import com.adaptivebiotech.cora.ui.workflow.History;
@@ -46,7 +43,6 @@ import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.QC;
-import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -65,9 +61,6 @@ import com.seleniumfy.test.utils.HttpClientHelper;
 public class TDetectReportTestSuite extends CoraBaseBrowser {
 
     private OrderDetailTDetect orderDetailTDetect  = new OrderDetailTDetect ();
-    private Billing            billing             = new Billing ();
-    private Shipment           shipment            = new Shipment ();
-    private Accession          accession           = new Accession ();
     private PatientDetail      patientDetail       = new PatientDetail ();
     private History            history             = new History ();
     private TaskList           taskList            = new TaskList ();
@@ -121,18 +114,11 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                                  collectionDate,
                                                                  assayTest,
                                                                  ChargeType.Client,
-                                                                 TestHelper.getRandomAddress ());
+                                                                 TestHelper.getRandomAddress (),
+                                                                 active,
+                                                                 ContainerType.SlideBox5CS);
+        Logging.testLog ("T-Detect Order created: " + orderNum);
 
-        createShipment (orderNum);
-
-        completeAccession ();
-
-        // activate order
-        billing.isCorrectPage ();
-        orderDetailTDetect.activateOrder ();
-        String orderId = orderDetailTDetect.getOrderId ();
-        orderDetailTDetect.navigateToOrderDetailsPage (orderId);
-        orderDetailTDetect.isCorrectPage ();
         orderDetailTDetect.clickPatientCode (active);
         patientDetail.isCorrectPage ();
         String patientId = patientDetail.getPatientId ();
@@ -316,18 +302,11 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                                  DateUtils.getPastFutureDate (-1),
                                                                  assayTest,
                                                                  ChargeType.Client,
-                                                                 TestHelper.getRandomAddress ());
+                                                                 TestHelper.getRandomAddress (),
+                                                                 com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active,
+                                                                 ContainerType.SlideBox5CS);
+        Logging.testLog ("T-Detect Order created: " + orderNum);
 
-        createShipment (orderNum);
-
-        completeAccession ();
-
-        // activate order
-        billing.isCorrectPage ();
-        orderDetailTDetect.activateOrder ();
-        String orderId = orderDetailTDetect.getOrderId ();
-        orderDetailTDetect.navigateToOrderDetailsPage (orderId);
-        orderDetailTDetect.isCorrectPage ();
         Order order = orderDetailTDetect.parseOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
         orderDetailTDetect.navigateToOrderStatusPage (order.id);
         orderStatus.isCorrectPage ();
@@ -346,26 +325,6 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         ReportRender reportDataJson = getReportDataJsonFile (reportDataJsonFileUrl);
         assertEquals (reportDataJson.isFailure, Boolean.valueOf (true));
         Logging.testLog ("STEP 11 - validate reportData.json displays isFailure as true");
-    }
-
-    private void createShipment (String orderNum) {
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (ShippingCondition.Ambient);
-        shipment.enterOrderNumber (orderNum);
-        shipment.selectDiagnosticSpecimenContainerType (ContainerType.SlideBox5CS);
-        shipment.clickAddSlide ();
-        shipment.clickSave ();
-    }
-
-    private void completeAccession () {
-        shipment.gotoAccession ();
-        accession.isCorrectPage ();
-        accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
-        accession.clickPass ();
-        accession.gotoOrderDetail ();
     }
 
     private void validateReportDataJson (ReportRender reportDataJson, Order order,

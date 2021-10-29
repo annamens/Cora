@@ -11,11 +11,14 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 import com.seleniumfy.test.utils.Timeout;
 
@@ -321,6 +324,45 @@ public class OrderDetailTDetect extends Diagnostic {
 
         String orderNum = getOrderNum ();
         Logging.info ("T-Detect Order Number: " + orderNum);
+        return orderNum;
+    }
+
+    public String createTDetectOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      String collectionDate,
+                                      Assay assayTest,
+                                      ChargeType chargeType,
+                                      Address patientAddress,
+                                      OrderStatus orderStatus,
+                                      ContainerType containerType) {
+        // create clonoSEQ diagnostic order
+        String orderNum = createTDetectOrder (physician,
+                                              patient,
+                                              icdCodes,
+                                              collectionDate,
+                                              assayTest,
+                                              chargeType,
+                                              patientAddress);
+
+        // add diagnostic shipment
+        new Shipment ().createShipment (orderNum, containerType);
+
+        // accession complete
+        if (orderStatus.equals (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active)) {
+            new Accession ().completeAccession ();
+
+            // activate order
+            isCorrectPage ();
+            activateOrder ();
+        }
+
+        // URL path still contains dx, change it to details page
+        // though both page looks similar, locators are different for dx and details in URL
+        // when order is activated
+        navigateToOrderDetailsPage (getOrderId ());
+        isCorrectPage ();
+
         return orderNum;
     }
 }

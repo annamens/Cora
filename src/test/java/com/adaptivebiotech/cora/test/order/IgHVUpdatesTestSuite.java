@@ -9,8 +9,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.InternalPharmaBilling;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.LymphNode;
@@ -59,16 +57,11 @@ import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraDbTestBase;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
-import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.workflow.FeatureFlags;
 import com.adaptivebiotech.cora.ui.workflow.History;
-import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
@@ -91,10 +84,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
     private Physician    IgHVPhysician;
     private Physician    NYPhysician;
-    private Billing      billing                          = new Billing ();
-    private Specimen     specimen                         = new Specimen ();
-    private Shipment     shipment                         = new Shipment ();
-    private Accession    accession                        = new Accession ();
+
     private Diagnostic   diagnostic                       = new Diagnostic ();
     private History      history                          = new History ();
     private FeatureFlags featureFlagsPage                 = new FeatureFlags ();
@@ -889,52 +879,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                               String[] icdCodes,
                                               String orderNotes) {
         // create clonoSEQ diagnostic order
-        billing.selectNewClonoSEQDiagnosticOrder ();
-        billing.isCorrectPage ();
-
-        billing.selectPhysician (physician);
-        billing.createNewPatient (TestHelper.newInsurancePatient ());
-        for (String icdCode : icdCodes)
-            billing.enterPatientICD_Codes (icdCode);
-        billing.selectBilling (InternalPharmaBilling);
-        billing.clickSave ();
-
-        // add specimen details for order
-        specimen.enterSpecimenDelivery (CustomerShipment);
-        specimen.clickEnterSpecimenDetails ();
-        specimen.enterSpecimenType (specimenType);
-        if (specimenSource != null)
-            specimen.enterSpecimenSource (specimenSource);
-        if (specimenType == SpecimenType.Blood)
-            specimen.enterAntiCoagulant (Anticoagulant.EDTA);
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        specimen.enterOrderNotes (orderNotes);
-        specimen.clickSave ();
-
-        String orderNum = specimen.getOrderNum ();
+        String orderNum = diagnostic.createClonoSeqOrder (physician,
+                                                          TestHelper.newInsurancePatient (),
+                                                          icdCodes,
+                                                          assayTest,
+                                                          InternalPharmaBilling,
+                                                          SpecimenType.Blood,
+                                                          specimenSource,
+                                                          Anticoagulant.EDTA,
+                                                          com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active,
+                                                          Tube);
         Logging.info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
-
-        // add diagnostic shipment
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
-        shipment.selectDiagnosticSpecimenContainerType (Tube);
-        shipment.clickSave ();
-        shipment.gotoAccession ();
-
-        // accession complete
-        accession.isCorrectPage ();
-        accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
-        accession.clickPass ();
-        accession.gotoOrderDetail ();
-
-        // activate order
-        diagnostic.isCorrectPage ();
-        diagnostic.clickAssayTest (assayTest);
-        diagnostic.activateOrder ();
 
         Map <String, String> orderDetails = new HashMap <> ();
         orderDetails.put ("orderNumber", orderNum);

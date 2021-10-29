@@ -1,8 +1,6 @@
 package com.adaptivebiotech.cora.test.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
@@ -12,22 +10,20 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.Detail;
-import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
-import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 /**
@@ -40,8 +36,6 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
     private OrdersList     ordersList      = new OrdersList ();
     private OrderStatus    orderStatus     = new OrderStatus ();
     private Diagnostic     diagnostic      = new Diagnostic ();
-    private Billing        billing         = new Billing ();
-    private Specimen       specimen        = new Specimen ();
     private Shipment       shipment        = new Shipment ();
     private ShipmentDetail shipmentDetail  = new ShipmentDetail ();
     private Detail         containerDetail = new Detail ();
@@ -205,52 +199,16 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
     private String createClonoSeqOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus orderStatus) {
         // create clonoSEQ diagnostic order
-        billing.selectNewClonoSEQDiagnosticOrder ();
-        billing.isCorrectPage ();
-
-        billing.selectPhysician (TestHelper.physicianTRF ());
-        billing.createNewPatient (TestHelper.newPatient ());
-        billing.enterPatientICD_Codes ("C90.00");
-        billing.clickAssayTest (Assay.ID_BCell2_CLIA);
-        billing.selectBilling (ChargeType.NoCharge);
-        billing.clickSave ();
-
-        // add specimen details for order
-        specimen.enterSpecimenDelivery (CustomerShipment);
-        specimen.clickEnterSpecimenDetails ();
-        specimen.enterSpecimenType (SpecimenType.Blood);
-        specimen.enterAntiCoagulant (Anticoagulant.EDTA);
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-1));
-        specimen.enterOrderNotes ("SR-T3025 " + orderStatus.name ());
-        specimen.clickSave ();
-
-        String orderNum = specimen.getOrderNum ();
-        Logging.info ("Order Number: " + orderNum);
-
-        // add diagnostic shipment
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
-        shipment.selectDiagnosticSpecimenContainerType (Tube);
-        shipment.clickSave ();
-        shipment.gotoAccession ();
-        accession.isCorrectPage ();
-
-        // accession complete
-        if (orderStatus.equals (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active)) {
-            accession.clickIntakeComplete ();
-            accession.labelingComplete ();
-            accession.labelVerificationComplete ();
-            accession.clickPass ();
-            accession.gotoOrderDetail ();
-
-            // activate order
-            diagnostic.isCorrectPage ();
-            diagnostic.activateOrder ();
-        }
-
-        return orderNum;
+        return diagnostic.createClonoSeqOrder (TestHelper.physicianTRF (),
+                                               TestHelper.newPatient (),
+                                               new String[] { "C90.00" },
+                                               Assay.ID_BCell2_CLIA,
+                                               ChargeType.NoCharge,
+                                               SpecimenType.Blood,
+                                               null,
+                                               Anticoagulant.EDTA,
+                                               orderStatus,
+                                               ContainerType.Tube);
     }
 
 }

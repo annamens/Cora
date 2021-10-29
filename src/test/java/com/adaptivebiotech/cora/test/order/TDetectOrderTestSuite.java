@@ -10,7 +10,6 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
@@ -29,7 +28,6 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
 
     private OrderDetailTDetect orderDetailTDetect = new OrderDetailTDetect ();
     private Billing            billing            = new Billing ();
-    private Specimen           Specimen           = new Specimen ();
     private Shipment           shipment           = new Shipment ();
     private Accession          accession          = new Accession ();
 
@@ -40,21 +38,13 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
         new Login ().doLogin ();
         new OrdersList ().isCorrectPage ();
         // create T-Detect diagnostic order
-        orderDetailTDetect.selectNewTDetectDiagnosticOrder ();
-        orderDetailTDetect.isCorrectPage ();
-
-        orderDetailTDetect.selectPhysician (TestHelper.physicianTRF ());
-        orderDetailTDetect.createNewPatient (TestHelper.newPatient ());
-        orderDetailTDetect.clickSave ();
-
-        Specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        orderDetailTDetect.clickAssayTest (Assay.COVID19_DX_IVD);
-        billing.selectBilling (ChargeType.Client);
-        billing.enterPatientAddress (TestHelper.getRandomAddress ());
-        billing.clickSave ();
-
-        String orderNum = orderDetailTDetect.getOrderNum ();
-        Logging.info ("Order Number: " + orderNum);
+        String orderNum = orderDetailTDetect.createTDetectOrder (TestHelper.physicianTRF (),
+                                                                 TestHelper.newPatient (),
+                                                                 new String[] {},
+                                                                 DateUtils.getPastFutureDate (-3),
+                                                                 Assay.COVID19_DX_IVD,
+                                                                 ChargeType.Client,
+                                                                 TestHelper.getRandomAddress ());
 
         // add diagnostic shipment
         shipment.selectNewDiagnosticShipment ();
@@ -77,12 +67,7 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
         Logging.testLog ("STEP 1.2 - Shipment bx and slides have CO-#");
 
         shipment.gotoAccession ();
-        accession.isCorrectPage ();
-        accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
-        accession.clickPass ();
-        accession.gotoOrderDetail ();
+        accession.completeAccession ();
 
         // activate order
         billing.isCorrectPage ();
