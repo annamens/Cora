@@ -2,12 +2,11 @@ package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.setDate;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 
 public class DateUtils {
 
@@ -52,15 +51,16 @@ public class DateUtils {
      * @return String date in toPattern
      */
     public static String convertDateFormat (String dateToConvert, String fromPattern, String toPattern) {
-        DateFormat fromFormat = new SimpleDateFormat (fromPattern);
-        DateFormat toFormat = new SimpleDateFormat (toPattern);
-        Date date = null;
-        try {
-            date = fromFormat.parse (dateToConvert);
-        } catch (ParseException e) {
-            throw new RuntimeException (e);
-        }
-        return toFormat.format (date);
+        DateTimeFormatter fromFormat = new DateTimeFormatterBuilder ().appendPattern (fromPattern)
+                                                                      .parseDefaulting (ChronoField.CLOCK_HOUR_OF_AMPM,
+                                                                                        12)
+                                                                      .parseDefaulting (ChronoField.MINUTE_OF_HOUR, 0)
+                                                                      .parseDefaulting (ChronoField.SECOND_OF_MINUTE, 0)
+                                                                      .parseDefaulting (ChronoField.AMPM_OF_DAY, 0)
+                                                                      .toFormatter ();
+        LocalDateTime parsedDate = LocalDateTime.parse (dateToConvert, fromFormat);
+        DateTimeFormatter toFormat = DateTimeFormatter.ofPattern (toPattern);
+        return parsedDate.format (toFormat);
     }
 
 }
