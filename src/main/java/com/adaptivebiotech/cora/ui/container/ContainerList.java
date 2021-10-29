@@ -88,8 +88,8 @@ public class ContainerList extends CoraPage {
             c.specimenId = getText (columns.get (3));
             c.name = getText (columns.get (4));
             c.location = getText (columns.get (5));
-            String capacity = Strings.isNotNullAndNotEmpty (getText (columns.get (6))) ? getText (columns.get (6)) : "0";
-            c.capacity = Integer.parseInt (capacity);
+            String capacity = getText (columns.get (6));
+            c.capacity = Integer.parseInt (Strings.isNotNullAndNotEmpty (capacity) ? capacity : "0");
             return c;
         }).collect (toList ()));
     }
