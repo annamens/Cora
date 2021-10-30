@@ -57,11 +57,11 @@ import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraDbTestBase;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.debug.FeatureFlags;
+import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.workflow.FeatureFlags;
-import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
@@ -86,7 +86,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     private Physician    NYPhysician;
 
     private Diagnostic   diagnostic                       = new Diagnostic ();
-    private History      history                          = new History ();
+    private OrcaHistory      history                          = new OrcaHistory ();
     private FeatureFlags featureFlagsPage                 = new FeatureFlags ();
     private OrderStatus  orderStatus                      = new OrderStatus ();
 

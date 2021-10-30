@@ -13,13 +13,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
-import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 
@@ -59,7 +59,7 @@ public class ReflexTestSuite extends CoraBaseBrowser {
         specimen.clickSave ();
         String specimenId = specimen.getSpecimenId ();
 
-        History history = new History ();
+        OrcaHistory history = new OrcaHistory ();
         history.gotoOrderDebug (addDiagnosticShipment_and_Activate ());
         history.cancelOrder ();
 

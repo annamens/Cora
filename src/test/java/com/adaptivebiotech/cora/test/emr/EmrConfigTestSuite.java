@@ -15,10 +15,10 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraDbTestBase;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.debug.CreateEmrConfig;
+import com.adaptivebiotech.cora.ui.debug.EmrConfig;
+import com.adaptivebiotech.cora.ui.debug.EmrConfigDetails;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.workflow.CreateEmrConfig;
-import com.adaptivebiotech.cora.ui.workflow.EmrConfig;
-import com.adaptivebiotech.cora.ui.workflow.EmrConfigDetails;
 import com.adaptivebiotech.test.utils.Logging;
 
 /**

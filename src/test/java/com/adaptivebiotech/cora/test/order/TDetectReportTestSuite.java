@@ -25,13 +25,13 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskList;
-import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
 import com.adaptivebiotech.cora.utils.TestHelper;
@@ -62,7 +62,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
 
     private OrderDetailTDetect orderDetailTDetect  = new OrderDetailTDetect ();
     private PatientDetail      patientDetail       = new PatientDetail ();
-    private History            history             = new History ();
+    private OrcaHistory            history             = new OrcaHistory ();
     private TaskList           taskList            = new TaskList ();
     private TaskDetail         task                = new TaskDetail ();
     private OrderStatus        orderStatus         = new OrderStatus ();

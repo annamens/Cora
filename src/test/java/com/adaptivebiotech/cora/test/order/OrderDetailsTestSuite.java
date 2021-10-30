@@ -14,6 +14,7 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.Billing;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
@@ -23,7 +24,6 @@ import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
-import com.adaptivebiotech.cora.ui.workflow.History;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.Logging;
@@ -53,7 +53,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
     private ShipmentDetail shipmentDetail = new ShipmentDetail ();
     private Accession      accession      = new Accession ();
     private PatientDetail  patientDetail  = new PatientDetail ();
-    private History        historyPage    = new History ();
+    private OrcaHistory        historyPage    = new OrcaHistory ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {

@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.ui.workflow;
+package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static org.testng.Assert.assertEquals;
