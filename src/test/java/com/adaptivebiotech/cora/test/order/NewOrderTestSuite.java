@@ -9,7 +9,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.Outpatient;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.BoneMarrowAspirateSlide;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -86,22 +85,9 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
 
     private void add_shipment_and_accession (String orderNum) {
         // test: add diagnostic shipment
-        Shipment shipment = new Shipment ();
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
-        shipment.selectDiagnosticSpecimenContainerType (Tube);
-        shipment.clickSave ();
-        shipment.gotoAccession ();
+        new Shipment ().createShipment (orderNum, Tube);
 
         // test: accession complete
-        Accession accession = new Accession ();
-        accession.isCorrectPage ();
-        accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
-        accession.clickPass ();
-        accession.gotoOrderDetail ();
+        new Accession ().completeAccession ();
     }
 }

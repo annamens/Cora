@@ -37,10 +37,10 @@ import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskList;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
-import com.adaptivebiotech.cora.ui.workflow.History;
 
 @Test (groups = {"akita", "regression"} )
 public class GatewayNotificationTestSuite extends OrderTestBase {
@@ -55,7 +55,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
     private Diagnostic                                   diagnostic;
     private Orders.OrderTest                             orderTest;
-    private History                                      history;
+    private OrcaHistory                                      history;
     private com.adaptivebiotech.cora.ui.order.Diagnostic order;
     private TaskList                                     taskList;
     private TaskStatus                                   taskStatus;
@@ -65,7 +65,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     public void beforeMethod () {
         doCoraLogin ();
         new Login ().doLogin ();
-        history = new History ();
+        history = new OrcaHistory ();
         order = new com.adaptivebiotech.cora.ui.order.Diagnostic ();
         taskList = new TaskList ();
         taskStatus = new TaskStatus ();

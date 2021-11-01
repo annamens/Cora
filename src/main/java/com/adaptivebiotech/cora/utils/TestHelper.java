@@ -25,6 +25,7 @@ import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
+import com.github.javafaker.Faker;
 
 public class TestHelper {
 
@@ -137,7 +138,7 @@ public class TestHelper {
         patient.insurance1.groupNumber = null;
         patient.insurance2 = insurance2 ();
 
-        Address address = address ();
+        Address address = getRandomAddress ();
         patient.address = address.line1;
         patient.phone = address.phone;
         patient.locality = address.city;
@@ -187,13 +188,21 @@ public class TestHelper {
         return patient;
     }
 
-    public static Address address () {
+    /**
+     * Generate random address
+     * 
+     * @return Address
+     */
+    public static Address getRandomAddress () {
+        Faker faker = new Faker ();
         Address address = new Address ();
-        address.line1 = "1551 Eastlake Ave E";
-        address.phone = "206-201-1868";
-        address.city = "Seattle";
-        address.state = "WA";
-        address.postalCode = "98104";
+        address.line1 = faker.address ().streetAddress ();
+        address.line2 = faker.address ().secondaryAddress ();
+        address.phone = faker.phoneNumber ().cellPhone ();
+        address.email = faker.name ().username () + "@gmail.com";
+        address.city = faker.address ().city ();
+        address.state = faker.address ().stateAbbr ();
+        address.postalCode = faker.address ().zipCodeByState (address.state);
         return address;
     }
 
@@ -263,4 +272,5 @@ public class TestHelper {
         physician.accountName = accountName;
         return physician;
     }
+
 }

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adaptivebiotech.test.functional</groupId>
     <artifactId>cora</artifactId>
-    <version>1.0.12</version>
+    <version>1.0.13-SNAPSHOT</version>
     <name>Adaptive Biotechnologies Functional Tests for Cora</name>
     <repositories>
         <repository>
@@ -164,37 +164,37 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.31</version>
+            <version>1.1.31-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.adaptivebiotech.test.functional</groupId>
-            <artifactId>pipeline-plugins</artifactId>
-            <version>1.0.4-SNAPSHOT</version>
+            <artifactId>picasso</artifactId>
+            <version>2.7.3</version>
         </dependency>
-        <dependency>
-			<groupId>com.adaptivebiotech.test.functional</groupId>
-			<artifactId>picasso</artifactId>
-			<version>2.7.2</version>
-		</dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>4.1.2</version>
         </dependency>
         <dependency>
-    		<groupId>org.apache.poi</groupId>
-    		<artifactId>poi-ooxml</artifactId>
-    		<version>4.1.2</version>
-		</dependency>
-        <dependency>
-        	<groupId>org.postgresql</groupId>
-        	<artifactId>postgresql</artifactId>
-        	<version>42.2.18</version>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.2</version>
         </dependency>
-		<dependency>
-		    <groupId>com.itextpdf</groupId>
-		    <artifactId>itextpdf</artifactId>
-		    <version>5.5.13.2</version>
-		</dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.18</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
     </dependencies>
 </project>

@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.ui.workflow;
+package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Cancelled;
@@ -23,12 +23,12 @@ import com.seleniumfy.test.utils.Timeout;
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class History extends CoraPage {
+public class OrcaHistory extends CoraPage {
 
     private final long millisRetry = 3000000l; // 50mins
     private final long waitRetry   = 60000l;   // 60sec
 
-    public History () {
+    public OrcaHistory () {
         staticNavBarHeight = 200;
     }
 

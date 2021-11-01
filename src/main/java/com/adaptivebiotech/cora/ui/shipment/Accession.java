@@ -198,4 +198,13 @@ public class Accession extends CoraPage {
         waitForStatus ("Label Verification Complete");
     }
 
+    public void completeAccession () {
+        isCorrectPage ();
+        clickIntakeComplete ();
+        labelingComplete ();
+        labelVerificationComplete ();
+        clickPass ();
+        gotoOrderDetail ();
+    }
+
 }

@@ -9,8 +9,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.InternalPharmaBilling;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.LymphNode;
@@ -52,28 +50,19 @@ import org.apache.http.message.BasicHeader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.db.CoraDBClient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.CoraDbTestBase;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.Billing;
+import com.adaptivebiotech.cora.ui.debug.FeatureFlags;
+import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
-import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
-import com.adaptivebiotech.cora.ui.workflow.FeatureFlags;
-import com.adaptivebiotech.cora.ui.workflow.History;
-import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
-import com.adaptivebiotech.cora.utils.Tunnel;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
@@ -91,16 +80,13 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
 @Test (groups = { "nutmeg" })
-public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
+public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
     private Physician    IgHVPhysician;
     private Physician    NYPhysician;
-    private Billing      billing                          = new Billing ();
-    private Specimen     specimen                         = new Specimen ();
-    private Shipment     shipment                         = new Shipment ();
-    private Accession    accession                        = new Accession ();
+
     private Diagnostic   diagnostic                       = new Diagnostic ();
-    private History      history                          = new History ();
+    private OrcaHistory  history                          = new OrcaHistory ();
     private FeatureFlags featureFlagsPage                 = new FeatureFlags ();
     private OrderStatus  orderStatus                      = new OrderStatus ();
 
@@ -140,8 +126,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     private final byte[] authBytes                        = (pipelinePortalTestUser + ":" + pipelinePortalTestPass).getBytes ();
     private final String portalTestAuth                   = "Basic " + Base64.getEncoder ().encodeToString (authBytes);
 
-    private Tunnel       tunnel;
-    private CoraDBClient coraDBClient;
     private final String orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
     private final String shmResultsSchema                 = "SELECT * FROM information_schema.columns WHERE table_name = 'shm_results' ORDER BY ordinal_position ASC";
     private final String noResultsAvailable               = "No result available";
@@ -149,30 +133,6 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
     private final String beginClonalityResult             = "CLONALITY RESULT";
     private final String endThisSampleFailed              = "This sample failed the quality control";
     private String       downloadDir;
-
-    @BeforeClass (alwaysRun = true)
-    public void beforeClass () {
-        testLog ("Should connect to DB using tunnel? " + CoraEnvironment.isDbTunnel);
-        if (CoraEnvironment.isDbTunnel) {
-            testLog ("Creating a DB connection using tunnel");
-            tunnel = Tunnel.getTunnel ();
-            Thread t = new Thread (tunnel);
-            t.start ();
-            tunnel.waitForConnection ();
-        }
-
-        coraDBClient = new CoraDBClient (CoraEnvironment.coraDBUser, CoraEnvironment.coraDBPass);
-
-        assertTrue (coraDBClient.openConnection ());
-
-    }
-
-    @AfterClass (alwaysRun = true)
-    public void afterClass () throws Exception {
-        coraDBClient.closeConnection ();
-        if (CoraEnvironment.isDbTunnel)
-            tunnel.close ();
-    }
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
@@ -919,52 +879,17 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
                                               String[] icdCodes,
                                               String orderNotes) {
         // create clonoSEQ diagnostic order
-        billing.selectNewClonoSEQDiagnosticOrder ();
-        billing.isCorrectPage ();
-
-        billing.selectPhysician (physician);
-        billing.createNewPatient (TestHelper.newInsurancePatient ());
-        for (String icdCode : icdCodes)
-            billing.enterPatientICD_Codes (icdCode);
-        billing.selectBilling (InternalPharmaBilling);
-        billing.clickSave ();
-
-        // add specimen details for order
-        specimen.enterSpecimenDelivery (CustomerShipment);
-        specimen.clickEnterSpecimenDetails ();
-        specimen.enterSpecimenType (specimenType);
-        if (specimenSource != null)
-            specimen.enterSpecimenSource (specimenSource);
-        if (specimenType == SpecimenType.Blood)
-            specimen.enterAntiCoagulant (Anticoagulant.EDTA);
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        specimen.enterOrderNotes (orderNotes);
-        specimen.clickSave ();
-
-        String orderNum = specimen.getOrderNum ();
+        String orderNum = diagnostic.createClonoSeqOrder (physician,
+                                                          TestHelper.newInsurancePatient (),
+                                                          icdCodes,
+                                                          assayTest,
+                                                          InternalPharmaBilling,
+                                                          SpecimenType.Blood,
+                                                          specimenSource,
+                                                          Anticoagulant.EDTA,
+                                                          com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active,
+                                                          Tube);
         Logging.info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
-
-        // add diagnostic shipment
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
-        shipment.selectDiagnosticSpecimenContainerType (Tube);
-        shipment.clickSave ();
-        shipment.gotoAccession ();
-
-        // accession complete
-        accession.isCorrectPage ();
-        accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
-        accession.clickPass ();
-        accession.gotoOrderDetail ();
-
-        // activate order
-        diagnostic.isCorrectPage ();
-        diagnostic.clickAssayTest (assayTest);
-        diagnostic.activateOrder ();
 
         Map <String, String> orderDetails = new HashMap <> ();
         orderDetails.put ("orderNumber", orderNum);
