@@ -62,7 +62,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
 
     private OrderDetailTDetect orderDetailTDetect  = new OrderDetailTDetect ();
     private PatientDetail      patientDetail       = new PatientDetail ();
-    private OrcaHistory            history             = new OrcaHistory ();
+    private OrcaHistory        history             = new OrcaHistory ();
     private TaskList           taskList            = new TaskList ();
     private TaskDetail         task                = new TaskDetail ();
     private OrderStatus        orderStatus         = new OrderStatus ();
@@ -378,8 +378,8 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         assertTrue (reportDataJson.dxResult.configVersion.startsWith ("dx.covid19."));
         assertTrue (reportDataJson.dxResult.qcFlags.size () == 0);
         assertEquals (reportDataJson.dxResult.posteriorProbability, 1.0);
-        assertEquals (reportDataJson.dxResult.countEnhancedSeq, 128);
-        assertEquals (reportDataJson.dxResult.uniqueProductiveTemplates, 222554);
+        assertEquals (reportDataJson.dxResult.countEnhancedSeq, Integer.valueOf (128));
+        assertEquals (reportDataJson.dxResult.uniqueProductiveTemplates, Integer.valueOf (222554));
 
         assertEquals (reportDataJson.commentInfo.klass, "com.adaptive.clonoseqreport.dtos.ReportCommentDto");
         assertEquals (reportDataJson.commentInfo.version, 1);

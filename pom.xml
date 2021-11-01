@@ -168,13 +168,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.adaptivebiotech.test.functional</groupId>
-			<artifactId>pipeline-plugins</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.adaptivebiotech.test.functional</groupId>
 			<artifactId>picasso</artifactId>
-			<version>2.7.2</version>
+			<version>2.7.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
