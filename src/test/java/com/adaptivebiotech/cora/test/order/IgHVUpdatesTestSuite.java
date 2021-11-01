@@ -86,7 +86,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     private Physician    NYPhysician;
 
     private Diagnostic   diagnostic                       = new Diagnostic ();
-    private OrcaHistory      history                          = new OrcaHistory ();
+    private OrcaHistory  history                          = new OrcaHistory ();
     private FeatureFlags featureFlagsPage                 = new FeatureFlags ();
     private OrderStatus  orderStatus                      = new OrderStatus ();
 

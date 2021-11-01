@@ -53,7 +53,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
     private ShipmentDetail shipmentDetail = new ShipmentDetail ();
     private Accession      accession      = new Accession ();
     private PatientDetail  patientDetail  = new PatientDetail ();
-    private OrcaHistory        historyPage    = new OrcaHistory ();
+    private OrcaHistory    historyPage    = new OrcaHistory ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
