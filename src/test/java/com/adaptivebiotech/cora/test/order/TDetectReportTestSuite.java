@@ -29,6 +29,7 @@ import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.order.Report;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskList;
@@ -66,7 +67,8 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     private TaskList           taskList            = new TaskList ();
     private TaskDetail         task                = new TaskDetail ();
     private OrderStatus        orderStatus         = new OrderStatus ();
-
+    private Report report = new Report();
+    
     private String             downloadDir;
     private final String       todaysDate          = DateUtils.getPastFutureDate (0,
                                                                                   DateTimeFormatter.ofPattern ("MM/dd/uuuu"),
@@ -125,7 +127,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         orderDetailTDetect.navigateToTab (0);
         orderDetailTDetect.isCorrectPage ();
 
-        Order order = orderDetailTDetect.parseOrder (active);
+        Order order = orderDetailTDetect.parseOrder ();
 
         String sampleName = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sampleName);
@@ -144,12 +146,12 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
 
         history.isCorrectPage ();
         history.clickOrderTest ();
-        orderDetailTDetect.isOrderStatusPage ();
+        orderStatus.isCorrectPage ();
         orderDetailTDetect.clickReportTab (assayTest);
 
         orderDetailTDetect.setQCstatus (QC.Pass);
 
-        String pdfUrl = orderDetailTDetect.getPreviewReportPdfUrl ();
+        String pdfUrl = report.getPreviewReportPdfUrl ();
         testLog ("PDF File URL: " + pdfUrl);
         String fileContent = getTextFromPDF (pdfUrl, 1);
         validateReportContent (fileContent, order);
@@ -174,16 +176,16 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
 
         // navigate to order status page
         history.clickOrderTest ();
-        orderDetailTDetect.isOrderStatusPage ();
+        orderStatus.isCorrectPage ();
         orderDetailTDetect.clickReportTab (assayTest);
         String reportNotes = "testing report notes";
-        orderDetailTDetect.enterReportNotes (reportNotes);
+        report.enterReportNotes (reportNotes);
         String additionalComments = "testing additional comments";
-        orderDetailTDetect.enterAdditionalComments (additionalComments);
+        report.enterAdditionalComments (additionalComments);
         orderDetailTDetect.clickSaveAndUpdate ();
         orderDetailTDetect.releaseReport ();
 
-        String releasePdfUrl = orderDetailTDetect.getReleasedReportPdfUrl ();
+        String releasePdfUrl = report.getReleasedReportPdfUrl ();
         testLog ("PDF File URL: " + releasePdfUrl);
         fileContent = getTextFromPDF (releasePdfUrl, 1);
         validateReportContent (fileContent, order);
@@ -211,7 +213,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
 
         history.waitFor (StageName.ReportDelivery, StageStatus.Finished);
         history.clickOrderTest ();
-        orderDetailTDetect.isOrderStatusPage ();
+        orderStatus.isCorrectPage ();
         orderDetailTDetect.clickReportTab (assayTest);
         orderDetailTDetect.clickCorrectReport ();
         orderDetailTDetect.selectCorrectionType (CorrectionType.Updated);
@@ -307,7 +309,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                                  ContainerType.SlideBox5CS);
         Logging.testLog ("T-Detect Order created: " + orderNum);
 
-        Order order = orderDetailTDetect.parseOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
+        Order order = orderDetailTDetect.parseOrder ();
         orderDetailTDetect.navigateToOrderStatusPage (order.id);
         orderStatus.isCorrectPage ();
         orderStatus.failWorkflow ("testing failure report");

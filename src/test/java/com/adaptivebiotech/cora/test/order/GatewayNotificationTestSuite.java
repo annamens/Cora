@@ -41,6 +41,7 @@ import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskList;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
+import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
 
 @Test (groups = {"akita", "regression"} )
 public class GatewayNotificationTestSuite extends OrderTestBase {
@@ -88,6 +89,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
+        orders
         order.releaseReport (ID_BCell2_CLIA, Pass);
         testLog ("released ID report");
 
@@ -100,7 +102,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.clickOrderTest ();
         order.clickReportTab (ID_BCell2_CLIA);
         order.clickCorrectReport ();
-        order.selectUpdatedCorrectedReport ();
+        order.selectCorrectionType(CorrectionType.Updated);
         order.enterReasonForCorrection ("Testing gateway notifications");
         order.clickCorrectReportSaveAndUpdate ();
         order.releaseReportWithSignatureRequired ();
@@ -138,7 +140,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.clickOrderTest ();
         order.clickReportTab (MRD_BCell2_CLIA);
         order.clickCorrectReport ();
-        order.selectAmendedCorrectedReport ();
+        order.selectCorrectionType(CorrectionType.Amended);
         order.enterReasonForCorrection ("Testing gateway notifications");
         order.clickCorrectReportSaveAndUpdate ();
         order.releaseReportWithSignatureRequired ();
@@ -180,7 +182,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.clickOrderTest ();
         order.clickReportTab (ID_TCRB);
         order.clickCorrectReport ();
-        order.selectUpdatedCorrectedReport ();
+        order.selectCorrectionType(CorrectionType.Updated);
         order.enterReasonForCorrection ("Testing gateway notifications");
         order.clickCorrectReportSaveAndUpdate ();
         order.releaseReportWithSignatureRequired ();
@@ -218,7 +220,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.clickOrderTest ();
         order.clickReportTab (MRD_TCRB);
         order.clickCorrectReport ();
-        order.selectUpdatedCorrectedReport ();
+        order.selectCorrectionType(CorrectionType.Updated);
         order.enterReasonForCorrection ("Testing gateway notifications");
         order.clickCorrectReportSaveAndUpdate ();
         order.releaseReportWithSignatureRequired ();

@@ -5,6 +5,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
+import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
@@ -14,7 +15,7 @@ import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class Billing extends Diagnostic {
+public class Billing extends CoraPage {
 
     private final String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
     private final String billing                = "#billing-type";

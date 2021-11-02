@@ -15,6 +15,7 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.Billing;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.Specimen;
@@ -32,7 +33,8 @@ import com.adaptivebiotech.cora.utils.TestHelper;
 @Test (enabled = false, groups = "regression")
 public class ReflexTestSuite extends CoraBaseBrowser {
 
-    private OrdersList oList;
+    private OrdersList       oList;
+    private NewOrderClonoSeq clonoSeqNewOrder = new NewOrderClonoSeq ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -68,7 +70,7 @@ public class ReflexTestSuite extends CoraBaseBrowser {
         specimen.selectPhysician (TestHelper.physicianTRF ());
         specimen.clickSave ();
         specimen.enterSpecimenDelivery (Reflex);
-        specimen.findSpecimenId (specimenId);
+        clonoSeqNewOrder.findSpecimenId (specimenId);
         specimen.clickSave ();
         addDiagnosticShipment_and_Activate ();
     }
@@ -98,7 +100,7 @@ public class ReflexTestSuite extends CoraBaseBrowser {
 
         Diagnostic diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
-        diagnostic.clickAssayTest (ID_BCell2_CLIA);
+        clonoSeqNewOrder.clickAssayTest (ID_BCell2_CLIA);
         diagnostic.activateOrder ();
         return diagnostic.getSampleName ();
     }

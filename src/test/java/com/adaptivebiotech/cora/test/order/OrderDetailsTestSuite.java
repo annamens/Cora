@@ -130,7 +130,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         String activateDateTime = activeHistory.get (2).split ("Activated by")[0].trim ();
         Logging.info ("Order Activated Date and Time: " + activateDateTime);
 
-        Order activeOrder = diagnostic.parseOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
+        Order activeOrder = diagnostic.parseOrder ();
         assertEquals (activeOrder.status, com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
         assertEquals (activeOrder.order_number, orderNum);
         String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + orderNum;
@@ -182,7 +182,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
 
         shipmentDetail.clickOrderNo ();
         orderStatus.isCorrectPage ();
-        orderStatus.clickOrderDetails ();
+        orderStatus.clickOrderDetailsTab ();
         diagnostic.isCorrectPage ();
         diagnostic.clickPatientCode (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
         patientDetail.isCorrectPage ();
@@ -207,7 +207,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         String coraAttachment = "test1.png";
         diagnostic.uploadAttachments (coraAttachment);
 
-        Order editOrder = diagnostic.parseOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
+        Order editOrder = diagnostic.parseOrder ();
         assertEquals (editOrder.properties.BillingType, editChargeType);
         Logging.testLog ("STEP 7 - Billing section displays Billing2");
 
@@ -244,7 +244,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         diagnostic.transferTrf (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
         diagnostic.isCorrectPage ();
 
-        Order transferTrOrder = diagnostic.parseOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending);
+        Order transferTrOrder = diagnostic.parseOrder ();
         assertEquals (transferTrOrder.order_number, orderNum + "-a");
 
         assertEquals (transferTrOrder.physician.providerFullName, physician.firstName + " " + physician.lastName);
@@ -262,7 +262,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         Logging.testLog ("STEP 13 - New diagnostic order page displays");
 
         orderStatus.navigateToOrderStatusPage (editOrder.id);
-        orderStatus.clickOrderDetails ();
+        orderStatus.clickOrderDetailsTab ();
         diagnostic.isCorrectPage ();
         diagnostic.clickCancelOrder ();
         Logging.testLog ("STEP 14 - Cancel Order modal appears.");

@@ -40,7 +40,7 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
 
         // test: transfer a pending TRF order
         diagnostic.isCorrectPage ();
-        expected = diagnostic.parseOrder (Pending);
+        expected = diagnostic.parseOrder ();
         expected.patient.notes = randomWords (30);
         expected.notes = randomWords (25);
 
@@ -50,7 +50,7 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
         diagnostic.isCorrectPage ();
 
         // test: verify the newly cloned order
-        Order actual = diagnostic.parseOrder (Pending);
+        Order actual = diagnostic.parseOrder ();
         assertEquals (actual.order_number, String.join ("-", expected.order_number, postfix));
         assertEquals (actual.name, String.join ("-", expected.name, postfix));
         verifyTrfCopied (actual, expected);
@@ -78,9 +78,9 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
         list.clickOrder (expected.order_number);
 
         // test: transfer a active TRF order
-        diagnostic.isOrderStatusPage ();
-        diagnostic.clickOrderDetails ();
-        expected = diagnostic.parseOrder (Active);
+        orderStatus.isCorrectPage ();
+        diagnostic.clickOrderDetailsTab ();
+        expected = diagnostic.parseOrder ();
         expected.patient.notes = randomWords (30);
         expected.notes = randomWords (25);
 
@@ -90,7 +90,7 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
         diagnostic.isCorrectPage ();
 
         // test: verify the newly cloned order
-        Order actual = diagnostic.parseOrder (Pending);
+        Order actual = diagnostic.parseOrder ();
         assertEquals (actual.order_number, String.join ("-", expected.order_number, postfix));
         assertEquals (actual.name, String.join ("-", expected.name, postfix));
         verifyTrfCopied (actual, expected);
@@ -113,9 +113,9 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
         list.clickOrder (expected.order_number);
 
         // test: transfer a pending TRF order
-        diagnostic.isOrderStatusPage ();
-        diagnostic.clickOrderDetails ();
-        expected = diagnostic.parseOrder (Cancelled);
+        orderStatus.isCorrectPage ();
+        diagnostic.clickOrderDetailsTab ();
+        expected = diagnostic.parseOrder ();
         expected.patient.notes = randomWords (30);
         expected.notes = randomWords (25);
 
@@ -125,7 +125,7 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
         diagnostic.isCorrectPage ();
 
         // test: verify the newly cloned order
-        Order actual = diagnostic.parseOrder (Pending);
+        Order actual = diagnostic.parseOrder ();
         assertEquals (actual.order_number, String.join ("-", expected.order_number, postfix));
         assertEquals (actual.name, String.join ("-", expected.name, postfix));
         verifyTrfCopied (actual, expected);
@@ -148,9 +148,9 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
         list.clickOrder (expected.order_number);
 
         // test: transfer a pending TRF order
-        diagnostic.isOrderStatusPage ();
-        diagnostic.clickOrderDetails ();
-        expected = diagnostic.parseOrder (Completed);
+        orderStatus.isCorrectPage ();
+        diagnostic.clickOrderDetailsTab ();
+        expected = diagnostic.parseOrder ();
         expected.patient.notes = randomWords (30);
         expected.notes = randomWords (25);
 
@@ -160,7 +160,7 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
         diagnostic.isCorrectPage ();
 
         // test: verify the newly cloned order
-        Order actual = diagnostic.parseOrder (Pending);
+        Order actual = diagnostic.parseOrder ();
         assertEquals (actual.order_number, String.join ("-", expected.order_number, postfix));
         actual.name = expected.name;
         verifyTrfCopied (actual, expected);
@@ -184,12 +184,12 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
 
         // test: transfer a pending TRF order
         diagnostic.isCorrectPage ();
-        expected = diagnostic.parseOrder (Pending);
+        expected = diagnostic.parseOrder ();
         diagnostic.transferTrf (Pending);
         diagnostic.isCorrectPage ();
 
         // test: first cloned order
-        Order actual1 = diagnostic.parseOrder (Pending);
+        Order actual1 = diagnostic.parseOrder ();
         actual1.patient.notes = randomWords (30);
         actual1.notes = randomWords (25);
         assertEquals (actual1.order_number, String.join ("-", expected.order_number, postfix1));
@@ -201,7 +201,7 @@ public class TransferTrfTestSuite extends CoraBaseBrowser {
 
         // test: second cloned order
         String postfix2 = String.valueOf ((char) (postfix1.charAt (0) + 1));
-        Order actual2 = diagnostic.parseOrder (Pending);
+        Order actual2 = diagnostic.parseOrder ();
         assertEquals (actual2.order_number, String.join ("-", expected.order_number, postfix2));
         assertEquals (actual2.name, String.join ("-", expected.name, postfix2));
         actual1.order_number = expected.order_number;

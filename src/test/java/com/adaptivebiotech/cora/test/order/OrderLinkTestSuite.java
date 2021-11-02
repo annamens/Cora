@@ -138,7 +138,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         assertEquals (orderStatus.getOrderNum (), order2);
         Logging.testLog ("STEP 9 - The generic order status page is displayed");
 
-        orderStatus.clickOrderDetails ();
+        orderStatus.clickOrderDetailsTab ();
         diagnostic.isCorrectPage ();
         diagnostic.clickPatientOrderHistory ();
         diagnostic.clickOrder (order2);
