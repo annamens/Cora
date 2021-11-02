@@ -8,7 +8,7 @@ import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 
-public class OrderStatus extends Diagnostic {
+public class OrderStatus extends OrderHeader {
 
     private final String historyLink          = ".history-link";
     private final String stageActionDots      = "#stageActionsDropdown";

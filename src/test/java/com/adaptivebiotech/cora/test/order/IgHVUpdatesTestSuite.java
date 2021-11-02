@@ -62,6 +62,7 @@ import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.Diagnostic;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.order.Report;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
@@ -89,6 +90,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     private OrcaHistory  history                          = new OrcaHistory ();
     private FeatureFlags featureFlagsPage                 = new FeatureFlags ();
     private OrderStatus  orderStatus                      = new OrderStatus ();
+    private Report       report                           = new Report ();
 
     private final String c91_10                           = "C91.10";
     private final String c83_00                           = "C83.00";
@@ -590,7 +592,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         releaseReport (assayTest, false);
 
-        String pdfUrl = diagnostic.getPreviewReportPdfUrl ();
+        String pdfUrl = report.getPreviewReportPdfUrl ();
         testLog ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 4, beginIghvMutationStatus, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
@@ -638,7 +640,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
 
         releaseReport (assayTest, false);
-        String pdfUrl = diagnostic.getPreviewReportPdfUrl ();
+        String pdfUrl = report.getPreviewReportPdfUrl ();
         testLog ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
@@ -678,7 +680,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         history.clickOrderTest ();
 
         // navigate to order status page
-        diagnostic.isOrderStatusPage ();
+        orderStatus.isCorrectPage ();
         diagnostic.clickReportTab (assayTest);
 
         diagnostic.setQCstatus (QC.Fail);
@@ -689,7 +691,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
 
         releaseReport (assayTest, true);
-        String pdfUrl = diagnostic.getReleasedReportPdfUrl ();
+        String pdfUrl = report.getReleasedReportPdfUrl ();
         testLog ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
@@ -898,7 +900,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         orderDetails.put ("sampleName", sampleName);
 
         orderStatus.clickOrderStatusTab ();
-        orderStatus.isOrderStatusPage ();
+        orderStatus.isCorrectPage ();
         orderStatus.expandWorkflowHistory ();
         String orderTestId = orderStatus.getOrderTestIdFromUrl ();
         orderDetails.put ("orderTestId", orderTestId);
@@ -1021,7 +1023,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         history.clickOrderTest ();
 
         // navigate to order status page
-        diagnostic.isOrderStatusPage ();
+        orderStatus.isCorrectPage ();
         diagnostic.clickReportTab (assayTest);
         boolean isCLIAIGHVFlagPresent = diagnostic.isCLIAIGHVBtnVisible ();
 
