@@ -57,11 +57,6 @@ public class OrderDetail extends OrderHeader {
         assertEquals (waitForElementVisible ("[uisref=\"main.patient.orders\"]").getText (), "PATIENT ORDER HISTORY");
     }
 
-    // aka sample name
-    public String getWorkflowId () {
-        return getText ("[ng-bind=\"::orderTest.workflowName\"]");
-    }
-
     public Order parseOrder () {
         Order order = new Order ();
         order.id = getOrderId ();

@@ -4,7 +4,6 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.LYME_DX_IVD;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -66,23 +65,6 @@ public class Report extends OrderHeader {
         pageLoading ();
     }
 
-    public void clickReportNotesIcon () {
-        String css = "img[src=\"/assets/images/ReportNotes.png\"]";
-        assertTrue (click (css));
-        waitForAjaxCalls ();
-    }
-
-    public String getTooltipText () {
-        String css = ".selectable-tooltip-content";
-        return getText (css);
-    }
-
-    public void clickAdditionalCommentsIcon () {
-        String additionalCommentsButton = "img[src=\"/assets/images/ReportPDFAdditionalComments.png\"]";
-        assertTrue (click (additionalCommentsButton));
-        waitForAjaxCalls ();
-    }
-
     public void releaseReportWithSignatureRequired () {
         String releaseReport = "[ng-click=\"ctrl.releaseReport()\"]";
         String usernameField = "#userName";
@@ -97,19 +79,6 @@ public class Report extends OrderHeader {
         assertTrue (click (button));
         pageLoading ();
 
-    }
-
-    public void closeReportPreview () {
-        String css = ".modal-header button.close";
-        assertTrue (click (css));
-        waitForAjaxCalls ();
-    }
-
-    public void clickReportPreviewLink () {
-        String css = "img[src=\"/assets/images/ReportPDF.png\"]";
-        assertTrue (click (css));
-        String headerText = waitForElementVisible (".modal-header").getText ();
-        assertEquals (headerText, "Preview");
     }
 
     public void clickSaveAndUpdate () {

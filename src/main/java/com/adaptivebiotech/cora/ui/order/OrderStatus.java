@@ -51,6 +51,11 @@ public class OrderStatus extends OrderHeader {
         return getText ("[ng-bind='::orderTest.testName']");
     }
 
+    // aka sample name
+    public String getWorkflowId () {
+        return getText ("[ng-bind=\"::orderTest.workflowName\"]");
+    }
+
     public String getLastActivity () {
         return getText ("//*[contains(@ng-bind,'::orderTest.lastActivity')]/..");
     }
