@@ -43,12 +43,6 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String   assayEl          = "//span[@ng-bind='test.name' and text()='%s']";
     private final String   specimenDelivery = "[name='specimenType']";
 
-    @Override
-    public void isCorrectPage () {
-        assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
-        pageLoading ();
-    }
-
     public void clickAssayTest (Assay assay) {
         String type = "[ng-click*='" + assay.type + "']";
         if (!waitForElement (type).isSelected ())
