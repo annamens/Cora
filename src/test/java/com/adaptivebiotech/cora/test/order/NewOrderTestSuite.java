@@ -15,10 +15,8 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.Billing;
-import com.adaptivebiotech.cora.ui.order.Diagnostic;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
@@ -27,15 +25,13 @@ import com.adaptivebiotech.cora.utils.TestHelper;
 @Test (groups = "regression", enabled = false)
 public class NewOrderTestSuite extends CoraBaseBrowser {
 
-    private OrdersList oList;
-    private Diagnostic diagnostic;
+    private OrdersList       oList      = new OrdersList ();
+    private NewOrderClonoSeq diagnostic = new NewOrderClonoSeq ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         new Login ().doLogin ();
-        oList = new OrdersList ();
         oList.isCorrectPage ();
-        diagnostic = new Diagnostic ();
     }
 
     public void clonality_eos_ivd () {
@@ -64,23 +60,21 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
     }
 
     private void prep_new_order (Patient patient) {
-        Billing billing = new Billing ();
-        billing.selectNewClonoSEQDiagnosticOrder ();
-        billing.isCorrectPage ();
-        billing.selectPhysician (TestHelper.physicianTRF ());
-        billing.createNewPatient (patient);
-        billing.enterPatientICD_Codes ("A01.02");
-        billing.enterBill (patient);
-        billing.clickSave (); // have to Save first before we can set Specimen info
+        diagnostic.selectNewClonoSEQDiagnosticOrder ();
+        diagnostic.isCorrectPage ();
+        diagnostic.selectPhysician (TestHelper.physicianTRF ());
+        diagnostic.createNewPatient (patient);
+        diagnostic.enterPatientICD_Codes ("A01.02");
+        diagnostic.billing.enterBill (patient);
+        diagnostic.clickSave (); // have to Save first before we can set Specimen info
 
-        Specimen specimen = new Specimen ();
-        specimen.enterSpecimenDelivery (CustomerShipment);
-        specimen.clickEnterSpecimenDetails ();
-        specimen.enterSpecimenType (BoneMarrowAspirateSlide);
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        specimen.clickSave ();
+        diagnostic.enterSpecimenDelivery (CustomerShipment);
+        diagnostic.clickEnterSpecimenDetails ();
+        diagnostic.enterSpecimenType (BoneMarrowAspirateSlide);
+        diagnostic.enterCollectionDate (DateUtils.getPastFutureDate (-3));
+        diagnostic.clickSave ();
 
-        add_shipment_and_accession (specimen.getOrderNum ());
+        add_shipment_and_accession (diagnostic.getOrderNum ());
     }
 
     private void add_shipment_and_accession (String orderNum) {

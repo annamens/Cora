@@ -9,7 +9,6 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox5x5;
 import static com.adaptivebiotech.test.utils.PageHelper.LinkType.Project;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.MrdBatchReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
@@ -33,7 +32,7 @@ import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.mira.MirasList;
 import com.adaptivebiotech.cora.ui.mira.NewMira;
 import com.adaptivebiotech.cora.ui.order.Batch;
-import com.adaptivebiotech.cora.ui.order.Diagnostic;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
@@ -47,37 +46,25 @@ import com.adaptivebiotech.cora.ui.task.TaskStatus;
 import com.adaptivebiotech.cora.ui.utilities.AuditTool;
 import com.adaptivebiotech.cora.ui.utilities.BarcodeComparisonTool;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 
 @Test (groups = "smoke")
 public class SmokeTestSuite extends CoraBaseBrowser {
 
-    private Login         login;
-    private Diagnostic    diagnostic;
-    private Task          task;
-    private Shipment      shipment;
-    private Batch         batch;
-    private NewMira       mira;
-    private AddContainer  addContainer;
-    private OrdersList    oList;
-    private PatientsList  pList;
-    private MirasList     mList;
-    private ContainerList cList;
+    private Login            login        = new Login ();
+    private NewOrderClonoSeq diagnostic   = new NewOrderClonoSeq ();
+    private Task             task         = new Task ();
+    private Shipment         shipment     = new Shipment ();
+    private Batch            batch        = new Batch ();
+    private NewMira          mira         = new NewMira ();
+    private AddContainer     addContainer = new AddContainer ();
+    private OrdersList       oList        = new OrdersList ();
+    private PatientsList     pList        = new PatientsList ();
+    private MirasList        mList        = new MirasList ();
+    private ContainerList    cList        = new ContainerList ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         openBrowser (coraTestUrl);
-        login = new Login ();
-        diagnostic = new Diagnostic ();
-        task = new Task ();
-        shipment = new Shipment ();
-        batch = new Batch ();
-        mira = new NewMira ();
-        addContainer = new AddContainer ();
-        oList = new OrdersList ();
-        pList = new PatientsList ();
-        mList = new MirasList ();
-        cList = new ContainerList ();
     }
 
     /**
@@ -285,10 +272,10 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         Patient patient = newPatient ();
         diagnostic.createNewPatient (patient);
         diagnostic.clickSave ();
-        assertEquals (diagnostic.getPatientName (OrderStatus.Pending), patient.fullname);
+        assertEquals (diagnostic.getPatientName (), patient.fullname);
         testLog ("Patient Information section displayed " + patient.fullname);
 
-        diagnostic.clickPatientCode (Pending);
+        diagnostic.clickPatientCode ();
         PatientDetail patientDetail = new PatientDetail ();
         patientDetail.isCorrectPage ();
         assertEquals (patientDetail.getFirstName (), patient.firstName);

@@ -317,13 +317,6 @@ public class NewOrder extends OrderHeader {
         return isElementVisible (css) ? readInput (css) : null;
     }
 
-    public void editPatientNotes (String notes) {
-        String css = "[notes='ctrl.orderEntry.order.patient.notes']";
-        assertTrue (click (css + " [ng-click='ctrl.editNotes()']"));
-        assertTrue (setText (css + " textarea", notes));
-        assertTrue (click (css + " [ng-click='ctrl.save()']"));
-    }
-
     public void enterPatientNotes (String notes) {
         assertTrue (setText ("[ng-model='ctrl.orderEntry.order.patient.notes']", notes));
     }
@@ -379,11 +372,6 @@ public class NewOrder extends OrderHeader {
 
     public String getSpecimenId () {
         return isElementVisible (specimenNumber) ? getText (specimenNumber) : null;
-    }
-
-    public String getSpecimenIdUrlAttribute (String attribute) {
-        String xpath = "//*[text()='Adaptive Specimen ID']/..//a";
-        return isElementPresent (xpath) && isElementVisible (xpath) ? getAttribute (xpath, attribute) : null;
     }
 
     public SpecimenType getSpecimenType () {
@@ -585,4 +573,15 @@ public class NewOrder extends OrderHeader {
         return readInput (xpath);
     }
 
+    public String getIntakeCompleteDate () {
+        return getText ("//*[text()='Intake Complete']/..//div");
+    }
+
+    public String getSpecimenApprovalDate () {
+        return getText ("//*[text()='Specimen Approval']/..//span[2]");
+    }
+
+    public String getSpecimenApprovalStatus () {
+        return getText ("//*[text()='Specimen Approval']/..//span[1]");
+    }
 }

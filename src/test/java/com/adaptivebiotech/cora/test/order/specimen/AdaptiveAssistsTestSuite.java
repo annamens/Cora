@@ -27,10 +27,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.Billing;
-import com.adaptivebiotech.cora.ui.order.Diagnostic;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
@@ -39,243 +37,239 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 @Test (groups = "regression")
 public class AdaptiveAssistsTestSuite extends CoraBaseBrowser {
 
-    private OrdersList oList;
-    private Specimen   specimen;
+    private OrdersList       oList            = new OrdersList ();
+    private NewOrderClonoSeq newOrderClonoSeq = new NewOrderClonoSeq ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         new Login ().doLogin ();
-        oList = new OrdersList ();
         oList.isCorrectPage ();
         oList.selectNewClonoSEQDiagnosticOrder ();
 
-        Diagnostic diagnostic = new Diagnostic ();
-        diagnostic.isCorrectPage ();
-        diagnostic.selectPhysician (TestHelper.physicianTRF ());
-        diagnostic.createNewPatient (newPatient ());
-        diagnostic.enterPatientICD_Codes ("A01.02");
-        diagnostic.clickSave (); // have to Save first before we can set Specimen info
+        newOrderClonoSeq.isCorrectPage ();
+        newOrderClonoSeq.selectPhysician (TestHelper.physicianTRF ());
+        newOrderClonoSeq.createNewPatient (newPatient ());
+        newOrderClonoSeq.enterPatientICD_Codes ("A01.02");
+        newOrderClonoSeq.clickSave (); // have to Save first before we can set Specimen info
 
-        specimen = new Specimen ();
-        specimen.enterSpecimenDelivery (PathRequest);
-        specimen.clickEnterSpecimenDetails ();
+        newOrderClonoSeq.enterSpecimenDelivery (PathRequest);
+        newOrderClonoSeq.clickEnterSpecimenDetails ();
     }
 
     public void specimenType_Blood_EDTA () {
-        specimen.enterSpecimenType (Blood);
-        specimen.enterAntiCoagulant (EDTA);
+        newOrderClonoSeq.enterSpecimenType (Blood);
+        newOrderClonoSeq.enterAntiCoagulant (EDTA);
         saveOrder ();
     }
 
     public void specimenType_Blood_Citrate () {
-        specimen.enterSpecimenType (Blood);
-        specimen.enterAntiCoagulant (Other);
-        specimen.enterAntiCoagulantOther ("Citrate");
+        newOrderClonoSeq.enterSpecimenType (Blood);
+        newOrderClonoSeq.enterAntiCoagulant (Other);
+        newOrderClonoSeq.enterAntiCoagulantOther ("Citrate");
         saveOrder ();
     }
 
     public void specimenType_Blood_Cellfree () {
-        specimen.enterSpecimenType (Blood);
-        specimen.enterCompartment (CellFree);
-        specimen.enterAntiCoagulant (CfdRoche);
+        newOrderClonoSeq.enterSpecimenType (Blood);
+        newOrderClonoSeq.enterCompartment (CellFree);
+        newOrderClonoSeq.enterAntiCoagulant (CfdRoche);
         saveOrder ();
     }
 
     public void specimenType_BoneMarrowAspirateSlide () {
-        specimen.enterSpecimenType (BoneMarrowAspirateSlide);
+        newOrderClonoSeq.enterSpecimenType (BoneMarrowAspirateSlide);
         saveOrder ();
     }
 
     public void specimenType_CellPellet_BoneMarrow () {
-        specimen.enterSpecimenType (CellPellet);
-        specimen.enterSpecimenSource (BoneMarrow);
+        newOrderClonoSeq.enterSpecimenType (CellPellet);
+        newOrderClonoSeq.enterSpecimenSource (BoneMarrow);
         saveOrder ();
     }
 
     public void specimenType_CellPellet_PBMC () {
-        specimen.enterSpecimenType (CellPellet);
-        specimen.enterSpecimenSource (PBMC);
+        newOrderClonoSeq.enterSpecimenType (CellPellet);
+        newOrderClonoSeq.enterSpecimenSource (PBMC);
         saveOrder ();
     }
 
     public void specimenType_CellPellet_BCells () {
-        specimen.enterSpecimenType (CellPellet);
-        specimen.enterSpecimenSource (BCells);
+        newOrderClonoSeq.enterSpecimenType (CellPellet);
+        newOrderClonoSeq.enterSpecimenSource (BCells);
         saveOrder ();
     }
 
     public void specimenType_CellPellet_TCells () {
-        specimen.enterSpecimenType (CellPellet);
-        specimen.enterSpecimenSource (TCells);
+        newOrderClonoSeq.enterSpecimenType (CellPellet);
+        newOrderClonoSeq.enterSpecimenSource (TCells);
         saveOrder ();
     }
 
     public void specimenType_CellPellet_LymphNode () {
-        specimen.enterSpecimenType (CellPellet);
-        specimen.enterSpecimenSource (SpecimenSource.Other);
-        specimen.enterSpecimenSourceOther (LymphNode.label);
+        newOrderClonoSeq.enterSpecimenType (CellPellet);
+        newOrderClonoSeq.enterSpecimenSource (SpecimenSource.Other);
+        newOrderClonoSeq.enterSpecimenSourceOther (LymphNode.label);
         saveOrder ();
     }
 
     public void specimenType_CellSuspension_BoneMarrow () {
-        specimen.enterSpecimenType (CellSuspension);
-        specimen.enterSpecimenSource (BoneMarrow);
+        newOrderClonoSeq.enterSpecimenType (CellSuspension);
+        newOrderClonoSeq.enterSpecimenSource (BoneMarrow);
         saveOrder ();
     }
 
     public void specimenType_CellSuspension_PBMC () {
-        specimen.enterSpecimenType (CellSuspension);
-        specimen.enterSpecimenSource (PBMC);
+        newOrderClonoSeq.enterSpecimenType (CellSuspension);
+        newOrderClonoSeq.enterSpecimenSource (PBMC);
         saveOrder ();
     }
 
     public void specimenType_CellSuspension_BCells () {
-        specimen.enterSpecimenType (CellSuspension);
-        specimen.enterSpecimenSource (BCells);
+        newOrderClonoSeq.enterSpecimenType (CellSuspension);
+        newOrderClonoSeq.enterSpecimenSource (BCells);
         saveOrder ();
     }
 
     public void specimenType_CellSuspension_TCells () {
-        specimen.enterSpecimenType (CellSuspension);
-        specimen.enterSpecimenSource (TCells);
+        newOrderClonoSeq.enterSpecimenType (CellSuspension);
+        newOrderClonoSeq.enterSpecimenSource (TCells);
         saveOrder ();
     }
 
     public void specimenType_CellSuspension_Skin () {
-        specimen.enterSpecimenType (CellSuspension);
-        specimen.enterSpecimenSource (SpecimenSource.Other);
-        specimen.enterSpecimenSourceOther (Skin.label);
+        newOrderClonoSeq.enterSpecimenType (CellSuspension);
+        newOrderClonoSeq.enterSpecimenSource (SpecimenSource.Other);
+        newOrderClonoSeq.enterSpecimenSourceOther (Skin.label);
         saveOrder ();
     }
 
     public void specimenType_FFPEScrolls_Skin () {
-        specimen.enterSpecimenType (FFPEScrolls);
-        specimen.enterSpecimenSource (Skin);
+        newOrderClonoSeq.enterSpecimenType (FFPEScrolls);
+        newOrderClonoSeq.enterSpecimenSource (Skin);
         saveOrder ();
     }
 
     public void specimenType_FFPEScrolls_LymphNode () {
-        specimen.enterSpecimenType (FFPEScrolls);
-        specimen.enterSpecimenSource (LymphNode);
+        newOrderClonoSeq.enterSpecimenType (FFPEScrolls);
+        newOrderClonoSeq.enterSpecimenSource (LymphNode);
         saveOrder ();
     }
 
     public void specimenType_FFPEScrolls_BoneMarrow () {
-        specimen.enterSpecimenType (FFPEScrolls);
-        specimen.enterSpecimenSource (BoneMarrow);
+        newOrderClonoSeq.enterSpecimenType (FFPEScrolls);
+        newOrderClonoSeq.enterSpecimenSource (BoneMarrow);
         saveOrder ();
     }
 
     public void specimenType_FFPEScrolls_PBMC () {
-        specimen.enterSpecimenType (FFPEScrolls);
-        specimen.enterSpecimenSource (SpecimenSource.Other);
-        specimen.enterSpecimenSourceOther (PBMC.label);
+        newOrderClonoSeq.enterSpecimenType (FFPEScrolls);
+        newOrderClonoSeq.enterSpecimenSource (SpecimenSource.Other);
+        newOrderClonoSeq.enterSpecimenSourceOther (PBMC.label);
         saveOrder ();
     }
 
     public void specimenType_FFPESlides_Skin () {
-        specimen.enterSpecimenType (FFPESlides);
-        specimen.enterSpecimenSource (Skin);
+        newOrderClonoSeq.enterSpecimenType (FFPESlides);
+        newOrderClonoSeq.enterSpecimenSource (Skin);
         saveOrder ();
     }
 
     public void specimenType_FFPESlides_LymphNode () {
-        specimen.enterSpecimenType (FFPESlides);
-        specimen.enterSpecimenSource (LymphNode);
+        newOrderClonoSeq.enterSpecimenType (FFPESlides);
+        newOrderClonoSeq.enterSpecimenSource (LymphNode);
         saveOrder ();
     }
 
     public void specimenType_FFPESlides_BoneMarrow () {
-        specimen.enterSpecimenType (FFPESlides);
-        specimen.enterSpecimenSource (BoneMarrow);
+        newOrderClonoSeq.enterSpecimenType (FFPESlides);
+        newOrderClonoSeq.enterSpecimenSource (BoneMarrow);
         saveOrder ();
     }
 
     public void specimenType_FFPESlides_BCells () {
-        specimen.enterSpecimenType (FFPESlides);
-        specimen.enterSpecimenSource (SpecimenSource.Other);
-        specimen.enterSpecimenSourceOther (BCells.label);
+        newOrderClonoSeq.enterSpecimenType (FFPESlides);
+        newOrderClonoSeq.enterSpecimenSource (SpecimenSource.Other);
+        newOrderClonoSeq.enterSpecimenSourceOther (BCells.label);
         saveOrder ();
     }
 
     public void specimenType_FreshBoneMarrow_EDTA () {
-        specimen.enterSpecimenType (FreshBoneMarrow);
-        specimen.enterAntiCoagulant (EDTA);
+        newOrderClonoSeq.enterSpecimenType (FreshBoneMarrow);
+        newOrderClonoSeq.enterAntiCoagulant (EDTA);
         saveOrder ();
     }
 
     public void specimenType_FreshBoneMarrow_Oxalate () {
-        specimen.enterSpecimenType (FreshBoneMarrow);
-        specimen.enterAntiCoagulant (Other);
-        specimen.enterAntiCoagulantOther ("Oxalate");
+        newOrderClonoSeq.enterSpecimenType (FreshBoneMarrow);
+        newOrderClonoSeq.enterAntiCoagulant (Other);
+        newOrderClonoSeq.enterAntiCoagulantOther ("Oxalate");
         saveOrder ();
     }
 
     public void specimenType_gDNA_Skin () {
-        specimen.enterSpecimenType (gDNA);
-        specimen.enterSpecimenSource (Skin);
+        newOrderClonoSeq.enterSpecimenType (gDNA);
+        newOrderClonoSeq.enterSpecimenSource (Skin);
         saveOrder ();
     }
 
     public void specimenType_gDNA_Tissue () {
-        specimen.enterSpecimenType (gDNA);
-        specimen.enterSpecimenSource (Tissue);
+        newOrderClonoSeq.enterSpecimenType (gDNA);
+        newOrderClonoSeq.enterSpecimenSource (Tissue);
         saveOrder ();
     }
 
     public void specimenType_gDNA_BoneMarrow () {
-        specimen.enterSpecimenType (gDNA);
-        specimen.enterSpecimenSource (BoneMarrow);
+        newOrderClonoSeq.enterSpecimenType (gDNA);
+        newOrderClonoSeq.enterSpecimenSource (BoneMarrow);
         saveOrder ();
     }
 
     public void specimenType_gDNA_PBMC () {
-        specimen.enterSpecimenType (gDNA);
-        specimen.enterSpecimenSource (PBMC);
+        newOrderClonoSeq.enterSpecimenType (gDNA);
+        newOrderClonoSeq.enterSpecimenSource (PBMC);
         saveOrder ();
     }
 
     public void specimenType_gDNA_TCells () {
-        specimen.enterSpecimenType (gDNA);
-        specimen.enterSpecimenSource (SpecimenSource.Other);
-        specimen.enterSpecimenSourceOther (TCells.label);
+        newOrderClonoSeq.enterSpecimenType (gDNA);
+        newOrderClonoSeq.enterSpecimenSource (SpecimenSource.Other);
+        newOrderClonoSeq.enterSpecimenSourceOther (TCells.label);
         saveOrder ();
     }
 
     public void specimenType_Plasma () {
-        specimen.enterSpecimenType (Plasma);
+        newOrderClonoSeq.enterSpecimenType (Plasma);
         saveOrder ();
     }
 
     public void specimenType_Tissue_Skin () {
-        specimen.enterSpecimenType (SpecimenType.Tissue);
-        specimen.enterSpecimenSource (Skin);
+        newOrderClonoSeq.enterSpecimenType (SpecimenType.Tissue);
+        newOrderClonoSeq.enterSpecimenSource (Skin);
         saveOrder ();
     }
 
     public void specimenType_Tissue_LymphNode () {
-        specimen.enterSpecimenType (SpecimenType.Tissue);
-        specimen.enterSpecimenSource (LymphNode);
+        newOrderClonoSeq.enterSpecimenType (SpecimenType.Tissue);
+        newOrderClonoSeq.enterSpecimenSource (LymphNode);
         saveOrder ();
     }
 
     public void specimenType_Tissue_BCells () {
-        specimen.enterSpecimenType (SpecimenType.Tissue);
-        specimen.enterSpecimenSource (SpecimenSource.Other);
-        specimen.enterSpecimenSourceOther (BCells.label);
+        newOrderClonoSeq.enterSpecimenType (SpecimenType.Tissue);
+        newOrderClonoSeq.enterSpecimenSource (SpecimenSource.Other);
+        newOrderClonoSeq.enterSpecimenSourceOther (BCells.label);
         saveOrder ();
     }
 
     public void specimenType_Saliva () {
-        specimen.enterSpecimenType (SpecimenType.Other);
-        specimen.enterSpecimenTypeOther ("Saliva");
+        newOrderClonoSeq.enterSpecimenType (SpecimenType.Other);
+        newOrderClonoSeq.enterSpecimenTypeOther ("Saliva");
         saveOrder ();
     }
 
     private void saveOrder () {
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        Billing billing = new Billing ();
-        billing.selectBilling (NoCharge);
-        billing.clickSave ();
+        newOrderClonoSeq.enterCollectionDate (DateUtils.getPastFutureDate (-3));
+        newOrderClonoSeq.billing.selectBilling (NoCharge);
+        newOrderClonoSeq.clickSave ();
     }
 }

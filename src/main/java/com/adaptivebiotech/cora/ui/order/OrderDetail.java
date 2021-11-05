@@ -97,7 +97,8 @@ public class OrderDetail extends OrderHeader {
         order.specimenDto.reconciliationDate = getReconciliationDt ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         order.expectedTestType = getExpectedTest ();
-        order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ()).parallelStream ().filter (t -> t.selected).collect (toList ());
+        order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ()).parallelStream ()
+                                         .filter (t -> t.selected).collect (toList ());
         order.orderAttachments = getCoraAttachments ();
         order.doraAttachments = getDoraAttachments ();
         order.patient.insurance1 = new Insurance ();
@@ -186,6 +187,14 @@ public class OrderDetail extends OrderHeader {
         return getText ("[ng-bind='ctrl.orderEntry.order.patient.gender']");
     }
 
+    public void clickPatientCode () {
+        String css = "//*[text()='Patient Code']/parent::div//a";
+        assertTrue (click (css));
+        assertTrue (waitForChildWindows (2));
+        List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
+        getDriver ().switchTo ().window (windows.get (1));
+    }
+
     public String getPatientCode () {
         String xpath = "//label[text()='Patient Code']/../div/a[1]/span";
         return getText (xpath);
@@ -198,6 +207,13 @@ public class OrderDetail extends OrderHeader {
     public String getPatientNotes () {
         String css = "[notes='ctrl.orderEntry.order.patient.notes']";
         return isElementPresent (css) ? getText (css) : null;
+    }
+
+    public void editPatientNotes (String notes) {
+        String css = "[notes='ctrl.orderEntry.order.patient.notes']";
+        assertTrue (click (css + " [ng-click='ctrl.editNotes()']"));
+        assertTrue (setText (css + " textarea", notes));
+        assertTrue (click (css + " [ng-click='ctrl.save()']"));
     }
 
     public List <String> getPatientICD_Codes () {
@@ -213,6 +229,11 @@ public class OrderDetail extends OrderHeader {
 
     public String getSpecimenId () {
         return isElementVisible (specimenNumber) ? getText (specimenNumber) : null;
+    }
+    
+    public String getSpecimenIdUrlAttribute (String attribute) {
+        String xpath = "//*[text()='Adaptive Specimen ID']/..//a";
+        return isElementPresent (xpath) && isElementVisible (xpath) ? getAttribute (xpath, attribute) : null;
     }
 
     private String getPatientMRN () {
@@ -410,6 +431,12 @@ public class OrderDetail extends OrderHeader {
 
     public String getOrderNotes () {
         return getText ("[notes='ctrl.orderEntry.order.notes']");
+    }
+    
+    public void editOrderNotes (String notes) {
+        assertTrue (click ("[notes='ctrl.orderEntry.order.notes'] [ng-click='ctrl.editNotes()'] span"));
+        assertTrue (setText ("[notes='ctrl.orderEntry.order.notes'] textarea", notes));
+        assertTrue (click ("[notes='ctrl.orderEntry.order.notes'] [ng-click='ctrl.save()']"));
     }
 
     public void uploadAttachments (String... files) {

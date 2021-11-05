@@ -2,7 +2,6 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending;
 import static java.lang.String.format;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
@@ -201,8 +200,8 @@ public class NewOrderClonoSeq extends NewOrder {
         waitUntilActivated ();
     }
 
-    public void transferTrf (OrderStatus state) {
-        assertTrue (click (Pending.equals (state) ? "[ng-click='ctrl.showTrfTransferModal()']" : ".transfer-trf-btn"));
+    public void transferTrf () {
+        assertTrue (click ("[ng-click='ctrl.showTrfTransferModal()']"));
         assertTrue (isTextInElement (popupTitle, "Transfer TRF to New Order"));
         assertTrue (click ("[data-ng-click='ctrl.ok()']"));
         moduleLoading ();
@@ -321,12 +320,6 @@ public class NewOrderClonoSeq extends NewOrder {
         String modalHeader = "[ng-bind-html=\"ctrl.dialogOptions.headerText\"]";
         assertTrue (isTextInElement (modalHeader, expectedModalTitle));
         clickPopupOK ();
-    }
-
-    public void editOrderNotes (String notes) {
-        assertTrue (click ("[notes='ctrl.orderEntry.order.notes'] [ng-click='ctrl.editNotes()'] span"));
-        assertTrue (setText ("[notes='ctrl.orderEntry.order.notes'] textarea", notes));
-        assertTrue (click ("[notes='ctrl.orderEntry.order.notes'] [ng-click='ctrl.save()']"));
     }
 
     public void enterOrderNotes (String notes) {

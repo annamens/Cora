@@ -15,11 +15,10 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
-import com.adaptivebiotech.cora.ui.order.Billing;
-import com.adaptivebiotech.cora.ui.order.Diagnostic;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
+import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
@@ -44,16 +43,15 @@ import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 @Test (groups = "regression")
 public class OrderDetailsTestSuite extends CoraBaseBrowser {
 
-    private OrdersList     ordersList     = new OrdersList ();
-    private OrderStatus    orderStatus    = new OrderStatus ();
-    private Diagnostic     diagnostic     = new Diagnostic ();
-    private Billing        billing        = new Billing ();
-    private Specimen       specimen       = new Specimen ();
-    private Shipment       shipment       = new Shipment ();
-    private ShipmentDetail shipmentDetail = new ShipmentDetail ();
-    private Accession      accession      = new Accession ();
-    private PatientDetail  patientDetail  = new PatientDetail ();
-    private OrcaHistory    historyPage    = new OrcaHistory ();
+    private OrdersList          ordersList          = new OrdersList ();
+    private OrderStatus         orderStatus         = new OrderStatus ();
+    private NewOrderClonoSeq    diagnostic          = new NewOrderClonoSeq ();
+    private OrderDetailClonoSeq clonoSeqOrderDetail = new OrderDetailClonoSeq ();
+    private Shipment            shipment            = new Shipment ();
+    private ShipmentDetail      shipmentDetail      = new ShipmentDetail ();
+    private Accession           accession           = new Accession ();
+    private PatientDetail       patientDetail       = new PatientDetail ();
+    private OrcaHistory         historyPage         = new OrcaHistory ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -74,16 +72,16 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         SpecimenType specimenType = SpecimenType.Blood;
         Anticoagulant anticoagulant = Anticoagulant.EDTA;
         String collectionDate = DateUtils.getPastFutureDate (-3);
-        String orderNum = new Diagnostic ().createClonoSeqOrder (physician,
-                                                                 patient,
-                                                                 new String[] { icdCode },
-                                                                 Assay.ID_BCell2_CLIA,
-                                                                 chargeType,
-                                                                 SpecimenType.Blood,
-                                                                 null,
-                                                                 Anticoagulant.EDTA);
+        String orderNum = diagnostic.createClonoSeqOrder (physician,
+                                                          patient,
+                                                          new String[] { icdCode },
+                                                          Assay.ID_BCell2_CLIA,
+                                                          chargeType,
+                                                          SpecimenType.Blood,
+                                                          null,
+                                                          Anticoagulant.EDTA);
 
-        List <String> history = specimen.getHistory (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending);
+        List <String> history = diagnostic.getHistory ();
         String createdDateTime = history.get (0).split ("Created by")[0].trim ();
         Logging.info ("Order Created Date and Time: " + createdDateTime);
 
@@ -126,11 +124,11 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         diagnostic.activateOrder ();
         diagnostic.refresh ();
         diagnostic.isCorrectPage ();
-        List <String> activeHistory = specimen.getHistory (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
+        List <String> activeHistory = clonoSeqOrderDetail.getHistory ();
         String activateDateTime = activeHistory.get (2).split ("Activated by")[0].trim ();
         Logging.info ("Order Activated Date and Time: " + activateDateTime);
 
-        Order activeOrder = diagnostic.parseOrder ();
+        Order activeOrder = clonoSeqOrderDetail.parseOrder ();
         assertEquals (activeOrder.status, com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
         assertEquals (activeOrder.order_number, orderNum);
         String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + orderNum;
@@ -138,7 +136,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         String expectedDueDate = DateUtils.getPastFutureDate (7,
                                                               DateTimeFormatter.ofPattern ("MM/dd/uu"),
                                                               DateUtils.utcZoneId);
-        assertEquals (diagnostic.getDueDate (), expectedDueDate);
+        assertEquals (clonoSeqOrderDetail.getDueDate (), expectedDueDate);
         assertEquals (activeOrder.data_analysis_group, "Clinical");
 
         assertEquals (activeOrder.physician.providerFullName, physician.firstName + " " + physician.lastName);
@@ -154,14 +152,14 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (activeOrder.specimenDto.anticoagulant, anticoagulant);
         assertEquals (activeOrder.specimenDto.collectionDate, collectionDate);
 
-        assertEquals (diagnostic.getShipmentArrivalDate (),
+        assertEquals (clonoSeqOrderDetail.getShipmentArrivalDate (),
                       DateUtils.convertDateFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
                                                    "MM/dd/yyyy h:mm a",
                                                    "MM/dd/yyyy hh:mm a"));
-        assertEquals (diagnostic.getIntakeCompleteDate (), intakeCompleteDate.split (",")[0]);
-        assertEquals (diagnostic.getSpecimenApprovalDate (), specimenApprovalDate.split (",")[0]);
+        assertEquals (clonoSeqOrderDetail.getIntakeCompleteDate (), intakeCompleteDate.split (",")[0]);
+        assertEquals (clonoSeqOrderDetail.getSpecimenApprovalDate (), specimenApprovalDate.split (",")[0]);
         assertEquals (activeOrder.specimenDto.specimenNumber, specimenId);
-        assertEquals (diagnostic.getSpecimenContainerType (), containerType);
+        assertEquals (clonoSeqOrderDetail.getSpecimenContainerType (), containerType);
 
         assertEquals (activeOrder.tests.get (0).assay, orderTest);
         assertEquals (activeOrder.properties.BillingType, chargeType);
@@ -171,43 +169,42 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         Logging.testLog ("STEP 1 - validate Order Details Page.");
 
         String editOrderNotes = "testing order notes";
-        diagnostic.editOrderNotes (editOrderNotes);
-        assertEquals (diagnostic.getOrderNotes (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active),
-                      editOrderNotes);
+        clonoSeqOrderDetail.editOrderNotes (editOrderNotes);
+        assertEquals (clonoSeqOrderDetail.getOrderNotes (), editOrderNotes);
         Logging.testLog ("STEP 2 - Order Notes displays testing order notes.");
 
-        diagnostic.clickShipmentArrivalDate ();
+        clonoSeqOrderDetail.clickShipmentArrivalDate ();
         shipmentDetail.isCorrectPage ();
         Logging.testLog ("STEP 3 - Shipment details page is opened Shipment1");
 
         shipmentDetail.clickOrderNo ();
         orderStatus.isCorrectPage ();
         orderStatus.clickOrderDetailsTab ();
-        diagnostic.isCorrectPage ();
-        diagnostic.clickPatientCode (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
+        clonoSeqOrderDetail.isCorrectPage ();
+        clonoSeqOrderDetail.clickPatientCode ();
         patientDetail.isCorrectPage ();
         Logging.testLog ("STEP 4 - Patient details page is opened in a new tab for Patient1");
 
-        diagnostic.navigateToTab (0);
-        diagnostic.isCorrectPage ();
-        diagnostic.clickPatientOrderHistory ();
-        diagnostic.navigateToOrderDetailsPage (activeOrder.id);
-        diagnostic.isCorrectPage ();
+        clonoSeqOrderDetail.navigateToTab (0);
+        clonoSeqOrderDetail.isCorrectPage ();
+        clonoSeqOrderDetail.clickPatientOrderHistory ();
+        clonoSeqOrderDetail.navigateToOrderDetailsPage (activeOrder.id);
+        clonoSeqOrderDetail.isCorrectPage ();
         Logging.testLog ("STEP 5 - Patient order history page is opened");
 
         String expectedLimsUrl = CoraEnvironment.coraTestUrl.replace ("cora",
                                                                       "lims") + "/clarity/search?scope=Sample&query=" + activeOrder.specimenDto.specimenNumber;
-        assertEquals (diagnostic.getSpecimenIdUrlAttribute ("href"), expectedLimsUrl);
-        assertEquals (diagnostic.getSpecimenIdUrlAttribute ("target"), "_blank");
+        assertEquals (clonoSeqOrderDetail.getSpecimenIdUrlAttribute ("href"), expectedLimsUrl);
+        assertEquals (clonoSeqOrderDetail.getSpecimenIdUrlAttribute ("target"), "_blank");
         Logging.testLog ("STEP 6 - Clarity LIMS link");
 
         ChargeType editChargeType = ChargeType.InternalPharmaBilling;
-        billing.editBilling (editChargeType);
+        clonoSeqOrderDetail.billing.editBilling (editChargeType);
 
         String coraAttachment = "test1.png";
-        diagnostic.uploadAttachments (coraAttachment);
+        clonoSeqOrderDetail.uploadAttachments (coraAttachment);
 
-        Order editOrder = diagnostic.parseOrder ();
+        Order editOrder = clonoSeqOrderDetail.parseOrder ();
         assertEquals (editOrder.properties.BillingType, editChargeType);
         Logging.testLog ("STEP 7 - Billing section displays Billing2");
 
@@ -240,8 +237,8 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (stageStatusUrls.get (0), stageStatusUrls.get (1));
         Logging.testLog ("STEP 12 - Clarity LIMS search is opened in a new tab for ASID1");
 
-        diagnostic.navigateToOrderDetailsPage (editOrder.id);
-        diagnostic.transferTrf (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
+        clonoSeqOrderDetail.navigateToOrderDetailsPage (editOrder.id);
+        clonoSeqOrderDetail.transferTrf ();
         diagnostic.isCorrectPage ();
 
         Order transferTrOrder = diagnostic.parseOrder ();
