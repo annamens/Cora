@@ -38,6 +38,8 @@ import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
+import com.adaptivebiotech.cora.ui.order.OrderDetail;
+import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskList;
@@ -62,6 +64,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private TaskList         taskList;
     private TaskStatus       taskStatus;
     private TaskDetail       task;
+    private OrderStatus      orderStatus;
+    private OrderDetail      orderDetail;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -72,6 +76,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         taskList = new TaskList ();
         taskStatus = new TaskStatus ();
         task = new TaskDetail ();
+        orderStatus = new OrderStatus ();
+        orderDetail = new OrderDetail ();
     }
 
     /**
@@ -90,6 +96,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (ID_BCell2_CLIA);
         report.releaseReport (ID_BCell2_CLIA, Pass);
         testLog ("released ID report");
 
@@ -128,6 +136,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (MRD_BCell2_CLIA);
         report.releaseReport (MRD_BCell2_CLIA, Pass);
         testLog ("released MRD report");
 
@@ -170,6 +180,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (ID_TCRB);
         report.releaseReport (ID_TCRB, Pass);
         testLog ("released ID report");
 
@@ -208,6 +220,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (MRD_TCRB);
         report.releaseReport (MRD_TCRB, Pass);
         testLog ("released MRD report");
 
@@ -253,6 +267,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.forceStatusUpdate (DxContamination, Finished);
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (COVID19_DX_IVD);
         report.releaseReport (COVID19_DX_IVD, Pass);
         testLog ("released the Covid report");
 

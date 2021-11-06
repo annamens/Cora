@@ -124,9 +124,6 @@ public class Report extends OrderHeader {
     }
 
     public void releaseReport (Assay assay, QC qc) {
-        new OrderStatus ().isCorrectPage ();
-        clickReportTab (assay);
-
         // for TCell
         if (!COVID19_DX_IVD.equals (assay) && !LYME_DX_IVD.equals (assay) && isElementVisible (".report-blocked-msg")) {
             assertTrue (click ("//*[text()='Generate Report']"));
