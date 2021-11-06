@@ -23,6 +23,10 @@ public class Report extends OrderHeader {
     private final String reportDataJson     = "[ng-model='ctrl.reportDataJSON']";
     private final String modalOk            = "[data-ng-click='ctrl.ok();']";
 
+    public Report () {
+        staticNavBarHeight = 200;
+    }
+
     public String getReportNotes () {
         return readInput (reportNotes);
     }

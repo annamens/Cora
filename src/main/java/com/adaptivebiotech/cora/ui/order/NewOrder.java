@@ -38,6 +38,10 @@ public class NewOrder extends OrderHeader {
     private final String   patientMrdStatus = ".patient-status";
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
 
+    public NewOrder () {
+        staticNavBarHeight = 200;
+    }
+
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));

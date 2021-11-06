@@ -15,10 +15,6 @@ public class OrderHeader extends CoraPage {
     protected final String tabBase  = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
     private final String   newAlert = ".new-alert";
 
-    public OrderHeader () {
-        staticNavBarHeight = 200;
-    }
-
     public void clickOrderStatusTab () {
         String tab = String.format (tabBase, "Order Status");
         assertTrue (click (tab));

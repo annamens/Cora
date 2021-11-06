@@ -19,6 +19,10 @@ public class OrderStatus extends OrderHeader {
     private final String actionConfirm        = ".action-confirm";
     private final String confirmYes           = "//button[text()='Yes']";
 
+    public OrderStatus () {
+        staticNavBarHeight = 200;
+    }
+
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER STATUS"));

@@ -9,6 +9,10 @@ import static org.testng.Assert.assertTrue;
  */
 public class PatientOrderHistory extends PatientHeader {
 
+    public PatientOrderHistory () {
+        staticNavBarHeight = 200;
+    }
+
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "PATIENT ORDER HISTORY"));

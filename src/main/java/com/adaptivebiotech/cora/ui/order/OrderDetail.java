@@ -41,6 +41,10 @@ public class OrderDetail extends OrderHeader {
     private final String patientMrdStatus = ".patient-status";
     private final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//span";
 
+    public OrderDetail () {
+        staticNavBarHeight = 200;
+    }
+
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
@@ -225,7 +229,7 @@ public class OrderDetail extends OrderHeader {
     public String getSpecimenId () {
         return isElementVisible (specimenNumber) ? getText (specimenNumber) : null;
     }
-    
+
     public String getSpecimenIdUrlAttribute (String attribute) {
         String xpath = "//*[text()='Adaptive Specimen ID']/..//a";
         return isElementPresent (xpath) && isElementVisible (xpath) ? getAttribute (xpath, attribute) : null;
@@ -427,7 +431,7 @@ public class OrderDetail extends OrderHeader {
     public String getOrderNotes () {
         return getText ("[notes='ctrl.orderEntry.order.notes']");
     }
-    
+
     public void editOrderNotes (String notes) {
         assertTrue (click ("[notes='ctrl.orderEntry.order.notes'] [ng-click='ctrl.editNotes()'] span"));
         assertTrue (setText ("[notes='ctrl.orderEntry.order.notes'] textarea", notes));

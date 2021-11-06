@@ -1,36 +1,23 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import com.adaptivebiotech.cora.dto.Patient.Address;
+
 /**
  * @author jpatel
  *
  */
 public class BillingTDetect extends Billing {
 
-    public String getPatientBillingAddress1 () {
-        return getAttribute ("[formcontrolname='address1']", "value");
+    public Address getPatientBillingAddress () {
+        Address address = new Address ();
+        address.line1 = getAttribute ("[formcontrolname='address1']", "value");
+        address.line2 = getAttribute ("[formcontrolname='address2']", "value");
+        address.city = getAttribute ("[formcontrolname='locality']", "value");
+        address.state = getFirstSelectedText ("[formcontrolname='region']");
+        address.postalCode = getAttribute ("[formcontrolname='postCode']", "value");
+        address.phone = getAttribute ("[formcontrolname='phone']", "value");
+        address.email = getAttribute ("[formcontrolname='email']", "value");
+        return address;
     }
 
-    public String getPatientBillingAddress2 () {
-        return getAttribute ("[formcontrolname='address2']", "value");
-    }
-
-    public String getPatientBillingCity () {
-        return getAttribute ("[formcontrolname='locality']", "value");
-    }
-
-    public String getPatientBillingState () {
-        return getFirstSelectedText ("[formcontrolname='region']");
-    }
-
-    public String getPatientBillingZipCode () {
-        return getAttribute ("[formcontrolname='postCode']", "value");
-    }
-
-    public String getPatientBillingPhone () {
-        return getAttribute ("[formcontrolname='phone']", "value");
-    }
-
-    public String getPatientBillingEmail () {
-        return getAttribute ("[formcontrolname='email']", "value");
-    }
 }

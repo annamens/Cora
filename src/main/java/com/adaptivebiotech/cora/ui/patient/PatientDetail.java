@@ -1,13 +1,12 @@
 package com.adaptivebiotech.cora.ui.patient;
 
 import static org.testng.Assert.assertTrue;
-import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class PatientDetail extends CoraPage {
+public class PatientDetail extends PatientHeader {
 
     public PatientDetail () {
         staticNavBarHeight = 200;
