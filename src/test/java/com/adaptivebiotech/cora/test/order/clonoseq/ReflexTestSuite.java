@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.test.order.specimen;
+package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;

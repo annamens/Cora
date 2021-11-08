@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.test.order;
+package com.adaptivebiotech.cora.test.order.tdetect;
 
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;

@@ -1,12 +1,10 @@
-package com.adaptivebiotech.cora.test.order.specimen;
+package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
-import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.CfdRoche;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.Other;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
-import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
-import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.PathRequest;
+import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.LymphNode;
@@ -21,7 +19,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspens
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FFPEScrolls;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FFPESlides;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FreshBoneMarrow;
-import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -35,7 +32,7 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 @Test (groups = "regression")
-public class AdaptiveAssistsTestSuite extends CoraBaseBrowser {
+public class ShippingToAdaptiveTestSuite extends CoraBaseBrowser {
 
     private OrdersList       oList            = new OrdersList ();
     private NewOrderClonoSeq newOrderClonoSeq = new NewOrderClonoSeq ();
@@ -52,7 +49,7 @@ public class AdaptiveAssistsTestSuite extends CoraBaseBrowser {
         newOrderClonoSeq.enterPatientICD_Codes ("A01.02");
         newOrderClonoSeq.clickSave (); // have to Save first before we can set Specimen info
 
-        newOrderClonoSeq.enterSpecimenDelivery (PathRequest);
+        newOrderClonoSeq.enterSpecimenDelivery (CustomerShipment);
         newOrderClonoSeq.clickEnterSpecimenDetails ();
     }
 
@@ -66,13 +63,6 @@ public class AdaptiveAssistsTestSuite extends CoraBaseBrowser {
         newOrderClonoSeq.enterSpecimenType (Blood);
         newOrderClonoSeq.enterAntiCoagulant (Other);
         newOrderClonoSeq.enterAntiCoagulantOther ("Citrate");
-        saveOrder ();
-    }
-
-    public void specimenType_Blood_Cellfree () {
-        newOrderClonoSeq.enterSpecimenType (Blood);
-        newOrderClonoSeq.enterCompartment (CellFree);
-        newOrderClonoSeq.enterAntiCoagulant (CfdRoche);
         saveOrder ();
     }
 
@@ -234,11 +224,6 @@ public class AdaptiveAssistsTestSuite extends CoraBaseBrowser {
         newOrderClonoSeq.enterSpecimenType (gDNA);
         newOrderClonoSeq.enterSpecimenSource (SpecimenSource.Other);
         newOrderClonoSeq.enterSpecimenSourceOther (TCells.label);
-        saveOrder ();
-    }
-
-    public void specimenType_Plasma () {
-        newOrderClonoSeq.enterSpecimenType (Plasma);
         saveOrder ();
     }
 
