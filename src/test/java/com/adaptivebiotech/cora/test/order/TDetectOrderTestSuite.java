@@ -7,7 +7,7 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.Billing;
+import com.adaptivebiotech.cora.ui.order.BillingNewOrder;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
@@ -27,7 +27,7 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 public class TDetectOrderTestSuite extends CoraBaseBrowser {
 
     private NewOrderTDetect newOrderTDetect = new NewOrderTDetect ();
-    private Billing         billing         = new Billing ();
+    private BillingNewOrder         billing         = new BillingNewOrder ();
     private Shipment        shipment        = new Shipment ();
     private Accession       accession       = new Accession ();
 

@@ -38,10 +38,10 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
  */
 public class NewOrderClonoSeq extends NewOrder {
 
-    public BillingClonoSeq billing          = new BillingClonoSeq ();
+    public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq ();
 
-    private final String   assayEl          = "//span[@ng-bind='test.name' and text()='%s']";
-    private final String   specimenDelivery = "[name='specimenType']";
+    private final String           assayEl          = "//span[@ng-bind='test.name' and text()='%s']";
+    private final String           specimenDelivery = "[name='specimenType']";
 
     public void clickAssayTest (Assay assay) {
         String type = "[ng-click*='" + assay.type + "']";
@@ -101,9 +101,9 @@ public class NewOrderClonoSeq extends NewOrder {
         order.patient.patientCode = Integer.valueOf (getPatientCode ());
         order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
-        ChargeType chargeType = getBillingType ();
+        ChargeType chargeType = billing.getBillingType ();
         order.patient.billingType = chargeType;
-        order.patient.abnStatusType = Medicare.equals (chargeType) ? getAbnStatus () : null;
+        order.patient.abnStatusType = Medicare.equals (chargeType) ? billing.getAbnStatus () : null;
         order.icdcodes = getPatientICD_Codes ();
         order.properties = new OrderProperties (chargeType, getSpecimenDelivery ());
         order.specimenDto = new Specimen ();
@@ -121,25 +121,25 @@ public class NewOrderClonoSeq extends NewOrder {
         order.orderAttachments = getCoraAttachments ();
         order.doraAttachments = getDoraAttachments ();
         order.patient.insurance1 = new Insurance ();
-        order.patient.insurance1.provider = getInsurance1Provider ();
-        order.patient.insurance1.groupNumber = getInsurance1GroupNumber ();
-        order.patient.insurance1.policyNumber = getInsurance1Policy ();
-        order.patient.insurance1.insuredRelationship = getInsurance1Relationship ();
-        order.patient.insurance1.policyholder = getInsurance1PolicyHolder ();
-        order.patient.insurance1.hospitalizationStatus = getInsurance1PatientStatus ();
-        order.patient.insurance1.billingInstitution = getInsurance1Hospital ();
-        order.patient.insurance1.dischargeDate = getInsurance1DischargeDate ();
+        order.patient.insurance1.provider = billing.getInsurance1Provider ();
+        order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
+        order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
+        order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
+        order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
+        order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
+        order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
+        order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
         order.patient.insurance2 = new Insurance ();
-        order.patient.insurance2.provider = getInsurance2Provider ();
-        order.patient.insurance2.groupNumber = getInsurance2GroupNumber ();
-        order.patient.insurance2.policyNumber = getInsurance2Policy ();
-        order.patient.insurance2.insuredRelationship = getInsurance2Relationship ();
-        order.patient.insurance2.policyholder = getInsurance2PolicyHolder ();
-        order.patient.address = getPatientAddress1 ();
-        order.patient.phone = getPatientPhone ();
-        order.patient.locality = getPatientCity ();
-        order.patient.region = getPatientState ();
-        order.patient.postCode = getPatientZipcode ();
+        order.patient.insurance2.provider = billing.getInsurance2Provider ();
+        order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
+        order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
+        order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
+        order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+        order.patient.address = billing.getPatientAddress1 ();
+        order.patient.phone = billing.getPatientPhone ();
+        order.patient.locality = billing.getPatientCity ();
+        order.patient.region = billing.getPatientState ();
+        order.patient.postCode = billing.getPatientZipcode ();
         order.notes = getOrderNotes ();
         return order;
     }
@@ -186,11 +186,11 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void activateOrder () {
-        clickActivateOrder ();
+        clickSaveAndActivate ();
+        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click ("[ng-click='ctrl.ok()']"));
         moduleLoading ();
         pageLoading ();
-        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "PendingActivation"));
         waitUntilActivated ();
     }
 
@@ -320,6 +320,21 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText ("[ng-model='ctrl.orderEntry.order.notes']", notes));
     }
 
+    /**
+     * Create ClonoSeq Pending Order by filling out all the required fields and passed arguments on
+     * New Order ClonoSeq page, and returns order no.
+     * NOTE: Keep updating this method, and try to always use these methods to create ClonoSeq Order
+     * 
+     * @param physician
+     * @param patient
+     * @param icdCodes
+     * @param assayTest
+     * @param chargeType
+     * @param specimenType
+     * @param specimenSource
+     * @param anticoagulant
+     * @return
+     */
     public String createClonoSeqOrder (Physician physician,
                                        Patient patient,
                                        String[] icdCodes,
@@ -360,6 +375,24 @@ public class NewOrderClonoSeq extends NewOrder {
         return orderNum;
     }
 
+    /**
+     * Create ClonoSeq Pending (differs from above method as this method creates shipment as well)
+     * or Active Order by passing orderStatus argument. Returns order no.
+     * NOTE: Keep updating this method, and try to always use these methods to create ClonoSeq
+     * Pending Or Active Order
+     * 
+     * @param physician
+     * @param patient
+     * @param icdCodes
+     * @param assayTest
+     * @param chargeType
+     * @param specimenType
+     * @param specimenSource
+     * @param anticoagulant
+     * @param orderStatus
+     * @param containerType
+     * @return
+     */
     public String createClonoSeqOrder (Physician physician,
                                        Patient patient,
                                        String[] icdCodes,
@@ -390,13 +423,10 @@ public class NewOrderClonoSeq extends NewOrder {
             // activate order
             isCorrectPage ();
             activateOrder ();
+        } else {
+            navigateToOrderDetailsPage (getOrderId ());
+            isCorrectPage ();
         }
-
-        // URL path still contains dx, change it to details page
-        // though both page looks similar, locators are different for dx and details in URL
-        // when order is activated
-        navigateToOrderDetailsPage (getOrderId ());
-        isCorrectPage ();
 
         return orderNum;
     }
