@@ -317,7 +317,7 @@ public class NewOrderTDetect extends NewOrder {
                                       Address patientAddress,
                                       OrderStatus orderStatus,
                                       ContainerType containerType) {
-        // create clonoSEQ diagnostic order
+        // create T-Detect order
         String orderNum = createTDetectOrder (physician,
                                               patient,
                                               icdCodes,
