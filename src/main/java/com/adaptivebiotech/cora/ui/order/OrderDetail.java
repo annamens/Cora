@@ -1,9 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.util.Arrays.asList;
 import static java.util.EnumSet.allOf;
@@ -23,23 +20,26 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
-import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
-import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.seleniumfy.test.utils.Timeout;
 
+/**
+ * @author jpatel
+ *
+ */
 public class OrderDetail extends OrderHeader {
 
-    private final String patientMrdStatus = ".patient-status";
-    private final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//span";
+    public BillingOrderDetail billing          = new BillingOrderDetail ();
+
+    private final String      patientMrdStatus = ".patient-status";
+    private final String      specimenNumber   = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
 
     public OrderDetail () {
         staticNavBarHeight = 200;
@@ -82,9 +82,9 @@ public class OrderDetail extends OrderHeader {
         order.patient.patientCode = Integer.valueOf (getPatientCode ());
         order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
-        ChargeType chargeType = getBillingType ();
+        ChargeType chargeType = billing.getBillingType ();
         order.patient.billingType = chargeType;
-        order.patient.abnStatusType = Medicare.equals (chargeType) ? getAbnStatus () : null;
+        order.patient.abnStatusType = Medicare.equals (chargeType) ? billing.getAbnStatus () : null;
         order.icdcodes = getPatientICD_Codes ();
         order.properties = new OrderProperties (chargeType, getSpecimenDelivery ());
         order.specimenDto = new Specimen ();
@@ -101,25 +101,25 @@ public class OrderDetail extends OrderHeader {
         order.orderAttachments = getCoraAttachments ();
         order.doraAttachments = getDoraAttachments ();
         order.patient.insurance1 = new Insurance ();
-        order.patient.insurance1.provider = getInsurance1Provider ();
-        order.patient.insurance1.groupNumber = getInsurance1GroupNumber ();
-        order.patient.insurance1.policyNumber = getInsurance1Policy ();
-        order.patient.insurance1.insuredRelationship = getInsurance1Relationship ();
-        order.patient.insurance1.policyholder = getInsurance1PolicyHolder ();
-        order.patient.insurance1.hospitalizationStatus = getInsurance1PatientStatus ();
-        order.patient.insurance1.billingInstitution = getInsurance1Hospital ();
-        order.patient.insurance1.dischargeDate = getInsurance1DischargeDate ();
+        order.patient.insurance1.provider = billing.getInsurance1Provider ();
+        order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
+        order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
+        order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
+        order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
+        order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
+        order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
+        order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
         order.patient.insurance2 = new Insurance ();
-        order.patient.insurance2.provider = getInsurance2Provider ();
-        order.patient.insurance2.groupNumber = getInsurance2GroupNumber ();
-        order.patient.insurance2.policyNumber = getInsurance2Policy ();
-        order.patient.insurance2.insuredRelationship = getInsurance2Relationship ();
-        order.patient.insurance2.policyholder = getInsurance2PolicyHolder ();
-        order.patient.address = getPatientAddress1 ();
-        order.patient.phone = getPatientPhone ();
-        order.patient.locality = getPatientCity ();
-        order.patient.region = getPatientState ();
-        order.patient.postCode = getPatientZipcode ();
+        order.patient.insurance2.provider = billing.getInsurance2Provider ();
+        order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
+        order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
+        order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
+        order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+        order.patient.address = billing.getPatientAddress1 ();
+        order.patient.phone = billing.getPatientPhone ();
+        order.patient.locality = billing.getPatientCity ();
+        order.patient.region = billing.getPatientState ();
+        order.patient.postCode = billing.getPatientZipcode ();
         order.notes = getOrderNotes ();
         return order;
     }
@@ -266,30 +266,30 @@ public class OrderDetail extends OrderHeader {
     }
 
     public String getShipmentArrivalDate () {
-        String xpath = "//*[text()='Shipment Arrival']/..//span";
+        String xpath = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
         String arrivalDate = isElementPresent (xpath) && isElementVisible (xpath) ? getText (xpath) : null;
         Logging.testLog ("Shipment Arrival Date from UI: " + arrivalDate);
         return arrivalDate;
     }
 
     public void clickShipmentArrivalDate () {
-        assertTrue (click ("//*[text()='Shipment Arrival']/..//span"));
+        assertTrue (click ("[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']"));
     }
 
     public String getIntakeCompleteDate () {
-        return getText ("//*[text()='Intake Complete']/..//div");
+        return getText ("[ng-bind^='ctrl.orderEntry.intakeCompletedDate']");
     }
 
     public String getSpecimenApprovalDate () {
-        return getText ("//*[text()='Specimen Approval']/..//span[2]");
+        return getText ("[ng-bind^='ctrl.orderEntry.specimen.approvedDate']");
     }
 
     public String getSpecimenApprovalStatus () {
-        return getText ("//*[text()='Specimen Approval']/..//span[1]");
+        return getText ("[ng-bind='ctrl.orderEntry.specimen.approvalStatus']");
     }
 
     public ContainerType getSpecimenContainerType () {
-        return ContainerType.getContainerType (getText ("//*[text()='Specimen Container Type']/..//div"));
+        return ContainerType.getContainerType (getText ("[ng-bind='ctrl.orderEntry.specimenDisplayContainerType']"));
     }
 
     private String getExpectedTest () {
@@ -307,108 +307,6 @@ public class OrderDetail extends OrderHeader {
 
     public String getSampleName () {
         return getText ("[ng-bind='orderTest.sampleName']");
-    }
-
-    private ChargeType getBillingType () {
-        String css = "[ng-model^='ctrl.orderEntry.order.billingType']";
-        return ChargeType.getChargeType (getText (css));
-    }
-
-    private AbnStatus getAbnStatus () {
-        String css = "[ng-model^='ctrl.orderEntry.order.abnStatusType']";
-        return AbnStatus.getAbnStatus (getText (css));
-    }
-
-    public String getInsurance1Provider () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.insuranceProvider']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    public String getInsurance1GroupNumber () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.groupNumber']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    public String getInsurance1Policy () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.policyNumber']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    public PatientRelationship getInsurance1Relationship () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.insuredRelationship']";
-        String value = isElementPresent (css) ? getText (css) : null;
-        return value != null ? PatientRelationship.valueOf (value) : null;
-    }
-
-    public String getInsurance1PolicyHolder () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.policyholder']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    public PatientStatus getInsurance1PatientStatus () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.hospitalizationStatus']";
-        return isElementPresent (css) ? getPatientStatus (getText (css)) : null;
-    }
-
-    public String getInsurance1Hospital () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.institution']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    public String getInsurance1DischargeDate () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.dischargeDate']";
-        String dt = isElementPresent (css) ? getText (css) : null;
-        return dt != null ? formatDt1.format (formatDt2.parse (dt)) : dt;
-    }
-
-    public String getInsurance2Provider () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuranceProvider']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    public String getInsurance2GroupNumber () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.groupNumber']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    public String getInsurance2Policy () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyNumber']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    public PatientRelationship getInsurance2Relationship () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuredRelationship']";
-        return isElementPresent (css) ? PatientRelationship.valueOf (getText (css)) : null;
-    }
-
-    public String getInsurance2PolicyHolder () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyholder']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    private String getPatientAddress1 () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.address1']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    private String getPatientPhone () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.phone']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    private String getPatientCity () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.locality']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    private String getPatientState () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.region']";
-        return isElementPresent (css) ? getText (css) : null;
-    }
-
-    private String getPatientZipcode () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.postCode']";
-        return isElementPresent (css) ? getText (css) : null;
     }
 
     public List <String> getCoraAttachments () {

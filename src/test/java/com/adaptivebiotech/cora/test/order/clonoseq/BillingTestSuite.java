@@ -258,7 +258,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         // test: add a test, confirm we're able to Activate and then cancel it
         diagnostic.isCorrectPage ();
         diagnostic.clickAssayTest (ID_BCell2_CLIA);
-        diagnostic.clickActivateOrder ();
+        diagnostic.clickSaveAndActivate ();
         diagnostic.clickCancel ();
     }
 }

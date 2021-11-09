@@ -8,7 +8,7 @@ import static org.testng.Assert.assertTrue;
  */
 public class OrderDetailClonoSeq extends OrderDetail {
 
-    public BillingClonoSeq billing = new BillingClonoSeq ();
+    public BillingOrderDetailClonoSeq billing = new BillingOrderDetailClonoSeq ();
 
     public String getSpecimenDeliverySelectedOption () {
         String css = "[ng-bind^='ctrl.orderEntry.order.specimenDeliveryType']";

@@ -24,23 +24,26 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
 import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 
+/**
+ * @author jpatel
+ *
+ */
 public class NewOrderTDetect extends NewOrder {
 
-    public BillingTDetect billing        = new BillingTDetect ();
+    public BillingNewOrderTDetect billing        = new BillingNewOrderTDetect ();
 
-    private final String  dateSigned     = "[formcontrolname='dateSigned']";
-    private final String  orderNotes     = "#order-notes";
-    private final String  collectionDate = "[formcontrolname='collectionDate']";
+    private final String          dateSigned     = "[formcontrolname='dateSigned']";
+    private final String          orderNotes     = "#order-notes";
+    private final String          collectionDate = "[formcontrolname='collectionDate']";
 
-    public void activateOrder () {
-        clickActivateOrder ();
-        waitUntilActivated ();
+    public String getPhysicianOrderCode () {
+        String xpath = "input[formcontrolname='externalOrderCode']";
+        return readInput (xpath);
     }
 
-    public void clickActivateOrder () {
+    public void activateOrder () {
         clickSaveAndActivate ();
-        moduleLoading ();
-        pageLoading ();
+        waitUntilActivated ();
     }
 
     public void createNewPatient (Patient patient) {
@@ -96,9 +99,9 @@ public class NewOrderTDetect extends NewOrder {
         order.patient.patientCode = Integer.valueOf (getPatientCode ());
         order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
-        ChargeType chargeType = getBillingType ();
+        ChargeType chargeType = billing.getBillingType ();
         order.patient.billingType = chargeType;
-        order.patient.abnStatusType = Medicare.equals (chargeType) ? getAbnStatus () : null;
+        order.patient.abnStatusType = Medicare.equals (chargeType) ? billing.getAbnStatus () : null;
         order.icdcodes = getPatientICD_Codes ();
         order.properties = new OrderProperties (chargeType, getSpecimenDelivery ());
         order.specimenDto = new Specimen ();
@@ -116,25 +119,25 @@ public class NewOrderTDetect extends NewOrder {
         order.orderAttachments = getCoraAttachments ();
         order.doraAttachments = getDoraAttachments ();
         order.patient.insurance1 = new Insurance ();
-        order.patient.insurance1.provider = getInsurance1Provider ();
-        order.patient.insurance1.groupNumber = getInsurance1GroupNumber ();
-        order.patient.insurance1.policyNumber = getInsurance1Policy ();
-        order.patient.insurance1.insuredRelationship = getInsurance1Relationship ();
-        order.patient.insurance1.policyholder = getInsurance1PolicyHolder ();
-        order.patient.insurance1.hospitalizationStatus = getInsurance1PatientStatus ();
-        order.patient.insurance1.billingInstitution = getInsurance1Hospital ();
-        order.patient.insurance1.dischargeDate = getInsurance1DischargeDate ();
+        order.patient.insurance1.provider = billing.getInsurance1Provider ();
+        order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
+        order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
+        order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
+        order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
+        order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
+        order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
+        order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
         order.patient.insurance2 = new Insurance ();
-        order.patient.insurance2.provider = getInsurance2Provider ();
-        order.patient.insurance2.groupNumber = getInsurance2GroupNumber ();
-        order.patient.insurance2.policyNumber = getInsurance2Policy ();
-        order.patient.insurance2.insuredRelationship = getInsurance2Relationship ();
-        order.patient.insurance2.policyholder = getInsurance2PolicyHolder ();
-        order.patient.address = getPatientAddress1 ();
-        order.patient.phone = getPatientPhone ();
-        order.patient.locality = getPatientCity ();
-        order.patient.region = getPatientState ();
-        order.patient.postCode = getPatientZipcode ();
+        order.patient.insurance2.provider = billing.getInsurance2Provider ();
+        order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
+        order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
+        order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
+        order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+        order.patient.address = billing.getPatientAddress1 ();
+        order.patient.phone = billing.getPatientPhone ();
+        order.patient.locality = billing.getPatientCity ();
+        order.patient.region = billing.getPatientState ();
+        order.patient.postCode = billing.getPatientZipcode ();
         order.notes = getOrderNotes ();
         return order;
     }
@@ -205,14 +208,6 @@ public class NewOrderTDetect extends NewOrder {
         return null;
     }
 
-    public String getRetrievalDate () {
-        String css = "[ng-model^='ctrl.orderEntry.specimen.retrievalDate']";
-        if (isElementVisible (css)) {
-            return readInput (css);
-        }
-        return null;
-    }
-
     public void enterOrderNotes (String notes) {
         assertTrue (setText (orderNotes, notes));
     }
@@ -253,6 +248,20 @@ public class NewOrderTDetect extends NewOrder {
         return getText ("//label[text()='Birth Date']/../div[1]");
     }
 
+    /**
+     * Create TDetect Pending Order by filling out all the required fields and passed arguments on
+     * New Order TDetect page, and returns order no.
+     * NOTE: Keep updating this method, and try to always use these methods to create TDetect Order
+     * 
+     * @param physician
+     * @param patient
+     * @param icdCodes
+     * @param collectionDate
+     * @param assayTest
+     * @param chargeType
+     * @param patientAddress
+     * @return
+     */
     public String createTDetectOrder (Physician physician,
                                       Patient patient,
                                       String[] icdCodes,
@@ -282,6 +291,23 @@ public class NewOrderTDetect extends NewOrder {
         return orderNum;
     }
 
+    /**
+     * Create TDetect Pending (differs from above method as this method creates shipment as well)
+     * or Active Order by passing orderStatus argument. Returns order no.
+     * NOTE: Keep updating this method, and try to always use these methods to create TDetect
+     * Pending Or Active Order
+     * 
+     * @param physician
+     * @param patient
+     * @param icdCodes
+     * @param collectionDate
+     * @param assayTest
+     * @param chargeType
+     * @param patientAddress
+     * @param orderStatus
+     * @param containerType
+     * @return
+     */
     public String createTDetectOrder (Physician physician,
                                       Patient patient,
                                       String[] icdCodes,
@@ -291,7 +317,7 @@ public class NewOrderTDetect extends NewOrder {
                                       Address patientAddress,
                                       OrderStatus orderStatus,
                                       ContainerType containerType) {
-        // create clonoSEQ diagnostic order
+        // create T-Detect order
         String orderNum = createTDetectOrder (physician,
                                               patient,
                                               icdCodes,
@@ -312,9 +338,6 @@ public class NewOrderTDetect extends NewOrder {
             activateOrder ();
         }
 
-        // URL path still contains dx, change it to details page
-        // though both page looks similar, locators are different for dx and details in URL
-        // when order is activated
         navigateToOrderDetailsPage (getOrderId ());
         isCorrectPage ();
 

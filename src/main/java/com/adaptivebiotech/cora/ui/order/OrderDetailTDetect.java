@@ -11,20 +11,14 @@ import com.adaptivebiotech.cora.utils.PageHelper.Race;
  */
 public class OrderDetailTDetect extends OrderDetail {
 
-    private final String dateSigned     = "[ng-bind='ctrl.originalDate']";
-    private final String orderNotes     = "[ng-bind='ctrl.originalNotes']";
-    private final String collectionDate = "[ng-bind^='ctrl.orderEntry.specimen.collectionDate']";
+    public BillingOrderDetailTDetect billing        = new BillingOrderDetailTDetect ();
+
+    private final String             dateSigned     = "[ng-bind='ctrl.originalDate']";
+    private final String             orderNotes     = "[ng-bind='ctrl.originalNotes']";
+    private final String             collectionDate = "[ng-bind^='ctrl.orderEntry.specimen.collectionDate']";
 
     public String getSpecimenDeliverySelectedOption () {
         String css = "[formcontrolname='specimenDeliveryType']";
-        if (isElementVisible (css)) {
-            return getText (css);
-        }
-        return null;
-    }
-
-    public String getRetrievalDate () {
-        String css = "[ng-bind^='ctrl.orderEntry.specimen.retrievalDate']";
         if (isElementVisible (css)) {
             return getText (css);
         }
