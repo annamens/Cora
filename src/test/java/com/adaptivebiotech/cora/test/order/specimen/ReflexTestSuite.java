@@ -14,10 +14,8 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
-import com.adaptivebiotech.cora.ui.order.Billing;
-import com.adaptivebiotech.cora.ui.order.Diagnostic;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
@@ -32,52 +30,49 @@ import com.adaptivebiotech.cora.utils.TestHelper;
 @Test (enabled = false, groups = "regression")
 public class ReflexTestSuite extends CoraBaseBrowser {
 
-    private OrdersList oList;
+    private OrdersList       oList            = new OrdersList ();
+    private NewOrderClonoSeq newOrderClonoSeq = new NewOrderClonoSeq ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         new Login ().doLogin ();
-        oList = new OrdersList ();
         oList.isCorrectPage ();
         oList.selectNewClonoSEQDiagnosticOrder ();
 
-        Diagnostic diagnostic = new Diagnostic ();
-        diagnostic.isCorrectPage ();
-        diagnostic.selectPhysician (TestHelper.physicianTRF ());
-        diagnostic.createNewPatient (newPatient ());
-        diagnostic.enterPatientICD_Codes ("A01.02");
-        diagnostic.clickSave (); // have to Save first before we can set Specimen info
+        newOrderClonoSeq.isCorrectPage ();
+        newOrderClonoSeq.selectPhysician (TestHelper.physicianTRF ());
+        newOrderClonoSeq.createNewPatient (newPatient ());
+        newOrderClonoSeq.enterPatientICD_Codes ("A01.02");
+        newOrderClonoSeq.clickSave (); // have to Save first before we can set Specimen info
     }
 
     public void withSpecimenId () {
-        Specimen specimen = new Specimen ();
-        specimen.enterSpecimenDelivery (CustomerShipment);
-        specimen.clickEnterSpecimenDetails ();
-        specimen.enterSpecimenType (Blood);
-        specimen.enterAntiCoagulant (EDTA);
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (3));
-        specimen.clickSave ();
-        String specimenId = specimen.getSpecimenId ();
+        newOrderClonoSeq.enterSpecimenDelivery (CustomerShipment);
+        newOrderClonoSeq.clickEnterSpecimenDetails ();
+        newOrderClonoSeq.enterSpecimenType (Blood);
+        newOrderClonoSeq.enterAntiCoagulant (EDTA);
+        newOrderClonoSeq.enterCollectionDate (DateUtils.getPastFutureDate (3));
+        newOrderClonoSeq.clickSave ();
+        String specimenId = newOrderClonoSeq.getSpecimenId ();
 
         OrcaHistory history = new OrcaHistory ();
         history.gotoOrderDebug (addDiagnosticShipment_and_Activate ());
         history.cancelOrder ();
 
-        specimen.selectNewClonoSEQDiagnosticOrder ();
-        specimen.isCorrectPage ();
-        specimen.selectPhysician (TestHelper.physicianTRF ());
-        specimen.clickSave ();
-        specimen.enterSpecimenDelivery (Reflex);
-        specimen.findSpecimenId (specimenId);
-        specimen.clickSave ();
+        newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
+        newOrderClonoSeq.isCorrectPage ();
+        newOrderClonoSeq.selectPhysician (TestHelper.physicianTRF ());
+        newOrderClonoSeq.clickSave ();
+        newOrderClonoSeq.enterSpecimenDelivery (Reflex);
+        newOrderClonoSeq.findSpecimenId (specimenId);
+        newOrderClonoSeq.clickSave ();
         addDiagnosticShipment_and_Activate ();
     }
 
     private String addDiagnosticShipment_and_Activate () {
-        Billing billing = new Billing ();
-        billing.selectBilling (NoCharge);
-        billing.clickSave ();
-        String orderNum = billing.getOrderNum ();
+        newOrderClonoSeq.billing.selectBilling (NoCharge);
+        newOrderClonoSeq.clickSave ();
+        String orderNum = newOrderClonoSeq.getOrderNum ();
 
         Shipment shipment = new Shipment ();
         shipment.selectNewDiagnosticShipment ();
@@ -96,10 +91,9 @@ public class ReflexTestSuite extends CoraBaseBrowser {
         accession.clickPass ();
         accession.gotoOrderDetail ();
 
-        Diagnostic diagnostic = new Diagnostic ();
-        diagnostic.isCorrectPage ();
-        diagnostic.clickAssayTest (ID_BCell2_CLIA);
-        diagnostic.activateOrder ();
-        return diagnostic.getSampleName ();
+        newOrderClonoSeq.isCorrectPage ();
+        newOrderClonoSeq.clickAssayTest (ID_BCell2_CLIA);
+        newOrderClonoSeq.activateOrder ();
+        return newOrderClonoSeq.getSampleName ();
     }
 }

@@ -24,10 +24,8 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.Billing;
-import com.adaptivebiotech.cora.ui.order.Diagnostic;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
@@ -35,39 +33,35 @@ import com.adaptivebiotech.cora.utils.DateUtils;
 @Test (groups = "regression", enabled = false)
 public class BillingTestSuite extends CoraBaseBrowser {
 
-    private OrdersList oList;
-    private Diagnostic diagnostic;
-    private Billing    billing;
+    private OrdersList       oList            = new OrdersList ();
+    private NewOrderClonoSeq diagnostic = new NewOrderClonoSeq ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         new Login ().doLogin ();
-        oList = new OrdersList ();
         oList.isCorrectPage ();
         oList.selectNewClonoSEQDiagnosticOrder ();
 
-        diagnostic = new Diagnostic ();
         diagnostic.isCorrectPage ();
         diagnostic.selectPhysician (physicianTRF ());
         diagnostic.enterPatientICD_Codes ("A01.02");
-        billing = new Billing ();
     }
 
     public void insurance () {
         Patient patient = newInsurancePatient ();
 
-        billing.createNewPatient (patient);
-        billing.enterInsuranceInfo (patient);
+        diagnostic.createNewPatient (patient);
+        diagnostic.billing.enterInsuranceInfo (patient);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing is reset
-        billing.removePatient ();
-        billing.removePatientTest ();
-        assertNull (billing.getBilling ());
+        diagnostic.removePatient ();
+        diagnostic.removePatientTest ();
+        assertNull (diagnostic.billing.getBilling ());
 
         // test: confirm we're able to Activate
-        billing.selectPatient (patient);
-        billing.enterInsuranceInfo (patient);
+        diagnostic.selectPatient (patient);
+        diagnostic.billing.enterInsuranceInfo (patient);
         activate_and_cancel ();
     }
 
@@ -77,18 +71,18 @@ public class BillingTestSuite extends CoraBaseBrowser {
     public void medicare () {
         Patient patient = newMedicarePatient ();
 
-        billing.createNewPatient (patient);
-        billing.enterMedicareInfo (patient);
+        diagnostic.createNewPatient (patient);
+        diagnostic.billing.enterMedicareInfo (patient);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing is reset
-        billing.removePatient ();
-        billing.removePatientTest ();
-        assertNull (billing.getBilling ());
+        diagnostic.removePatient ();
+        diagnostic.removePatientTest ();
+        assertNull (diagnostic.billing.getBilling ());
 
         // test: confirm we're able to Activate
-        billing.selectPatient (patient);
-        billing.enterMedicareInfo (patient);
+        diagnostic.selectPatient (patient);
+        diagnostic.billing.enterMedicareInfo (patient);
         activate_and_cancel ();
     }
 
@@ -97,18 +91,18 @@ public class BillingTestSuite extends CoraBaseBrowser {
         patient.billingType = PatientSelfPay;
         patient.insurance1.hospitalizationStatus = NonHospital;
 
-        billing.createNewPatient (patient);
-        billing.enterBill (patient);
+        diagnostic.createNewPatient (patient);
+        diagnostic.billing.enterBill (patient);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing is reset
-        billing.removePatient ();
-        billing.removePatientTest ();
-        assertNull (billing.getBilling ());
+        diagnostic.removePatient ();
+        diagnostic.removePatientTest ();
+        assertNull (diagnostic.billing.getBilling ());
 
         // test: confirm we're able to Activate
-        billing.selectPatient (patient);
-        billing.enterBill (patient);
+        diagnostic.selectPatient (patient);
+        diagnostic.billing.enterBill (patient);
         activate_and_cancel ();
     }
 
@@ -117,18 +111,18 @@ public class BillingTestSuite extends CoraBaseBrowser {
         patient.billingType = PatientSelfPay;
         patient.insurance1 = insurance1 ();
 
-        billing.createNewPatient (patient);
-        billing.enterBill (patient);
+        diagnostic.createNewPatient (patient);
+        diagnostic.billing.enterBill (patient);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing is reset
-        billing.removePatient ();
-        billing.removePatientTest ();
-        assertNull (billing.getBilling ());
+        diagnostic.removePatient ();
+        diagnostic.removePatientTest ();
+        assertNull (diagnostic.billing.getBilling ());
 
         // test: confirm we're able to Activate
-        billing.selectPatient (patient);
-        billing.enterBill (patient);
+        diagnostic.selectPatient (patient);
+        diagnostic.billing.enterBill (patient);
         activate_and_cancel ();
     }
 
@@ -137,18 +131,18 @@ public class BillingTestSuite extends CoraBaseBrowser {
         patient.billingType = Client;
         patient.insurance1.hospitalizationStatus = NonHospital;
 
-        billing.createNewPatient (patient);
-        billing.enterBill (patient);
+        diagnostic.createNewPatient (patient);
+        diagnostic.billing.enterBill (patient);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing is reset
-        billing.removePatient ();
-        billing.removePatientTest ();
-        assertNull (billing.getBilling ());
+        diagnostic.removePatient ();
+        diagnostic.removePatientTest ();
+        assertNull (diagnostic.billing.getBilling ());
 
         // test: confirm we're able to Activate
-        billing.selectPatient (patient);
-        billing.enterBill (patient);
+        diagnostic.selectPatient (patient);
+        diagnostic.billing.enterBill (patient);
         activate_and_cancel ();
     }
 
@@ -157,18 +151,18 @@ public class BillingTestSuite extends CoraBaseBrowser {
         patient.billingType = Client;
         patient.insurance1 = insurance1 ();
 
-        billing.createNewPatient (patient);
-        billing.enterBill (patient);
+        diagnostic.createNewPatient (patient);
+        diagnostic.billing.enterBill (patient);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing is reset
-        billing.removePatient ();
-        billing.removePatientTest ();
-        assertNull (billing.getBilling ());
+        diagnostic.removePatient ();
+        diagnostic.removePatientTest ();
+        assertNull (diagnostic.billing.getBilling ());
 
         // test: confirm we're able to Activate
-        billing.selectPatient (patient);
-        billing.enterBill (patient);
+        diagnostic.selectPatient (patient);
+        diagnostic.billing.enterBill (patient);
         activate_and_cancel ();
     }
 
@@ -176,17 +170,17 @@ public class BillingTestSuite extends CoraBaseBrowser {
         Patient patient = newPatient ();
         patient.billingType = TrialProtocol;
 
-        billing.createNewPatient (patient);
-        billing.selectBilling (patient.billingType);
+        diagnostic.createNewPatient (patient);
+        diagnostic.billing.selectBilling (patient.billingType);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing stays the same
-        billing.clickRemovePatient ();
-        billing.removePatientTest ();
-        assertEquals (billing.getBilling (), patient.billingType);
+        diagnostic.clickRemovePatient ();
+        diagnostic.removePatientTest ();
+        assertEquals (diagnostic.billing.getBilling (), patient.billingType);
 
         // test: confirm we're able to Activate
-        billing.selectPatient (patient);
+        diagnostic.selectPatient (patient);
         activate_and_cancel ();
     }
 
@@ -194,17 +188,17 @@ public class BillingTestSuite extends CoraBaseBrowser {
         Patient patient = newPatient ();
         patient.billingType = NoCharge;
 
-        billing.createNewPatient (patient);
-        billing.selectBilling (patient.billingType);
+        diagnostic.createNewPatient (patient);
+        diagnostic.billing.selectBilling (patient.billingType);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing stays the same
-        billing.clickRemovePatient ();
-        billing.removePatientTest ();
-        assertEquals (billing.getBilling (), patient.billingType);
+        diagnostic.clickRemovePatient ();
+        diagnostic.removePatientTest ();
+        assertEquals (diagnostic.billing.getBilling (), patient.billingType);
 
         // test: confirm we're able to Activate
-        billing.selectPatient (patient);
+        diagnostic.selectPatient (patient);
         activate_and_cancel ();
     }
 
@@ -212,17 +206,17 @@ public class BillingTestSuite extends CoraBaseBrowser {
         Patient patient = newPatient ();
         patient.billingType = InternalPharmaBilling;
 
-        billing.createNewPatient (patient);
-        billing.selectBilling (patient.billingType);
+        diagnostic.createNewPatient (patient);
+        diagnostic.billing.selectBilling (patient.billingType);
         complete_order_and_activate ();
 
         // test: remove patient and confirm billing stays the same
-        billing.clickRemovePatient ();
-        billing.removePatientTest ();
-        assertEquals (billing.getBilling (), patient.billingType);
+        diagnostic.clickRemovePatient ();
+        diagnostic.removePatientTest ();
+        assertEquals (diagnostic.billing.getBilling (), patient.billingType);
 
         // test: confirm we're able to Activate
-        billing.selectPatient (patient);
+        diagnostic.selectPatient (patient);
         activate_and_cancel ();
     }
 
@@ -233,15 +227,14 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     private void complete_order_and_activate () {
-        Specimen specimen = new Specimen ();
-        specimen.clickSave ();
-        specimen.enterSpecimenDelivery (CustomerShipment);
-        specimen.clickEnterSpecimenDetails ();
-        specimen.enterSpecimenType (Blood);
-        specimen.enterAntiCoagulant (EDTA);
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        specimen.clickSave ();
-        String orderNum = specimen.getOrderNum ();
+        diagnostic.clickSave ();
+        diagnostic.enterSpecimenDelivery (CustomerShipment);
+        diagnostic.clickEnterSpecimenDetails ();
+        diagnostic.enterSpecimenType (Blood);
+        diagnostic.enterAntiCoagulant (EDTA);
+        diagnostic.enterCollectionDate (DateUtils.getPastFutureDate (-3));
+        diagnostic.clickSave ();
+        String orderNum = diagnostic.getOrderNum ();
 
         // test: add diagnostic shipment
         Shipment shipment = new Shipment ();
@@ -265,7 +258,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         // test: add a test, confirm we're able to Activate and then cancel it
         diagnostic.isCorrectPage ();
         diagnostic.clickAssayTest (ID_BCell2_CLIA);
-        diagnostic.clickActivateOrder ();
+        diagnostic.clickSaveAndActivate ();
         diagnostic.clickCancel ();
     }
 }

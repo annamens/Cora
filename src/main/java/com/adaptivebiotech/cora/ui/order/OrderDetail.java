@@ -1,0 +1,368 @@
+package com.adaptivebiotech.cora.ui.order;
+
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
+import static java.lang.ClassLoader.getSystemResource;
+import static java.util.Arrays.asList;
+import static java.util.EnumSet.allOf;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
+import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Insurance;
+import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
+import com.adaptivebiotech.cora.dto.Orders.OrderTest;
+import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Specimen;
+import com.adaptivebiotech.test.utils.Logging;
+import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
+import com.adaptivebiotech.test.utils.PageHelper.Assay;
+import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
+import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
+import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
+import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
+import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
+import com.seleniumfy.test.utils.Timeout;
+
+/**
+ * @author jpatel
+ *
+ */
+public class OrderDetail extends OrderHeader {
+
+    public BillingOrderDetail billing          = new BillingOrderDetail ();
+
+    private final String      patientMrdStatus = ".patient-status";
+    private final String      specimenNumber   = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
+
+    public OrderDetail () {
+        staticNavBarHeight = 200;
+    }
+
+    @Override
+    public void isCorrectPage () {
+        assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
+        pageLoading ();
+    }
+
+    public String getPatientMRDStatus () {
+        return getText (patientMrdStatus);
+    }
+
+    public void clickPatientOrderHistory () {
+        assertTrue (click ("//a[text()='Patient Order History']"));
+        pageLoading ();
+        assertEquals (waitForElementVisible ("[uisref=\"main.patient.orders\"]").getText (), "PATIENT ORDER HISTORY");
+    }
+
+    public Order parseOrder () {
+        Order order = new Order ();
+        order.id = getOrderId ();
+        order.orderEntryType = getOrderType ();
+        order.name = getOrderName ();
+        order.status = getOrderStatus ();
+        order.order_number = getOrderNum ();
+        order.data_analysis_group = getDataAnalysisGroup ();
+        order.isTrfAttached = toBoolean (isTrfAttached ());
+        order.date_signed = getDateSigned ();
+        order.customerInstructions = getInstructions ();
+        order.physician = new Physician ();
+        order.physician.providerFullName = getProviderName ();
+        order.physician.accountName = getProviderAccount ();
+        order.patient = new Patient ();
+        order.patient.fullname = getPatientName ();
+        order.patient.dateOfBirth = getPatientDOB ();
+        order.patient.gender = getPatientGender ();
+        order.patient.patientCode = Integer.valueOf (getPatientCode ());
+        order.patient.mrn = getPatientMRN ();
+        order.patient.notes = getPatientNotes ();
+        ChargeType chargeType = billing.getBillingType ();
+        order.patient.billingType = chargeType;
+        order.patient.abnStatusType = Medicare.equals (chargeType) ? billing.getAbnStatus () : null;
+        order.icdcodes = getPatientICD_Codes ();
+        order.properties = new OrderProperties (chargeType, getSpecimenDelivery ());
+        order.specimenDto = new Specimen ();
+        order.specimenDto.specimenNumber = getSpecimenId ();
+        order.specimenDto.sampleType = getSpecimenType ();
+        order.specimenDto.sourceType = getSpecimenSource ();
+        order.specimenDto.anticoagulant = getAnticoagulant ();
+        order.specimenDto.collectionDate = getCollectionDt ();
+        order.specimenDto.reconciliationDate = getReconciliationDt ();
+        order.specimenDto.arrivalDate = getShipmentArrivalDate ();
+        order.expectedTestType = getExpectedTest ();
+        order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ()).parallelStream ()
+                                         .filter (t -> t.selected).collect (toList ());
+        order.orderAttachments = getCoraAttachments ();
+        order.doraAttachments = getDoraAttachments ();
+        order.patient.insurance1 = new Insurance ();
+        order.patient.insurance1.provider = billing.getInsurance1Provider ();
+        order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
+        order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
+        order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
+        order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
+        order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
+        order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
+        order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
+        order.patient.insurance2 = new Insurance ();
+        order.patient.insurance2.provider = billing.getInsurance2Provider ();
+        order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
+        order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
+        order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
+        order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+        order.patient.address = billing.getPatientAddress1 ();
+        order.patient.phone = billing.getPatientPhone ();
+        order.patient.locality = billing.getPatientCity ();
+        order.patient.region = billing.getPatientState ();
+        order.patient.postCode = billing.getPatientZipcode ();
+        order.notes = getOrderNotes ();
+        return order;
+    }
+
+    private String getOrderType () {
+        String css = "[ng-bind='ctrl.orderEntry.order.category.name']";
+        return isElementPresent (css) ? getText (css) : null;
+    }
+
+    public String getOrderName () {
+        // sometimes it's taking a while for the order detail page to load
+        String css = oDetail + " [ng-bind='ctrl.orderEntry.order.name']";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        while (!timer.Timedout () && ! (isTextInElement (css, "Clinical")))
+            timer.Wait ();
+        pageLoading ();
+        return getText (css);
+    }
+
+    public OrderStatus getOrderStatus () {
+        return OrderStatus.valueOf (getText ("[ng-bind='ctrl.orderEntry.order.status']"));
+    }
+
+    public String getOrderNum () {
+        String css = oDetail + " .ab-panel-first" + " [ng-bind='ctrl.orderEntry.order.orderNumber']";
+        return getText (css);
+    }
+
+    public String getDataAnalysisGroup () {
+        return getText ("[ng-bind='ctrl.orderEntry.order.dataAnalysisGroup']");
+    }
+
+    private String isTrfAttached () {
+        return getText ("[ng-bind^='ctrl.orderEntry.order.documentedByType']");
+    }
+
+    public String getDateSigned () {
+        String css = "[ng-bind^='ctrl.orderEntry.order.dateSigned']";
+        return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
+    }
+
+    private String getInstructions () {
+        String css = "[ng-bind='ctrl.orderEntry.order.specialInstructions']";
+        return isElementVisible (css) ? getText (css) : null;
+    }
+
+    public String getProviderName () {
+        return getText ("[ng-bind$='providerFullName']");
+    }
+
+    private String getProviderAccount () {
+        return getText ("[ng-bind='ctrl.orderEntry.order.authorizingProvider.account.name']");
+    }
+
+    public String getPatientName () {
+        return getText ("[ng-bind$='patientFullName']");
+    }
+
+    public String getPatientDOB () {
+        return getText ("[ng-bind^='ctrl.orderEntry.order.patient.dateOfBirth']");
+    }
+
+    public String getPatientGender () {
+        return getText ("[ng-bind='ctrl.orderEntry.order.patient.gender']");
+    }
+
+    public void clickPatientCode () {
+        String css = "//*[text()='Patient Code']/parent::div//a";
+        assertTrue (click (css));
+        assertTrue (waitForChildWindows (2));
+        List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
+        getDriver ().switchTo ().window (windows.get (1));
+    }
+
+    public String getPatientCode () {
+        String xpath = "//label[text()='Patient Code']/../div/a[1]/span";
+        return getText (xpath);
+    }
+
+    public void enterPatientNotes (String notes) {
+        assertTrue (setText ("[ng-model='ctrl.orderEntry.order.patient.notes']", notes));
+    }
+
+    public String getPatientNotes () {
+        String css = "[notes='ctrl.orderEntry.order.patient.notes']";
+        return isElementPresent (css) ? getText (css) : null;
+    }
+
+    public void editPatientNotes (String notes) {
+        String css = "[notes='ctrl.orderEntry.order.patient.notes']";
+        assertTrue (click (css + " [ng-click='ctrl.editNotes()']"));
+        assertTrue (setText (css + " textarea", notes));
+        assertTrue (click (css + " [ng-click='ctrl.save()']"));
+    }
+
+    public List <String> getPatientICD_Codes () {
+        String searchBox = "[ng-show='ctrl.searchBoxVisible'] input";
+        String css = "[ng-repeat*='ctrl.orderEntry.icdCodes']";
+        return isElementPresent (searchBox) && isElementVisible (searchBox) ? null : isElementPresent (css) ? getTextList (css) : null;
+    }
+
+    private DeliveryType getSpecimenDelivery () {
+        String css = "[ng-bind^='ctrl.orderEntry.order.specimenDeliveryType']";
+        return DeliveryType.getDeliveryType (getText (css));
+    }
+
+    public String getSpecimenId () {
+        return isElementVisible (specimenNumber) ? getText (specimenNumber) : null;
+    }
+
+    public String getSpecimenIdUrlAttribute (String attribute) {
+        String xpath = "//*[text()='Adaptive Specimen ID']/..//a";
+        return isElementPresent (xpath) && isElementVisible (xpath) ? getAttribute (xpath, attribute) : null;
+    }
+
+    private String getPatientMRN () {
+        String css = "[ng-bind='ctrl.orderEntry.order.mrn']";
+        return isElementVisible (css) ? getText (css) : null;
+    }
+
+    public SpecimenType getSpecimenType () {
+        String css = "[ng-bind^='ctrl.orderEntry.specimen.sampleType']";
+        return isElementPresent (css) && isElementVisible (css) ? SpecimenType.getSpecimenType (getText (css)) : null;
+    }
+
+    public SpecimenSource getSpecimenSource () {
+        String css = "[ng-bind^='ctrl.orderEntry.specimen.sourceType']";
+        return isElementPresent (css) && isElementVisible (css) ? SpecimenSource.valueOf (getText (css)) : null;
+    }
+
+    public Anticoagulant getAnticoagulant () {
+        String css = "[ng-bind^='ctrl.orderEntry.specimen | specimenAnticoagulant']";
+        return isElementPresent (css) && isElementVisible (css) ? Anticoagulant.valueOf (getText (css)) : null;
+    }
+
+    public String getCollectionDt () {
+        String css = "[ng-bind^='ctrl.orderEntry.specimen.collectionDate']";
+        return isElementPresent (css) && isElementVisible (css) ? getText (css) : null;
+    }
+
+    private String getReconciliationDt () {
+        String rDate = "[ng-bind*='ctrl.orderEntry.specimen.reconciliationDate']";
+        return isElementPresent (rDate) && isElementVisible (rDate) ? getText (rDate) : null;
+    }
+
+    public String getShipmentArrivalDate () {
+        String xpath = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
+        String arrivalDate = isElementPresent (xpath) && isElementVisible (xpath) ? getText (xpath) : null;
+        Logging.testLog ("Shipment Arrival Date from UI: " + arrivalDate);
+        return arrivalDate;
+    }
+
+    public void clickShipmentArrivalDate () {
+        assertTrue (click ("[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']"));
+    }
+
+    public String getIntakeCompleteDate () {
+        return getText ("[ng-bind^='ctrl.orderEntry.intakeCompletedDate']");
+    }
+
+    public String getSpecimenApprovalDate () {
+        return getText ("[ng-bind^='ctrl.orderEntry.specimen.approvedDate']");
+    }
+
+    public String getSpecimenApprovalStatus () {
+        return getText ("[ng-bind='ctrl.orderEntry.specimen.approvalStatus']");
+    }
+
+    public ContainerType getSpecimenContainerType () {
+        return ContainerType.getContainerType (getText ("[ng-bind='ctrl.orderEntry.specimenDisplayContainerType']"));
+    }
+
+    private String getExpectedTest () {
+        return isElementPresent ("[ng-if='ctrl.orderEntry.order.expectedTestType']") ? getText ("[ng-bind*='order.expectedTestType']") : null;
+    }
+
+    private OrderTest getTestState (Assay assay) {
+        String xpath = "//*[@ng-bind='orderTest.test.name' and text()='" + assay.test + "']";
+        boolean selected = isElementPresent (xpath);
+        String sampleName = selected ? getText (xpath + "/..//*[@ng-bind='orderTest.sampleName']") : null;
+        OrderTest orderTest = new OrderTest (assay, selected);
+        orderTest.sampleName = sampleName;
+        return orderTest;
+    }
+
+    public String getSampleName () {
+        return getText ("[ng-bind='orderTest.sampleName']");
+    }
+
+    public List <String> getCoraAttachments () {
+        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isOrderAttachment']";
+        return isElementPresent (files + " .attachments-table-row") ? getTextList (files + " a [ng-bind='attachment.name']") : null;
+    }
+
+    private List <String> getDoraAttachments () {
+        List <String> result = new ArrayList <> ();
+        String doraTrf = "[ng-if='ctrl.orderEntry.hasDoraTrf']";
+        if (isElementPresent (doraTrf))
+            result.add (getText (doraTrf));
+
+        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isDoraAttachment']";
+        if (isElementPresent (files + " .attachments-table-row"))
+            result.addAll (getTextList (files + " a [ng-bind='attachment.name']"));
+        return result;
+    }
+
+    public String getOrderNotes () {
+        return getText ("[notes='ctrl.orderEntry.order.notes']");
+    }
+
+    public void editOrderNotes (String notes) {
+        assertTrue (click ("[notes='ctrl.orderEntry.order.notes'] [ng-click='ctrl.editNotes()'] span"));
+        assertTrue (setText ("[notes='ctrl.orderEntry.order.notes'] textarea", notes));
+        assertTrue (click ("[notes='ctrl.orderEntry.order.notes'] [ng-click='ctrl.save()']"));
+    }
+
+    public void uploadAttachments (String... files) {
+        String attachments = asList (files).parallelStream ()
+                                           .map (f -> getSystemResource (f).getPath ())
+                                           .collect (joining ("\n"));
+        waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
+        pageLoading ();
+    }
+
+    public String getDAGText () {
+        String DAG = "[ng-bind*='dataAnalysisGroup']";
+        return getText (DAG);
+    }
+
+    public int getMessageTableRowCount () {
+        String messages = "//h2[text()='Messages']";
+        assertTrue (click (messages));
+        String messagesTableRows = "[ng-repeat*='ctrl.orderEntry.orderMessages']";
+        List <WebElement> rows = waitForElementsVisible (messagesTableRows);
+        return rows.size ();
+    }
+
+    public boolean isMessagesTableVisible () {
+        String messages = "//h2[text()='Messages']";
+        return waitUntilVisible (messages);
+    }
+
+    public List <String> getHistory () {
+        return getTextList ("//*[text()='History']/ancestor::div[@class='row']//li");
+    }
+}

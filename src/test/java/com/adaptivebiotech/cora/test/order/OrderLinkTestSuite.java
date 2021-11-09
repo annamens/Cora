@@ -10,7 +10,8 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.Detail;
-import com.adaptivebiotech.cora.ui.order.Diagnostic;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
+import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
@@ -33,15 +34,16 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 @Test (groups = "regression")
 public class OrderLinkTestSuite extends CoraBaseBrowser {
 
-    private OrdersList     ordersList      = new OrdersList ();
-    private OrderStatus    orderStatus     = new OrderStatus ();
-    private Diagnostic     diagnostic      = new Diagnostic ();
-    private Shipment       shipment        = new Shipment ();
-    private ShipmentDetail shipmentDetail  = new ShipmentDetail ();
-    private Detail         containerDetail = new Detail ();
-    private Accession      accession       = new Accession ();
-    private OrderTestsList orderTestsList  = new OrderTestsList ();
-    private ShipmentList   shipmentList    = new ShipmentList ();
+    private OrdersList          ordersList          = new OrdersList ();
+    private OrderStatus         orderStatus         = new OrderStatus ();
+    private NewOrderClonoSeq    newOrderClonoSeq    = new NewOrderClonoSeq ();
+    private OrderDetailClonoSeq orderDetailClonoSeq = new OrderDetailClonoSeq ();
+    private Shipment            shipment            = new Shipment ();
+    private ShipmentDetail      shipmentDetail      = new ShipmentDetail ();
+    private Detail              containerDetail     = new Detail ();
+    private Accession           accession           = new Accession ();
+    private OrderTestsList      orderTestsList      = new OrderTestsList ();
+    private ShipmentList        shipmentList        = new ShipmentList ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -56,8 +58,8 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         String order1 = createClonoSeqOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending);
         Logging.testLog ("Pending Order, order1: " + order1);
         ordersList.searchAndClickOrder (order1);
-        diagnostic.isCorrectPage ();
-        assertEquals (diagnostic.getOrderNum (), order1);
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
         Logging.testLog ("STEP 1 - clonoSEQ Order Form is displayed");
 
         ordersList.doOrderSearch (order1);
@@ -65,21 +67,21 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         Physician physician = TestHelper.physicianTRF ();
         String orderName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + order1;
         ordersList.clickOrderName (orderName);
-        diagnostic.isCorrectPage ();
-        assertEquals (diagnostic.getOrderNum (), order1);
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
         Logging.testLog ("STEP 2 - clonoSEQ Order Form is displayed");
 
-        diagnostic.clickPatientOrderHistory ();
-        diagnostic.clickOrder (order1);
-        diagnostic.isCorrectPage ();
-        assertEquals (diagnostic.getOrderNum (), order1);
+        newOrderClonoSeq.clickPatientOrderHistory ();
+        newOrderClonoSeq.clickOrder (order1);
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
         Logging.testLog ("STEP 3 - clonoSEQ Order Form is displayed");
 
-        diagnostic.doOrderTestSearch (order1);
+        newOrderClonoSeq.doOrderTestSearch (order1);
         orderTestsList.isCorrectPage ();
         orderTestsList.clickOrderName (orderName);
-        diagnostic.isCorrectPage ();
-        assertEquals (diagnostic.getOrderNum (), order1);
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
         Logging.testLog ("STEP 4 - clonoSEQ Order Form is displayed");
 
         shipmentList.goToShipments ();
@@ -95,8 +97,8 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         shipment.gotoAccession ();
         accession.isCorrectPage ();
         accession.clickOrderNo ();
-        diagnostic.isCorrectPage ();
-        assertEquals (diagnostic.getOrderNum (), order1);
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
         Logging.testLog ("STEP 6 - clonoSEQ Order Form is displayed");
 
         shipmentList.goToShipments ();
@@ -110,9 +112,9 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         shipment.clickContainerNo (containers.list.get (0).containerNumber);
         containerDetail.isCorrectPage ();
         containerDetail.clickAccessionedOrderNo (order1);
-        diagnostic.navigateToTab (1);
-        diagnostic.isCorrectPage ();
-        assertEquals (diagnostic.getOrderNum (), order1);
+        newOrderClonoSeq.navigateToTab (1);
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
         Logging.testLog ("STEP 7 - clonoSEQ Order Form is displayed");
 
     }
@@ -138,15 +140,15 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         assertEquals (orderStatus.getOrderNum (), order2);
         Logging.testLog ("STEP 9 - The generic order status page is displayed");
 
-        orderStatus.clickOrderDetails ();
-        diagnostic.isCorrectPage ();
-        diagnostic.clickPatientOrderHistory ();
-        diagnostic.clickOrder (order2);
+        orderStatus.clickOrderDetailsTab ();
+        orderDetailClonoSeq.isCorrectPage ();
+        orderDetailClonoSeq.clickPatientOrderHistory ();
+        orderDetailClonoSeq.clickOrder (order2);
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getOrderNum (), order2);
         Logging.testLog ("STEP 10 - The generic order status page is displayed");
 
-        diagnostic.doOrderTestSearch (order2);
+        orderDetailClonoSeq.doOrderTestSearch (order2);
         orderTestsList.isCorrectPage ();
         orderTestsList.clickOrderName (orderName);
         orderStatus.isCorrectPage ();
@@ -190,7 +192,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         shipmentDetail.clickContainerNo (containers.list.get (0).containerNumber);
         containerDetail.isCorrectPage ();
         containerDetail.clickAccessionedOrderNo (order2);
-        diagnostic.navigateToTab (1);
+        orderDetailClonoSeq.navigateToTab (1);
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getOrderNum (), order2);
         Logging.testLog ("STEP 14 - The generic order status page is displayed");
@@ -199,16 +201,16 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
     private String createClonoSeqOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus orderStatus) {
         // create clonoSEQ diagnostic order
-        return diagnostic.createClonoSeqOrder (TestHelper.physicianTRF (),
-                                               TestHelper.newPatient (),
-                                               new String[] { "C90.00" },
-                                               Assay.ID_BCell2_CLIA,
-                                               ChargeType.NoCharge,
-                                               SpecimenType.Blood,
-                                               null,
-                                               Anticoagulant.EDTA,
-                                               orderStatus,
-                                               ContainerType.Tube);
+        return newOrderClonoSeq.createClonoSeqOrder (TestHelper.physicianTRF (),
+                                                     TestHelper.newPatient (),
+                                                     new String[] { "C90.00" },
+                                                     Assay.ID_BCell2_CLIA,
+                                                     ChargeType.NoCharge,
+                                                     SpecimenType.Blood,
+                                                     null,
+                                                     Anticoagulant.EDTA,
+                                                     orderStatus,
+                                                     ContainerType.Tube);
     }
 
 }

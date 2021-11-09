@@ -38,38 +38,46 @@ import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
+import com.adaptivebiotech.cora.ui.order.OrderDetail;
+import com.adaptivebiotech.cora.ui.order.OrderStatus;
+import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskList;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
+import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
 
-@Test (groups = {"akita", "regression"} )
+@Test (groups = { "akita", "regression" })
 public class GatewayNotificationTestSuite extends OrderTestBase {
 
-    private final String                                 bcellIdTsv         = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.id.tsv.gz";
-    private final String                                 bcellMrdTsv        = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.mrd.tsv.gz";
-    private final String                                 tcellTsv           = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
-    private final String                                 covidTsv           = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz";
-    private final String                                 lastFlowcellId     = "HKJVGBGXC";
-    private final String                                 covidWorkspaceName = "Hospital12deOctubre-MartinezLopez";
-    private final String                                 covidSampleName    = "860011348";
+    private final String     bcellIdTsv         = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.id.tsv.gz";
+    private final String     bcellMrdTsv        = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.mrd.tsv.gz";
+    private final String     tcellTsv           = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
+    private final String     covidTsv           = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz";
+    private final String     lastFlowcellId     = "HKJVGBGXC";
+    private final String     covidWorkspaceName = "Hospital12deOctubre-MartinezLopez";
+    private final String     covidSampleName    = "860011348";
 
-    private Diagnostic                                   diagnostic;
-    private Orders.OrderTest                             orderTest;
-    private OrcaHistory                                      history;
-    private com.adaptivebiotech.cora.ui.order.Diagnostic order;
-    private TaskList                                     taskList;
-    private TaskStatus                                   taskStatus;
-    private TaskDetail                                   task;
+    private Diagnostic       diagnostic;
+    private Orders.OrderTest orderTest;
+    private OrcaHistory      history;
+    private ReportClonoSeq   report;
+    private TaskList         taskList;
+    private TaskStatus       taskStatus;
+    private TaskDetail       task;
+    private OrderStatus      orderStatus;
+    private OrderDetail      orderDetail;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         doCoraLogin ();
         new Login ().doLogin ();
         history = new OrcaHistory ();
-        order = new com.adaptivebiotech.cora.ui.order.Diagnostic ();
+        report = new ReportClonoSeq ();
         taskList = new TaskList ();
         taskStatus = new TaskStatus ();
         task = new TaskDetail ();
+        orderStatus = new OrderStatus ();
+        orderDetail = new OrderDetail ();
     }
 
     /**
@@ -88,7 +96,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        order.releaseReport (ID_BCell2_CLIA, Pass);
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (ID_BCell2_CLIA);
+        report.releaseReport (ID_BCell2_CLIA, Pass);
         testLog ("released ID report");
 
         history.gotoOrderDebug (orderTest.sampleName);
@@ -98,12 +108,12 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
-        order.clickReportTab (ID_BCell2_CLIA);
-        order.clickCorrectReport ();
-        order.selectUpdatedCorrectedReport ();
-        order.enterReasonForCorrection ("Testing gateway notifications");
-        order.clickCorrectReportSaveAndUpdate ();
-        order.releaseReportWithSignatureRequired ();
+        report.clickReportTab (ID_BCell2_CLIA);
+        report.clickCorrectReport ();
+        report.selectCorrectionType (CorrectionType.Updated);
+        report.enterReasonForCorrection ("Testing gateway notifications");
+        report.clickCorrectReportSaveAndUpdate ();
+        report.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
 
         taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
@@ -126,7 +136,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        order.releaseReport (MRD_BCell2_CLIA, Pass);
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (MRD_BCell2_CLIA);
+        report.releaseReport (MRD_BCell2_CLIA, Pass);
         testLog ("released MRD report");
 
         history.gotoOrderDebug (orderTest.sampleName);
@@ -136,12 +148,12 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
-        order.clickReportTab (MRD_BCell2_CLIA);
-        order.clickCorrectReport ();
-        order.selectAmendedCorrectedReport ();
-        order.enterReasonForCorrection ("Testing gateway notifications");
-        order.clickCorrectReportSaveAndUpdate ();
-        order.releaseReportWithSignatureRequired ();
+        report.clickReportTab (MRD_BCell2_CLIA);
+        report.clickCorrectReport ();
+        report.selectCorrectionType (CorrectionType.Amended);
+        report.enterReasonForCorrection ("Testing gateway notifications");
+        report.clickCorrectReportSaveAndUpdate ();
+        report.releaseReportWithSignatureRequired ();
         testLog ("released amended report");
 
         taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
@@ -168,7 +180,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        order.releaseReport (ID_TCRB, Pass);
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (ID_TCRB);
+        report.releaseReport (ID_TCRB, Pass);
         testLog ("released ID report");
 
         history.gotoOrderDebug (orderTest.workflowName);
@@ -178,12 +192,12 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
-        order.clickReportTab (ID_TCRB);
-        order.clickCorrectReport ();
-        order.selectUpdatedCorrectedReport ();
-        order.enterReasonForCorrection ("Testing gateway notifications");
-        order.clickCorrectReportSaveAndUpdate ();
-        order.releaseReportWithSignatureRequired ();
+        report.clickReportTab (ID_TCRB);
+        report.clickCorrectReport ();
+        report.selectCorrectionType (CorrectionType.Updated);
+        report.enterReasonForCorrection ("Testing gateway notifications");
+        report.clickCorrectReportSaveAndUpdate ();
+        report.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
 
         taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
@@ -206,7 +220,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        order.releaseReport (MRD_TCRB, Pass);
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (MRD_TCRB);
+        report.releaseReport (MRD_TCRB, Pass);
         testLog ("released MRD report");
 
         history.gotoOrderDebug (orderTest.workflowName);
@@ -216,12 +232,12 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
-        order.clickReportTab (MRD_TCRB);
-        order.clickCorrectReport ();
-        order.selectUpdatedCorrectedReport ();
-        order.enterReasonForCorrection ("Testing gateway notifications");
-        order.clickCorrectReportSaveAndUpdate ();
-        order.releaseReportWithSignatureRequired ();
+        report.clickReportTab (MRD_TCRB);
+        report.clickCorrectReport ();
+        report.selectCorrectionType (CorrectionType.Updated);
+        report.enterReasonForCorrection ("Testing gateway notifications");
+        report.clickCorrectReportSaveAndUpdate ();
+        report.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
 
         taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
@@ -251,7 +267,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         history.forceStatusUpdate (DxContamination, Finished);
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        order.releaseReport (COVID19_DX_IVD, Pass);
+        orderStatus.isCorrectPage ();
+        orderDetail.clickReportTab (COVID19_DX_IVD);
+        report.releaseReport (COVID19_DX_IVD, Pass);
         testLog ("released the Covid report");
 
         history.gotoOrderDebug (orderTest.sampleName);

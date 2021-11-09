@@ -8,7 +8,7 @@ import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 
-public class OrderStatus extends Diagnostic {
+public class OrderStatus extends OrderHeader {
 
     private final String historyLink          = ".history-link";
     private final String stageActionDots      = "#stageActionsDropdown";
@@ -18,6 +18,10 @@ public class OrderStatus extends Diagnostic {
     private final String submit               = "//button[text()='Submit']";
     private final String actionConfirm        = ".action-confirm";
     private final String confirmYes           = "//button[text()='Yes']";
+
+    public OrderStatus () {
+        staticNavBarHeight = 200;
+    }
 
     @Override
     public void isCorrectPage () {
@@ -49,6 +53,11 @@ public class OrderStatus extends Diagnostic {
 
     public String getTestName () {
         return getText ("[ng-bind='::orderTest.testName']");
+    }
+
+    // aka sample name
+    public String getWorkflowId () {
+        return getText ("[ng-bind=\"::orderTest.workflowName\"]");
     }
 
     public String getLastActivity () {
