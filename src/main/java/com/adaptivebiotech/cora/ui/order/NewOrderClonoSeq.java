@@ -144,6 +144,11 @@ public class NewOrderClonoSeq extends NewOrder {
         return order;
     }
 
+    public String getCollectionDt () {
+        String css = "[ng-model^='ctrl.orderEntry.specimen.collectionDate']";
+        return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
+    }
+
     private DeliveryType getSpecimenDelivery () {
         String css = "[ng-model^='ctrl.orderEntry.order.specimenDeliveryType']";
         return DeliveryType.getDeliveryType (getFirstSelectedText (css));

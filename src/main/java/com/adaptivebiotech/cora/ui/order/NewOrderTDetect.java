@@ -43,6 +43,8 @@ public class NewOrderTDetect extends NewOrder {
 
     public void activateOrder () {
         clickSaveAndActivate ();
+        moduleLoading ();
+        pageLoading ();
         waitUntilActivated ();
     }
 
@@ -224,7 +226,7 @@ public class NewOrderTDetect extends NewOrder {
         return isElementPresent (dateSigned) && isElementVisible (dateSigned) ? readInput (dateSigned) : null;
     }
 
-    public String getCollectionDate () {
+    public String getCollectionDt () {
         return isElementPresent (collectionDate) && isElementVisible (collectionDate) ? readInput (collectionDate) : null;
     }
 

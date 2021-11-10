@@ -11,11 +11,10 @@ import com.adaptivebiotech.cora.utils.PageHelper.Race;
  */
 public class OrderDetailTDetect extends OrderDetail {
 
-    public BillingOrderDetailTDetect billing        = new BillingOrderDetailTDetect ();
+    public BillingOrderDetailTDetect billing    = new BillingOrderDetailTDetect ();
 
-    private final String             dateSigned     = "[ng-bind='ctrl.originalDate']";
-    private final String             orderNotes     = "[ng-bind='ctrl.originalNotes']";
-    private final String             collectionDate = "[ng-bind^='ctrl.orderEntry.specimen.collectionDate']";
+    private final String             dateSigned = "[ng-bind='ctrl.originalDate']";
+    private final String             orderNotes = "[ng-bind='ctrl.originalNotes']";
 
     public String getSpecimenDeliverySelectedOption () {
         String css = "[formcontrolname='specimenDeliveryType']";
@@ -31,10 +30,6 @@ public class OrderDetailTDetect extends OrderDetail {
 
     public String getOrderNotes () {
         return isElementPresent (orderNotes) && isElementVisible (orderNotes) ? getText (orderNotes) : null;
-    }
-
-    public String getCollectionDate () {
-        return isElementPresent (collectionDate) && isElementVisible (collectionDate) ? getText (collectionDate) : null;
     }
 
     public void clickEditPatientDemographic () {
