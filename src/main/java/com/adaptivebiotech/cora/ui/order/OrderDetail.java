@@ -92,7 +92,7 @@ public class OrderDetail extends OrderHeader {
         order.specimenDto.sampleType = getSpecimenType ();
         order.specimenDto.sourceType = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
-        order.specimenDto.collectionDate = getCollectionDt ();
+        order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDt ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         order.expectedTestType = getExpectedTest ();
@@ -255,7 +255,7 @@ public class OrderDetail extends OrderHeader {
         return isElementPresent (css) && isElementVisible (css) ? Anticoagulant.valueOf (getText (css)) : null;
     }
 
-    public String getCollectionDt () {
+    public String getCollectionDate () {
         String css = "[ng-bind^='ctrl.orderEntry.specimen.collectionDate']";
         return isElementPresent (css) && isElementVisible (css) ? getText (css) : null;
     }
