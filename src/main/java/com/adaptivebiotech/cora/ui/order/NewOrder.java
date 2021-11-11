@@ -345,17 +345,12 @@ public class NewOrder extends OrderHeader {
 
     public SpecimenSource getSpecimenSource () {
         String css = "[ng-model^='ctrl.orderEntry.specimen.sourceType']";
-        return isElementPresent (css) && isElementVisible (css) ? SpecimenSource.valueOf (getFirstSelectedText (css)) : null;
+        return isElementPresent (css) && isElementVisible (css) ? SpecimenSource.getSpecimenSource (getFirstSelectedText (css)) : null;
     }
 
     public Anticoagulant getAnticoagulant () {
         String css = "[ng-model^='ctrl.orderEntry.specimen | specimenAnticoagulant']";
         return isElementPresent (css) && isElementVisible (css) ? Anticoagulant.valueOf (getFirstSelectedText (css)) : null;
-    }
-
-    public String getCollectionDt () {
-        String css = "[ng-model^='ctrl.orderEntry.specimen.collectionDate']";
-        return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
     }
 
     protected String getReconciliationDt () {

@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.test.order;
+package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestPass;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUser;

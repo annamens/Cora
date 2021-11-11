@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.test.order;
+package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static org.testng.Assert.assertEquals;

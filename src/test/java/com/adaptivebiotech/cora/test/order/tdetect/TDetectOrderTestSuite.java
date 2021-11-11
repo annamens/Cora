@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.test.order;
+package com.adaptivebiotech.cora.test.order.tdetect;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertTrue;
