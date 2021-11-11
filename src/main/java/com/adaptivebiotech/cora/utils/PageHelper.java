@@ -224,4 +224,23 @@ public class PageHelper {
         Updated, Amended;
     }
 
+    public enum FriendlyOrderStatus {
+        All ("All"),
+        PendingOrder ("Pending Order"),
+        SpecimenReceived ("Specimen Received"),
+        SpecimenCoordination ("Specimen Coordination"),
+        SpecimenProcessing ("Specimen Processing"),
+        ResultsAvailable ("Results Available");
+
+        public String label;
+
+        private FriendlyOrderStatus (String label) {
+            this.label = label;
+        }
+
+        public static FriendlyOrderStatus getFriendlyOrderStatus (String label) {
+            return allOf (FriendlyOrderStatus.class).parallelStream ().filter (a -> a.label.equals (label)).findAny ()
+                                                    .get ();
+        }
+    }
 }

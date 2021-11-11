@@ -54,7 +54,7 @@ public final class Physician {
     }
 
     public String displayName () {
-        return format ("%s, %s -- %s", this.lastName, this.firstName, this.accountName);
+        return format ("%s %s\n%s", this.lastName, this.firstName, this.accountName);
     }
 
     public String shortName () {
