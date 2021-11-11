@@ -43,7 +43,7 @@ public class NewOrderTDetect extends NewOrder {
 
     public void activateOrder () {
         clickSaveAndActivate ();
-        moduleLoading ();
+        hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();
     }
@@ -111,7 +111,7 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDto.sampleType = getSpecimenType ();
         order.specimenDto.sourceType = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
-        order.specimenDto.collectionDate = getCollectionDt ();
+        order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDt ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         Logging.testLog ("DTO Shipment Arrival Date: " + order.specimenDto.arrivalDate);
@@ -226,7 +226,7 @@ public class NewOrderTDetect extends NewOrder {
         return isElementPresent (dateSigned) && isElementVisible (dateSigned) ? readInput (dateSigned) : null;
     }
 
-    public String getCollectionDt () {
+    public String getCollectionDate () {
         return isElementPresent (collectionDate) && isElementVisible (collectionDate) ? readInput (collectionDate) : null;
     }
 

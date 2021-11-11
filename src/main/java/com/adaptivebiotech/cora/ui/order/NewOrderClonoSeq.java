@@ -111,7 +111,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.sampleType = getSpecimenType ();
         order.specimenDto.sourceType = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
-        order.specimenDto.collectionDate = getCollectionDt ();
+        order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDt ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         Logging.testLog ("DTO Shipment Arrival Date: " + order.specimenDto.arrivalDate);
@@ -144,7 +144,7 @@ public class NewOrderClonoSeq extends NewOrder {
         return order;
     }
 
-    public String getCollectionDt () {
+    public String getCollectionDate () {
         String css = "[ng-model^='ctrl.orderEntry.specimen.collectionDate']";
         return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
     }
