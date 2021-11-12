@@ -353,7 +353,7 @@ public class NewOrder extends OrderHeader {
         return isElementPresent (css) && isElementVisible (css) ? Anticoagulant.valueOf (getFirstSelectedText (css)) : null;
     }
 
-    protected String getReconciliationDt () {
+    protected String getReconciliationDate () {
         String rDate = "[ng-bind*='ctrl.orderEntry.specimen.reconciliationDate']";
         return isElementPresent (rDate) && isElementVisible (rDate) ? getText (rDate) : null;
     }
