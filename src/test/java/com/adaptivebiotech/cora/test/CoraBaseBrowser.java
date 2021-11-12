@@ -9,14 +9,12 @@ import static com.adaptivebiotech.test.BaseEnvironment.version;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.seleniumfy.test.utils.HttpClientHelper.formPost;
-import static com.seleniumfy.test.utils.HttpClientHelper.resetheaders;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.slf4j.MDC;
@@ -63,8 +61,11 @@ public class CoraBaseBrowser extends TestBase {
         forms.put ("userName", coraTestUser);
         forms.put ("password", coraTestPass);
         formPost (coraTestUrl + "/cora/login", forms);
-        resetheaders();
-        HttpClientHelper.headers.get ().add (username);
+        resetheaders ();
     }
 
+    protected void resetheaders () {
+        HttpClientHelper.resetheaders ();
+        HttpClientHelper.headers.get ().add (username);
+    }
 }

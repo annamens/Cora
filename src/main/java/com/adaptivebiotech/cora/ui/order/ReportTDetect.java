@@ -14,10 +14,13 @@ public class ReportTDetect extends Report {
     public List <ReportFlag> parseFlags () {
         List <ReportFlag> flags = new ArrayList <> ();
         if (isElementPresent ("//h2[text()='Flags']"))
-            for (WebElement a : waitForElements ("//*[h2='Flags']//tr//a")) {
+            for (WebElement td : waitForElements ("//*[h2='Flags']//tbody//td")) {
                 ReportFlag flag = new ReportFlag ();
-                flag.name = getText (a);
-                flag.link = getAttribute (a, "href");
+                if (isElementPresent (td, "a")) {
+                    flag.name = getText (td, "a");
+                    flag.link = getAttribute (td, "a", "href");
+                } else
+                    flag.name = getText (td);
                 flags.add (flag);
             }
         return flags;

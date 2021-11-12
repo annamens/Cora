@@ -2,21 +2,26 @@ package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
+import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.getPhysicians;
 import static com.adaptivebiotech.test.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.CommercialInsurance;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.PatientSelfPay;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.TrialProtocol;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Child;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Other;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Spouse;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.Inpatient;
+import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
-import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
+import static org.testng.Assert.fail;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
@@ -70,42 +75,100 @@ public class TestHelper {
     }
 
     public static Physician physician1 () {
-        Physician physician = new Physician ();
-        physician.id = "dfb8acb3-37af-474b-bb07-0dc8c6c10668";
-        physician.firstName = "Selenium";
-        physician.lastName = "Test1";
-        physician.accountName = "SEA_QA Test";
-        physician.providerFullName = format ("%s %s", physician.firstName, physician.lastName);
-        physician.address1 = "1234 Main St";
-        physician.city = "Seattle";
-        physician.state = "WA";
-        physician.zip = "98111";
-        physician.phone = "(206) 555-1212";
-        physician.allowInternalOrderUpload = false;
-        physician.email = "selenium.test1@1secmail.com";
-        physician.notificationEmails = "selenium.test1@1secmail.com";
-        physician.portal_emails = "selenium.test1@1secmail.com";
-        return physician;
+        List <Physician> physicians = getPhysicians ("Selenium", "Test1", "SEA_QA Test");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
     }
 
     // AllowInternalOrderUpload flag enabled in SalesForce
     public static Physician physicianTRF () {
-        Physician physician = new Physician ();
-        physician.id = "a1461f9d-29e0-464c-8bf6-a383079f1d62";
-        physician.firstName = "Automated";
-        physician.lastName = "Tests";
-        physician.accountName = "SEA_QA Test";
-        physician.providerFullName = format ("%s %s", physician.firstName, physician.lastName);
-        physician.address1 = "1234 Main St";
-        physician.city = "Seattle";
-        physician.state = "WA";
-        physician.zip = "98111";
-        physician.phone = "(206) 555-1212";
-        physician.allowInternalOrderUpload = true;
-        physician.email = "automated.test@adaptivebiotech.com";
-        physician.notificationEmails = "automated.test@adaptivebiotech.com";
-        physician.portal_emails = "automated.test@adaptivebiotech.com";
-        return physician;
+        List <Physician> physicians = getPhysicians ("Automated", "Tests", "SEA_QA Test");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianClonoSEQInsurance () {
+        List <Physician> physicians = getPhysicians ("ClonoSEQ", "Insurance", "SEA_QA ClonoSEQ Insurance");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianClonoSEQMedicare () {
+        List <Physician> physicians = getPhysicians ("ClonoSEQ", "Medicare", "SEA_QA ClonoSEQ Medicare");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianClonoSEQSelfPay () {
+        List <Physician> physicians = getPhysicians ("ClonoSEQ",
+                                                     "Patient Self-Pay",
+                                                     "SEA_QA ClonoSEQ Patient Self-Pay");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianClonoSEQClientBill () {
+        List <Physician> physicians = getPhysicians ("ClonoSEQ",
+                                                     "Bill My Institution",
+                                                     "SEA_QA ClonoSEQ Bill My Institution");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianClonoSEQTrialProtocol () {
+        List <Physician> physicians = getPhysicians ("ClonoSEQ",
+                                                     "Bill per Study Protocol",
+                                                     "SEA_QA ClonoSEQ Bill per Study Protocol");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianTDetectInsurance () {
+        List <Physician> physicians = getPhysicians ("T-Detect", "Insurance", "SEA_QA T-Detect Insurance");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianTDetectQMedicare () {
+        List <Physician> physicians = getPhysicians ("T-Detect", "Medicare", "SEA_QA T-Detect Medicare");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianTDetectSelfPay () {
+        List <Physician> physicians = getPhysicians ("T-Detect",
+                                                     "Patient Self-Pay",
+                                                     "SEA_QA T-Detect Patient Self-Pay");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianTDetectClientBill () {
+        List <Physician> physicians = getPhysicians ("T-Detect",
+                                                     "Bill My Institution",
+                                                     "SEA_QA T-Detect Bill My Institution");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
+    }
+
+    public static Physician physicianTDetectTrialProtocol () {
+        List <Physician> physicians = getPhysicians ("T-Detect",
+                                                     "Bill per Study Protocol",
+                                                     "SEA_QA T-Detect Bill per Study Protocol");
+        if (physicians.size () > 1)
+            fail ("Salesforce and Orca is out-of-sync");
+        return physicians.get (0);
     }
 
     // clean: no insurance, medicare, address, etc.
@@ -147,12 +210,38 @@ public class TestHelper {
         return patient;
     }
 
+    // Bill my Institution
+    public static Patient newClientPatient () {
+        Patient patient = newPatient ();
+        patient.billingType = Client;
+        patient.insurance1 = new Insurance ();
+        patient.insurance1.hospitalizationStatus = NonHospital;
+        return patient;
+    }
+
+    // Bill my Study Protocol
+    public static Patient newTrialProtocolPatient () {
+        Patient patient = newPatient ();
+        patient.billingType = TrialProtocol;
+        return patient;
+    }
+
+    // Patient Self-Pay
+    public static Patient newSelfPayPatient () {
+        Patient patient = newPatient ();
+        patient.billingType = PatientSelfPay;
+        patient.insurance1 = new Insurance ();
+        patient.insurance1.hospitalizationStatus = NonHospital;
+        return patient;
+    }
+
     // address is not required for cora
     public static Patient newInsurancePatient () {
         Patient patient = newPatient ();
         patient.billingType = CommercialInsurance;
         patient.insurance1 = insurance1 ();
         patient.insurance2 = insurance2 ();
+        patient.insurance3 = insurance3 ();
         return patient;
     }
 
@@ -164,6 +253,7 @@ public class TestHelper {
         patient.insurance1 = insurance1 ();
         patient.insurance1.groupNumber = null;
         patient.insurance2 = insurance2 ();
+        patient.insurance3 = insurance3 ();
         return patient;
     }
 
