@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Self;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
@@ -104,6 +105,30 @@ public class BillingNewOrder extends CoraPage {
         assertTrue (setText ("[name='secondaryPolicyholder']", name));
     }
 
+    public void addTertiaryInsurance () {
+        assertTrue (click ("[name='isTertiaryInsurance'][value='true']"));
+    }
+
+    public void enterInsurance3Provider (String provider) {
+        assertTrue (setText ("[name='tertiaryInsuranceProvider']", provider));
+    }
+
+    public void enterInsurance3GroupNumber (String group) {
+        assertTrue (setText ("[name='tertiaryGroupNumber']", group));
+    }
+
+    public void enterInsurance3Policy (String policy) {
+        assertTrue (setText ("[name='tertiaryPolicyNumber']", policy));
+    }
+
+    public void enterInsurance3Relationship (PatientRelationship relationship) {
+        assertTrue (clickAndSelectValue ("[name='tertiaryInsuredRelationship']", "string:" + relationship));
+    }
+
+    public void enterInsurance3PolicyHolder (String name) {
+        assertTrue (setText ("[name='tertiaryPolicyholder']", name));
+    }
+
     public void enterPatientAddress1 (String address1) {
         assertTrue (setText ("//*[text()='Address 1']/..//input", address1));
     }
@@ -135,21 +160,36 @@ public class BillingNewOrder extends CoraPage {
 
     public void enterMedicareInfo (Patient patient) {
         selectBilling (patient.billingType);
+        if (patient.abnStatusType != null)
+            enterABNstatus (patient.abnStatusType);
         enterInsurance1Provider (patient.insurance1.provider);
         enterInsurance1Policy (patient.insurance1.policyNumber);
         enterInsurance1Relationship (patient.insurance1.insuredRelationship);
-        if (!patient.insurance1.insuredRelationship.equals (PatientRelationship.Self))
+        if (!patient.insurance1.insuredRelationship.equals (Self))
             enterInsurance1PolicyHolder (patient.insurance1.policyholder);
         enterInsurance1PatientStatus (patient.insurance1.hospitalizationStatus);
         enterInsurance1Hospital (patient.insurance1.billingInstitution);
         enterInsurance1Discharge (patient.insurance1.dischargeDate);
-        addSecondaryInsurance ();
-        enterInsurance2Provider (patient.insurance2.provider);
-        enterInsurance2GroupNumber (patient.insurance2.groupNumber);
-        enterInsurance2Policy (patient.insurance2.policyNumber);
-        enterInsurance2Relationship (patient.insurance2.insuredRelationship);
-        if (!patient.insurance2.insuredRelationship.equals (PatientRelationship.Self))
-            enterInsurance2PolicyHolder (patient.insurance2.policyholder);
+
+        if (patient.insurance2 != null) {
+            addSecondaryInsurance ();
+            enterInsurance2Provider (patient.insurance2.provider);
+            enterInsurance2GroupNumber (patient.insurance2.groupNumber);
+            enterInsurance2Policy (patient.insurance2.policyNumber);
+            enterInsurance2Relationship (patient.insurance2.insuredRelationship);
+            if (!patient.insurance2.insuredRelationship.equals (Self))
+                enterInsurance2PolicyHolder (patient.insurance2.policyholder);
+        }
+
+        if (patient.insurance3 != null) {
+            addTertiaryInsurance ();
+            enterInsurance3Provider (patient.insurance3.provider);
+            enterInsurance3GroupNumber (patient.insurance3.groupNumber);
+            enterInsurance3Policy (patient.insurance3.policyNumber);
+            enterInsurance3Relationship (patient.insurance3.insuredRelationship);
+            if (!patient.insurance3.insuredRelationship.equals (Self))
+                enterInsurance3PolicyHolder (patient.insurance3.policyholder);
+        }
     }
 
     public void enterInsuranceInfo (Patient patient) {
@@ -158,18 +198,31 @@ public class BillingNewOrder extends CoraPage {
         enterInsurance1GroupNumber (patient.insurance1.groupNumber);
         enterInsurance1Policy (patient.insurance1.policyNumber);
         enterInsurance1Relationship (patient.insurance1.insuredRelationship);
-        if (!patient.insurance1.insuredRelationship.equals (PatientRelationship.Self))
+        if (!patient.insurance1.insuredRelationship.equals (Self))
             enterInsurance1PolicyHolder (patient.insurance1.policyholder);
         enterInsurance1PatientStatus (patient.insurance1.hospitalizationStatus);
         enterInsurance1Hospital (patient.insurance1.billingInstitution);
         enterInsurance1Discharge (patient.insurance1.dischargeDate);
-        addSecondaryInsurance ();
-        enterInsurance2Provider (patient.insurance2.provider);
-        enterInsurance2GroupNumber (patient.insurance2.groupNumber);
-        enterInsurance2Policy (patient.insurance2.policyNumber);
-        enterInsurance2Relationship (patient.insurance2.insuredRelationship);
-        if (!patient.insurance2.insuredRelationship.equals (PatientRelationship.Self))
-            enterInsurance2PolicyHolder (patient.insurance2.policyholder);
+
+        if (patient.insurance2 != null) {
+            addSecondaryInsurance ();
+            enterInsurance2Provider (patient.insurance2.provider);
+            enterInsurance2GroupNumber (patient.insurance2.groupNumber);
+            enterInsurance2Policy (patient.insurance2.policyNumber);
+            enterInsurance2Relationship (patient.insurance2.insuredRelationship);
+            if (!patient.insurance2.insuredRelationship.equals (Self))
+                enterInsurance2PolicyHolder (patient.insurance2.policyholder);
+        }
+
+        if (patient.insurance3 != null) {
+            addTertiaryInsurance ();
+            enterInsurance3Provider (patient.insurance3.provider);
+            enterInsurance3GroupNumber (patient.insurance3.groupNumber);
+            enterInsurance3Policy (patient.insurance3.policyNumber);
+            enterInsurance3Relationship (patient.insurance3.insuredRelationship);
+            if (!patient.insurance3.insuredRelationship.equals (Self))
+                enterInsurance3PolicyHolder (patient.insurance3.policyholder);
+        }
     }
 
     public void enterBill (Patient patient) {

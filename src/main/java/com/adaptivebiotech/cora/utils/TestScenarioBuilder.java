@@ -17,6 +17,7 @@ import static com.seleniumfy.test.utils.HttpClientHelper.body;
 import static com.seleniumfy.test.utils.HttpClientHelper.encodeUrl;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
+import static java.lang.String.format;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
@@ -108,7 +109,12 @@ public class TestScenarioBuilder {
         try {
             String[] args = { "firstName=" + first, "lastName=" + last, "accountName=" + account };
             String url = encodeUrl (coraTestUrl + "/cora/api/v1/providers?", args);
-            return mapper.readValue (get (url), ProvidersResponse.class).objects;
+            List <Physician> physicians = mapper.readValue (get (url), ProvidersResponse.class).objects;
+            physicians.forEach (p -> {
+                p.accountName = p.account.name;
+                p.providerFullName = format ("%s %s", p.firstName, p.lastName);
+            });
+            return physicians;
         } catch (Exception e) {
             throw new RuntimeException (e);
         }

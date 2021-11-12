@@ -170,7 +170,7 @@ public class NewOrder extends OrderHeader {
 
     public void clickPickPhysician () {
         assertTrue (click ("//button[text()='Pick Physician...']"));
-        assertTrue (waitUntilVisible (".modal-open"));
+        assertTrue (isTextInElement (popupTitle, "Pick Physician"));
     }
 
     public void enterPhysicianFirstname (String firstName) {

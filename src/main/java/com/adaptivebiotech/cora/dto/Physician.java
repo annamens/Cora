@@ -1,6 +1,6 @@
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.lang.String.format;
 import java.time.LocalDateTime;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
@@ -63,10 +63,29 @@ public final class Physician {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
+        return toStringOverride (this);
+    }
+
+    public enum PhysicianType {
+        clonoSEQ_client ("ClonoSEQ", "Bill My Institution", "SEA_QA ClonoSEQ Bill My Institution"),
+        clonoSEQ_trial ("ClonoSEQ", "Bill per Study Protocol", "SEA_QA ClonoSEQ Bill per Study Protocol"),
+        clonoSEQ_insurance ("ClonoSEQ", "Insurance", "SEA_QA ClonoSEQ Insurance"),
+        clonoSEQ_medicare ("ClonoSEQ", "Medicare", "SEA_QA ClonoSEQ Medicare"),
+        clonoSEQ_selfpay ("ClonoSEQ", "Patient Self-Pay", "SEA_QA ClonoSEQ Patient Self-Pay"),
+        TDetect_client ("T-Detect", "Bill My Institution", "SEA_QA T-Detect Bill My Institution"),
+        TDetect_trial ("T-Detect", "Bill per Study Protocol", "SEA_QA T-Detect Bill per Study Protocol"),
+        TDetect_insurance ("T-Detect", "Insurance", "SEA_QA T-Detect Insurance"),
+        TDetect_medicare ("T-Detect", "Medicare", "SEA_QA T-Detect Medicare"),
+        TDetect_selfpay ("T-Detect", "Patient Self-Pay", "SEA_QA T-Detect Patient Self-Pay");
+
+        public String firstName;
+        public String lastName;
+        public String accountName;
+
+        private PhysicianType (String firstName, String lastName, String accountName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.accountName = accountName;
         }
     }
 }

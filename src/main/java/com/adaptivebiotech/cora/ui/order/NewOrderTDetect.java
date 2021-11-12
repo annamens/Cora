@@ -279,13 +279,13 @@ public class NewOrderTDetect extends NewOrder {
         for (String icdCode : icdCodes) {
             enterPatientICD_Codes (icdCode);
         }
-        clickSave ();
 
         enterCollectionDate (collectionDate);
 
         clickAssayTest (assayTest);
         billing.selectBilling (chargeType);
-        billing.enterPatientAddress (patientAddress);
+        if (patientAddress != null)
+            billing.enterPatientAddress (patientAddress);
         clickSave ();
 
         String orderNum = getOrderNum ();

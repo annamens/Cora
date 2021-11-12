@@ -204,7 +204,7 @@ public class Accession extends CoraPage {
         labelingComplete ();
         labelVerificationComplete ();
         clickPass ();
-        gotoOrderDetail ();
+        clickOrderNo ();
     }
 
 }
