@@ -1,15 +1,16 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_insurance;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_medicare;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
-import static com.adaptivebiotech.cora.utils.TestHelper.physicianClonoSEQClientBill;
-import static com.adaptivebiotech.cora.utils.TestHelper.physicianClonoSEQInsurance;
-import static com.adaptivebiotech.cora.utils.TestHelper.physicianClonoSEQMedicare;
-import static com.adaptivebiotech.cora.utils.TestHelper.physicianClonoSEQSelfPay;
-import static com.adaptivebiotech.cora.utils.TestHelper.physicianClonoSEQTrialProtocol;
+import static com.adaptivebiotech.cora.utils.TestHelper.physician;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
@@ -47,7 +48,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     public void insurance () {
         doCoraLogin ();
         Patient patient = newInsurancePatient ();
-        diagnostic.createClonoSeqOrder (physicianClonoSEQInsurance (),
+        diagnostic.createClonoSeqOrder (physician (clonoSEQ_insurance),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
@@ -66,7 +67,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     public void medicare () {
         doCoraLogin ();
         Patient patient = newMedicarePatient ();
-        diagnostic.createClonoSeqOrder (physicianClonoSEQMedicare (),
+        diagnostic.createClonoSeqOrder (physician (clonoSEQ_medicare),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
@@ -82,7 +83,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     public void patientSelfPay () {
         doCoraLogin ();
         Patient patient = newSelfPayPatient ();
-        diagnostic.createClonoSeqOrder (physicianClonoSEQSelfPay (),
+        diagnostic.createClonoSeqOrder (physician (clonoSEQ_selfpay),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
@@ -98,7 +99,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     public void billClient () {
         doCoraLogin ();
         Patient patient = newClientPatient ();
-        diagnostic.createClonoSeqOrder (physicianClonoSEQClientBill (),
+        diagnostic.createClonoSeqOrder (physician (clonoSEQ_client),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
@@ -114,7 +115,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     public void billPerStudyProtocol () {
         doCoraLogin ();
         Patient patient = newTrialProtocolPatient ();
-        diagnostic.createClonoSeqOrder (physicianClonoSEQTrialProtocol (),
+        diagnostic.createClonoSeqOrder (physician (clonoSEQ_trial),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
@@ -124,6 +125,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         specimen.anticoagulant,
                                         Active,
                                         Tube);
-        testLog ("created an order with billing: Client Bill");
+        testLog ("created an order with billing: Bill per Study Protocol");
     }
 }

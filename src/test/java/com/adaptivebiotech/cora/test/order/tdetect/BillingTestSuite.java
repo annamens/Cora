@@ -1,9 +1,10 @@
 package com.adaptivebiotech.cora.test.order.tdetect;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
-import static com.adaptivebiotech.cora.utils.TestHelper.physicianTDetectClientBill;
-import static com.adaptivebiotech.cora.utils.TestHelper.physicianTDetectSelfPay;
+import static com.adaptivebiotech.cora.utils.TestHelper.physician;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
@@ -42,7 +43,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     public void patientSelfPay () {
         doCoraLogin ();
         Patient patient = newSelfPayPatient ();
-        diagnostic.createTDetectOrder (physicianTDetectSelfPay (),
+        diagnostic.createTDetectOrder (physician (TDetect_selfpay),
                                        patient,
                                        icdCodes,
                                        specimen.collectionDate.toString (),
@@ -57,7 +58,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     public void billClient () {
         doCoraLogin ();
         Patient patient = newClientPatient ();
-        diagnostic.createTDetectOrder (physicianTDetectClientBill (),
+        diagnostic.createTDetectOrder (physician (TDetect_client),
                                        patient,
                                        icdCodes,
                                        specimen.collectionDate.toString (),

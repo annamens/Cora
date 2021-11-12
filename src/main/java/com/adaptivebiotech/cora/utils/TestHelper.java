@@ -28,6 +28,7 @@ import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.github.javafaker.Faker;
@@ -89,83 +90,8 @@ public class TestHelper {
         return physicians.get (0);
     }
 
-    public static Physician physicianClonoSEQInsurance () {
-        List <Physician> physicians = getPhysicians ("ClonoSEQ", "Insurance", "SEA_QA ClonoSEQ Insurance");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physicianClonoSEQMedicare () {
-        List <Physician> physicians = getPhysicians ("ClonoSEQ", "Medicare", "SEA_QA ClonoSEQ Medicare");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physicianClonoSEQSelfPay () {
-        List <Physician> physicians = getPhysicians ("ClonoSEQ",
-                                                     "Patient Self-Pay",
-                                                     "SEA_QA ClonoSEQ Patient Self-Pay");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physicianClonoSEQClientBill () {
-        List <Physician> physicians = getPhysicians ("ClonoSEQ",
-                                                     "Bill My Institution",
-                                                     "SEA_QA ClonoSEQ Bill My Institution");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physicianClonoSEQTrialProtocol () {
-        List <Physician> physicians = getPhysicians ("ClonoSEQ",
-                                                     "Bill per Study Protocol",
-                                                     "SEA_QA ClonoSEQ Bill per Study Protocol");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physicianTDetectInsurance () {
-        List <Physician> physicians = getPhysicians ("T-Detect", "Insurance", "SEA_QA T-Detect Insurance");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physicianTDetectQMedicare () {
-        List <Physician> physicians = getPhysicians ("T-Detect", "Medicare", "SEA_QA T-Detect Medicare");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physicianTDetectSelfPay () {
-        List <Physician> physicians = getPhysicians ("T-Detect",
-                                                     "Patient Self-Pay",
-                                                     "SEA_QA T-Detect Patient Self-Pay");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physicianTDetectClientBill () {
-        List <Physician> physicians = getPhysicians ("T-Detect",
-                                                     "Bill My Institution",
-                                                     "SEA_QA T-Detect Bill My Institution");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physicianTDetectTrialProtocol () {
-        List <Physician> physicians = getPhysicians ("T-Detect",
-                                                     "Bill per Study Protocol",
-                                                     "SEA_QA T-Detect Bill per Study Protocol");
+    public static Physician physician (PhysicianType type) {
+        List <Physician> physicians = getPhysicians (type.firstName, type.lastName, type.accountName);
         if (physicians.size () > 1)
             fail ("Salesforce and Orca is out-of-sync");
         return physicians.get (0);
