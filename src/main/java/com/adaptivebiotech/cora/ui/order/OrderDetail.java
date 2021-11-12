@@ -93,7 +93,7 @@ public class OrderDetail extends OrderHeader {
         order.specimenDto.sourceType = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
-        order.specimenDto.reconciliationDate = getReconciliationDt ();
+        order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         order.expectedTestType = getExpectedTest ();
         order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ()).parallelStream ()
@@ -260,7 +260,7 @@ public class OrderDetail extends OrderHeader {
         return isElementPresent (css) && isElementVisible (css) ? getText (css) : null;
     }
 
-    private String getReconciliationDt () {
+    private String getReconciliationDate () {
         String rDate = "[ng-bind*='ctrl.orderEntry.specimen.reconciliationDate']";
         return isElementPresent (rDate) && isElementVisible (rDate) ? getText (rDate) : null;
     }

@@ -112,7 +112,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.sourceType = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
-        order.specimenDto.reconciliationDate = getReconciliationDt ();
+        order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         Logging.testLog ("DTO Shipment Arrival Date: " + order.specimenDto.arrivalDate);
         order.expectedTestType = getExpectedTest ();
