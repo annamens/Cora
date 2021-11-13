@@ -28,7 +28,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
-import com.adaptivebiotech.cora.dto.Orders;
+import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.order.OrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
@@ -42,20 +42,19 @@ import com.adaptivebiotech.cora.ui.task.TaskStatus;
 @Test (groups = { "akita", "regression" })
 public class GatewayNotificationTestSuite extends OrderTestBase {
 
-    private final String     bcellIdTsv     = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.id.tsv.gz";
-    private final String     bcellMrdTsv    = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.mrd.tsv.gz";
-    private final String     tcellTsv       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
-    private final String     lastFlowcellId = "HKJVGBGXC";
-    private final String     gatewayJson    = "gatewayMessage.json";
-    private OrcaHistory      history        = new OrcaHistory ();
-    private ReportClonoSeq   report         = new ReportClonoSeq ();
-    private TaskStatus       taskStatus     = new TaskStatus ();
-    private TaskDetail       taskDetail     = new TaskDetail ();
-    private OrderStatus      orderStatus    = new OrderStatus ();
-    private OrderDetail      orderDetail    = new OrderDetail ();
-    private Diagnostic       diagnostic;
-    private Orders.OrderTest orderTest;
-    private Patient          patient;
+    private final String   bcellIdTsv     = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.id.tsv.gz";
+    private final String   bcellMrdTsv    = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.mrd.tsv.gz";
+    private final String   tcellTsv       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
+    private final String   lastFlowcellId = "HKJVGBGXC";
+    private final String   gatewayJson    = "gatewayMessage.json";
+    private OrcaHistory    history        = new OrcaHistory ();
+    private ReportClonoSeq report         = new ReportClonoSeq ();
+    private TaskStatus     taskStatus     = new TaskStatus ();
+    private TaskDetail     taskDetail     = new TaskDetail ();
+    private OrderStatus    orderStatus    = new OrderStatus ();
+    private OrderDetail    orderDetail    = new OrderDetail ();
+    private Diagnostic     diagnostic;
+    private Patient        patient;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -74,7 +73,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         assertEquals (newDiagnosticOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new BCell ID order");
 
-        orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
+        OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
@@ -156,7 +155,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         assertEquals (createPortalJob (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell ID order");
 
-        orderTest = diagnostic.findOrderTest (ID_TCRB);
+        OrderTest orderTest = diagnostic.findOrderTest (ID_TCRB);
         history.gotoOrderDebug (orderTest.workflowName);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
