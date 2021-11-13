@@ -53,7 +53,6 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private TaskDetail     taskDetail     = new TaskDetail ();
     private OrderStatus    orderStatus    = new OrderStatus ();
     private OrderDetail    orderDetail    = new OrderDetail ();
-    private Diagnostic     diagnostic;
     private Patient        patient;
 
     @BeforeMethod (alwaysRun = true)
@@ -67,9 +66,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
      * @sdlc_requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqBcellGatewayMessageUpdate () {
-        diagnostic = buildDiagnosticOrder (patient,
-                                           stage (SecondaryAnalysis, Ready),
-                                           genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
+        Diagnostic diagnostic = buildDiagnosticOrder (patient,
+                                                      stage (SecondaryAnalysis, Ready),
+                                                      genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
         assertEquals (newDiagnosticOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new BCell ID order");
 
@@ -148,9 +147,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
      * @sdlc_requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqTcellGatewayMessageUpdate () {
-        diagnostic = buildDiagnosticOrder (patient,
-                                           stage (NorthQC, Ready),
-                                           genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv));
+        Diagnostic diagnostic = buildDiagnosticOrder (patient,
+                                                      stage (NorthQC, Ready),
+                                                      genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
         assertEquals (createPortalJob (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell ID order");
