@@ -26,7 +26,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcc
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.headers;
-import static com.seleniumfy.test.utils.HttpClientHelper.resetheaders;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -1030,7 +1029,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         if (setQCStatus) {
             reportClonoSeq.setQCstatus (QC.Pass);
-            reportClonoSeq.releaseReport ();
+            reportClonoSeq.clickReleaseReport ();
         }
         return isCLIAIGHVFlagPresent;
     }

@@ -1,9 +1,12 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Amended;
+import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.createPortalJob;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.newDiagnosticOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_TCRB;
@@ -19,7 +22,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_REPORT_NOTIFICATION;
-import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.notifyGateway;
+import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
@@ -34,9 +37,7 @@ import com.adaptivebiotech.cora.ui.order.OrderDetail;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
-import com.adaptivebiotech.cora.ui.task.TaskList;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
-import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
 
 @Test (groups = { "akita", "regression" })
 public class GatewayNotificationTestSuite extends OrderTestBase {
@@ -45,35 +46,28 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private final String     bcellMrdTsv    = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.mrd.tsv.gz";
     private final String     tcellTsv       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
     private final String     lastFlowcellId = "HKJVGBGXC";
-
+    private final String     gatewayJson    = "gatewayMessage.json";
+    private OrcaHistory      history        = new OrcaHistory ();
+    private ReportClonoSeq   report         = new ReportClonoSeq ();
+    private TaskStatus       taskStatus     = new TaskStatus ();
+    private TaskDetail       taskDetail     = new TaskDetail ();
+    private OrderStatus      orderStatus    = new OrderStatus ();
+    private OrderDetail      orderDetail    = new OrderDetail ();
     private Diagnostic       diagnostic;
     private Orders.OrderTest orderTest;
-    private OrcaHistory      history;
-    private ReportClonoSeq   report;
-    private TaskList         taskList;
-    private TaskStatus       taskStatus;
-    private TaskDetail       task;
-    private OrderStatus      orderStatus;
-    private OrderDetail      orderDetail;
+    private Patient          patient;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
+        patient = scenarioBuilderPatient ();
         doCoraLogin ();
         new Login ().doLogin ();
-        history = new OrcaHistory ();
-        report = new ReportClonoSeq ();
-        taskList = new TaskList ();
-        taskStatus = new TaskStatus ();
-        task = new TaskDetail ();
-        orderStatus = new OrderStatus ();
-        orderDetail = new OrderDetail ();
     }
 
     /**
      * @sdlc_requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqBcellGatewayMessageUpdate () {
-        Patient patient = scenarioBuilderPatient ();
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (SecondaryAnalysis, Ready),
                                            genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
@@ -82,36 +76,35 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        orderStatus.isCorrectPage ();
         orderDetail.clickReportTab (ID_BCell2_CLIA);
         report.releaseReport (ID_BCell2_CLIA, Pass);
         testLog ("released ID report");
 
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent ("gatewayMessage.json");
+        history.isFilePresent (gatewayJson);
         testLog ("gateway message sent");
 
         history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
         report.clickReportTab (ID_BCell2_CLIA);
         report.clickCorrectReport ();
-        report.selectCorrectionType (CorrectionType.Updated);
-        report.enterReasonForCorrection ("Testing gateway notifications");
-        report.clickCorrectReportSaveAndUpdate ();
+        report.selectCorrectionType (Updated);
+        report.enterReasonForCorrection ("Testing gateway notifications for BCell ID order");
+        report.clickSaveAndUpdate ();
         report.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
 
-        taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
-        task.clickTaskStatus ();
+        assertTrue (navigateTo (format ("%s/cora/task/%s?p=status", coraTestUrl, report.getCorrectedReportTaskId ())));
+        taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        task.clickTaskDetail ();
-        assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
+        taskStatus.clickTaskDetail ();
+        assertTrue (taskDetail.taskFiles ().containsKey (gatewayJson));
         testLog ("gateway message with corrected report sent");
-        task.clickTaskStatus ();
+
+        taskDetail.clickTaskStatus ();
         taskStatus.waitFor (ReportDelivery, Finished);
 
         diagnostic = buildDiagnosticOrder (patient,
@@ -122,7 +115,6 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         orderStatus.isCorrectPage ();
@@ -132,24 +124,24 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent ("gatewayMessage.json");
+        history.isFilePresent (gatewayJson);
         testLog ("gateway message sent");
 
         history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
         report.clickReportTab (MRD_BCell2_CLIA);
         report.clickCorrectReport ();
-        report.selectCorrectionType (CorrectionType.Amended);
-        report.enterReasonForCorrection ("Testing gateway notifications");
-        report.clickCorrectReportSaveAndUpdate ();
+        report.selectCorrectionType (Amended);
+        report.enterReasonForCorrection ("Testing gateway notifications for BCell MRD order");
+        report.clickSaveAndUpdate ();
         report.releaseReportWithSignatureRequired ();
         testLog ("released amended report");
 
-        taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
-        task.clickTaskStatus ();
+        assertTrue (navigateTo (format ("%s/cora/task/%s?p=status", coraTestUrl, report.getCorrectedReportTaskId ())));
+        taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        task.clickTaskDetail ();
-        assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
+        taskStatus.clickTaskDetail ();
+        assertTrue (taskDetail.taskFiles ().containsKey (gatewayJson));
         testLog ("gateway message with amended report sent");
     }
 
@@ -157,45 +149,45 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
      * @sdlc_requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqTcellGatewayMessageUpdate () {
-        Patient patient = scenarioBuilderPatient ();
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (NorthQC, Ready),
                                            genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
         assertEquals (createPortalJob (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell ID order");
+
         orderTest = diagnostic.findOrderTest (ID_TCRB);
         history.gotoOrderDebug (orderTest.workflowName);
-        history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         orderStatus.isCorrectPage ();
         orderDetail.clickReportTab (ID_TCRB);
         report.releaseReport (ID_TCRB, Pass);
-        testLog ("released ID report");
+        testLog ("released TCRB ID report");
 
         history.gotoOrderDebug (orderTest.workflowName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent ("gatewayMessage.json");
+        history.isFilePresent (gatewayJson);
         testLog ("gateway message sent");
 
         history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
         report.clickReportTab (ID_TCRB);
         report.clickCorrectReport ();
-        report.selectCorrectionType (CorrectionType.Updated);
-        report.enterReasonForCorrection ("Testing gateway notifications");
-        report.clickCorrectReportSaveAndUpdate ();
+        report.selectCorrectionType (Updated);
+        report.enterReasonForCorrection ("Testing gateway notifications for TCRB ID report");
+        report.clickSaveAndUpdate ();
         report.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
 
-        taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
-        task.clickTaskStatus ();
+        assertTrue (navigateTo (format ("%s/cora/task/%s?p=status", coraTestUrl, report.getCorrectedReportTaskId ())));
+        taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        task.clickTaskDetail ();
-        assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
+        taskStatus.clickTaskDetail ();
+        assertTrue (taskDetail.taskFiles ().containsKey (gatewayJson));
         testLog ("gateway message with corrected report sent");
-        task.clickTaskStatus ();
+
+        taskDetail.clickTaskStatus ();
         taskStatus.waitFor (ReportDelivery, Finished);
 
         diagnostic = buildDiagnosticOrder (patient,
@@ -204,37 +196,36 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         diagnostic.order.postToImmunoSEQ = true;
         assertEquals (createPortalJob (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell MRD order");
+
         orderTest = diagnostic.findOrderTest (MRD_TCRB);
         history.gotoOrderDebug (orderTest.workflowName);
-        history.setWorkflowProperty (notifyGateway, "true");
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         orderStatus.isCorrectPage ();
         orderDetail.clickReportTab (MRD_TCRB);
         report.releaseReport (MRD_TCRB, Pass);
-        testLog ("released MRD report");
+        testLog ("released TCRB MRD report");
 
         history.gotoOrderDebug (orderTest.workflowName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent ("gatewayMessage.json");
+        history.isFilePresent (gatewayJson);
         testLog ("gateway message sent");
 
         history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
         report.clickReportTab (MRD_TCRB);
         report.clickCorrectReport ();
-        report.selectCorrectionType (CorrectionType.Updated);
-        report.enterReasonForCorrection ("Testing gateway notifications");
-        report.clickCorrectReportSaveAndUpdate ();
+        report.selectCorrectionType (Updated);
+        report.enterReasonForCorrection ("Testing gateway notifications for TCRB MRD report");
+        report.clickSaveAndUpdate ();
         report.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
 
-        taskList.searchAndClickFirstTask ("ClonoSEQ 2.0 Corrected Report");
-        task.clickTaskStatus ();
+        assertTrue (navigateTo (format ("%s/cora/task/%s?p=status", coraTestUrl, report.getCorrectedReportTaskId ())));
+        taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        task.clickTaskDetail ();
-        assertTrue (task.taskFiles ().containsKey ("gatewayMessage.json"));
+        taskStatus.clickTaskDetail ();
+        assertTrue (taskDetail.taskFiles ().containsKey (gatewayJson));
         testLog ("gateway message with corrected report sent");
     }
-
 }

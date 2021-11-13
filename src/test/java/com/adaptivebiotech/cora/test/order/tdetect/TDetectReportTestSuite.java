@@ -6,7 +6,6 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.headers;
-import static com.seleniumfy.test.utils.HttpClientHelper.resetheaders;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -185,7 +184,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         String additionalComments = "testing additional comments";
         reportTDetect.enterAdditionalComments (additionalComments);
         reportTDetect.clickSaveAndUpdate ();
-        reportTDetect.releaseReport ();
+        reportTDetect.clickReleaseReport ();
 
         String releasePdfUrl = reportTDetect.getReleasedReportPdfUrl ();
         testLog ("PDF File URL: " + releasePdfUrl);
@@ -323,7 +322,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         orderDetailTDetect.clickReportTab (assayTest);
 
         reportTDetect.setQCstatus (QC.Pass);
-        reportTDetect.releaseReport ();
+        reportTDetect.clickReleaseReport ();
         history.gotoOrderDebug (order.tests.get (0).sampleName);
         String reportDataJsonFileUrl = history.getFileUrl ("reportData.json");
         ReportRender reportDataJson = getReportDataJsonFile (reportDataJsonFileUrl);
