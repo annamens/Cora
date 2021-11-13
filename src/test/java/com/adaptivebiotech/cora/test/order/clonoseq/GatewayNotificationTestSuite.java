@@ -53,11 +53,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private TaskDetail     taskDetail     = new TaskDetail ();
     private OrderStatus    orderStatus    = new OrderStatus ();
     private OrderDetail    orderDetail    = new OrderDetail ();
-    private Patient        patient;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        patient = scenarioBuilderPatient ();
         doCoraLogin ();
         new Login ().doLogin ();
     }
@@ -66,6 +64,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
      * @sdlc_requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqBcellGatewayMessageUpdate () {
+        Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildDiagnosticOrder (patient,
                                                       stage (SecondaryAnalysis, Ready),
                                                       genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
@@ -147,6 +146,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
      * @sdlc_requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqTcellGatewayMessageUpdate () {
+        Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildDiagnosticOrder (patient,
                                                       stage (NorthQC, Ready),
                                                       genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv));

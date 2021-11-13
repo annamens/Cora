@@ -34,11 +34,9 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private final String   gatewayJson        = "gatewayMessage.json";
     private OrcaHistory    history            = new OrcaHistory ();
     private ReportClonoSeq report             = new ReportClonoSeq ();
-    private Patient        patient;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        patient = scenarioBuilderPatient ();
         doCoraLogin ();
         new Login ().doLogin ();
     }
@@ -54,6 +52,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         test.workflowProperties.workspaceName = covidWorkspaceName;
         test.workflowProperties.sampleName = covidSampleName;
 
+        Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCovidOrder (patient, stage (DxReport, Ready), test);
         assertEquals (newCovidOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
