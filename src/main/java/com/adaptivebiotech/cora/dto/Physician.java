@@ -76,7 +76,9 @@ public final class Physician {
         TDetect_trial ("T-Detect", "Bill per Study Protocol", "SEA_QA T-Detect Bill per Study Protocol"),
         TDetect_insurance ("T-Detect", "Insurance", "SEA_QA T-Detect Insurance"),
         TDetect_medicare ("T-Detect", "Medicare", "SEA_QA T-Detect Medicare"),
-        TDetect_selfpay ("T-Detect", "Patient Self-Pay", "SEA_QA T-Detect Patient Self-Pay");
+        TDetect_selfpay ("T-Detect", "Patient Self-Pay", "SEA_QA T-Detect Patient Self-Pay"),
+        non_CLEP_clonoseq ("Seattle", "ClonoSEQ", "SEA_QA Test"),
+        CLEP_clonoseq ("CLEP", "ClonoSEQ", "SEA_QA Test");
 
         public String firstName;
         public String lastName;
