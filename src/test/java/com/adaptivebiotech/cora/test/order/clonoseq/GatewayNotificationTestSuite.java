@@ -81,7 +81,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.isFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.waitFor (ReportDelivery, Finished);
@@ -121,7 +121,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.isFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.waitFor (ReportDelivery, Finished);
@@ -165,7 +165,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.gotoOrderDebug (orderTest.workflowName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.isFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.waitFor (ReportDelivery, Finished);
@@ -206,7 +206,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.gotoOrderDebug (orderTest.workflowName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.isFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.waitFor (ReportDelivery, Finished);

@@ -13,6 +13,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_REPORT_NOTIFICATION;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse;
@@ -67,7 +68,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.isFilePresent (gatewayJson));
         testLog ("gateway message sent");
     }
 }

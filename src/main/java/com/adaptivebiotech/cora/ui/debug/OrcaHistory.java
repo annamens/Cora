@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -25,8 +27,9 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class OrcaHistory extends CoraPage {
 
-    private final long millisRetry = 3000000l; // 50mins
-    private final long waitRetry   = 60000l;   // 60sec
+    private final long   millisRetry = 3000000l;                                                    // 50mins
+    private final long   waitRetry   = 60000l;                                                      // 60sec
+    private final String fileLocator = "//h3[text()='Files']/following-sibling::ul//a[text()='%s']";
 
     public OrcaHistory () {
         staticNavBarHeight = 200;
@@ -254,7 +257,17 @@ public class OrcaHistory extends CoraPage {
         assertTrue (click ("form[action*='forceWorkflowProperty'] input[type='submit']"));
     }
 
-    public void isFilePresent (String fileName) {
-        assertTrue (isElementPresent ("//h3[text()='Files']/following-sibling::ul//a[text()='" + fileName + "']"));
+    public boolean isFilePresent (String fileName) {
+        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                if (isElementPresent (format (fileLocator, fileName)))
+                    return true;
+                else {
+                    refresh ();
+                    return false;
+                }
+            }
+        };
+        return waitForBooleanCondition (300, 30, func);
     }
 }
