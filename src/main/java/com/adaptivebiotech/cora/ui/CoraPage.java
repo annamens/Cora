@@ -264,11 +264,6 @@ public class CoraPage extends BasePage {
         assertTrue (noSuchElementPresent (".modal-backdrop"));
     }
 
-    protected void reportLoading () {
-        assertTrue (waitForElementInvisible (".report-loading"));
-        assertTrue (waitForElementInvisible ("[ng-show='ctrl.isLoadingPDF']"));
-    }
-
     protected String getConId (String href) {
         return href.replaceFirst (".*container/details/", "");
     }

@@ -15,6 +15,11 @@ public class OrderHeader extends CoraPage {
     protected final String tabBase  = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
     private final String   newAlert = ".new-alert";
 
+    protected void reportLoading () {
+        assertTrue (waitForElementInvisible (".report-loading"));
+        assertTrue (waitForElementInvisible ("[ng-show='ctrl.isLoadingPDF']"));
+    }
+
     public void clickOrderStatusTab () {
         String tab = String.format (tabBase, "Order Status");
         assertTrue (click (tab));
