@@ -32,7 +32,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
     private final String[]   icdCodes   = { "A01.02" };
     private OrdersList       oList      = new OrdersList ();
     private NewOrderClonoSeq diagnostic = new NewOrderClonoSeq ();
-
     private Specimen         specimen;
 
     @BeforeMethod (alwaysRun = true)

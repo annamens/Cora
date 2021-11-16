@@ -4,6 +4,7 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.LYME_DX_IVD;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -69,24 +70,8 @@ public class Report extends OrderHeader {
         pageLoading ();
     }
 
-    public void releaseReportWithSignatureRequired () {
-        String releaseReport = "[ng-click=\"ctrl.releaseReport()\"]";
-        String usernameField = "#userName";
-        String passwordField = "#userPassword";
-        String button = "[ng-click=\"ctrl.ok();\"]";
-        // click release report, wait for popup, enter username and pw, then click release
-        // button in popup
-        assertTrue (click (releaseReport));
-        assertTrue (isTextInElement (popupTitle, "Release Report"));
-        assertTrue (setText (usernameField, coraTestUser));
-        assertTrue (setText (passwordField, coraTestPass));
-        assertTrue (click (button));
-        pageLoading ();
-
-    }
-
     public void clickSaveAndUpdate () {
-        String css = "//button[text()='Save & Update']";
+        String css = "//*[text()='Save & Update']";
         assertTrue (click (css));
         pageLoading ();
     }
@@ -117,7 +102,7 @@ public class Report extends OrderHeader {
         pageLoading ();
     }
 
-    public void releaseReport () {
+    public void clickReleaseReport () {
         assertTrue (click ("//*[text()='Release Report']"));
         assertTrue (isTextInElement (popupTitle, "Release Report"));
         clickPopupOK ();
@@ -131,7 +116,19 @@ public class Report extends OrderHeader {
         }
 
         setQCstatus (qc);
-        releaseReport ();
+        clickReleaseReport ();
+    }
+
+    public void releaseReportWithSignatureRequired () {
+        // click release report, wait for popup, enter username and pw, then click release
+        // button in popup
+        assertTrue (click ("//*[text()='Release Report']"));
+        assertTrue (isTextInElement (popupTitle, "Sign & Release Report"));
+        assertTrue (setText ("#userName", coraTestUser));
+        assertTrue (setText ("#userPassword", coraTestPass));
+        assertTrue (click ("//*[text()='Sign & release Report']"));
+        moduleLoading ();
+        pageLoading ();
     }
 
     public String getReportReleaseDate () {
@@ -146,6 +143,7 @@ public class Report extends OrderHeader {
         String button = "//button[text()='Correct Report']";
         assertTrue (click (button));
         pageLoading ();
+        reportLoading ();
     }
 
     public void selectCorrectionType (CorrectionType correctionType) {
@@ -157,10 +155,9 @@ public class Report extends OrderHeader {
         assertTrue (setText (reasonTextArea, text));
     }
 
-    public void clickCorrectReportSaveAndUpdate () {
-        String button = "[ng-click='ctrl.update()']";
-        assertTrue (click (button));
-        pageLoading ();
+    public String getCorrectedReportTaskId () {
+        String url = getAttribute ("//*[contains (@download, 'CORRECTED')]", "href");
+        return substringBetween (url, "cora-data/orca/", "/");
     }
 
     public boolean waitForCorrectedReportStatusFinished () {

@@ -39,6 +39,7 @@ public final class Workflow {
         public Boolean skipNorthQCToContam;
         public Boolean ighvAnalysisEnabled;
         public Boolean ighvReportEnabled;
+        public Boolean notifyGateway;
         public String  shmDataSourcePath;
     }
 

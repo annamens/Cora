@@ -281,6 +281,13 @@ public class TestScenarioBuilder {
         return task;
     }
 
+    public static Diagnostic diagnosticOrder (Physician physician,
+                                              Patient patient,
+                                              Specimen specimen,
+                                              Shipment shipment) {
+        return diagnosticOrder (physician.account, physician, patient, specimen, shipment);
+    }
+
     public static Diagnostic diagnosticOrder (Account account,
                                               Physician physician,
                                               Patient patient,

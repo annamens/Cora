@@ -284,8 +284,7 @@ public class NewOrderTDetect extends NewOrder {
 
         clickAssayTest (assayTest);
         billing.selectBilling (chargeType);
-        if (patientAddress != null)
-            billing.enterPatientAddress (patientAddress);
+        billing.enterPatientAddress (patientAddress);
         clickSave ();
 
         String orderNum = getOrderNum ();

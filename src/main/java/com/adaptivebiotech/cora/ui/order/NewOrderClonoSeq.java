@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
-import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static java.lang.String.format;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
@@ -358,11 +357,22 @@ public class NewOrderClonoSeq extends NewOrder {
             enterPatientICD_Codes (icdCode);
         }
 
-        billing.selectBilling (chargeType);
+        switch (chargeType) {
+        case CommercialInsurance:
+            billing.enterInsuranceInfo (patient);
+            break;
+        case Medicare:
+            billing.enterMedicareInfo (patient);
+            break;
+        case Client:
+        case PatientSelfPay:
+            billing.enterBill (patient);
+        default:
+            billing.selectBilling (chargeType);
+            break;
+        }
         clickSave ();
 
-        clickAssayTest (assayTest);
-        enterSpecimenDelivery (CustomerShipment);
         clickEnterSpecimenDetails ();
         enterSpecimenType (specimenType);
 
@@ -373,6 +383,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
         enterCollectionDate (DateUtils.getPastFutureDate (-3));
         enterOrderNotes ("Creating Order in Cora");
+        clickAssayTest (assayTest);
         clickSave ();
 
         String orderNum = getOrderNum ();
