@@ -13,7 +13,7 @@ public class CoraDbTestBase extends CoraBaseBrowser {
     protected CoraDBClient coraDBClient;
 
     @BeforeClass (alwaysRun = true)
-    public void dbTestBeforeClass () {
+    public void beforeClass () {
         testLog ("Should connect to DB using tunnel? " + CoraEnvironment.isDbTunnel);
         if (CoraEnvironment.isDbTunnel) {
             testLog ("Creating a DB connection using tunnel");
@@ -30,7 +30,7 @@ public class CoraDbTestBase extends CoraBaseBrowser {
     }
 
     @AfterClass (alwaysRun = true)
-    public void dbTestafterClass () throws Exception {
+    public void afterClass () throws Exception {
         coraDBClient.closeConnection ();
         if (CoraEnvironment.isDbTunnel)
             tunnel.close ();
