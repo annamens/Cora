@@ -78,7 +78,16 @@ public final class Physician {
         TDetect_medicare ("T-Detect", "Medicare", "SEA_QA T-Detect Medicare"),
         TDetect_selfpay ("T-Detect", "Patient Self-Pay", "SEA_QA T-Detect Patient Self-Pay"),
         non_CLEP_clonoseq ("Seattle", "ClonoSEQ", "SEA_QA Test"),
-        CLEP_clonoseq ("CLEP", "ClonoSEQ", "SEA_QA Test");
+        non_CLEP_tdetect_all ("Seattle", "T-Detect-All", "SEA_QA Test"),
+        non_CLEP_tdetect ("Seattle", "T-Detect", "SEA_QA Test"),
+        non_CLEP_lyme ("Seattle", "Lyme", "SEA_QA Test"),
+        non_CLEP_covid ("Seattle", "Covid", "SEA_QA Test"),
+        CLEP_clonoseq ("CLEP", "ClonoSEQ", "SEA_QA Test"),
+        CLEP_tdetect ("CLEP", "T-Detect", "SEA_QA Test"),
+        CLEP_lyme ("CLEP", "Lyme", "SEA_QA Test"),
+        CLEP_covid ("CLEP", "Covid", "SEA_QA Test"),
+        trial_clonoseq ("Trial", "ClonoSEQ", "SEA_QA Test"),
+        non_trial_clonoseq ("Non-Trial", "ClonoSEQ", "SEA_QA Test");
 
         public String firstName;
         public String lastName;
