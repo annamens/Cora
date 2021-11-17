@@ -22,6 +22,7 @@ import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.fail;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -105,11 +106,27 @@ public class TestScenarioBuilder {
         }
     }
 
+    /**
+     * Note:
+     * - GET /cora/api/v1/providers is returning a like search instead of an exact match
+     * 
+     * @param first
+     *            Physician first name
+     * @param last
+     *            Physician last name
+     * @param account
+     *            Physician's account name
+     * @return a list of {@link Physician}
+     */
     public static List <Physician> getPhysicians (String first, String last, String account) {
         try {
             String[] args = { "firstName=" + first, "lastName=" + last, "accountName=" + account };
             String url = encodeUrl (coraTestUrl + "/cora/api/v1/providers?", args);
-            List <Physician> physicians = mapper.readValue (get (url), ProvidersResponse.class).objects;
+            List <Physician> physicians = mapper.readValue (get (url), ProvidersResponse.class).objects.stream ()
+                                                                                                       .filter (p -> p.firstName.equals (first))
+                                                                                                       .filter (p -> p.lastName.equals (last))
+                                                                                                       .filter (p -> p.account.name.equals (account))
+                                                                                                       .collect (toList ());
             physicians.forEach (p -> {
                 p.accountName = p.account.name;
                 p.providerFullName = format ("%s %s", p.firstName, p.lastName);
