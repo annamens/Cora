@@ -27,17 +27,17 @@ import com.seleniumfy.test.utils.HttpClientHelper;
 
 public class CoraBaseBrowser extends TestBase {
 
-    protected static Header username = new BasicHeader ("X-Api-UserName", coraTestUser);
+    protected Header username = new BasicHeader ("X-Api-UserName", coraTestUser);
 
     static {
         initialization ();
-        doCoraLogin ();
         testLog (format ("Current branch: %s - %s", version, gitcommitId));
     }
 
     @BeforeClass (alwaysRun = true)
     public void baseBeforeClass () {
         MDC.put ("job.id", UUID.randomUUID ().toString ());
+        doCoraLogin ();
         info (format ("running: %s", getClass ()));
     }
 
@@ -57,7 +57,7 @@ public class CoraBaseBrowser extends TestBase {
         return join ("/", "target/logs", join ("/", paths));
     }
 
-    protected static void doCoraLogin () {
+    protected void doCoraLogin () {
         Map <String, String> forms = new HashMap <> ();
         forms.put ("userName", coraTestUser);
         forms.put ("password", coraTestPass);
@@ -65,7 +65,7 @@ public class CoraBaseBrowser extends TestBase {
         resetheaders ();
     }
 
-    protected static void resetheaders () {
+    protected void resetheaders () {
         HttpClientHelper.resetheaders ();
         HttpClientHelper.headers.get ().add (username);
     }
