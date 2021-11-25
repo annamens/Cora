@@ -17,13 +17,6 @@ public class CoraEnvironment extends BaseEnvironment {
     public static String  pipelinePortalTestUser;
     public static String  pipelinePortalTestPass;
 
-    public static String  coraDBHost;
-    public static String  coraDBUser;
-    public static String  coraDBPass;
-    public static String  coraJumpBox;
-    public static String  sshUser;
-    public static String  sshPass;
-
     public static boolean isDbTunnel;
 
     public static void initialization () {

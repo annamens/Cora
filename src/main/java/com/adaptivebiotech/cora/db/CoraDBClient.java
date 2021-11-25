@@ -20,18 +20,20 @@ public class CoraDBClient {
 
     private String       username;
     private String       password;
+    private Boolean      isDbTunnel;
 
     private Connection   connection = null;
 
-    public CoraDBClient (String username, String pw) {
+    public CoraDBClient (String username, String pw, Boolean isDbTunnel) {
         this.username = username;
         this.password = pw;
+        this.isDbTunnel = isDbTunnel;
     }
 
     public boolean openConnection () {
         closeConnection ();
         try {
-            String url = CoraEnvironment.isDbTunnel ? sshUrl : dbUrl;
+            String url = this.isDbTunnel ? sshUrl : dbUrl;
             connection = DriverManager.getConnection (url, username, password);
             return true;
         } catch (SQLException e) {
