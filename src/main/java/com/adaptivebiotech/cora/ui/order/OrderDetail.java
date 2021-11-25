@@ -187,7 +187,7 @@ public class OrderDetail extends OrderHeader {
     }
 
     public void clickPatientCode () {
-        String css = "//*[text()='Patient Code']/parent::div//a";
+        String css = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
         assertTrue (click (css));
         assertTrue (waitForChildWindows (2));
         List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
@@ -195,7 +195,7 @@ public class OrderDetail extends OrderHeader {
     }
 
     public String getPatientCode () {
-        String xpath = "//label[text()='Patient Code']/../div/a[1]/span";
+        String xpath = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
         return getText (xpath);
     }
 
@@ -235,7 +235,7 @@ public class OrderDetail extends OrderHeader {
         return isElementPresent (xpath) && isElementVisible (xpath) ? getAttribute (xpath, attribute) : null;
     }
 
-    private String getPatientMRN () {
+    public String getPatientMRN () {
         String css = "[ng-bind='ctrl.orderEntry.order.mrn']";
         return isElementVisible (css) ? getText (css) : null;
     }

@@ -24,12 +24,16 @@ public class OrderAlert extends BasePage {
 
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (alertModal));
-        assertTrue (isTextInElement (alertTitle, "Alerts for Order"));
+        assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order"));
     }
 
     public void isCorrectPage (String orderNo) {
         isCorrectPage ();
-        assertTrue (isTextInElement (alertTitle, "Alerts for Order #" + orderNo));
+        assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order #" + orderNo));
+    }
+
+    public boolean isAlertModalPresent () {
+        return isElementPresent (alertModal);
     }
 
     public void selectAlertType (String alertName) {
@@ -66,4 +70,19 @@ public class OrderAlert extends BasePage {
         }
         return resolvedAlertsMap;
     }
+
+    public void clickAlert (String alertName) {
+        assertTrue (click (String.format ("//*[@class='alert-type-description' and text()='%s']", alertName)));
+    }
+
+    public void clickAlertResolveBtn (String alertName) {
+        assertTrue (click (String.format ("//*[@class='alert-type-description' and text()='%s']/ancestor::accordion-group//button[text()='Resolve']",
+                                          alertName)));
+    }
+
+    public boolean isEmailNotificationPresent (String alertName) {
+        return isElementPresent (String.format ("//*[@class='alert-type-description' and text()='%s']/ancestor::accordion-group//*[@class='send-notification-label']",
+                                                alertName));
+    }
+
 }

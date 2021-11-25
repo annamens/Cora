@@ -69,6 +69,11 @@ public class NewOrder extends OrderHeader {
         assertEquals (waitForElementVisible ("[uisref=\"main.patient.orders\"]").getText (), "PATIENT ORDER HISTORY");
     }
 
+    public String getPatientId () {
+        String patientUrl = getAttribute ("//a[contains(text(),'Edit Patient')]", "href");
+        return patientUrl.substring (patientUrl.lastIndexOf ("/") + 1);
+    }
+
     public void clickSave () {
         assertTrue (click ("#order-entry-save"));
         pageLoading ();
@@ -300,11 +305,11 @@ public class NewOrder extends OrderHeader {
     }
 
     public String getPatientCode () {
-        String xpath = "//label[text()='Patient Code']/../div/a[1]/span";
+        String xpath = "//*[text()='Patient Code']/..//a[1]/span";
         return getText (xpath);
     }
 
-    protected String getPatientMRN () {
+    public String getPatientMRN () {
         String css = "[ng-model='ctrl.orderEntry.order.mrn']";
         return isElementVisible (css) ? readInput (css) : null;
     }
