@@ -1,11 +1,11 @@
 package com.adaptivebiotech.cora.test.order.tdetect;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_tdetect_all_tests;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
-import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -17,9 +17,9 @@ import java.lang.reflect.Method;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.UUID;
-import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -52,7 +52,6 @@ import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 /**
  * @author jpatel
@@ -61,6 +60,9 @@ import com.seleniumfy.test.utils.HttpClientHelper;
 @Test (groups = { "regression", "tDetectOrder" })
 public class TDetectReportTestSuite extends CoraBaseBrowser {
 
+    private CoraApi            coraApi             = new CoraApi ();
+    private Login              login               = new Login ();
+    private OrdersList         ordersList          = new OrdersList ();
     private NewOrderTDetect    newOrderTDetect     = new NewOrderTDetect ();
     private OrderDetailTDetect orderDetailTDetect  = new OrderDetailTDetect ();
     private ReportTDetect      reportTDetect       = new ReportTDetect ();
@@ -94,8 +96,9 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir = artifacts (this.getClass ().getName (), test.getName ());
-        new Login ().doLogin ();
-        new OrdersList ().isCorrectPage ();
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        coraApi.login ();
     }
 
     /**
@@ -111,7 +114,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         patient.mrn = randomString (10);
         String icdCode1 = "C90.00", icdCode2 = "C91.00";
         String collectionDate = DateUtils.getPastFutureDate (-1);
-        String orderNum = newOrderTDetect.createTDetectOrder (TestHelper.physicianTRF (),
+        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_tdetect_all_tests),
                                                               patient,
                                                               new String[] { icdCode1, icdCode2 },
                                                               collectionDate,
@@ -299,7 +302,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
      */
     public void validateFailedTDetectReportData () {
         Assay assayTest = Assay.COVID19_DX_IVD;
-        String orderNum = newOrderTDetect.createTDetectOrder (TestHelper.physicianTRF (),
+        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_tdetect_all_tests),
                                                               TestHelper.newPatient (),
                                                               new String[] { "C90.00" },
                                                               DateUtils.getPastFutureDate (-1),
@@ -440,10 +443,8 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         testLog ("PDF File Location: " + pdfFileLocation);
 
         // get file from URL and save it
-        doCoraLogin ();
-        headers.get ().add (new BasicHeader ("Connection", "keep-alive"));
+        coraApi.login ();
         get (url, new File (pdfFileLocation));
-        resetheaders ();
 
         // read PDF and extract text
         PdfReader reader = null;
@@ -467,20 +468,12 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
      */
     private ReportRender getReportDataJsonFile (String fileUrl) {
         // get file using get request
-        doCoraLogin ();
-        ReportRender reportDataJson = null;
-        try {
-            testLog ("File URL: " + fileUrl);
-            resetheaders ();
-            headers.get ().add (username);
-            String getResponse = get (fileUrl);
-            testLog ("File URL Response: " + getResponse);
-            reportDataJson = mapper.readValue (getResponse, ReportRender.class);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        coraApi.login ();
+        testLog ("File URL: " + fileUrl);
+        String getResponse = get (fileUrl);
+        testLog ("File URL Response: " + getResponse);
+        ReportRender reportDataJson = mapper.readValue (getResponse, ReportRender.class);
         testLog ("Json File Data " + reportDataJson);
-        HttpClientHelper.resetheaders ();
         return reportDataJson;
     }
 

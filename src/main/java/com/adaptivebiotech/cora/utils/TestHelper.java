@@ -2,7 +2,6 @@ package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.getPhysicians;
 import static com.adaptivebiotech.test.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.CommercialInsurance;
@@ -18,17 +17,14 @@ import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.util.UUID.randomUUID;
-import static org.testng.Assert.fail;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
-import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.github.javafaker.Faker;
@@ -40,6 +36,14 @@ public class TestHelper {
         container.id = testdata ().get ("freezerDestroyed_id");
         container.containerNumber = testdata ().get ("freezerDestroyed_num");
         container.name = "[Destroyed]";
+        return container;
+    }
+
+    public static Container dumbwaiter () {
+        Container container = new Container ();
+        container.id = testdata ().get ("dumbwaiter_id");
+        container.containerNumber = testdata ().get ("dumbwaiter_num");
+        container.name = "1165 Dumbwaiter";
         return container;
     }
 
@@ -73,28 +77,6 @@ public class TestHelper {
         container.containerNumber = testdata ().get ("AB039003_num");
         container.name = "AB039003 (Ambient)";
         return container;
-    }
-
-    public static Physician physician1 () {
-        List <Physician> physicians = getPhysicians ("Selenium", "Test1", "SEA_QA Test");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    // AllowInternalOrderUpload flag enabled in SalesForce
-    public static Physician physicianTRF () {
-        List <Physician> physicians = getPhysicians ("Automated", "Tests", "SEA_QA Test");
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
-    }
-
-    public static Physician physician (PhysicianType type) {
-        List <Physician> physicians = getPhysicians (type.firstName, type.lastName, type.accountName);
-        if (physicians.size () > 1)
-            fail ("Salesforce and Orca is out-of-sync");
-        return physicians.get (0);
     }
 
     // clean: no insurance, medicare, address, etc.
@@ -267,6 +249,8 @@ public class TestHelper {
         data.put ("AB018082_num", "CO-100162");
         data.put ("AB039003_id", "8fba58e9-6d78-4e0f-993a-63c7b9450494");
         data.put ("AB039003_num", "CO-166946");
+        data.put ("dumbwaiter_id", "eec8c896-0cbe-4531-83a6-da958c79c368");
+        data.put ("dumbwaiter_num", "CO-724045");
         return data;
     };
 
@@ -288,5 +272,4 @@ public class TestHelper {
         physician.accountName = accountName;
         return physician;
     }
-
 }

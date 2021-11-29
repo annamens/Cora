@@ -1,13 +1,14 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
@@ -43,6 +44,8 @@ import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 @Test (groups = "regression")
 public class OrderDetailsTestSuite extends CoraBaseBrowser {
 
+    private CoraApi             coraApi             = new CoraApi ();
+    private Login               login               = new Login ();
     private OrdersList          ordersList          = new OrdersList ();
     private OrderStatus         orderStatus         = new OrderStatus ();
     private NewOrderClonoSeq    diagnostic          = new NewOrderClonoSeq ();
@@ -53,18 +56,15 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
     private PatientDetail       patientDetail       = new PatientDetail ();
     private OrcaHistory         historyPage         = new OrcaHistory ();
 
-    @BeforeMethod (alwaysRun = true)
-    public void beforeMethod () {
-        new Login ().doLogin ();
-        ordersList.isCorrectPage ();
-    }
-
     /**
      * NOTE: SR-T2166
      */
     public void verifyOrderDetailsPage () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        coraApi.login ();
 
-        Physician physician = TestHelper.physicianTRF ();
+        Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
         Patient patient = TestHelper.newPatient ();
         String icdCode = "C90.00";
         Assay orderTest = Assay.ID_BCell2_CLIA;

@@ -1,12 +1,15 @@
 package com.adaptivebiotech.cora.test.container;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.openOutputStream;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -15,13 +18,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -29,6 +32,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
+import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.Shipment;
@@ -37,41 +41,37 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 @Test (groups = "regression")
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
-    private String        downloadDir;
-    private Login         login;
-    private OrdersList    oList;
-    private ContainerList cList;
-    private Detail        detail;
-    private History       history;
-    private Container     freezer;
-    private Containers    containers;
+    private ThreadLocal <String> downloadDir   = new ThreadLocal <> ();
+    private CoraApi              coraApi       = new CoraApi ();
+    private Login                login         = new Login ();
+    private OrdersList           ordersList    = new OrdersList ();
+    private ContainerList        containerList = new ContainerList ();
+    private Detail               detail        = new Detail ();
+    private History              history       = new History ();
+    private MyCustody            myCustody     = new MyCustody ();
+    private Shipment             shipment      = new Shipment ();
+    private Accession            accession     = new Accession ();
 
-    @BeforeMethod (alwaysRun = true)
+    @BeforeMethod
     public void beforeMethod (Method test) {
-        downloadDir = artifacts (this.getClass ().getName (), test.getName ());
-        doCoraLogin ();
-        login = new Login ();
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
         login.doLogin ();
-        oList = new OrdersList ();
-        oList.isCorrectPage ();
-        cList = new ContainerList ();
-        detail = new Detail ();
-        history = new History ();
-        containers = new Containers ();
-        containers.list = new ArrayList <> ();
+        ordersList.isCorrectPage ();
     }
 
     /**
      * @sdlc_requirements 126.MoveMetadata
      */
     public void move_primary_to_freezer () {
-        for (ContainerType type : ContainerType.values ())
-            if (!type.isHolding)
-                containers.list.add (container (type));
-        containers = addContainers (containers);
         String comment = randomWords (10);
+        coraApi.login ();
+        Containers containers = coraApi.addContainers (new Containers (
+                stream (ContainerType.values ()).filter (t -> !t.isHolding)
+                                                .map (t -> container (t))
+                                                .collect (toList ())));
 
-        oList.clickContainers ();
+        ordersList.clickContainers ();
+        Container freezer;
         for (Container primary : containers.list) {
             switch (primary.containerType) {
             case MatrixTube:
@@ -88,10 +88,10 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
             primary.depleted = true;
             primary.comment = comment;
-            cList.moveToFreezer (primary, freezer);
+            containerList.moveToFreezer (primary, freezer);
 
             // test: go to detail page to verify location
-            oList.gotoContainerDetail (primary);
+            ordersList.gotoContainerDetail (primary);
             detail.isCorrectPage ();
             Container actual = detail.parsePrimaryDetail ();
             actual.comment = comment;
@@ -111,37 +111,25 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         // test: go to containers list for the given freezer and verify
         for (Container primary : containers.list) {
-            oList.searchContainerByContainerId (primary);
-            Containers listContainers = cList.getContainers ();
+            ordersList.searchContainer (primary);
+            Containers listContainers = containerList.getContainers ();
             assertEquals (listContainers.findContainerByNumber (primary).location, primary.location);
         }
-
+        coraApi.deactivateContainers (containers);
     }
 
     /**
      * @sdlc_requirements 126.MoveMetadata
      */
     public void move_child_to_freezer () {
-
-        // setup for holding containers with children
-        oList.selectNewBatchShipment ();
-        Shipment shipment = new Shipment ();
-        shipment.isBatchOrGeneral ();
-        shipment.enterShippingCondition (DryIce);
-        shipment.clickSave ();
-        shipment.gotoAccession ();
-
-        Accession accession = new Accession ();
-        accession.isCorrectPage ();
-
         String manifestName = "intakemanifest_holding_w_child";
-        String manifestFileName = join ("/", downloadDir, manifestName + ".xlsx");
         String manifestTemplatePath = getSystemResource (manifestName + "_template.xlsx").getPath ();
+        File manifestFileName = new File (join ("/", downloadDir.get (), manifestName + ".xlsx"));
         DateTimeFormatter fmt = ofPattern ("yyddhhmmss");
 
-        try (FileInputStream inputStream = new FileInputStream (new File (manifestTemplatePath));
+        try (FileInputStream inputStream = new FileInputStream (manifestTemplatePath);
                 Workbook workbook = WorkbookFactory.create (inputStream);
-                FileOutputStream outputStream = openOutputStream (new File (manifestFileName))) {
+                FileOutputStream outputStream = openOutputStream (manifestFileName)) {
             Sheet sheet = workbook.getSheetAt (0);
             sheet.getRow (38).getCell (9).setCellValue (now ().format (fmt));
             sheet.getRow (39).getCell (9).setCellValue (now ().plusSeconds (1L).format (fmt));
@@ -150,13 +138,22 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             throw new RuntimeException (e);
         }
 
-        accession.uploadIntakeManifest (new File (manifestFileName).getAbsolutePath ());
+        // setup for holding containers with children
+        ordersList.selectNewBatchShipment ();
+        shipment.isBatchOrGeneral ();
+        shipment.enterShippingCondition (DryIce);
+        shipment.clickSave ();
+        shipment.gotoAccession ();
+
+        accession.isCorrectPage ();
+        accession.uploadIntakeManifest (manifestFileName.getAbsolutePath ());
         accession.clickIntakeComplete ();
         accession.gotoShipment ();
-        containers = shipment.getBatchContainers ();
+        Containers containers = shipment.getBatchContainers ();
 
+        Container freezer;
         for (Container holding : containers.list) {
-            Container child = holding.containerType.equals (ContainerType.Plate) ? holding : holding.children.get (0);
+            Container child = holding.containerType.equals (Plate) ? holding : holding.children.get (0);
             child.depleted = true;
             child.comment = randomWords (10);
 
@@ -187,7 +184,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             case VacutainerBox7x7:
             case MatrixRack:
             case MatrixRack4x6:
-                location = String.join (" : ", coraTestUser, child.root.containerNumber, "Position A:1");
+                location = join (" : ", coraTestUser, child.root.containerNumber, "Position A:1");
                 break;
             case SlideBox5:
             case SlideBox5CS:
@@ -195,17 +192,17 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             case SlideTubeCS:
             case OtherSlideBox:
             case OtherSlideBoxCS:
-                location = String.join (" : ", coraTestUser, child.root.containerNumber);
+                location = join (" : ", coraTestUser, child.root.containerNumber);
                 break;
             default:
-                location = String.join (" : ", coraTestUser, child.root.containerNumber, "Position 1");
+                location = join (" : ", coraTestUser, child.root.containerNumber, "Position 1");
                 break;
             }
             shipment.clickContainers ();
-            cList.moveToFreezer (child, freezer);
+            containerList.moveToFreezer (child, freezer);
 
             // test: go to child detail page to verify location
-            cList.gotoContainerDetail (child);
+            containerList.gotoContainerDetail (child);
             detail.isCorrectPage ();
             Container actual = detail.parsePrimaryDetail ();
             actual.comment = child.comment;
@@ -216,7 +213,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             detail.gotoHistory ();
             history.isCorrectPage ();
             List <ContainerHistory> histories = history.getHistories ();
-            if (ContainerType.Plate.equals (actual.containerType)) {
+            if (Plate.equals (actual.containerType)) {
                 assertEquals (histories.size (), 2);
                 verifyMovedToContainer (histories.get (0), actual);
                 verifyTookCustody (histories.get (1));
@@ -230,7 +227,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 verifyMovedTo (histories.get (2), actual);
             }
 
-            if (!ContainerType.Plate.equals (actual.containerType)) {
+            if (!Plate.equals (actual.containerType)) {
                 // test: go to holding detail page to verify location
                 history.gotoContainerDetail (holding);
                 detail.isCorrectPage ();
@@ -250,13 +247,20 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         }
 
         // test: go to containers list for the given freezer and verify
-        for (Container c : containers.list) {
-            oList.searchContainerByContainerId (c);
-            Containers listContainers = cList.getContainers ();
-            String location = c.containerType.equals (ContainerType.Plate) ? c.location : String.join (" : ",
-                                                                                                       c.location,
-                                                                                                       c.containerNumber);
+        containers.list.forEach (c -> {
+            ordersList.searchContainer (c);
+            Containers listContainers = containerList.getContainers ();
+            String location = c.containerType.equals (Plate) ? c.location : join (" : ", c.location, c.containerNumber);
             assertEquals (listContainers.findContainerByNumber (c).location, location);
-        }
+        });
+
+        // cleanup
+        ordersList.gotoMyCustody ();
+        myCustody.isCorrectPage ();
+        containers.list.forEach (c -> {
+            if (!coraTestUser.equals (c.location))
+                myCustody.takeCustody (c);
+        });
+        myCustody.sendContainersToFreezer (containers, freezerDestroyed);
     }
 }

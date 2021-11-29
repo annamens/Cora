@@ -8,13 +8,14 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
@@ -23,36 +24,33 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 @Test (groups = { "regression" })
 public class ContainerDetailTestSuite extends ContainerTestBase {
 
-    private final String error1 = "Only '.pdf,.jpg,.png,.gif,.xlsx' files allowed";
-    private final String error2 = "Please select less than 10 files at a time!";
-    private Login        login;
-    private OrdersList   oList;
-    private Containers   containers;
-    private Detail       detail;
-    private MyCustody    my;
+    private final String             error1     = "Only '.pdf,.jpg,.png,.gif,.xlsx' files allowed";
+    private CoraApi                  coraApi    = new CoraApi ();
+    private Login                    login      = new Login ();
+    private OrdersList               orderList  = new OrdersList ();
+    private Detail                   detail     = new Detail ();
+    private MyCustody                myCustody  = new MyCustody ();
+    private ThreadLocal <Containers> containers = new ThreadLocal <> ();
 
-    @BeforeMethod (alwaysRun = true)
+    @BeforeMethod
     public void beforeMethod () {
-        doCoraLogin ();
-        login = new Login ();
-        login.doLogin ();
-        oList = new OrdersList ();
-        oList.isCorrectPage ();
-        oList.selectNewContainer ();
+        coraApi.login ();
+        containers.set (coraApi.addContainers (new Containers (asList (container (SlideBox5CS)))));
 
-        AddContainer add = new AddContainer ();
-        add.addContainer (SlideBox5CS, 1);
-        add.clickSave ();
-        containers = add.getContainers ();
-        detail = new Detail ();
-        my = new MyCustody ();
+        login.doLogin ();
+        orderList.isCorrectPage ();
+    }
+
+    @AfterMethod
+    public void afterMethod () {
+        coraApi.deactivateContainers (containers.get ());
     }
 
     /**
      * @sdlc_requirements 126.ContainerDetailsPage
      */
     public void extensionCheck () {
-        oList.gotoContainerDetail (containers.list.get (0));
+        orderList.gotoContainerDetail (containers.get ().list.get (0));
 
         // test: unsupported file ext
         detail.isCorrectPage ();
@@ -61,28 +59,10 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
     }
 
     /**
-     * Note: disabling this test until we figure out how to run it in SauceLabs
-     * 
-     * @sdlc_requirements 126.ContainerDetailsPage
-     */
-    @Test (enabled = false)
-    public void maxFilesCheck () {
-        oList.gotoContainerDetail (containers.list.get (0));
-
-        // test: >10 files at a time
-        String[] files = new String[] {
-                "test1.png", "test2.png", "test3.png", "test4.png", "test5.png", "test6.png", "test7.png", "test8.png",
-                "test9.png", "test10.png", "attachment.jpg"
-        };
-        detail.uploadAttachments (files);
-        assertEquals (detail.getMaxFileErr (), error2);
-    }
-
-    /**
      * @sdlc_requirements 126.ContainerDetailsPage
      */
     public void happyPath () {
-        oList.gotoContainerDetail (containers.list.get (0));
+        orderList.gotoContainerDetail (containers.get ().list.get (0));
 
         // test: view attachment
         String[] files = new String[] { "attachment.gif", "attachment.jpg", "attachment.pdf", "attachment.png" };
@@ -96,11 +76,11 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
      * @sdlc_requirements 126.ContainerDetailsPage
      */
     public void history () {
-        oList.gotoMyCustody ();
+        orderList.gotoMyCustody ();
 
         // test: history section of container detail
-        Container testContainer = containers.list.get (0);
-        my.gotoContainerDetail (testContainer);
+        Container testContainer = containers.get ().list.get (0);
+        myCustody.gotoContainerDetail (testContainer);
         detail.isCorrectPage ();
         List <String> detailHistories1 = detail.getDetailHistory ();
         assertTrue (detailHistories1.get (0).contains ("Created by " + coraTestUser));

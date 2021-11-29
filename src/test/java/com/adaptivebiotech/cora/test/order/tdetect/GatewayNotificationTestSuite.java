@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.test.order.tdetect;
 
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.newCovidOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
@@ -14,8 +13,8 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_REPORT_NOTIFICATION;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -33,20 +32,17 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private final String   covidWorkspaceName = "CLINICAL-CLINICAL";
     private final String   covidSampleName    = "95268-SN-2205";
     private final String   gatewayJson        = "gatewayMessage.json";
+    private CoraApi        coraApi            = new CoraApi ();
+    private Login          login              = new Login ();
     private OrcaHistory    history            = new OrcaHistory ();
     private ReportClonoSeq report             = new ReportClonoSeq ();
-
-    @BeforeMethod (alwaysRun = true)
-    public void beforeMethod () {
-        doCoraLogin ();
-        new Login ().doLogin ();
-    }
 
     /**
      * @sdlc_requirements SR-7370
      */
     public void verifyCovidGatewayMessageUpdate () {
-        AssayResponse.CoraTest test = genTDxTest (COVID19_DX_IVD);
+        coraApi.login ();
+        AssayResponse.CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
         test.tsvPath = covidTsv;
         test.workflowProperties = new WorkflowProperties ();
         test.workflowProperties.flowcell = "H752HBGXH";
@@ -55,10 +51,11 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCovidOrder (patient, stage (DxReport, Ready), test);
-        assertEquals (newCovidOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newCovidOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
 
         OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
+        login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();

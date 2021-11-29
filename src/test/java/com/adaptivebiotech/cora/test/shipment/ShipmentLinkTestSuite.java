@@ -1,8 +1,10 @@
 package com.adaptivebiotech.cora.test.shipment;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -27,6 +29,8 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 @Test (groups = "regression")
 public class ShipmentLinkTestSuite extends CoraBaseBrowser {
 
+    private CoraApi          coraApi         = new CoraApi ();
+    private Login            login           = new Login ();
     private OrdersList       ordersList      = new OrdersList ();
     private NewOrderClonoSeq diagnostic      = new NewOrderClonoSeq ();
     private Shipment         shipment        = new Shipment ();
@@ -36,8 +40,9 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        new Login ().doLogin ();
+        login.doLogin ();
         ordersList.isCorrectPage ();
+        coraApi.login ();
     }
 
     /**
@@ -45,7 +50,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      */
     public void verifyClonoSeqShipmentLink () {
         // create clonoSEQ diagnostic order
-        String orderNum = diagnostic.createClonoSeqOrder (TestHelper.physicianTRF (),
+        String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
                                                           TestHelper.newPatient (),
                                                           new String[] { "C90.00" },
                                                           Assay.ID_BCell2_CLIA,
@@ -99,7 +104,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      */
     public void verifyTDetectShipmentLink () {
         // create T-Detect diagnostic order
-        String orderNum = newOrderTDetect.createTDetectOrder (TestHelper.physicianTRF (),
+        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
                                                               TestHelper.newPatient (),
                                                               new String[] {},
                                                               DateUtils.getPastFutureDate (-1),

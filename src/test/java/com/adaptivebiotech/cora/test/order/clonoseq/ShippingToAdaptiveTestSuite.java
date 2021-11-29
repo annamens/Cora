@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.Other;
@@ -22,29 +23,32 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FreshBoneMa
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.utils.DateUtils;
-import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 @Test (groups = "regression")
 public class ShippingToAdaptiveTestSuite extends CoraBaseBrowser {
 
-    private OrdersList       oList            = new OrdersList ();
+    private CoraApi          coraApi          = new CoraApi ();
+    private Login            login            = new Login ();
+    private OrdersList       ordersList       = new OrdersList ();
     private NewOrderClonoSeq newOrderClonoSeq = new NewOrderClonoSeq ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        new Login ().doLogin ();
-        oList.isCorrectPage ();
-        oList.selectNewClonoSEQDiagnosticOrder ();
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.selectNewClonoSEQDiagnosticOrder ();
 
+        coraApi.login ();
         newOrderClonoSeq.isCorrectPage ();
-        newOrderClonoSeq.selectPhysician (TestHelper.physicianTRF ());
+        newOrderClonoSeq.selectPhysician (coraApi.getPhysician (non_CLEP_clonoseq));
         newOrderClonoSeq.createNewPatient (newPatient ());
         newOrderClonoSeq.enterPatientICD_Codes ("A01.02");
         newOrderClonoSeq.clickSave (); // have to Save first before we can set Specimen info
