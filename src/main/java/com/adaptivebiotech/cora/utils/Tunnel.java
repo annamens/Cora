@@ -23,9 +23,9 @@ public class Tunnel implements Runnable, Closeable {
     private static Tunnel        tunnel;
 
     private final CountDownLatch tunnelEstablishedLatch = new CountDownLatch (1);
-    
-    private final String         SSH_USERNAME           = CoraEnvironment.sshUser;
-    private final String         SSH_PASSWORD           = CoraEnvironment.sshPass;
+
+    private final String         SSH_USERNAME           = CoraEnvironment.jumpboxUser;
+    private final String         SSH_PASSWORD           = CoraEnvironment.jumpboxPass;
     private final String         REMOTE_HOST            = CoraEnvironment.coraJumpBox;
     private final String         DB_HOST                = CoraEnvironment.coraDBHost;
     private final int            DB_PORT                = 5432;

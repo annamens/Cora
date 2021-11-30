@@ -42,8 +42,8 @@ public class CoraEnvironment extends BaseEnvironment {
             coraDBPass = decrypt (getProperty ("cora.db.pass"));
             coraJumpBox = getProperty ("cora.db.jumpbox");
 
-            sshUser = getProperty ("ssh.user");
-            sshPass = getProperty ("ssh.pass");
+            jumpboxUser = getProperty ("ssh.user");
+            jumpboxPass = getProperty ("ssh.pass");
 
             isDbTunnel = Boolean.parseBoolean (getProperty ("db.tunnel"));
 

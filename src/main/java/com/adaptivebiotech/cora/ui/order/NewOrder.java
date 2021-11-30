@@ -92,6 +92,7 @@ public class NewOrder extends OrderHeader {
             refresh ();
             timer.Wait ();
         }
+        assertEquals (getStatusText (), "Active", "Order did not activated successfully");
     }
 
     public void clickSaveAndActivate () {
