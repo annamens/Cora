@@ -6,12 +6,10 @@ import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.util.Arrays;
 import java.util.List;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -25,7 +23,6 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 public class ContainerDetailTestSuite extends ContainerTestBase {
 
     private final String             error1     = "Only '.pdf,.jpg,.png,.gif,.xlsx' files allowed";
-    private CoraApi                  coraApi    = new CoraApi ();
     private Login                    login      = new Login ();
     private OrdersList               orderList  = new OrdersList ();
     private Detail                   detail     = new Detail ();
@@ -66,7 +63,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
 
         // test: view attachment
         String[] files = new String[] { "attachment.gif", "attachment.jpg", "attachment.pdf", "attachment.png" };
-        Arrays.stream (files).forEach (s -> detail.uploadAttachments (s));
+        detail.uploadAttachments (files);
         detail.viewAttachment (2);
         detail.closePopup ();
         detail.deleteAttachment (2);

@@ -11,7 +11,6 @@ import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static java.util.Arrays.asList;
 import java.util.ArrayList;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders;
@@ -23,8 +22,6 @@ import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 import com.adaptivebiotech.test.utils.PageHelper;
 
 public class OrderTestBase extends CoraBaseBrowser {
-
-    private CoraApi coraApi = new CoraApi ();
 
     protected AssayResponse.CoraTest genCDxTest (PageHelper.Assay assay, String tsvPath) {
         AssayResponse.CoraTest test = coraApi.getCDxTest (assay);

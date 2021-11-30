@@ -13,7 +13,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.Login;
@@ -37,7 +36,6 @@ public class ScanTestSuite extends ContainerTestBase {
     private final String error9     = "Container %s is already in %s";
     private final String error10    = "%s failed verification. Current location is:\n%s";
     private final String scanTest   = "CO-" + System.nanoTime ();
-    private CoraApi      coraApi    = new CoraApi ();
     private Login        login      = new Login ();
     private OrdersList   ordersList = new OrdersList ();
     private MyCustody    myCustody  = new MyCustody ();

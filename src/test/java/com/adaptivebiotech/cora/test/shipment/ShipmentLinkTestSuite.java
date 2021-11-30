@@ -4,7 +4,6 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clon
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -29,7 +28,6 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 @Test (groups = "regression")
 public class ShipmentLinkTestSuite extends CoraBaseBrowser {
 
-    private CoraApi          coraApi         = new CoraApi ();
     private Login            login           = new Login ();
     private OrdersList       ordersList      = new OrdersList ();
     private NewOrderClonoSeq diagnostic      = new NewOrderClonoSeq ();

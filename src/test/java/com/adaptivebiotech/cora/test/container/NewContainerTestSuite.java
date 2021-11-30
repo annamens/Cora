@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -40,7 +39,6 @@ public class NewContainerTestSuite extends ContainerTestBase {
     private final String            error2                  = "Quantity must be between 1 and 50.";
     private final String            error3                  = "Unable to find a location in %s. Choose another storage location.";
     private final String            error4                  = "Container name is not unique. Enter another name.";
-    private CoraApi                 coraApi                 = new CoraApi ();
     private Login                   login                   = new Login ();
     private OrdersList              ordersList              = new OrdersList ();
     private ContainerList           containerList           = new ContainerList ();

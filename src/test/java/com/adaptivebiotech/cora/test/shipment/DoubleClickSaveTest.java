@@ -7,7 +7,6 @@ import static org.testng.Assert.assertEquals;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -18,7 +17,6 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
 @Test (groups = "regression")
 public class DoubleClickSaveTest extends CoraBaseBrowser {
 
-    private CoraApi          coraApi      = new CoraApi ();
     private Login            login        = new Login ();
     private OrdersList       ordersList   = new OrdersList ();
     private NewOrderClonoSeq diagnostic   = new NewOrderClonoSeq ();

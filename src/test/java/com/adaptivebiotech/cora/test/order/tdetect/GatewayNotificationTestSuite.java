@@ -14,7 +14,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_R
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -32,7 +31,6 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private final String   covidWorkspaceName = "CLINICAL-CLINICAL";
     private final String   covidSampleName    = "95268-SN-2205";
     private final String   gatewayJson        = "gatewayMessage.json";
-    private CoraApi        coraApi            = new CoraApi ();
     private Login          login              = new Login ();
     private OrcaHistory    history            = new OrcaHistory ();
     private ReportClonoSeq report             = new ReportClonoSeq ();

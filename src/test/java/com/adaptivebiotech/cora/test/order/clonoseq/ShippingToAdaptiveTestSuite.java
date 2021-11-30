@@ -23,7 +23,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FreshBoneMa
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -35,7 +34,6 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 @Test (groups = "regression")
 public class ShippingToAdaptiveTestSuite extends CoraBaseBrowser {
 
-    private CoraApi          coraApi          = new CoraApi ();
     private Login            login            = new Login ();
     private OrdersList       ordersList       = new OrdersList ();
     private NewOrderClonoSeq newOrderClonoSeq = new NewOrderClonoSeq ();

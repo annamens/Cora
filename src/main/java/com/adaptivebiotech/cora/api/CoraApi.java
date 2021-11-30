@@ -32,6 +32,8 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.HttpResponse;
+import com.adaptivebiotech.cora.dto.Orders.Alert;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
@@ -53,16 +55,20 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class CoraApi {
 
-    private final long millisRetry = 3000000l;                                        // 50mins
-    private final long waitRetry   = 5000l;                                           // 5sec
-    public Header      username    = new BasicHeader ("X-Api-UserName", coraTestUser);
+    private final long  millisRetry = 3000000l;                                        // 50mins
+    private final long  waitRetry   = 5000l;                                           // 5sec
+    public final Header username    = new BasicHeader ("X-Api-UserName", coraTestUser);
 
     public void login () {
-        Map <String, String> forms = new HashMap <> ();
-        forms.put ("userName", coraTestUser);
-        forms.put ("password", coraTestPass);
-        formPost (coraTestUrl + "/cora/login", forms);
+        login (coraTestUser, coraTestPass);
         resetheaders ();
+    }
+
+    public void login (String user, String pass) {
+        Map <String, String> forms = new HashMap <> ();
+        forms.put ("userName", user);
+        forms.put ("password", pass);
+        formPost (coraTestUrl + "/cora/login", forms);
     }
 
     public void resetheaders () {
@@ -118,6 +124,12 @@ public class CoraApi {
             props.put ("workflowId", orderTest.workflowId);
             post (url, body (mapper.writeValueAsString (props)));
         });
+    }
+
+    public void resetAccountLogin (String email) {
+        Map <String, String> params = new HashMap <> ();
+        params.put ("emails", email);
+        post (coraTestUrl + "/cora/debug/resetAccountLoginSubmit", body (mapper.writeValueAsString (params)));
     }
 
     public void removeWorkflowHold (OrderTest orderTest, WorkflowProperty property, String message) {
@@ -176,14 +188,8 @@ public class CoraApi {
      * @return a list of {@link Physician}
      */
     public List <Physician> getProviders (String first, String last, String account) {
-        List <String> args = new ArrayList <> ();
-        if (first != null)
-            args.add ("firstName=" + first);
-        if (last != null)
-            args.add ("lastName=" + last);
-        if (account != null)
-            args.add ("accountName=" + account);
-        String url = encodeUrl (coraTestUrl + "/cora/api/v1/providers?", args.toArray (new String[] {}));
+        String[] args = { "firstName=" + first, "lastName=" + last, "accountName=" + account };
+        String url = encodeUrl (coraTestUrl + "/cora/api/v1/providers?", args);
         List <Physician> physicians = mapper.readValue (get (url), ProvidersResponse.class).objects.stream ()
                                                                                                    .filter (p -> p.firstName.equals (first))
                                                                                                    .filter (p -> p.lastName.equals (last))
@@ -194,6 +200,16 @@ public class CoraApi {
             p.providerFullName = format ("%s %s", p.firstName, p.lastName);
         });
         return physicians;
+    }
+
+    public List <Physician> getProvidersByAccount (String account) {
+        String[] args = { "accountName=" + account };
+        String url = encodeUrl (coraTestUrl + "/cora/api/v1/providers?", args);
+        return mapper.readValue (get (url), ProvidersResponse.class).objects;
+    }
+
+    public String updateProvider (Physician physician) {
+        return put (coraTestUrl + "/cora/api/v1/providers", body (mapper.writeValueAsString (physician)));
     }
 
     public Physician getPhysician (PhysicianType type) {
@@ -223,7 +239,28 @@ public class CoraApi {
         return mapper.readValue (get (url), Integer.class);
     }
 
-    public OrderTest[] searchOrderTest (List <String> terms) {
+    public Order[] searchOrders (String term) {
+        return searchOrders (asList ("search=" + term));
+    }
+
+    public Order[] searchOrders (List <String> terms) {
+        List <String> args = new ArrayList <> ();
+        args.add ("sort=Created");
+        args.add ("ascending=false");
+        args.add ("limit=500");
+
+        for (String term : terms)
+            args.add (term);
+
+        String url = encodeUrl (coraTestUrl + "/cora/api/v1/orders/search?", args.toArray (new String[] {}));
+        return mapper.readValue (get (url), Order[].class);
+    }
+
+    public OrderTest[] searchOrderTests (String term) {
+        return searchOrderTests (asList ("search=" + term));
+    }
+
+    public OrderTest[] searchOrderTests (List <String> terms) {
         List <String> args = new ArrayList <> ();
         args.add ("sort=DueDate");
         args.add ("limit=500");
@@ -286,5 +323,19 @@ public class CoraApi {
     public Patient[] getPatients (String searchKeyword) {
         String[] args = { "search=" + searchKeyword, "sort=Patient Code", "ascending=false" };
         return mapper.readValue (get (encodeUrl (coraTestUrl + "/cora/api/v2/patients?", args)), Patient[].class);
+    }
+
+    public Patient getPatient (Patient patient) {
+        String url = coraTestUrl + "/cora/api/v2/patients/patientCode/" + searchOrders (patient.lastName)[0].patient_code;
+        return mapper.readValue (get (url), Patient.class);
+    }
+
+    public Patient updatePatient (Patient patient) {
+        String url = coraTestUrl + "/cora/api/v2/patients/" + patient.id;
+        return mapper.readValue (put (url, body (mapper.writeValueAsString (patient))), Patient.class);
+    }
+
+    public void setAlerts (Alert alert) {
+        post (coraTestUrl + "/cora/api/v2/alerts/create", body (mapper.writeValueAsString (alert)));
     }
 }

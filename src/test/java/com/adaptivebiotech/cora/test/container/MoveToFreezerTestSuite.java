@@ -24,7 +24,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -42,7 +41,6 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 public class MoveToFreezerTestSuite extends ContainerTestBase {
 
     private ThreadLocal <String> downloadDir   = new ThreadLocal <> ();
-    private CoraApi              coraApi       = new CoraApi ();
     private Login                login         = new Login ();
     private OrdersList           ordersList    = new OrdersList ();
     private ContainerList        containerList = new ContainerList ();

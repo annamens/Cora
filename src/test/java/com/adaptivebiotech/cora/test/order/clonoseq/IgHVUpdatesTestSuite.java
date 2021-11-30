@@ -62,7 +62,6 @@ import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraDbTestBase;
@@ -94,7 +93,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
     private Physician             IgHVPhysician;
     private Physician             NYPhysician;
-    private CoraApi               coraApi                          = new CoraApi ();
     private NewOrderClonoSeq      diagnostic                       = new NewOrderClonoSeq ();
     private ReportClonoSeq        reportClonoSeq                   = new ReportClonoSeq ();
     private OrcaHistory           history                          = new OrcaHistory ();

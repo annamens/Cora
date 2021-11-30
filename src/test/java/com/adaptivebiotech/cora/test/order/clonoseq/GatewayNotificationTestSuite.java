@@ -25,7 +25,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -46,7 +45,6 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private final String   tcellTsv       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
     private final String   lastFlowcellId = "HKJVGBGXC";
     private final String   gatewayJson    = "gatewayMessage.json";
-    private CoraApi        coraApi        = new CoraApi ();
     private Login          login          = new Login ();
     private OrcaHistory    history        = new OrcaHistory ();
     private ReportClonoSeq report         = new ReportClonoSeq ();

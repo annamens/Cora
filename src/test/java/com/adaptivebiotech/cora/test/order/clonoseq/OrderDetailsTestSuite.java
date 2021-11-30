@@ -8,7 +8,6 @@ import static org.testng.Assert.assertTrue;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
@@ -44,7 +43,6 @@ import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 @Test (groups = "regression")
 public class OrderDetailsTestSuite extends CoraBaseBrowser {
 
-    private CoraApi             coraApi             = new CoraApi ();
     private Login               login               = new Login ();
     private OrdersList          ordersList          = new OrdersList ();
     private OrderStatus         orderStatus         = new OrderStatus ();

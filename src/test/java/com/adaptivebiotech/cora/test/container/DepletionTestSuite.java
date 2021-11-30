@@ -12,7 +12,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -25,7 +24,6 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 @Test (groups = "regression")
 public class DepletionTestSuite extends ContainerTestBase {
 
-    private CoraApi                  coraApi    = new CoraApi ();
     private Login                    login      = new Login ();
     private OrdersList               orderList  = new OrdersList ();
     private MyCustody                myCustody  = new MyCustody ();

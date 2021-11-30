@@ -6,7 +6,6 @@ import static org.testng.Assert.assertEquals;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -36,7 +35,6 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 @Test (groups = "regression")
 public class OrderLinkTestSuite extends CoraBaseBrowser {
 
-    private CoraApi             coraApi             = new CoraApi ();
     private Login               login               = new Login ();
     private OrdersList          ordersList          = new OrdersList ();
     private OrderStatus         orderStatus         = new OrderStatus ();

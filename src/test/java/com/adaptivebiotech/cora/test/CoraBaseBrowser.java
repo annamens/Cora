@@ -14,9 +14,12 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.util.Strings;
+import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.test.TestBase;
 
 public class CoraBaseBrowser extends TestBase {
+
+    protected CoraApi coraApi = new CoraApi ();
 
     static {
         initialization ();

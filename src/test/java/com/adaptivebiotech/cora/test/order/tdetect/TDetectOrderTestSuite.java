@@ -4,7 +4,6 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_tdet
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -28,7 +27,6 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 @Test (groups = { "regression", "tDetectOrder" })
 public class TDetectOrderTestSuite extends CoraBaseBrowser {
 
-    private CoraApi         coraApi         = new CoraApi ();
     private Login           login           = new Login ();
     private OrdersList      ordersList      = new OrdersList ();
     private NewOrderTDetect newOrderTDetect = new NewOrderTDetect ();

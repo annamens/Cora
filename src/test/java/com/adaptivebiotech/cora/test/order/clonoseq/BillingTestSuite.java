@@ -18,7 +18,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -30,7 +29,6 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 public class BillingTestSuite extends CoraBaseBrowser {
 
     private final String[]   icdCodes   = { "A01.02" };
-    private CoraApi          coraApi    = new CoraApi ();
     private Login            login      = new Login ();
     private OrdersList       ordersList = new OrdersList ();
     private NewOrderClonoSeq diagnostic = new NewOrderClonoSeq ();
