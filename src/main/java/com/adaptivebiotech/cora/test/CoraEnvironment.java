@@ -6,18 +6,16 @@ import com.adaptivebiotech.test.BaseEnvironment;
 
 public class CoraEnvironment extends BaseEnvironment {
 
-    public static String  physicianLastName;
-    public static String  physicianFirstName;
-    public static String  physicianAccountName;
-    public static String  NYphysicianLastName;
-    public static String  NYphysicianFirstName;
+    public static String physicianLastName;
+    public static String physicianFirstName;
+    public static String physicianAccountName;
+    public static String NYphysicianLastName;
+    public static String NYphysicianFirstName;
 
-    public static String  portalCliaTestUrl;
-    public static String  portalIvdTestUrl;
-    public static String  pipelinePortalTestUser;
-    public static String  pipelinePortalTestPass;
-
-    public static boolean isDbTunnel;
+    public static String portalCliaTestUrl;
+    public static String portalIvdTestUrl;
+    public static String pipelinePortalTestUser;
+    public static String pipelinePortalTestPass;
 
     public static void initialization () {
         try {

@@ -23,8 +23,7 @@ public class CoraDbTestBase extends CoraBaseBrowser {
             tunnel.waitForConnection ();
         }
         testLog ("Create DB Conection");
-        coraDBClient = new CoraDBClient (CoraEnvironment.coraDBUser, CoraEnvironment.coraDBPass,
-                CoraEnvironment.isDbTunnel);
+        coraDBClient = new CoraDBClient (CoraEnvironment.coraDBUser, CoraEnvironment.coraDBPass);
 
         assertTrue (coraDBClient.openConnection ());
         testLog ("DB connection successful");
