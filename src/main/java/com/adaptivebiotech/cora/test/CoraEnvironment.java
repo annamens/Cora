@@ -43,7 +43,7 @@ public class CoraEnvironment extends BaseEnvironment {
             jumpboxUser = getProperty ("ssh.user");
             jumpboxPass = getProperty ("ssh.pass");
 
-            isDbTunnel = Boolean.parseBoolean (getProperty ("db.tunnel"));
+            useDbTunnel = Boolean.parseBoolean (getProperty ("db.tunnel"));
 
         } catch (Exception e) {
             error ("failed to parse the config file", e);
