@@ -31,7 +31,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFin
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
-import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
@@ -169,7 +168,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     public void verifyIgHVStageAndReportFeatureOrder1CLIAFeatureFlagOn () {
         if (!isIgHVFlag.get ()) {
             getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("this test is for feature IgHV flag on");
+            throw new SkipException ("IgHV flag is OFF, IgHV flag is off, this test is for feature IgHV flag ON");
         }
 
         // order 1
@@ -215,7 +214,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     public void verifyIgHVStageAndReportFeatureOrder2CLIAFeatureFlagOn () {
         if (!isIgHVFlag.get ()) {
             getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("this test is for feature IgHV flag on");
+            throw new SkipException ("IgHV flag is OFF, this test is for feature IgHV flag ON");
         }
 
         // order 2
@@ -261,7 +260,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     public void verifyIgHVStageAndReportFeatureOrder3IVDFeatureFlagOn () {
         if (!isIgHVFlag.get ()) {
             getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("this test is for feature IgHV flag on");
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
         }
 
         // order 3
@@ -307,7 +306,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     public void verifyIgHVStageAndReportFeatureOrder4IVDFeatureFlagOn () {
         if (!isIgHVFlag.get ()) {
             getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("this test is for feature IgHV flag on");
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
         }
 
         // order 4
@@ -353,7 +352,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     public void verifyIgHVStageAndReportFeatureOrder5CLIAFeatureFlagOn () {
         if (!isIgHVFlag.get ()) {
             getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("this test is for feature IgHV flag on");
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
         }
 
         // order 5
@@ -390,7 +389,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     public void verifyIgHVStageAndReportFeatureOrder6IVDFeatureFlagOn () {
         if (!isIgHVFlag.get ()) {
             getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("this test is for feature IgHV flag on");
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
         }
 
         // order 6
@@ -427,7 +426,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     public void verifyIgHVStageAndReportFeatureOrder7IVDFeatureFlagOn () {
         if (!isIgHVFlag.get ()) {
             getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("this test is for feature IgHV flag on");
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
         }
 
         // order 7
@@ -464,7 +463,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     public void verifyIgHVStageAndReportCLIAFeatureFlagOff () {
         if (isIgHVFlag.get ()) {
             getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("this test is for feature IgHV flag off");
+            throw new SkipException ("IgHV flag is on, this test is for feature IgHV flag off");
         }
 
         // order 8
@@ -1245,10 +1244,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         // get file from URL and save it
         coraApi.login ();
-        Header keepLive = new BasicHeader ("Connection", "keep-alive");
-        headers.get ().add (keepLive);
         get (url, new File (pdfFileLocation));
-        headers.get ().remove (keepLive);
 
         // read PDF and extract text
         PdfReader reader = null;
