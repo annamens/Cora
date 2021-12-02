@@ -1,57 +1,35 @@
 package com.adaptivebiotech.cora.utils;
 
-import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.CDx;
-import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderCategory.Diagnostic;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Cancelled;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSeq2_WorkflowNanny;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static com.seleniumfy.test.utils.HttpClientHelper.body;
-import static com.seleniumfy.test.utils.HttpClientHelper.encodeUrl;
-import static com.seleniumfy.test.utils.HttpClientHelper.get;
-import static com.seleniumfy.test.utils.HttpClientHelper.post;
-import static java.lang.String.format;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
-import static org.testng.Assert.fail;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import com.adaptivebiotech.cora.dto.AccountsResponse;
-import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.Diagnostic.Order;
 import com.adaptivebiotech.cora.dto.Diagnostic.Task;
-import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
-import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
-import com.adaptivebiotech.cora.dto.ProvidersResponse;
 import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.dto.Research.TechTransfer;
 import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.SpecimenProperties;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
-import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
-import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author Harry Soehalim
@@ -59,186 +37,9 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class TestScenarioBuilder {
 
-    private static final long         millisRetry        = 3000000l;             // 50mins
-    private static final long         waitRetry          = 5000l;                // 5sec
     public static final LocalDateTime collectionDate     = now ().minusDays (10);
     public static final LocalDateTime reconciliationDate = now ().minusDays (10);
     public static final LocalDateTime arrivalDate        = now ().minusDays (15);
-    public static AssayResponse       coraCDxTests       = getTests (CDx);
-    public static AssayResponse       coraTDxTests       = getTests (TDx);
-
-    public static CoraTest getCDxTest (Assay assay) {
-        return coraCDxTests.get (assay);
-    }
-
-    public static CoraTest getTDxTest (Assay assay) {
-        return coraTDxTests.get (assay);
-    }
-
-    public static AssayResponse getTests (OrderType type) {
-        try {
-            String id = null;
-            switch (type) {
-            case CDx:
-                id = "63780203-caeb-483d-930c-8392afb5d927";
-                break;
-            case TDx:
-                id = "f0ac48ed-7527-4e1b-9a45-afb4c58e680d";
-                break;
-            }
-            return mapper.readValue (get (coraTestUrl + "/cora/api/v1/tests?categoryId=" + id), AssayResponse.class);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    public static Account getAccounts (String name) {
-        try {
-            String url = encodeUrl (coraTestUrl + "/cora/api/v1/accounts?", "name=" + name);
-            AccountsResponse response = mapper.readValue (get (url), AccountsResponse.class);
-            if (response.objects.size () == 0)
-                return null;
-            else {
-                return response.objects.get (0);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    /**
-     * Note:
-     * - GET /cora/api/v1/providers is returning a like search instead of an exact match
-     * 
-     * @param first
-     *            Physician first name
-     * @param last
-     *            Physician last name
-     * @param account
-     *            Physician's account name
-     * @return a list of {@link Physician}
-     */
-    public static List <Physician> getPhysicians (String first, String last, String account) {
-        try {
-            String[] args = { "firstName=" + first, "lastName=" + last, "accountName=" + account };
-            String url = encodeUrl (coraTestUrl + "/cora/api/v1/providers?", args);
-            List <Physician> physicians = mapper.readValue (get (url), ProvidersResponse.class).objects.stream ()
-                                                                                                       .filter (p -> p.firstName.equals (first))
-                                                                                                       .filter (p -> p.lastName.equals (last))
-                                                                                                       .filter (p -> p.account.name.equals (account))
-                                                                                                       .collect (toList ());
-            physicians.forEach (p -> {
-                p.accountName = p.account.name;
-                p.providerFullName = format ("%s %s", p.firstName, p.lastName);
-            });
-            return physicians;
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    public static OrderTest[] getOrderTest (String term) {
-        try {
-            String url = coraTestUrl + "/cora/api/v1/orderTests/search?search=" + term + "&sort=DueDate&limit=500";
-            OrderTest[] tests = mapper.readValue (get (url), OrderTest[].class);
-            Timeout timer = new Timeout (millisRetry, waitRetry);
-            while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.workflowName == null && !Cancelled.equals (ot.status)))) {
-                timer.Wait ();
-                tests = mapper.readValue (get (url), OrderTest[].class);
-            }
-            if (tests.length == 0)
-                fail ("unable to create order");
-            if (stream (tests).anyMatch (ot -> ot.workflowName == null && !Cancelled.equals (ot.status)))
-                fail ("workflowName is null");
-
-            for (OrderTest test : tests) {
-                url = coraTestUrl + "/cora/api/v1/specimens/specimenNumber/" + test.specimenNumber;
-                test.specimen = mapper.readValue (get (url), Specimen.class);
-                test.test = new CoraTest ();
-                test.test.name = test.testName;
-                if (test.specimen.subjectCode == null) {
-                    url = coraTestUrl + "/cora/api/v1/orderTests/patientOrSubjectCode/" + test.id;
-                    test.specimen.subjectCode = mapper.readValue (get (url), Integer.class);
-                }
-            }
-
-            return tests;
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    private static OrderTest[] waitForOrderReady (String orderId) {
-        try {
-            String url = coraTestUrl + "/cora/api/v1/orderTests/order/" + orderId;
-            OrderTest[] tests = mapper.readValue (get (url), OrderTest[].class);
-            Timeout timer = new Timeout (millisRetry, waitRetry);
-            while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.sampleName == null))) {
-                timer.Wait ();
-                tests = mapper.readValue (get (url), OrderTest[].class);
-            }
-            if (tests.length == 0)
-                fail ("unable to create order");
-            if (stream (tests).anyMatch (ot -> ot.sampleName == null))
-                fail ("sampleName is null");
-            for (OrderTest test : tests)
-                if (test.specimen.subjectCode == null) {
-                    url = coraTestUrl + "/cora/api/v1/orderTests/patientOrSubjectCode/" + test.id;
-                    test.specimen.subjectCode = mapper.readValue (get (url), Integer.class);
-                }
-
-            return tests;
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    public synchronized static HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
-        try {
-            String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
-            HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
-                                                      HttpResponse.class);
-            diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
-            return response;
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    public synchronized static HttpResponse createPortalJob (Diagnostic diagnostic) {
-        try {
-            String url = coraTestUrl + "/cora/api/v1/test/scenarios/createPortalJob";
-            HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
-                                                      HttpResponse.class);
-            url = coraTestUrl + "/cora/api/v1/specimens/" + response.specimenId;
-            diagnostic.orderTests = asList (getOrderTest (mapper.readValue (get (url), Specimen.class).specimenNumber));
-            return response;
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    public synchronized static HttpResponse newCovidOrder (Diagnostic diagnostic) {
-        try {
-            String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
-            HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
-                                                      HttpResponse.class);
-            url = coraTestUrl + "/cora/api/v1/orderTests/order/" + response.orderId;
-            diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
-            return response;
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    public static HttpResponse newResearchOrder (Research research) {
-        try {
-            String url = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
-            return mapper.readValue (post (url, body (mapper.writeValueAsString (research))), HttpResponse.class);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
 
     public static Order order (OrderProperties properties, CoraTest... tests) {
         Order order = new Order ();

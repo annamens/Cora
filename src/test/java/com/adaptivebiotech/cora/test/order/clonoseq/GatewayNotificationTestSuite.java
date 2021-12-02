@@ -3,8 +3,6 @@ package com.adaptivebiotech.cora.test.order.clonoseq;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Amended;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.createPortalJob;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.newDiagnosticOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -47,6 +45,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private final String   tcellTsv       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
     private final String   lastFlowcellId = "HKJVGBGXC";
     private final String   gatewayJson    = "gatewayMessage.json";
+    private Login          login          = new Login ();
     private OrcaHistory    history        = new OrcaHistory ();
     private ReportClonoSeq report         = new ReportClonoSeq ();
     private TaskStatus     taskStatus     = new TaskStatus ();
@@ -56,8 +55,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        doCoraLogin ();
-        new Login ().doLogin ();
+        coraApi.login ();
+        login.doLogin ();
     }
 
     /**
@@ -68,7 +67,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         Diagnostic diagnostic = buildDiagnosticOrder (patient,
                                                       stage (SecondaryAnalysis, Ready),
                                                       genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
-        assertEquals (newDiagnosticOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newDiagnosticOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new BCell ID order");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
@@ -107,7 +106,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (SecondaryAnalysis, Ready),
                                            genCDxTest (MRD_BCell2_CLIA, bcellMrdTsv));
-        assertEquals (newDiagnosticOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newDiagnosticOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new BCell MRD order");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
@@ -151,11 +150,11 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
                                                       stage (NorthQC, Ready),
                                                       genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
-        assertEquals (createPortalJob (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.createPortalJob (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell ID order");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_TCRB);
-        history.gotoOrderDebug (orderTest.workflowName);
+        history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         orderStatus.isCorrectPage ();
@@ -163,7 +162,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         report.releaseReport (ID_TCRB, Pass);
         testLog ("released TCRB ID report");
 
-        history.gotoOrderDebug (orderTest.workflowName);
+        history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         assertTrue (history.isFilePresent (gatewayJson));
         testLog ("gateway message sent");
@@ -192,11 +191,11 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
                                            stage (NorthQC, Ready),
                                            genTcrTest (MRD_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
-        assertEquals (createPortalJob (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.createPortalJob (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell MRD order");
 
         orderTest = diagnostic.findOrderTest (MRD_TCRB);
-        history.gotoOrderDebug (orderTest.workflowName);
+        history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         orderStatus.isCorrectPage ();
@@ -204,7 +203,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         report.releaseReport (MRD_TCRB, Pass);
         testLog ("released TCRB MRD report");
 
-        history.gotoOrderDebug (orderTest.workflowName);
+        history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         assertTrue (history.isFilePresent (gatewayJson));
         testLog ("gateway message sent");

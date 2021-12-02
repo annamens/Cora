@@ -5,7 +5,6 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfp
 import static com.adaptivebiotech.cora.utils.TestHelper.getRandomAddress;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
-import static com.adaptivebiotech.cora.utils.TestHelper.physician;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
@@ -26,25 +25,26 @@ import com.adaptivebiotech.cora.utils.DateUtils;
 public class BillingTestSuite extends CoraBaseBrowser {
 
     private final String[]  icdCodes   = { "A01.02" };
-    private OrdersList      oList      = new OrdersList ();
+    private Login           login      = new Login ();
+    private OrdersList      ordersList = new OrdersList ();
     private NewOrderTDetect diagnostic = new NewOrderTDetect ();
     private Specimen        specimen;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        new Login ().doLogin ();
-        oList.isCorrectPage ();
+        login.doLogin ();
+        ordersList.isCorrectPage ();
 
         specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
         specimen.collectionDate = DateUtils.getPastFutureDate (-3);
+        coraApi.login ();
     }
 
     public void patientSelfPay () {
-        doCoraLogin ();
         Patient patient = newSelfPayPatient ();
-        diagnostic.createTDetectOrder (physician (TDetect_selfpay),
+        diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                        patient,
                                        icdCodes,
                                        specimen.collectionDate.toString (),
@@ -57,9 +57,8 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     public void billClient () {
-        doCoraLogin ();
         Patient patient = newClientPatient ();
-        diagnostic.createTDetectOrder (physician (TDetect_client),
+        diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                        patient,
                                        icdCodes,
                                        specimen.collectionDate.toString (),

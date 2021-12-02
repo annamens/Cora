@@ -8,7 +8,8 @@ import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
-import org.testng.annotations.BeforeClass;
+import org.apache.commons.lang3.SerializationUtils;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
@@ -23,35 +24,27 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 @Test (groups = "regression")
 public class DepletionTestSuite extends ContainerTestBase {
 
-    private Login      login;
-    private OrdersList oList;
-    private MyCustody  my;
-    private Detail     detail;
-    private History    history;
-    private Container  child;
-    private Container  holding;
+    private Login                    login      = new Login ();
+    private OrdersList               orderList  = new OrdersList ();
+    private MyCustody                myCustody  = new MyCustody ();
+    private Detail                   detail     = new Detail ();
+    private History                  history    = new History ();
+    private ThreadLocal <Containers> containers = new ThreadLocal <> ();
 
-    @BeforeClass (alwaysRun = true)
-    public void beforeClass () {
-        doCoraLogin ();
+    @BeforeMethod
+    public void beforeMethod () {
+        coraApi.login ();
+        containers.set (coraApi.addContainers (new Containers (asList (container (Tube), container (TubeBox5x5)))));
+
+        login.doLogin ();
+        orderList.isCorrectPage ();
+        orderList.gotoMyCustody ();
+        myCustody.isCorrectPage ();
     }
 
-    @BeforeMethod (alwaysRun = true)
-    public void beforeMethod () {
-        Containers testContainers = addContainers (new Containers (asList (container (Tube), container (TubeBox5x5))));
-        child = testContainers.list.get (0);
-        holding = testContainers.list.get (1);
-
-        login = new Login ();
-        login.doLogin ();
-        oList = new OrdersList ();
-        oList.isCorrectPage ();
-        oList.gotoMyCustody ();
-
-        detail = new Detail ();
-        history = new History ();
-        my = new MyCustody ();
-        my.isCorrectPage ();
+    @AfterMethod
+    public void afterMethod () {
+        coraApi.deactivateContainers (containers.get ());
     }
 
     /**
@@ -60,12 +53,13 @@ public class DepletionTestSuite extends ContainerTestBase {
     public void move_primary_to_freezer () {
 
         // test: move primary to freezer, set depletion and comment
+        Container child = SerializationUtils.clone (containers.get ().list.get (0));
         child.depleted = true;
         child.comment = "send to " + freezerAB018055.name;
-        my.moveToFreezer (child, freezerAB018055);
+        myCustody.moveToFreezer (child, freezerAB018055);
 
         // test: go to detail page to verify depletion
-        my.gotoContainerDetail (child);
+        myCustody.gotoContainerDetail (child);
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
         actual.comment = child.comment;
@@ -85,15 +79,17 @@ public class DepletionTestSuite extends ContainerTestBase {
      * @sdlc_requirements 126.MoveMetadata
      */
     public void move_child_to_freezer () {
-        my.setHoldingContainer (child, holding);
+        Container child = SerializationUtils.clone (containers.get ().list.get (0));
+        Container holding = SerializationUtils.clone (containers.get ().list.get (1));
+        myCustody.setHoldingContainer (child, holding);
 
         // test: move child container to freezer, set depletion and comment
         child.depleted = true;
         child.comment = "send to " + freezerAB018055.name;
-        my.moveToFreezer (child, freezerAB018055);
+        myCustody.moveToFreezer (child, freezerAB018055);
 
         // test: go to primary detail page to verify depletion
-        my.gotoContainerDetail (child);
+        myCustody.gotoContainerDetail (child);
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
         actual.comment = child.comment;
@@ -113,18 +109,20 @@ public class DepletionTestSuite extends ContainerTestBase {
      * @sdlc_requirements 126.MoveMetadata
      */
     public void move_holding_to_freezer () {
-        my.setHoldingContainer (child, holding);
+        Container child = SerializationUtils.clone (containers.get ().list.get (0));
+        Container holding = SerializationUtils.clone (containers.get ().list.get (1));
+        myCustody.setHoldingContainer (child, holding);
 
         // test: move holding container to freezer, set depletion on child and comment
         String comment = "send to " + freezerAB018078.name;
         child.depleted = true;
-        my.scan (holding);
-        my.setChildDepletion (child);
-        my.clickFreezer ();
-        my.selectFreezer (holding, freezerAB018078, comment);
+        myCustody.scan (holding);
+        myCustody.setChildDepletion (child);
+        myCustody.clickFreezer ();
+        myCustody.selectFreezer (holding, freezerAB018078, comment);
 
         // test: go to holding detail page to verify depletion
-        my.gotoContainerDetail (holding);
+        myCustody.gotoContainerDetail (holding);
         detail.isCorrectPage ();
         Container actual = detail.parseHoldingDetail ();
         actual.comment = comment;
@@ -169,14 +167,16 @@ public class DepletionTestSuite extends ContainerTestBase {
      * @sdlc_requirements 126.MoveMetadata
      */
     public void set_holding_container () {
+        Container holding = SerializationUtils.clone (containers.get ().list.get (1));
+        Container child = SerializationUtils.clone (containers.get ().list.get (0));
         child.depleted = true;
         child.comment = randomWords (10);
 
         // test: add to a holding container, mark it as depleted and comment
-        my.setHoldingContainer (child, holding);
+        myCustody.setHoldingContainer (child, holding);
 
         // test: go to child detail page to verify depletion
-        my.gotoContainerDetail (child);
+        myCustody.gotoContainerDetail (child);
         detail.isCorrectPage ();
         Container actual = detail.parseChildDetail ();
         actual.comment = child.comment;
@@ -196,15 +196,17 @@ public class DepletionTestSuite extends ContainerTestBase {
      * @sdlc_requirements 126.MoveMetadata
      */
     public void remove_holding_container () {
-        my.setHoldingContainer (child, holding);
+        Container child = SerializationUtils.clone (containers.get ().list.get (0));
+        Container holding = SerializationUtils.clone (containers.get ().list.get (1));
+        myCustody.setHoldingContainer (child, holding);
 
         // test: remove from a holding container, mark it as depleted and comment
         child.depleted = true;
         child.comment = randomWords (10);
-        my.removeFromHoldingContainer (child, holding);
+        myCustody.removeFromHoldingContainer (child, holding);
 
         // test: go to primary detail page to verify depletion
-        my.gotoContainerDetail (child);
+        myCustody.gotoContainerDetail (child);
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
         actual.comment = child.comment;

@@ -1,10 +1,14 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.CLEP_clonoseq;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestPass;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUser;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
+import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.InternalPharmaBilling;
@@ -23,19 +27,22 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcceptedTsvPath;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFinishedPipelineJobId;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
-import static com.seleniumfy.test.utils.HttpClientHelper.headers;
+import static java.lang.Boolean.TRUE;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
+import static org.testng.ITestResult.SKIP;
+import static org.testng.Reporter.getCurrentTestResult;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
@@ -45,16 +52,18 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.testng.SkipException;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraDbTestBase;
-import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.FeatureFlags;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -67,7 +76,6 @@ import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
@@ -82,83 +90,87 @@ import com.seleniumfy.test.utils.HttpClientHelper;
 @Test (groups = { "nutmeg" })
 public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
-    private Physician        IgHVPhysician;
-    private Physician        NYPhysician;
+    private Physician             IgHVPhysician;
+    private Physician             NYPhysician;
+    private NewOrderClonoSeq      diagnostic                       = new NewOrderClonoSeq ();
+    private ReportClonoSeq        reportClonoSeq                   = new ReportClonoSeq ();
+    private OrcaHistory           history                          = new OrcaHistory ();
+    private FeatureFlags          featureFlagsPage                 = new FeatureFlags ();
+    private OrderStatus           orderStatus                      = new OrderStatus ();
 
-    private NewOrderClonoSeq diagnostic                       = new NewOrderClonoSeq ();
-    private ReportClonoSeq   reportClonoSeq                   = new ReportClonoSeq ();
-    private OrcaHistory      history                          = new OrcaHistory ();
-    private FeatureFlags     featureFlagsPage                 = new FeatureFlags ();
-    private OrderStatus      orderStatus                      = new OrderStatus ();
+    private final String          c91_10                           = "C91.10";
+    private final String          c83_00                           = "C83.00";
+    private final String          c90_00                           = "C90.00";
 
-    private final String     c91_10                           = "C91.10";
-    private final String     c83_00                           = "C83.00";
-    private final String     c90_00                           = "C90.00";
+    private final String          tsvOverridePathO1O2              = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
+    private final String          tsvOverridePathO3O4              = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210615_NB551732_0294_AH3G53BGXJ/v3.1/20210617_0828/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/H3G53BGXJ_0_CLINICAL-CLINICAL_96633-08MC-UA001BM.adap.txt.results.tsv.gz";
+    private final String          tsvOverridePathO5O6O7O8          = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
+    private final String          tsvOverridePathOrcaIgHVO1O8      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210605_NB552488_0035_AHFFJ2BGXJ/v3.1/20210607_1834/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/HFFJ2BGXJ_0_CLINICAL-CLINICAL_01159-11MC.adap.txt.results.tsv.gz";
+    private final String          tsvOverridePathOrcaIgHVO2O6O7    = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210603_NB552480_0036_AH2C2LBGXJ/v3.1/20210605_1317/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H2C2LBGXJ_0_CLINICAL-CLINICAL_111034-01LC.adap.txt.results.tsv.gz";
+    private final String          tsvOverridePathOrcaIgHVO3        = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210608_NB500953_0936_AH3G3KBGXJ/v3.1/20210610_0431/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3G3KBGXJ_0_CLINICAL-CLINICAL_111730-01MC-2115301589D.adap.txt.results.tsv.gz";
+    private final String          tsvOverridePathOrcaIgHVO4        = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_2027/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3GK5BGXJ_0_CLINICAL-CLINICAL_102589-01MC-B20-229.adap.txt.results.tsv.gz";
+    private final String          tsvOverridePathOrcaIgHVO5        = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_1958/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3GK5BGXJ_0_CLINICAL-CLINICAL_109306-01MC-jb20-67.adap.txt.results.tsv.gz";
+    private final String          tsvOverridePathOrcaIgHVO9        = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev4/H3KF2BGX5_0_MDAnderson-Thompson_PH-5N.adap.txt.results.tsv.gz";
+    private final String          lastFinishedPipelineJobIdO1O2    = "8a7a94db77a26ee1017a01c874c67394";
+    private final String          lastFinishedPipelineJobIdO3O4    = "8a7a958877a26e74017a176ecd2b1b45";
+    private final String          lastFinishedPipelineOrcaIgHVO1O8 = "8a7a94db77a26ee10179dfbd004f5955";
+    private final String          lastFinishedPipelineOrcaIgHVO6   = "12345678901234567890";
+    private final String          lastFinishedPipelineOrcaIgHVO2O7 = "8a7a958877a26e740179d9e8beaf3b48";
+    private final String          lastFinishedPipelineOrcaIgHVO3   = "8a7a958877a26e740179f2dbc180183a";
+    private final String          lastFinishedPipelineOrcaIgHVO4   = "8a7a94db77a26ee10179d04ea1a739e9";
+    private final String          lastFinishedPipelineOrcaIgHVO5   = "8a7a958877a26e740179d5e2e51821ce";
+    private final String          sampleNameO1O2                   = "96343-05BC";
+    private final String          sampleNameO3O4                   = "96633-08MC-UA001BM";
+    private final String          sampleNameOrcaIgHVO1O8           = "01159-11MC";
+    private final String          sampleNameOrcaIgHVO2O6O7         = "111034-01LC";
+    private final String          sampleNameOrcaIgHVO3             = "111730-01MC-2115301589D";
+    private final String          sampleNameOrcaIgHVO4             = "102589-01MC-B20-229";
+    private final String          sampleNameOrcaIgHVO5             = "109306-01MC-jb20-67";
+    private final String          sampleNameOrcaIgHVO9             = "PH-5N";
+    private final String          shmDataSourcePathOrcaIgHVO9      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229";
+    private final String          workSpaceNameOrcaIgHVO9          = "MDAnderson-Thompson";
 
-    private final String     tsvOverridePathO1O2              = "s3://pipeline-north-production-archive:us-west-2/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
-    private final String     tsvOverridePathO3O4              = "s3://pipeline-fda-production-archive:us-west-2/210615_NB551732_0294_AH3G53BGXJ/v3.1/20210617_0828/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/H3G53BGXJ_0_CLINICAL-CLINICAL_96633-08MC-UA001BM.adap.txt.results.tsv.gz";
-    private final String     tsvOverridePathO5O6O7O8          = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
-    private final String     tsvOverridePathOrcaIgHVO1O8      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210605_NB552488_0035_AHFFJ2BGXJ/v3.1/20210607_1834/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/HFFJ2BGXJ_0_CLINICAL-CLINICAL_01159-11MC.adap.txt.results.tsv.gz";
-    private final String     tsvOverridePathOrcaIgHVO2O6O7    = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210603_NB552480_0036_AH2C2LBGXJ/v3.1/20210605_1317/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H2C2LBGXJ_0_CLINICAL-CLINICAL_111034-01LC.adap.txt.results.tsv.gz";
-    private final String     tsvOverridePathOrcaIgHVO3        = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210608_NB500953_0936_AH3G3KBGXJ/v3.1/20210610_0431/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3G3KBGXJ_0_CLINICAL-CLINICAL_111730-01MC-2115301589D.adap.txt.results.tsv.gz";
-    private final String     tsvOverridePathOrcaIgHVO4        = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_2027/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3GK5BGXJ_0_CLINICAL-CLINICAL_102589-01MC-B20-229.adap.txt.results.tsv.gz";
-    private final String     tsvOverridePathOrcaIgHVO5        = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_1958/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3GK5BGXJ_0_CLINICAL-CLINICAL_109306-01MC-jb20-67.adap.txt.results.tsv.gz";
-    private final String     tsvOverridePathOrcaIgHVO9        = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev4/H3KF2BGX5_0_MDAnderson-Thompson_PH-5N.adap.txt.results.tsv.gz";
-    private final String     lastFinishedPipelineJobIdO1O2    = "8a7a94db77a26ee1017a01c874c67394";
-    private final String     lastFinishedPipelineJobIdO3O4    = "8a7a958877a26e74017a176ecd2b1b45";
-    private final String     lastFinishedPipelineOrcaIgHVO1O8 = "8a7a94db77a26ee10179dfbd004f5955";
-    private final String     lastFinishedPipelineOrcaIgHVO6   = "12345678901234567890";
-    private final String     lastFinishedPipelineOrcaIgHVO2O7 = "8a7a958877a26e740179d9e8beaf3b48";
-    private final String     lastFinishedPipelineOrcaIgHVO3   = "8a7a958877a26e740179f2dbc180183a";
-    private final String     lastFinishedPipelineOrcaIgHVO4   = "8a7a94db77a26ee10179d04ea1a739e9";
-    private final String     lastFinishedPipelineOrcaIgHVO5   = "8a7a958877a26e740179d5e2e51821ce";
-    private final String     sampleNameO1O2                   = "96343-05BC";
-    private final String     sampleNameO3O4                   = "96633-08MC-UA001BM";
-    private final String     sampleNameOrcaIgHVO1O8           = "01159-11MC";
-    private final String     sampleNameOrcaIgHVO2O6O7         = "111034-01LC";
-    private final String     sampleNameOrcaIgHVO3             = "111730-01MC-2115301589D";
-    private final String     sampleNameOrcaIgHVO4             = "102589-01MC-B20-229";
-    private final String     sampleNameOrcaIgHVO5             = "109306-01MC-jb20-67";
-    private final String     sampleNameOrcaIgHVO9             = "PH-5N";
-    private final String     shmDataSourcePathOrcaIgHVO9      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229";
-    private final String     workSpaceNameOrcaIgHVO9          = "MDAnderson-Thompson";
+    private final byte[]          authBytes                        = (pipelinePortalTestUser + ":" + pipelinePortalTestPass).getBytes ();
+    private final String          portalTestAuth                   = "Basic " + Base64.getEncoder ()
+                                                                                      .encodeToString (authBytes);
 
-    private boolean          isIgHVFlag;
-    private final byte[]     authBytes                        = (pipelinePortalTestUser + ":" + pipelinePortalTestPass).getBytes ();
-    private final String     portalTestAuth                   = "Basic " + Base64.getEncoder ()
-                                                                                 .encodeToString (authBytes);
+    private final String          orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
+    private final String          shmResultsSchema                 = "SELECT * FROM information_schema.columns WHERE table_name = 'shm_results' ORDER BY ordinal_position ASC";
+    private final String          noResultsAvailable               = "No result available";
+    private final String          beginIghvMutationStatus          = "IGHV MUTATION STATUS";
+    private final String          beginClonalityResult             = "CLONALITY RESULT";
+    private final String          endThisSampleFailed              = "This sample failed the quality control";
+    private ThreadLocal <String>  downloadDir                      = new ThreadLocal <> ();
+    private ThreadLocal <Boolean> isIgHVFlag                       = new ThreadLocal <> ();
 
-    private final String     orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
-    private final String     shmResultsSchema                 = "SELECT * FROM information_schema.columns WHERE table_name = 'shm_results' ORDER BY ordinal_position ASC";
-    private final String     noResultsAvailable               = "No result available";
-    private final String     beginIghvMutationStatus          = "IGHV MUTATION STATUS";
-    private final String     beginClonalityResult             = "CLONALITY RESULT";
-    private final String     endThisSampleFailed              = "This sample failed the quality control";
-    private String           downloadDir;
+    @BeforeClass (alwaysRun = true)
+    public void beforeClass () {
+        coraApi.login ();
+        // IgHVPhysician Physician
+        IgHVPhysician = coraApi.getPhysician (non_CLEP_clonoseq);
+
+        // NY Physician
+        NYPhysician = coraApi.getPhysician (CLEP_clonoseq);
+    }
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
-        downloadDir = artifacts (this.getClass ().getName (), test.getName ());
-        // IgHVPhysician Physician
-        IgHVPhysician = TestHelper.setPhysician (CoraEnvironment.physicianLastName,
-                                                 CoraEnvironment.physicianFirstName,
-                                                 CoraEnvironment.physicianAccountName);
-
-        // NY Physician
-        NYPhysician = TestHelper.setPhysician (CoraEnvironment.NYphysicianLastName,
-                                               CoraEnvironment.NYphysicianFirstName,
-                                               CoraEnvironment.physicianAccountName);
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
 
         new Login ().doLogin ();
         new OrdersList ().isCorrectPage ();
         featureFlagsPage.navigateToFeatureFlagsPage ();
         Map <String, String> featureFlags = featureFlagsPage.getFeatureFlags ();
-        isIgHVFlag = Boolean.valueOf (featureFlags.get ("IgHV"));
+        isIgHVFlag.set (Boolean.valueOf (featureFlags.get ("IgHV")));
     }
 
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder1CLIAFeatureFlagOn () {
-        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
+        if (!isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is OFF, IgHV flag is off, this test is for feature IgHV flag ON");
+        }
+
         // order 1
         Assay assayTest = ID_BCell2_CLIA;
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
@@ -194,12 +206,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
+     * NOTE: SR-T3689
+     * 
      * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
-     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder2CLIAFeatureFlagOn () {
-        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
+        if (!isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is OFF, this test is for feature IgHV flag ON");
+        }
+
         // order 2
         Assay assayTest = ID_BCell2_CLIA;
         Map <String, String> orderDetails = createOrder (NYPhysician,
@@ -235,12 +252,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
+     * NOTE: SR-T3689
+     * 
      * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
-     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder3IVDFeatureFlagOn () {
-        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
+        if (!isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
+        }
+
         // order 3
         Assay assayTest = ID_BCell2_IVD;
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
@@ -276,12 +298,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
+     * NOTE: SR-T3689
+     * 
      * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
-     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder4IVDFeatureFlagOn () {
-        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
+        if (!isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
+        }
+
         // order 4
         Assay assayTest = ID_BCell2_IVD;
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
@@ -317,12 +344,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
+     * NOTE: SR-T3689
+     * 
      * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
-     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder5CLIAFeatureFlagOn () {
-        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
+        if (!isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
+        }
+
         // order 5
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
                                                          ID_BCell2_CLIA,
@@ -349,12 +381,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
+     * NOTE: SR-T3689
+     * 
      * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
-     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder6IVDFeatureFlagOn () {
-        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
+        if (!isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
+        }
+
         // order 6
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
                                                          ID_BCell2_CLIA,
@@ -381,12 +418,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag ON
      * 
+     * NOTE: SR-T3689
+     * 
      * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
-     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder7IVDFeatureFlagOn () {
-        assertTrue (isIgHVFlag, "Validate IgHV flag is true before test starts");
+        if (!isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
+        }
+
         // order 7
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
                                                          ID_BCell2_CLIA,
@@ -413,12 +455,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * Ask the Cora dev team to turn the IgHV feature flag OFF
      * 
+     * NOTE: SR-T3689
+     * 
      * @sdlc_requirements SR-6656:R7
-     *                    NOTE: SR-T3689
      */
     @Test (groups = "featureFlagOff")
     public void verifyIgHVStageAndReportCLIAFeatureFlagOff () {
-        assertFalse (isIgHVFlag, "Validate IgHV flag is false before test starts");
+        if (isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is on, this test is for feature IgHV flag off");
+        }
+
         // order 8
         Assay assayTest = ID_BCell2_CLIA;
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
@@ -495,8 +542,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
+     * NOTE: SR-T3728
+     * 
      * @sdlc_requirements SR-7163:R3, SR-7028:R1
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder2 () {
@@ -520,8 +568,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
+     * NOTE: SR-T3728
+     * 
      * @sdlc_requirements SR-7163:R3, SR-7028:R1
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder3 () {
@@ -545,8 +594,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
+     * NOTE: SR-T3728
+     * 
      * @sdlc_requirements SR-7163:R3, SR-7028:R1
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder4 () {
@@ -570,8 +620,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
+     * NOTE: SR-T3728
+     * 
      * @sdlc_requirements SR-7163:R3, SR-7029:R1
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder5 () {
@@ -610,8 +661,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
+     * NOTE: SR-T3728
+     * 
      * @sdlc_requirements SR-7163:R3, SR-7029:R1
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder6 () {
@@ -629,10 +681,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         // set workflow property and force status update
         history.setWorkflowProperty (lastAcceptedTsvPath, tsvOverridePathOrcaIgHVO2O6O7);
 
-        history.setWorkflowProperty (WorkflowProperty.lastFinishedPipelineJobId,
-                                     lastFinishedPipelineOrcaIgHVO6);
+        history.setWorkflowProperty (lastFinishedPipelineJobId, lastFinishedPipelineOrcaIgHVO6);
 
-        history.setWorkflowProperty (WorkflowProperty.sampleName, sampleNameOrcaIgHVO2O6O7);
+        history.setWorkflowProperty (sampleName, sampleNameOrcaIgHVO2O6O7);
 
         history.forceStatusUpdate (StageName.NorthQC, StageStatus.Failed);
 
@@ -656,8 +707,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
+     * NOTE: SR-T3728
+     * 
      * @sdlc_requirements SR-7163:R3, SR-7029:R1
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder7 () {
@@ -707,8 +759,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
+     * NOTE: SR-T3728
+     * 
      * @sdlc_requirements SR-7163:R1, R3, R4
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder8 () {
@@ -740,8 +793,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
+     * NOTE: SR-T3728
+     * 
      * @sdlc_requirements SR-7163:R1, R3, R4
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder9 () {
@@ -803,13 +857,14 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * @sdlc_requirements SR-7163:R1, R2, R3, R4, SR-7029:R1
-     *                    NOTE: SR-T3728
+     * NOTE: SR-T3728
      * 
-     *                    validate shm_results table schema
+     * validate shm_results table schema
+     * 
+     * @sdlc_requirements SR-7163:R1, R2, R3, R4, SR-7029:R1
      */
     @Test (groups = "orcaighv")
-    private void validateShmResultsTableSchema () {
+    public void validateShmResultsTableSchema () {
         String query = shmResultsSchema;
         testLog ("Query: " + query);
 
@@ -886,9 +941,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                                           icdCodes,
                                                           assayTest,
                                                           InternalPharmaBilling,
-                                                          SpecimenType.Blood,
+                                                          specimenType,
                                                           specimenSource,
-                                                          Anticoagulant.EDTA,
+                                                          Blood.equals (specimenType) ? EDTA : null,
                                                           com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active,
                                                           Tube);
         Logging.info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
@@ -962,6 +1017,10 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         if (workspaceNameOverride != null)
             history.setWorkflowProperty (WorkflowProperty.workspaceName, workspaceNameOverride);
 
+        // skip cloneshare check
+        history.setWorkflowProperty (WorkflowProperty.disableHiFreqSave, TRUE.toString ());
+        history.setWorkflowProperty (WorkflowProperty.disableHiFreqSharing, TRUE.toString ());
+
         history.forceStatusUpdate (StageName.SecondaryAnalysis, Ready);
 
         history.waitFor (StageName.SecondaryAnalysis, Finished);
@@ -1024,7 +1083,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         // navigate to order status page
         orderStatus.isCorrectPage ();
-        diagnostic.clickReportTab (assayTest);
+        orderStatus.clickReportTab (assayTest);
         boolean isCLIAIGHVFlagPresent = reportClonoSeq.isCLIAIGHVBtnVisible ();
 
         if (setQCStatus) {
@@ -1044,22 +1103,22 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         diagnostic.clickOrderDetailsTab ();
         diagnostic.isCorrectPage ();
         String sampleName = diagnostic.getSampleName ();
-        testLog ("Sample Name: " + sampleName);
+        info ("Sample Name: " + sampleName);
         history.gotoOrderDebug (sampleName);
 
         // get file using get request
-        doCoraLogin ();
+        coraApi.login ();
         ReportRender reportDataJson = null;
         try {
             String fileUrl = history.getFileUrl ("reportData.json");
-            testLog ("File URL: " + fileUrl);
+            info ("File URL: " + fileUrl);
             String getResponse = get (fileUrl);
-            testLog ("File URL Response: " + getResponse);
+            info ("File URL Response: " + getResponse);
             reportDataJson = mapper.readValue (getResponse, ReportRender.class);
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
-        testLog ("Json File Data " + reportDataJson);
+        info ("Json File Data " + reportDataJson);
         HttpClientHelper.resetheaders ();
         return reportDataJson;
     }
@@ -1071,20 +1130,21 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @param assayTest
      */
     private void validatePipelineStatusToComplete (String sampleName, Assay assayTest) {
-        HttpClientHelper.headers.get ().add (new BasicHeader ("Authorization", portalTestAuth));
+        Header portalAuth = new BasicHeader ("Authorization", portalTestAuth);
+        HttpClientHelper.headers.get ().add (portalAuth);
         // pipeline portal url and end-point
         String url = assayTest.equals (ID_BCell2_IVD) ? portalIvdTestUrl : portalCliaTestUrl;
         String endpoint = "/flowcells?page=0&pageSize=1&select=id&samples.reactions.configuration.name=eos.shm&samples.name=" + sampleName + "&job.statuses.status=COMPLETED";
-        testLog ("URL: " + url + endpoint);
+        info ("URL: " + url + endpoint);
 
         JSONArray response;
         try {
             response = new JSONArray (get (url + endpoint));
-            testLog ("Response: " + response);
+            info ("Response: " + response);
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
-        HttpClientHelper.resetheaders ();
+        HttpClientHelper.headers.get ().remove (portalAuth);
         assertEquals (response.length (), 1, "Validate pipeline portal job is completed");
     }
 
@@ -1179,15 +1239,12 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @return
      */
     private String getTextFromPDF (String url, int pageNumber, String beginText, String endText) {
-        String pdfFileLocation = join ("/", downloadDir, UUID.randomUUID () + ".pdf");
-        testLog ("PDF File Location: " + pdfFileLocation);
+        String pdfFileLocation = join ("/", downloadDir.get (), UUID.randomUUID () + ".pdf");
+        info ("PDF File Location: " + pdfFileLocation);
 
         // get file from URL and save it
-        doCoraLogin ();
-        headers.set (new ArrayList <> ());
-        headers.get ().add (new BasicHeader ("Connection", "keep-alive"));
+        coraApi.login ();
         get (url, new File (pdfFileLocation));
-        resetheaders ();
 
         // read PDF and extract text
         PdfReader reader = null;
@@ -1195,12 +1252,12 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         try {
             reader = new PdfReader (pdfFileLocation);
             String fileContent = PdfTextExtractor.getTextFromPage (reader, pageNumber);
-            testLog ("File Content: " + fileContent);
+            info ("File Content: " + fileContent);
 
             int beginIndex = fileContent.indexOf (beginText);
             int endIndex = fileContent.indexOf (endText);
             extractedText = fileContent.substring (beginIndex, endIndex);
-            testLog ("Extracted Text: " + extractedText);
+            info ("Extracted Text: " + extractedText);
         } catch (IOException e) {
             throw new RuntimeException (e);
         } finally {

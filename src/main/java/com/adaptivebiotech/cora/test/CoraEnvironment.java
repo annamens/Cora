@@ -6,24 +6,16 @@ import com.adaptivebiotech.test.BaseEnvironment;
 
 public class CoraEnvironment extends BaseEnvironment {
 
-    public static String  physicianLastName;
-    public static String  physicianFirstName;
-    public static String  physicianAccountName;
-    public static String  NYphysicianLastName;
-    public static String  NYphysicianFirstName;
-
     public static String  portalCliaTestUrl;
     public static String  portalIvdTestUrl;
     public static String  pipelinePortalTestUser;
     public static String  pipelinePortalTestPass;
-
     public static String  coraDBHost;
     public static String  coraDBUser;
     public static String  coraDBPass;
     public static String  coraJumpBox;
     public static String  sshUser;
     public static String  sshPass;
-
     public static boolean isDbTunnel;
 
     public static void initialization () {
@@ -32,12 +24,6 @@ public class CoraEnvironment extends BaseEnvironment {
             coraTestUrl = format (getProperty ("cora.test.url"), env);
             coraTestUser = getProperty ("cora.test.user");
             coraTestPass = decrypt (getProperty ("cora.test.pass"));
-
-            physicianLastName = "Tests";
-            physicianFirstName = "Automated";
-            physicianAccountName = "SEA_QA Test";
-            NYphysicianLastName = "IgHV";
-            NYphysicianFirstName = "Selenium";
 
             portalCliaTestUrl = format (getProperty ("portal.clia.test.url"), env);
             portalIvdTestUrl = format (getProperty ("portal.ivd.test.url"), env);

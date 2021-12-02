@@ -43,7 +43,7 @@ public class Accession extends CoraPage {
 
     public void uploadIntakeManifest (String file) {
         waitForElement ("input[data-ng-model='ctrl.intakeManifestFiles']").sendKeys (file);
-        moduleLoading ();
+        transactionInProgress ();
         assertTrue (click ("[data-ng-click='ctrl.proceedToFullAccessionScreen()']"));
         pageLoading ();
     }
