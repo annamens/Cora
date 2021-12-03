@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.CfdRoche;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
@@ -30,26 +31,25 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.utils.DateUtils;
-import com.adaptivebiotech.cora.utils.TestHelper;
-import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 @Test (groups = "regression")
 public class AdaptiveAssistsTestSuite extends CoraBaseBrowser {
 
-    private OrdersList       oList            = new OrdersList ();
+    private Login            login            = new Login ();
+    private OrdersList       ordersList       = new OrdersList ();
     private NewOrderClonoSeq newOrderClonoSeq = new NewOrderClonoSeq ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        new Login ().doLogin ();
-        oList.isCorrectPage ();
-        oList.selectNewClonoSEQDiagnosticOrder ();
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.selectNewClonoSEQDiagnosticOrder ();
 
+        coraApi.login ();
         newOrderClonoSeq.isCorrectPage ();
-        newOrderClonoSeq.selectPhysician (TestHelper.physicianTRF ());
+        newOrderClonoSeq.selectPhysician (coraApi.getPhysician (non_CLEP_clonoseq));
         newOrderClonoSeq.createNewPatient (newPatient ());
         newOrderClonoSeq.enterPatientICD_Codes ("A01.02");
         newOrderClonoSeq.clickSave (); // have to Save first before we can set Specimen info

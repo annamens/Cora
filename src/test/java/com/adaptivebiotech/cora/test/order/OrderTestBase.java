@@ -3,10 +3,7 @@ package com.adaptivebiotech.cora.test.order;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
-import static com.adaptivebiotech.cora.utils.TestHelper.physician;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.diagnosticOrder;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.getCDxTest;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.getTDxTest;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.order;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.shipment;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.specimen;
@@ -26,15 +23,8 @@ import com.adaptivebiotech.test.utils.PageHelper;
 
 public class OrderTestBase extends CoraBaseBrowser {
 
-    protected AssayResponse.CoraTest genTDxTest (PageHelper.Assay assay) {
-        AssayResponse.CoraTest test = new AssayResponse.CoraTest ();
-        test.testId = getTDxTest (assay).id;
-        return test;
-    }
-
     protected AssayResponse.CoraTest genCDxTest (PageHelper.Assay assay, String tsvPath) {
-        AssayResponse.CoraTest test = new AssayResponse.CoraTest ();
-        test.testId = getCDxTest (assay).id;
+        AssayResponse.CoraTest test = coraApi.getCDxTest (assay);
         test.workflowProperties = new Workflow.WorkflowProperties ();
         test.workflowProperties.disableHiFreqSave = true;
         test.workflowProperties.disableHiFreqSharing = true;
@@ -44,8 +34,7 @@ public class OrderTestBase extends CoraBaseBrowser {
     }
 
     protected AssayResponse.CoraTest genTcrTest (PageHelper.Assay assay, String flowcell, String tsvPath) {
-        AssayResponse.CoraTest test = new AssayResponse.CoraTest ();
-        test.testId = getCDxTest (assay).id;
+        AssayResponse.CoraTest test = coraApi.getCDxTest (assay);
         test.workflowProperties = new Workflow.WorkflowProperties ();
         test.workflowProperties.notifyGateway = true;
         test.flowcell = flowcell;
@@ -55,7 +44,7 @@ public class OrderTestBase extends CoraBaseBrowser {
     }
 
     protected Diagnostic buildCovidOrder (Patient patient, Workflow.Stage stage, AssayResponse.CoraTest test) {
-        Diagnostic diagnostic = diagnosticOrder (physician (TDetect_client), patient, null, shipment ());
+        Diagnostic diagnostic = diagnosticOrder (coraApi.getPhysician (TDetect_client), patient, null, shipment ());
         diagnostic.order = order (null, test);
         diagnostic.order.orderType = TDx;
         diagnostic.order.mrn = patient.mrn;
@@ -72,7 +61,10 @@ public class OrderTestBase extends CoraBaseBrowser {
     }
 
     protected Diagnostic buildDiagnosticOrder (Patient patient, Workflow.Stage stage, AssayResponse.CoraTest... tests) {
-        Diagnostic diagnostic = diagnosticOrder (physician (clonoSEQ_client), patient, specimen (), shipment ());
+        Diagnostic diagnostic = diagnosticOrder (coraApi.getPhysician (clonoSEQ_client),
+                                                 patient,
+                                                 specimen (),
+                                                 shipment ());
         diagnostic.order = order (new Orders.OrderProperties (patient.billingType, CustomerShipment, "C91.00"), tests);
         diagnostic.order.mrn = patient.mrn;
         diagnostic.specimen.collectionDate = new int[] { 2019, 4, 1, 18, 6, 59, 639 };

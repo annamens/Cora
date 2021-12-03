@@ -10,7 +10,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
-import static com.adaptivebiotech.cora.utils.TestHelper.physician;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
@@ -30,24 +29,25 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 public class BillingTestSuite extends CoraBaseBrowser {
 
     private final String[]   icdCodes   = { "A01.02" };
-    private OrdersList       oList      = new OrdersList ();
+    private Login            login      = new Login ();
+    private OrdersList       ordersList = new OrdersList ();
     private NewOrderClonoSeq diagnostic = new NewOrderClonoSeq ();
     private Specimen         specimen;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        new Login ().doLogin ();
-        oList.isCorrectPage ();
+        login.doLogin ();
+        ordersList.isCorrectPage ();
 
         specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
+        coraApi.login ();
     }
 
     public void insurance () {
-        doCoraLogin ();
         Patient patient = newInsurancePatient ();
-        diagnostic.createClonoSeqOrder (physician (clonoSEQ_insurance),
+        diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_insurance),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
@@ -64,9 +64,8 @@ public class BillingTestSuite extends CoraBaseBrowser {
      * @sdlc_requirements 173.Medicare.required
      */
     public void medicare () {
-        doCoraLogin ();
         Patient patient = newMedicarePatient ();
-        diagnostic.createClonoSeqOrder (physician (clonoSEQ_medicare),
+        diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_medicare),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
@@ -80,9 +79,8 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     public void patientSelfPay () {
-        doCoraLogin ();
         Patient patient = newSelfPayPatient ();
-        diagnostic.createClonoSeqOrder (physician (clonoSEQ_selfpay),
+        diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_selfpay),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
@@ -96,9 +94,8 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     public void billClient () {
-        doCoraLogin ();
         Patient patient = newClientPatient ();
-        diagnostic.createClonoSeqOrder (physician (clonoSEQ_client),
+        diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_client),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
@@ -112,9 +109,8 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     public void billPerStudyProtocol () {
-        doCoraLogin ();
         Patient patient = newTrialProtocolPatient ();
-        diagnostic.createClonoSeqOrder (physician (clonoSEQ_trial),
+        diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,

@@ -212,15 +212,7 @@ public class CoraPage extends BasePage {
     }
 
     public void searchContainer (Container container) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&search=" + container.containerNumber));
-    }
-
-    public void searchContainerByContainerId (Container container) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber));
-    }
-
-    public void showTodayFreezerContents (Container freezer) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=today&rootContainerId=" + freezer.id));
+        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber + "&sort=HoldingContainer&ascending=true&searchType=Container&groupByHoldingContainer=false&includeChildSpecimen=false&offset=0"));
     }
 
     public void gotoMyCustody () {
@@ -259,9 +251,15 @@ public class CoraPage extends BasePage {
     }
 
     protected void moduleLoading () {
-        assertTrue (waitForElementInvisible (".message.ng-hide[ng-show='loading.overlay']"));
+        transactionInProgress ();
         assertTrue (noSuchElementPresent (".modal-dialog"));
         assertTrue (noSuchElementPresent (".modal-backdrop"));
+    }
+
+    // Transaction in progress: Do not leave this page.
+    protected void transactionInProgress () {
+        assertTrue (waitForElementInvisible (".message[ng-show='loading.overlay']"));
+        hasPageLoaded ();
     }
 
     protected String getConId (String href) {
@@ -279,7 +277,7 @@ public class CoraPage extends BasePage {
     }
 
     public void clickFilter () {
-        assertTrue (click ("[ng-click='ctrl.search()']"));
+        assertTrue (click ("//*[text()='Filter list']"));
     }
 
     public Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds, Function <WebDriver, Boolean> func) {

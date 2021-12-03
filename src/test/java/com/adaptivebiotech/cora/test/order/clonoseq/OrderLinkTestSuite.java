@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
@@ -34,6 +35,7 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 @Test (groups = "regression")
 public class OrderLinkTestSuite extends CoraBaseBrowser {
 
+    private Login               login               = new Login ();
     private OrdersList          ordersList          = new OrdersList ();
     private OrderStatus         orderStatus         = new OrderStatus ();
     private NewOrderClonoSeq    newOrderClonoSeq    = new NewOrderClonoSeq ();
@@ -47,8 +49,9 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        new Login ().doLogin ();
+        login.doLogin ();
         ordersList.isCorrectPage ();
+        coraApi.login ();
     }
 
     /**
@@ -64,7 +67,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         ordersList.doOrderSearch (order1);
         ordersList.isCorrectPage ();
-        Physician physician = TestHelper.physicianTRF ();
+        Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
         String orderName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + order1;
         ordersList.clickOrderName (orderName);
         newOrderClonoSeq.isCorrectPage ();
@@ -133,7 +136,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         ordersList.doOrderSearch (order2);
         ordersList.isCorrectPage ();
-        Physician physician = TestHelper.physicianTRF ();
+        Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
         String orderName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + order2;
         ordersList.clickOrderName (orderName);
         orderStatus.isCorrectPage ();
@@ -201,7 +204,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
     private String createClonoSeqOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus orderStatus) {
         // create clonoSEQ diagnostic order
-        return newOrderClonoSeq.createClonoSeqOrder (TestHelper.physicianTRF (),
+        return newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
                                                      TestHelper.newPatient (),
                                                      new String[] { "C90.00" },
                                                      Assay.ID_BCell2_CLIA,

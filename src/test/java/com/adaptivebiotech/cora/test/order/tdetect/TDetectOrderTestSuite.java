@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.test.order.tdetect;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_tdetect_all_tests;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
@@ -26,8 +27,10 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 @Test (groups = { "regression", "tDetectOrder" })
 public class TDetectOrderTestSuite extends CoraBaseBrowser {
 
+    private Login           login           = new Login ();
+    private OrdersList      ordersList      = new OrdersList ();
     private NewOrderTDetect newOrderTDetect = new NewOrderTDetect ();
-    private BillingNewOrder         billing         = new BillingNewOrder ();
+    private BillingNewOrder billing         = new BillingNewOrder ();
     private Shipment        shipment        = new Shipment ();
     private Accession       accession       = new Accession ();
 
@@ -35,10 +38,11 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
      * NOTE: SR-T3243
      */
     public void validateTDetectOrderActivation () {
-        new Login ().doLogin ();
-        new OrdersList ().isCorrectPage ();
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        coraApi.login ();
         // create T-Detect diagnostic order
-        String orderNum = newOrderTDetect.createTDetectOrder (TestHelper.physicianTRF (),
+        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_tdetect_all_tests),
                                                               TestHelper.newPatient (),
                                                               new String[] {},
                                                               DateUtils.getPastFutureDate (-3),
