@@ -37,7 +37,7 @@ public class OrcaHistory extends CoraPage {
 
     @Override
     public void isCorrectPage () {
-        assertTrue (isTextInElement (".content .container", "Debugging: ORCA Workflow"));
+        assertTrue (isTextInElement (".content .container h1", "Debugging: ORCA Workflow"));
         assertTrue (waitUntilVisible ("table.genoTable"));
     }
 

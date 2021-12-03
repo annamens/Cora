@@ -6,17 +6,10 @@ import com.adaptivebiotech.test.BaseEnvironment;
 
 public class CoraEnvironment extends BaseEnvironment {
 
-    public static String  portalCliaTestUrl;
-    public static String  portalIvdTestUrl;
-    public static String  pipelinePortalTestUser;
-    public static String  pipelinePortalTestPass;
-    public static String  coraDBHost;
-    public static String  coraDBUser;
-    public static String  coraDBPass;
-    public static String  coraJumpBox;
-    public static String  sshUser;
-    public static String  sshPass;
-    public static boolean isDbTunnel;
+    public static String portalCliaTestUrl;
+    public static String portalIvdTestUrl;
+    public static String pipelinePortalTestUser;
+    public static String pipelinePortalTestPass;
 
     public static void initialization () {
         try {
@@ -35,10 +28,10 @@ public class CoraEnvironment extends BaseEnvironment {
             coraDBPass = decrypt (getProperty ("cora.db.pass"));
             coraJumpBox = getProperty ("cora.db.jumpbox");
 
-            sshUser = getProperty ("ssh.user");
-            sshPass = getProperty ("ssh.pass");
+            jumpboxUser = getProperty ("ssh.user");
+            jumpboxPass = getProperty ("ssh.pass");
 
-            isDbTunnel = Boolean.parseBoolean (getProperty ("db.tunnel"));
+            useDbTunnel = Boolean.parseBoolean (getProperty ("db.tunnel"));
 
         } catch (Exception e) {
             error ("failed to parse the config file", e);

@@ -1,7 +1,9 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.openqa.selenium.WebElement;
 import com.seleniumfy.test.utils.BasePage;
@@ -14,6 +16,7 @@ public class OrderAlert extends BasePage {
     private final String closeBtn         = "//button[text()='Close']";
     private final String activeTab        = "//span[contains(text(), 'ACTIVE')]";
     private final String resolveTab       = "//span[contains(text(), 'RESOLVED')]";
+    private final String activeAlerts     = ".panel.active-alerts";
     private final String resolvedAlerts   = ".resolved-alerts";
     private final String alertDesc        = ".alert-type-description";
     private final String resolvedBtn      = ".unresolve-alert-button";
@@ -24,12 +27,16 @@ public class OrderAlert extends BasePage {
 
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (alertModal));
-        assertTrue (isTextInElement (alertTitle, "Alerts for Order"));
+        assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order"));
     }
 
     public void isCorrectPage (String orderNo) {
         isCorrectPage ();
-        assertTrue (isTextInElement (alertTitle, "Alerts for Order #" + orderNo));
+        assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order #" + orderNo));
+    }
+
+    public boolean isAlertModalPresent () {
+        return isElementPresent (alertModal);
     }
 
     public void selectAlertType (String alertName) {
@@ -57,6 +64,14 @@ public class OrderAlert extends BasePage {
         assertTrue (click (cancelBtn));
     }
 
+    public List <String> getActiveAlertsList () {
+        List <String> activeAlertsList = new ArrayList <> ();
+        for (WebElement element : waitForElements (activeAlerts)) {
+            activeAlertsList.add (getText (element, alertDesc));
+        }
+        return activeAlertsList;
+    }
+
     public Map <String, String> getResolvedAlerts () {
         assertTrue (waitUntilVisible (resolvedAlerts));
 
@@ -66,4 +81,19 @@ public class OrderAlert extends BasePage {
         }
         return resolvedAlertsMap;
     }
+
+    public void clickAlert (String alertName) {
+        assertTrue (click (String.format ("//*[@class='alert-type-description' and text()='%s']", alertName)));
+    }
+
+    public void clickAlertResolveBtn (String alertName) {
+        assertTrue (click (String.format ("//*[@class='alert-type-description' and text()='%s']/ancestor::accordion-group//button[text()='Resolve']",
+                                          alertName)));
+    }
+
+    public boolean isEmailNotificationPresent (String alertName) {
+        return isElementPresent (String.format ("//*[@class='alert-type-description' and text()='%s']/ancestor::accordion-group//*[@class='send-notification-label']",
+                                                alertName));
+    }
+
 }
