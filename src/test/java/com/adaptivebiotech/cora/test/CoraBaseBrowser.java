@@ -29,7 +29,7 @@ public class CoraBaseBrowser extends TestBase {
     @BeforeClass (alwaysRun = true)
     public void baseBeforeClass () {
         MDC.put ("job.id", UUID.randomUUID ().toString ());
-        doCoraLogin ();
+        coraApi.login ();
         info (format ("running: %s", getClass ()));
     }
 
