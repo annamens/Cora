@@ -1,7 +1,9 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.openqa.selenium.WebElement;
 import com.seleniumfy.test.utils.BasePage;
@@ -14,6 +16,7 @@ public class OrderAlert extends BasePage {
     private final String closeBtn         = "//button[text()='Close']";
     private final String activeTab        = "//span[contains(text(), 'ACTIVE')]";
     private final String resolveTab       = "//span[contains(text(), 'RESOLVED')]";
+    private final String activeAlerts     = ".panel.active-alerts";
     private final String resolvedAlerts   = ".resolved-alerts";
     private final String alertDesc        = ".alert-type-description";
     private final String resolvedBtn      = ".unresolve-alert-button";
@@ -59,6 +62,14 @@ public class OrderAlert extends BasePage {
 
     public void clickCancel () {
         assertTrue (click (cancelBtn));
+    }
+
+    public List <String> getActiveAlertsList () {
+        List <String> activeAlertsList = new ArrayList <> ();
+        for (WebElement element : waitForElements (activeAlerts)) {
+            activeAlertsList.add (getText (element, alertDesc));
+        }
+        return activeAlertsList;
     }
 
     public Map <String, String> getResolvedAlerts () {

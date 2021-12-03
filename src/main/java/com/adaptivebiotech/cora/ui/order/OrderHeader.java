@@ -16,6 +16,7 @@ public class OrderHeader extends CoraPage {
     protected final String tabBase             = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
     private final String   newAlert            = ".new-alert";
     private final String   alertDashboard      = ".alert-dashboard-main";
+    private final String   activeAlertCount    = ".alert-count";
     private final String   orderAlerts         = ".alert-dashboard-modal .alert-category-name";
     private final String   alertDashboardClose = ".alert-dashboard-modal .alert-close";
     private final String   activeAlert         = ".alert-dashboard-modal .alert-status a:nth-of-type(1)";
@@ -43,6 +44,10 @@ public class OrderHeader extends CoraPage {
         pageLoading ();
         reportLoading ();
         assertTrue (waitUntilVisible (".order-test-report"));
+    }
+
+    public boolean isActiveAlertCountPresent () {
+        return isElementPresent (alertDashboard + " " + activeAlertCount);
     }
 
     public void clickAlertDashboard () {
