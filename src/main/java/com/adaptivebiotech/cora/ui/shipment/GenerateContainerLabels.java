@@ -50,7 +50,7 @@ public class GenerateContainerLabels extends CoraPage {
     }
 
     public boolean isCloseVisible () {
-        executeJScript ("arguments[0].scrollIntoView()", getDriver ().findElement (locateBy (close)));
+        executeJScript ("arguments[0].scrollIntoView()", findElement (close));
         return isElementVisible (close);
     }
 
