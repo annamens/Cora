@@ -73,20 +73,6 @@ public class OrderStatus extends OrderHeader {
         return waitForElement ("[class='ordertest-list-stage KitReportDelivery']").isDisplayed ();
     }
 
-    public void clickPatientNotesIcon () {
-        String css = "[ng-click=\"ctrl.showPatientNotesDialog()\"]";
-        assertTrue (click (css));
-        waitForElementVisible (".patient-notes-modal");
-        assertTrue (getText (popupTitle).contains ("Patient Note for Patient "));
-    }
-
-    // patient notes popup
-    public String getPatientNotes () {
-        String css = "[ng-bind=\"ctrl.patient.notes\"]";
-        String text = readInput (css);
-        return text;
-    }
-
     public int getClarityStageRequeueCount () {
         String css = ".ordertest-list-stage.Clarity .requeue-count";
         return Integer.valueOf (getText (css));
