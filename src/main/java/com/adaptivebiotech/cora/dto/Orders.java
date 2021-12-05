@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.dto;
 
+import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.util.stream.Collectors.toList;
 import java.time.LocalDateTime;
@@ -51,11 +52,7 @@ public final class Orders {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return mapper.writeValueAsString (this);
     }
 
     public static final class Order {
@@ -118,11 +115,7 @@ public final class Orders {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return mapper.writeValueAsString (this);
         }
     }
 
@@ -206,20 +199,21 @@ public final class Orders {
 
         public OrderTest () {}
 
-        public OrderTest (Assay assay, boolean selected) {
+        public OrderTest (Assay assay) {
             this.test = new CoraTest ();
             this.test.name = assay.test;
             this.assay = assay;
-            this.selected = selected;
+            this.selected = true;
         }
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return mapper.writeValueAsString (this);
+        }
+
+        @Override
+        public boolean equals (Object o) {
+            return equalsOverride (this, (OrderTest) o);
         }
     }
 
@@ -243,11 +237,7 @@ public final class Orders {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return mapper.writeValueAsString (this);
         }
     }
 
@@ -274,11 +264,7 @@ public final class Orders {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return mapper.writeValueAsString (this);
         }
     }
 }

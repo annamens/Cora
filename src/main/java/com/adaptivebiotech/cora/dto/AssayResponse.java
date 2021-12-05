@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.dto;
 
+import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,11 +24,7 @@ public final class AssayResponse {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return mapper.writeValueAsString (this);
     }
 
     public static final class CoraTest {
@@ -77,6 +74,16 @@ public final class AssayResponse {
         public String             tsvPath;
         public String             flowcell;
         public WorkflowProperties workflowProperties;
+
+        @Override
+        public String toString () {
+            return mapper.writeValueAsString (this);
+        }
+
+        @Override
+        public boolean equals (Object o) {
+            return equalsOverride (this, (CoraTest) o);
+        }
     }
 
     public static final class TestProperties {

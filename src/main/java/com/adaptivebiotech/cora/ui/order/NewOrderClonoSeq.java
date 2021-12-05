@@ -2,7 +2,6 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
 import static java.lang.String.format;
-import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
@@ -13,12 +12,11 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
-import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
@@ -38,19 +36,17 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 public class NewOrderClonoSeq extends NewOrder {
 
     public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq ();
-
-    private final String           assayEl          = "//span[@ng-bind='test.name' and text()='%s']";
     private final String           specimenDelivery = "[name='specimenType']";
 
     public void clickAssayTest (Assay assay) {
         String type = "[ng-click*='" + assay.type + "']";
-        if (!waitForElement (type).isSelected ())
+        if (!findElement (type).isSelected ())
             assertTrue (click (type));
 
         if (isElementPresent (".ng-hide[ng-show='ctrl.showTestMenu']"))
             assertTrue (click (".clickable[ng-bind*='showTestMenu']"));
 
-        assertTrue (click (format (assayEl, assay.test)));
+        assertTrue (click (format ("//*[@ng-bind='test.name' and text()='%s']", assay.test)));
     }
 
     public void findSpecimenId (String id) {
@@ -67,16 +63,11 @@ public class NewOrderClonoSeq extends NewOrder {
         String bCellCheckbox = "#order-test-type-b-cell";
         String trackingCheckbox = "#order-test-type-tracking";
         String[] checkboxes = { tCellCheckbox, bCellCheckbox, trackingCheckbox };
-        for (String checkbox : checkboxes) {
-            if (waitForElementVisible (checkbox).isSelected ()) {
+        for (String checkbox : checkboxes)
+            if (findElement (checkbox).isSelected ())
                 assertTrue (click (checkbox));
-                waitForAjaxCalls ();
-            }
-        }
-        String testSelection = "[ng-bind=\"ctrl.getTestSelectionSummary()\"]";
-        String testSelectionText = waitForElementVisible (testSelection).getText ();
-        assertEquals (testSelectionText, "No tests selected");
-        waitForAjaxCalls ();
+
+        assertTrue (isElementPresent ("//*[@class='test-selection-header']//*[text()='No tests selected']"));
     }
 
     public Order parseOrder () {
@@ -115,8 +106,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         Logging.testLog ("DTO Shipment Arrival Date: " + order.specimenDto.arrivalDate);
         order.expectedTestType = getExpectedTest ();
-        order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ())
-                                         .parallelStream ().filter (t -> t.selected).collect (toList ());
+        order.tests = getSelectedTests ();
         order.orderAttachments = getCoraAttachments ();
         order.doraAttachments = getDoraAttachments ();
         order.patient.insurance1 = new Insurance ();
@@ -166,23 +156,9 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void clickEditPatient () {
-        pageLoading ();
         String editPatientLink = "a[ui-sref^='main.patient.details']";
         assertTrue (click (editPatientLink));
         pageLoading ();
-    }
-
-    public List <OrderTest> getSelectedTests () {
-        return allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ())
-                                  .parallelStream ().filter (t -> t.selected).collect (toList ());
-    }
-
-    public void verifyTests (List <Assay> assays) {
-        List <OrderTest> orderTests = this.getSelectedTests ();
-        assertEquals (orderTests.size (), assays.size ());
-        for (OrderTest test : orderTests) {
-            assertTrue (assays.contains (test.assay));
-        }
     }
 
     public boolean isAbnStatusNotRequired () {
@@ -196,14 +172,6 @@ public class NewOrderClonoSeq extends NewOrder {
         moduleLoading ();
         pageLoading ();
         waitUntilActivated ();
-    }
-
-    public void transferTrf () {
-        assertTrue (click ("[ng-click='ctrl.showTrfTransferModal()']"));
-        assertTrue (isTextInElement (popupTitle, "Transfer TRF to New Order"));
-        assertTrue (click ("[data-ng-click='ctrl.ok()']"));
-        moduleLoading ();
-        pageLoading ();
     }
 
     public void createNewPatient (Patient patient) {
@@ -234,7 +202,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
             if (isElementPresent (row, ".container-table")) {
                 String css = "[ng-repeat='child in group.containers']";
-                List <Container> children = row.findElements (locateBy (css)).stream ().map (childRow -> {
+                List <Container> children = findElements (row, css).stream ().map (childRow -> {
                     Container childContainer = new Container ();
                     childContainer.id = getConId (getAttribute (childRow,
                                                                 "[data-ng-bind='child.container.containerNumber']",
@@ -430,7 +398,7 @@ public class NewOrderClonoSeq extends NewOrder {
                                                anticoagulant);
 
         // add diagnostic shipment
-        new Shipment ().createShipment (orderNum, containerType);
+        new NewShipment ().createShipment (orderNum, containerType);
 
         // accession complete
         if (orderStatus.equals (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active)) {

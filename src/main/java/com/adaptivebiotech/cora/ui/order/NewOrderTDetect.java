@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
-import static java.util.EnumSet.allOf;
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertTrue;
@@ -16,7 +16,7 @@ import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
@@ -31,7 +31,6 @@ import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 public class NewOrderTDetect extends NewOrder {
 
     public BillingNewOrderTDetect billing        = new BillingNewOrderTDetect ();
-
     private final String          dateSigned     = "[formcontrolname='dateSigned']";
     private final String          orderNotes     = "#order-notes";
     private final String          collectionDate = "[formcontrolname='collectionDate']";
@@ -69,11 +68,7 @@ public class NewOrderTDetect extends NewOrder {
     }
 
     public void clickAssayTest (Assay assay) {
-        waitForElements (".test-type-selection .panel-label").forEach (el -> {
-            if (el.getText ().equals (assay.test)) {
-                click (el, "input");
-            }
-        });
+        assertTrue (click (format ("//*[@class='test-type-selection']//*[text()='%s']", assay.test)));
     }
 
     public void clickShipment () {
@@ -116,8 +111,7 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         Logging.testLog ("DTO Shipment Arrival Date: " + order.specimenDto.arrivalDate);
         order.expectedTestType = getExpectedTest ();
-        order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ())
-                                         .parallelStream ().filter (t -> t.selected).collect (toList ());
+        order.tests = getSelectedTests ();
         order.orderAttachments = getCoraAttachments ();
         order.doraAttachments = getDoraAttachments ();
         order.patient.insurance1 = new Insurance ();
@@ -184,7 +178,7 @@ public class NewOrderTDetect extends NewOrder {
 
             if (isElementPresent (row, ".container-table")) {
                 String css = "tbody tr";
-                List <Container> children = row.findElements (locateBy (css)).stream ().map (childRow -> {
+                List <Container> children = findElements (row, css).stream ().map (childRow -> {
                     Container childContainer = new Container ();
                     childContainer.id = getConId (getAttribute (childRow,
                                                                 "td:nth-child(1) a",
@@ -328,7 +322,7 @@ public class NewOrderTDetect extends NewOrder {
                                               patientAddress);
 
         // add diagnostic shipment
-        new Shipment ().createShipment (orderNum, containerType);
+        new NewShipment ().createShipment (orderNum, containerType);
 
         // accession complete
         if (orderStatus.equals (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active)) {

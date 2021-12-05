@@ -60,8 +60,8 @@ public class CoraApi {
     public final Header username    = new BasicHeader ("X-Api-UserName", coraTestUser);
 
     public void login () {
-        login (coraTestUser, coraTestPass);
         resetheaders ();
+        login (coraTestUser, coraTestPass);
     }
 
     public void login (String user, String pass) {

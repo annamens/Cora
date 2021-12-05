@@ -1,7 +1,5 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import static org.testng.Assert.assertTrue;
-
 /**
  * @author jpatel
  *
@@ -24,13 +22,5 @@ public class OrderDetailClonoSeq extends OrderDetail {
             return getText (css);
         }
         return null;
-    }
-
-    public void transferTrf () {
-        assertTrue (click (".transfer-trf-btn"));
-        assertTrue (isTextInElement (popupTitle, "Transfer TRF to New Order"));
-        assertTrue (click ("[data-ng-click='ctrl.ok()']"));
-        moduleLoading ();
-        pageLoading ();
     }
 }
