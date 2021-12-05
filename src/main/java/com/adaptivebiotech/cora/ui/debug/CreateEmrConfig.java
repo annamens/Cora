@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -223,7 +222,7 @@ public class CreateEmrConfig extends CoraPage {
 
     public void selectAccounts (String... accounts) {
         assertTrue (click (selectAccountsBtn));
-        assertEquals (getCssProperty (selectAccountsDropDown, "display"), "block");
+        assertEquals (getCssValue (selectAccountsDropDown, "display"), "block");
 
         String previousFirstResult = null;
         for (int i = 0; i < accounts.length; i++) {
@@ -243,7 +242,7 @@ public class CreateEmrConfig extends CoraPage {
             }
         }
         assertTrue (click (selectAccountsBtn));
-        assertEquals (getCssProperty (selectAccountsDropDown, "display"), "none");
+        assertEquals (getCssValue (selectAccountsDropDown, "display"), "none");
     }
 
     private void waitForDropdownToChange (String previousFirstResult) {
@@ -272,7 +271,7 @@ public class CreateEmrConfig extends CoraPage {
     public void deleteNewAccounts (String... accounts) {
         for (WebElement element : waitForElements (newAccounts)) {
             if (Arrays.asList (accounts).contains (getText (element).trim ())) {
-                element.findElement (By.xpath ("./..//button")).click ();
+                click (element, "./..//button");
             }
         }
     }
@@ -286,7 +285,7 @@ public class CreateEmrConfig extends CoraPage {
     public Map <String, String> getFieldErrors () {
         Map <String, String> fieldErrors = new HashMap <> ();
         waitForElements (fieldError).forEach (error -> {
-            fieldErrors.put (error.findElement (By.xpath ("./../label")).getText (), getText (error));
+            fieldErrors.put (getText (error, "./../label"), getText (error));
         });
         return fieldErrors;
     }

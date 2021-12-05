@@ -5,7 +5,6 @@ import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -50,7 +49,7 @@ public class EmrConfigDetails extends CreateEmrConfig {
     public void deleteAttachedAccounts (String... accounts) {
         for (WebElement element : waitForElements (attachedAccounts)) {
             if (Arrays.asList (accounts).contains (getText (element).trim ())) {
-                element.findElement (By.xpath ("./..//button")).click ();
+                click (element, "./..//button");
             }
         }
     }
