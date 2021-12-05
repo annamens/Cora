@@ -97,7 +97,7 @@ public class ShipmentDetail extends CoraPage {
 
             if (isElementPresent (el, ".container-table")) {
                 String css = "[data-ng-repeat='child in container.children']";
-                List <Container> children = el.findElements (locateBy (css)).stream ().map (childRow -> {
+                List <Container> children = findElements (el, css).stream ().map (childRow -> {
                     Container childContainer = new Container ();
                     childContainer.id = getConId (getAttribute (childRow,
                                                                 "[data-ng-bind='child.containerNumber']",

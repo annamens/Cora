@@ -4,18 +4,14 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.Keys.ENTER;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.Carrier;
 import com.adaptivebiotech.cora.utils.PageHelper.LinkShipment;
@@ -26,13 +22,13 @@ import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class Shipment extends CoraPage {
+public class NewShipment extends ShipmentHeader {
 
     private final String cssCarrier        = "#carrierType";
     private final String cssTrackingNumber = "#trackingNumber";
     private final String cssNotes          = "#shipment-notes";
 
-    public Shipment () {
+    public NewShipment () {
         staticNavBarHeight = 195;
     }
 
@@ -49,14 +45,10 @@ public class Shipment extends CoraPage {
         assertTrue (waitUntilVisible ("#expectedRecordType"));
     }
 
-    public void gotoAccession () {
-        assertTrue (click ("#shipment-accession-tab-link"));
-        pageLoading ();
-    }
-
     public void clickSave () {
         assertTrue (click ("[data-ng-click*='shipment-save']"));
         pageLoading ();
+        transactionInProgress ();
     }
 
     public String getArrivalDate () {
@@ -96,17 +88,9 @@ public class Shipment extends CoraPage {
         assertTrue (setText ("[name='trackingNumber" + (idx - 1) + "']", containerName));
     }
 
-    public String getHeaderShipmentNum () {
-        return getText (".shipment").replace ("\n", " ");
-    }
-
-    public String getShipmentNum () {
-        return getText ("[ng-bind='ctrl.entry.shipment.shipmentNumber']");
-    }
-
     public Containers getPrimaryContainers (ContainerType type) {
         String lines = "[class='container-section'] [ng-repeat='container in ctrl.entry.containers']";
-        String shipmentNum = getText ("[ng-bind='ctrl.entry.shipment.shipmentNumber']");
+        String shipmentNum = getShipmentNumber ();
         return new Containers (waitForElements (lines).stream ().map (el -> {
             Container c = new Container ();
             c.id = getConId (getAttribute (el, "[data-ng-bind='container.containerNumber']", "href"));
@@ -118,7 +102,7 @@ public class Shipment extends CoraPage {
 
             if (isElementPresent (el, ".container-table")) {
                 String css = "[ng-repeat='child in container.children']";
-                List <Container> children = el.findElements (locateBy (css)).stream ().map (childRow -> {
+                List <Container> children = findElements (el, css).stream ().map (childRow -> {
                     Container childContainer = new Container ();
                     childContainer.id = getConId (getAttribute (childRow,
                                                                 "[data-ng-bind='child.containerNumber']",
@@ -136,7 +120,7 @@ public class Shipment extends CoraPage {
 
     public Containers getBatchContainers () {
         String lines = ".shipment-details-research [data-ng-repeat='container in ctrl.entry.containers']";
-        String shipmentNum = getText ("div[data-ng-bind='ctrl.entry.shipment.shipmentNumber']");
+        String shipmentNum = getShipmentNumber ();
         return new Containers (waitForElements (lines).stream ().map (el -> {
             Container container = new Container ();
             container.id = getConId (getAttribute (el, "[data-ng-bind='container.containerNumber']", "href"));
@@ -147,7 +131,7 @@ public class Shipment extends CoraPage {
 
             if (isElementPresent (el, ".container-specimen-summary-table")) {
                 String css = ".middle-container [data-ng-repeat='specimen in container.specimens']";
-                List <Container> children = el.findElements (locateBy (css)).stream ().map (el1 -> {
+                List <Container> children = findElements (el, css).stream ().map (el1 -> {
                     Container c = new Container ();
                     c.id = getConId (getAttribute (el1, "[data-ng-bind*='containerNumber']", "href"));
                     c.containerNumber = getText (el1, "td:nth-child(1)");
@@ -163,7 +147,7 @@ public class Shipment extends CoraPage {
                     return c;
                 }).collect (toList ());
                 css = "[data-ng-bind*='specimen.location']";
-                List <String> locs = el.findElements (locateBy (css)).stream ().map (el1 -> {
+                List <String> locs = findElements (el, css).stream ().map (el1 -> {
                     String loc = getText (el1);
                     if (loc != null) {
                         return loc.length () > 0 ? " : Position " + loc : loc;
@@ -206,11 +190,10 @@ public class Shipment extends CoraPage {
     }
 
     public void uploadAttachments (String... files) {
-        String attachments = asList (files).parallelStream ()
-                                           .map (f -> getSystemResource (f).getPath ())
-                                           .collect (joining ("\n"));
-        waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
-        pageLoading ();
+        for (String file : files) {
+            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            pageLoading ();
+        }
     }
 
     public void doubleClickSave () {
@@ -240,10 +223,7 @@ public class Shipment extends CoraPage {
     public void clickAddShipmentDiscrepancy () {
         String cssShipmentDiscrepancy = "[title='Add Shipment Discrepancy']";
         assertTrue (click (cssShipmentDiscrepancy));
-        pageLoading ();
-        String expectedTitle = "Discrepancy";
-        String title = waitForElementVisible (popupTitle).getText ();
-        assertEquals (title, expectedTitle);
+        assertTrue (isTextInElement (popupTitle, "Discrepancy"));
     }
 
     public void enterNotes (String notes) {
@@ -296,17 +276,6 @@ public class Shipment extends CoraPage {
         pageLoading ();
     }
 
-    public String getShipmentStatus () {
-        String css = "[ng-bind=\"ctrl.entry | shipmentEntryStatus\"]";
-        String status = getText (css);
-        return status;
-    }
-
-    public void gotoDiscrepancyResolutions () {
-        String css = "#shipment-discrepancy-tab-link";
-        assertTrue (click (css));
-    }
-
     public void clickDiscontinueShipment () {
         String button = "//button[contains(., 'Discontinue Shipment')]";
         assertTrue (click (button));
@@ -321,14 +290,29 @@ public class Shipment extends CoraPage {
         assertTrue (click ("//table//a[text()='" + containerNo + "']"));
     }
 
-    public void createShipment (String orderNo, ContainerType containerType) {
+    public void createShipment (String orderNumber, ContainerType containerType) {
         selectNewDiagnosticShipment ();
         isDiagnostic ();
         enterShippingCondition (Ambient);
-        enterOrderNumber (orderNo);
+        enterOrderNumber (orderNumber);
         selectDiagnosticSpecimenContainerType (containerType);
         clickSave ();
         gotoAccession ();
     }
 
+    public void createShipment (ShippingCondition shippingCondition,
+                                Carrier carrier,
+                                String trackingNumber,
+                                String orderNumber,
+                                ContainerType containerType,
+                                String initialFreezer) {
+        selectNewDiagnosticShipment ();
+        enterShippingCondition (shippingCondition);
+        enterCarrier (carrier);
+        enterTrackingNumber (trackingNumber);
+        enterOrderNumber (orderNumber);
+        selectDiagnosticSpecimenContainerType (containerType);
+        enterInitialStorageLocation (initialFreezer);
+        clickSave ();
+    }
 }
