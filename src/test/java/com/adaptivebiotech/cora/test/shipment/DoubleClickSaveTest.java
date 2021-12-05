@@ -11,7 +11,7 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
 
 @Test (groups = "regression")
@@ -20,7 +20,7 @@ public class DoubleClickSaveTest extends CoraBaseBrowser {
     private Login            login        = new Login ();
     private OrdersList       ordersList   = new OrdersList ();
     private NewOrderClonoSeq diagnostic   = new NewOrderClonoSeq ();
-    private Shipment         shipment     = new Shipment ();
+    private NewShipment      shipment     = new NewShipment ();
     private ShipmentList     shipmentList = new ShipmentList ();
 
     public void doubleClickSave () {

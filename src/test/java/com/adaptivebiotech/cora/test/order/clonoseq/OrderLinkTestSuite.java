@@ -17,7 +17,7 @@ import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
 import com.adaptivebiotech.cora.utils.TestHelper;
@@ -40,7 +40,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
     private OrderStatus         orderStatus         = new OrderStatus ();
     private NewOrderClonoSeq    newOrderClonoSeq    = new NewOrderClonoSeq ();
     private OrderDetailClonoSeq orderDetailClonoSeq = new OrderDetailClonoSeq ();
-    private Shipment            shipment            = new Shipment ();
+    private NewShipment         shipment            = new NewShipment ();
     private ShipmentDetail      shipmentDetail      = new ShipmentDetail ();
     private Detail              containerDetail     = new Detail ();
     private Accession           accession           = new Accession ();
@@ -99,7 +99,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         shipment.gotoAccession ();
         accession.isCorrectPage ();
-        accession.clickOrderNo ();
+        accession.clickOrderNuber ();
         newOrderClonoSeq.isCorrectPage ();
         assertEquals (newOrderClonoSeq.getOrderNum (), order1);
         Logging.testLog ("STEP 6 - clonoSEQ Order Form is displayed");
@@ -179,7 +179,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         shipmentDetail.isCorrectPage ();
         shipment.gotoAccession ();
         accession.isCorrectPage ();
-        accession.clickOrderNo ();
+        accession.clickOrderNuber ();
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getOrderNum (), order2);
         Logging.testLog ("STEP 13 - The generic order status page is displayed");

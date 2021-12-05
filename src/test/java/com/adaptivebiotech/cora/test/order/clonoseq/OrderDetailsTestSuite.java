@@ -21,7 +21,7 @@ import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
@@ -48,7 +48,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
     private OrderStatus         orderStatus         = new OrderStatus ();
     private NewOrderClonoSeq    diagnostic          = new NewOrderClonoSeq ();
     private OrderDetailClonoSeq clonoSeqOrderDetail = new OrderDetailClonoSeq ();
-    private Shipment            shipment            = new Shipment ();
+    private NewShipment         shipment            = new NewShipment ();
     private ShipmentDetail      shipmentDetail      = new ShipmentDetail ();
     private Accession           accession           = new Accession ();
     private PatientDetail       patientDetail       = new PatientDetail ();
@@ -92,7 +92,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         shipment.selectDiagnosticSpecimenContainerType (containerType);
         shipment.clickSave ();
 
-        String shipmentNo = shipment.getShipmentNum ();
+        String shipmentNo = shipment.getShipmentNumber ();
         Logging.info ("Shipment No: " + shipmentNo);
         String shipmentArrivalDate = shipment.getArrivalDate ();
         String shipmentArrivalTime = shipment.getArrivalTime ();
@@ -105,8 +105,8 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         accession.clickIntakeComplete ();
         String intakeCompleteDate = accession.getIntakeCompleteDate ();
         Logging.info ("Intake complete Details: " + intakeCompleteDate);
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
         accession.clickPass ();
         String specimenApprovalDate = accession.getSpecimenApprovedDate ();
         Logging.info ("Specimen Approved Details: " + specimenApprovalDate);
@@ -235,28 +235,6 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (stageStatusUrls.get (0), stageStatusUrls.get (1));
         Logging.testLog ("STEP 12 - Clarity LIMS search is opened in a new tab for ASID1");
 
-        clonoSeqOrderDetail.navigateToOrderDetailsPage (editOrder.id);
-        clonoSeqOrderDetail.transferTrf ();
-        diagnostic.isCorrectPage ();
-
-        Order transferTrOrder = diagnostic.parseOrder ();
-        assertEquals (transferTrOrder.order_number, orderNum + "-a");
-
-        assertEquals (transferTrOrder.physician.providerFullName, physician.firstName + " " + physician.lastName);
-        assertEquals (transferTrOrder.physician.accountName, physician.accountName);
-
-        assertEquals (transferTrOrder.patient.fullname, patient.fullname);
-        assertEquals (transferTrOrder.patient.dateOfBirth, patient.dateOfBirth);
-        assertEquals (transferTrOrder.patient.gender, patient.gender);
-        assertEquals (transferTrOrder.patient.mrn, patient.mrn);
-
-        assertEquals (transferTrOrder.tests.get (0).assay.type, orderTest.type);
-        assertEquals (transferTrOrder.properties.BillingType, editChargeType);
-
-        assertEquals (transferTrOrder.orderAttachments.get (0), coraAttachment);
-        Logging.testLog ("STEP 13 - New diagnostic order page displays");
-
-        orderStatus.navigateToOrderStatusPage (editOrder.id);
         orderStatus.clickOrderDetailsTab ();
         diagnostic.isCorrectPage ();
         diagnostic.clickCancelOrder ();

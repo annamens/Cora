@@ -1,23 +1,28 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
-import static org.testng.Assert.assertEquals;
+import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
-import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
-import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class Accession extends CoraPage {
+public class Accession extends ShipmentHeader {
 
-    private final String orderNo              = "#order-link";
-    private String       accessionNotes       = "#accession-notes";
-    private String       specimenApprovalPass = "#specimen-pass-button";
-    private String       specimenApprovalFail = "#specimen-fail-button";
+    public final String[] documents            = new String[] {
+            "TwoMatchingIdentifiers", "PatientNameMatch", "DateOfBirthMatch", "MrnMatch", "UniqueSpecimenIdMatch"
+    };
+    public final String[] specimens            = new String[] {
+            "SpecimenTypeMatch", "CollectionDateExists", "CollectionDateInRange", "ShippingCondition"
+    };
+    private final String  passCheck            = "[ng-click=\"ctrl.setAccessionItemStatus('%s', 'Pass')\"] .accession-radio";
+    private final String  failCheck            = "[ng-click=\"ctrl.setAccessionItemStatus('%s', 'Fail')\"] .accession-radio";
+    private final String  orderNo              = "#order-link";
+    private final String  accessionNotes       = "#accession-notes";
+    private final String  specimenApprovalPass = "#specimen-pass-button";
+    private final String  specimenApprovalFail = "#specimen-fail-button";
 
     @Override
     public void isCorrectPage () {
@@ -25,11 +30,11 @@ public class Accession extends CoraPage {
         pageLoading ();
     }
 
-    public void clickOrderNo () {
+    public void clickOrderNuber () {
         assertTrue (click (orderNo));
     }
 
-    public String getOrderNo () {
+    public String getOrderNumber () {
         return getText (orderNo);
     }
 
@@ -52,6 +57,7 @@ public class Accession extends CoraPage {
         assertTrue (click ("[data-ng-click*='intake-complete']"));
         assertTrue (isTextInElement (popupTitle, "Intake Complete Confirmation"));
         clickPopupOK ();
+        assertTrue (isTextInElement (shipmentStatus, "Intake Complete"));
     }
 
     public void manualPass (DiscrepancyType type) {
@@ -66,58 +72,41 @@ public class Accession extends CoraPage {
         assertTrue (click ("[ng-click='ctrl.approveSpecimen(true)']"));
         assertTrue (isTextInElement (popupTitle, "Specimen Approval Confirmation"));
         clickPopupOK ();
+        assertTrue (isTextInElement (shipmentStatus, "Specimen Approved (PASS)"));
     }
 
-    public void verifyLabels () {
+    public void clickLabelingComplete () {
         assertTrue (click ("[ng-click='ctrl.setLabelingComplete(container)']"));
         assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
         clickPopupOK ();
+        assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
     }
 
-    public void labelingComplete () {
-        assertTrue (click ("[ng-click='ctrl.setLabelingComplete(container)']"));
-        assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
-        clickPopupOK ();
-    }
-
-    public void labelVerificationComplete () {
+    public void clickLabelVerificationComplete () {
         assertTrue (click ("[ng-click='ctrl.setLabelVerificationComplete(container)']"));
         assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
         clickPopupOK ();
+        assertTrue (isTextInElement (shipmentStatus, "Label Verification Complete"));
     }
 
-    public void gotoOrderDetail () {
-        assertTrue (click ("[data-ng-bind='ctrl.entry.order.orderNumber']"));
-        pageLoading ();
+    public void clickPassAllDocumentations () {
+        for (String document : documents)
+            if (!waitForElement (format (passCheck, document)).isSelected ())
+                assertTrue (click (format (passCheck, document)));
     }
 
-    public void gotoShipment () {
-        assertTrue (click ("[role='presentation'] [data-ng-click*='shipment']"));
-        pageLoading ();
+    public void clickFailAllSpecimens () {
+        for (String specimen : specimens)
+            if (!waitForElement (format (failCheck, specimen)).isSelected ())
+                assertTrue (click (format (failCheck, specimen)));
     }
 
-    public void clickPassAllDocumentation () {
-        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('TwoMatchingIdentifiers', 'Pass')\"]"));
-        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('PatientNameMatch', 'Pass')\"]"));
-        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('DateOfBirthMatch', 'Pass')\"]"));
-        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('MrnMatch', 'Pass')\"]"));
-        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('UniqueSpecimenIdMatch', 'Pass')\"]"));
+    public boolean isAccessionItemPass (String accessionItem) {
+        return isElementPresent (format (".pass[ng-class*='%s']", accessionItem));
     }
 
-    public void clickPassSpecimenType () {
-        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('SpecimenTypeMatch', 'Pass')\"]"));
-    }
-
-    public void clickPassShippingConditions () {
-        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('ShippingCondition', 'Pass')\"]"));
-    }
-
-    public void clickFailSpecimenType () {
-        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('SpecimenTypeMatch', 'Fail')\"]"));
-    }
-
-    public void clickFailShippingConditions () {
-        assertTrue (click ("[ng-click=\"ctrl.setAccessionItemStatus('ShippingCondition', 'Fail')\"]"));
+    public boolean isAccessionItemFail (String accessionItem) {
+        return isElementPresent (format (".fail[ng-class*='%s']", accessionItem));
     }
 
     public void enterNotes (String notes) {
@@ -129,17 +118,15 @@ public class Accession extends CoraPage {
     }
 
     public void clickRevert () {
-        String css = "[ng-click=\"ctrl.undoIntakeComplete()\"]";
-        assertTrue (click (css));
+        assertTrue (click ("[ng-click='ctrl.undoIntakeComplete()']"));
+        transactionInProgress ();
         isCorrectPage ();
+        assertTrue (isTextInElement (shipmentStatus, "Arrived"));
     }
 
     public void clickAddContainerSpecimenDiscrepancy () {
-        String button = "button[title=\"Add Container/Specimen Discrepancy\"]"; // doesn't work
-        assertTrue (click (button));
-        pageLoading ();
-        String expectedTitle = "Discrepancy";
-        assertEquals (waitForElementVisible (popupTitle).getText (), expectedTitle);
+        assertTrue (click ("[title='Add Container/Specimen Discrepancy']"));
+        assertTrue (isTextInElement (popupTitle, "Discrepancy"));
     }
 
     public boolean specimenApprovalPassEnabled () {
@@ -148,33 +135,6 @@ public class Accession extends CoraPage {
 
     public boolean specimenApprovalFailEnabled () {
         return waitForElementVisible (specimenApprovalFail).isEnabled ();
-    }
-
-    public void waitForStatus (String expectedStatus) {
-        String status = "[ng-bind='ctrl.entry | shipmentEntryStatus']";
-        assertTrue (isTextInElement (status, expectedStatus));
-    }
-
-    // discrepancy pop up methods
-
-    public void addDiscrepancy (Discrepancy discrepancy, String notes,
-                                DiscrepancyAssignee assignee) {
-        String cssAdd = "#dropdownDiscrepancy";
-        assertTrue (click (cssAdd));
-
-        String menuItemFmtString = "//*[@class='discrepancies-options']/ul/li[text()='%s']";
-        String menuItem = String.format (menuItemFmtString, discrepancy.text);
-
-        assertTrue (click (menuItem));
-        String cssTextArea = "[ng-repeat='discrepancy in ctrl.discrepancies'] textarea";
-        assertTrue (setText (cssTextArea, notes));
-        String cssAssignee = "[ng-repeat='discrepancy in ctrl.discrepancies'] select";
-        assertTrue (clickAndSelectText (cssAssignee, assignee.text));
-    }
-
-    public void clickSave () {
-        String cssSave = "[ng-click='ctrl.save()'";
-        assertTrue (click (cssSave));
     }
 
     public void clickAccessionComplete () {
@@ -188,23 +148,12 @@ public class Accession extends CoraPage {
         return getTextList (specimenIds);
     }
 
-    /**
-     * this button is labeled "Revert"
-     */
-    public void clickUndoAccessionComplete () {
-        String button = "button[ng-click='ctrl.undoAccessionComplete()']";
-        assertTrue (click (button));
-        moduleLoading ();
-        waitForStatus ("Label Verification Complete");
-    }
-
     public void completeAccession () {
         isCorrectPage ();
         clickIntakeComplete ();
-        labelingComplete ();
-        labelVerificationComplete ();
+        clickLabelingComplete ();
+        clickLabelVerificationComplete ();
         clickPass ();
-        clickOrderNo ();
+        clickOrderNuber ();
     }
-
 }
