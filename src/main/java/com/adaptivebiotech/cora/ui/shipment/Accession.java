@@ -17,8 +17,7 @@ public class Accession extends ShipmentHeader {
     public final String[] specimens            = new String[] {
             "SpecimenTypeMatch", "CollectionDateExists", "CollectionDateInRange", "ShippingCondition"
     };
-    private final String  passCheck            = "[ng-click=\"ctrl.setAccessionItemStatus('%s', 'Pass')\"] .accession-radio";
-    private final String  failCheck            = "[ng-click=\"ctrl.setAccessionItemStatus('%s', 'Fail')\"] .accession-radio";
+    private final String  accessionItemLocator = "[ng-click=\"ctrl.setAccessionItemStatus('%s', '%s')\"] .accession-radio";
     private final String  orderNo              = "#order-link";
     private final String  accessionNotes       = "#accession-notes";
     private final String  specimenApprovalPass = "#specimen-pass-button";
@@ -91,14 +90,22 @@ public class Accession extends ShipmentHeader {
 
     public void clickPassAllDocumentations () {
         for (String document : documents)
-            if (!waitForElement (format (passCheck, document)).isSelected ())
-                assertTrue (click (format (passCheck, document)));
+            clickAccessionItemPass (document);
     }
 
     public void clickFailAllSpecimens () {
         for (String specimen : specimens)
-            if (!waitForElement (format (failCheck, specimen)).isSelected ())
-                assertTrue (click (format (failCheck, specimen)));
+            clickAccessionItemFail (specimen);
+    }
+
+    public void clickAccessionItemPass (String accessionItem) {
+        if (!waitForElement (format (accessionItemLocator, accessionItem, "Pass")).isSelected ())
+            assertTrue (click (format (accessionItemLocator, accessionItem, "Pass")));
+    }
+
+    public void clickAccessionItemFail (String accessionItem) {
+        if (!waitForElement (format (accessionItemLocator, accessionItem, "Fail")).isSelected ())
+            assertTrue (click (format (accessionItemLocator, accessionItem, "Fail")));
     }
 
     public boolean isAccessionItemPass (String accessionItem) {
