@@ -33,7 +33,7 @@ public class DoubleClickSaveTest extends CoraBaseBrowser {
         diagnostic.selectPhysician (coraApi.getPhysician (non_CLEP_clonoseq));
         diagnostic.enterPatientICD_Codes ("A01.02");
         diagnostic.clickSave ();
-        String orderNum = diagnostic.getOrderNum ();
+        String orderNum = diagnostic.getOrderNumber ();
 
         diagnostic.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();

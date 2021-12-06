@@ -81,7 +81,7 @@ public class NewOrderTDetect extends NewOrder {
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
-        order.order_number = getOrderNum ();
+        order.order_number = getOrderNumber ();
         order.data_analysis_group = null;
         order.isTrfAttached = toBoolean (isTrfAttached ());
         order.date_signed = getDateSigned ();
@@ -208,14 +208,17 @@ public class NewOrderTDetect extends NewOrder {
         assertTrue (setText (orderNotes, notes));
     }
 
+    @Override
     public String getOrderNotes () {
         return isElementPresent (orderNotes) && isElementVisible (orderNotes) ? readInput (orderNotes) : null;
     }
 
+    @Override
     public void enterDateSigned (String date) {
         assertTrue (setText (dateSigned, date));
     }
 
+    @Override
     public String getDateSigned () {
         return isElementPresent (dateSigned) && isElementVisible (dateSigned) ? readInput (dateSigned) : null;
     }
@@ -228,18 +231,22 @@ public class NewOrderTDetect extends NewOrder {
         return getText ("//label[text()='Gender']/../div[1]");
     }
 
-    public String getOrderNum () {
+    @Override
+    public String getOrderNumber () {
         return getText ("//label[@id='order-number-text']/../div[1]/span");
     }
 
+    @Override
     public String getOrderName () {
         return getText ("//labeled-value[@label='Order Name']/div/div[2]/span");
     }
 
+    @Override
     public String getPatientName () {
         return getText ("//label[text()='Patient']/../div[1]");
     }
 
+    @Override
     public String getPatientDOB () {
         return getText ("//label[text()='Birth Date']/../div[1]");
     }
@@ -281,7 +288,7 @@ public class NewOrderTDetect extends NewOrder {
         billing.enterPatientAddress (patientAddress);
         clickSave ();
 
-        String orderNum = getOrderNum ();
+        String orderNum = getOrderNumber ();
         Logging.info ("T-Detect Order Number: " + orderNum);
         return orderNum;
     }

@@ -76,7 +76,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
-        order.order_number = getOrderNum ();
+        order.order_number = getOrderNumber ();
         order.data_analysis_group = null;
         order.isTrfAttached = toBoolean (isTrfAttached ());
         order.date_signed = getDateSigned ();
@@ -354,7 +354,7 @@ public class NewOrderClonoSeq extends NewOrder {
         clickAssayTest (assayTest);
         clickSave ();
 
-        String orderNum = getOrderNum ();
+        String orderNum = getOrderNumber ();
         Logging.info ("ClonoSeq Order Number: " + orderNum);
         return orderNum;
     }

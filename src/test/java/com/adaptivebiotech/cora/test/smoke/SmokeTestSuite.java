@@ -265,7 +265,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog ("Matt UVT-Physician displayed in the Diagnostic Order page's Ordering Physician section");
 
         diagnostic.clickSave ();
-        String ordernum = diagnostic.getOrderNum ();
+        String ordernum = diagnostic.getOrderNumber ();
         assertTrue (ordernum.matches ("D-\\d{6}"), ordernum);
         testLog (format ("Diagnostic Order page displayed an order number, %s, in the order header", ordernum));
 

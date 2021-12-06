@@ -149,7 +149,7 @@ public class NewOrder extends OrderHeader {
         return getText (css);
     }
 
-    public String getOrderNum () {
+    public String getOrderNumber () {
         String css = oEntry + " .ab-panel-first" + " [ng-bind='ctrl.orderEntry.order.orderNumber']";
         return getText (css);
     }

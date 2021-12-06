@@ -24,10 +24,12 @@ public class OrderDetailTDetect extends OrderDetail {
         return null;
     }
 
+    @Override
     public String getDateSigned () {
         return isElementPresent (dateSigned) && isElementVisible (dateSigned) ? getText (dateSigned) : null;
     }
 
+    @Override
     public String getOrderNotes () {
         return isElementPresent (orderNotes) && isElementVisible (orderNotes) ? getText (orderNotes) : null;
     }
@@ -53,6 +55,7 @@ public class OrderDetailTDetect extends OrderDetail {
         return Ethnicity.getEthnicity (getText ("//label[text()='Ethnicity']/../div[1]"));
     }
 
+    @Override
     public String getOrderName () {
         return getText ("[ng-bind='ctrl.orderEntry.order.name']");
     }
@@ -102,10 +105,12 @@ public class OrderDetailTDetect extends OrderDetail {
         return readInput (xpath);
     }
 
+    @Override
     public String getPatientName () {
         return getText ("[ng-bind$='patientFullName']");
     }
 
+    @Override
     public String getPatientDOB () {
         return getText ("[ng-bind^='ctrl.orderEntry.order.patient.dateOfBirth']");
     }

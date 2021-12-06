@@ -66,7 +66,7 @@ public class OrderDetail extends OrderHeader {
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
-        order.order_number = getOrderNum ();
+        order.order_number = getOrderNumber ();
         order.data_analysis_group = getDataAnalysisGroup ();
         order.isTrfAttached = toBoolean (isTrfAttached ());
         order.date_signed = getDateSigned ();
@@ -142,7 +142,7 @@ public class OrderDetail extends OrderHeader {
         return OrderStatus.valueOf (getText ("[ng-bind='ctrl.orderEntry.order.status']"));
     }
 
-    public String getOrderNum () {
+    public String getOrderNumber () {
         String css = oDetail + " .ab-panel-first" + " [ng-bind='ctrl.orderEntry.order.orderNumber']";
         return getText (css);
     }

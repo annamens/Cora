@@ -39,10 +39,6 @@ public class OrderStatus extends OrderHeader {
         return cancellationMsgs;
     }
 
-    public String getOrderNum () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
-    }
-
     public String getOrderName () {
         return getText ("[ng-bind='ctrl.orderEntry.order.name']");
     }

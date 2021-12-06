@@ -62,7 +62,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         Logging.testLog ("Pending Order, order1: " + order1);
         ordersList.searchAndClickOrder (order1);
         newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
+        assertEquals (newOrderClonoSeq.getOrderNumber (), order1);
         Logging.testLog ("STEP 1 - clonoSEQ Order Form is displayed");
 
         ordersList.doOrderSearch (order1);
@@ -71,20 +71,20 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         String orderName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + order1;
         ordersList.clickOrderName (orderName);
         newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
+        assertEquals (newOrderClonoSeq.getOrderNumber (), order1);
         Logging.testLog ("STEP 2 - clonoSEQ Order Form is displayed");
 
         newOrderClonoSeq.clickPatientOrderHistory ();
         newOrderClonoSeq.clickOrder (order1);
         newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
+        assertEquals (newOrderClonoSeq.getOrderNumber (), order1);
         Logging.testLog ("STEP 3 - clonoSEQ Order Form is displayed");
 
         newOrderClonoSeq.doOrderTestSearch (order1);
         orderTestsList.isCorrectPage ();
         orderTestsList.clickOrderName (orderName);
         newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
+        assertEquals (newOrderClonoSeq.getOrderNumber (), order1);
         Logging.testLog ("STEP 4 - clonoSEQ Order Form is displayed");
 
         shipmentList.goToShipments ();
@@ -101,7 +101,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         accession.isCorrectPage ();
         accession.clickOrderNuber ();
         newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
+        assertEquals (newOrderClonoSeq.getOrderNumber (), order1);
         Logging.testLog ("STEP 6 - clonoSEQ Order Form is displayed");
 
         shipmentList.goToShipments ();
@@ -117,7 +117,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         containerDetail.clickAccessionedOrderNo (order1);
         newOrderClonoSeq.navigateToTab (1);
         newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getOrderNum (), order1);
+        assertEquals (newOrderClonoSeq.getOrderNumber (), order1);
         Logging.testLog ("STEP 7 - clonoSEQ Order Form is displayed");
 
     }
@@ -131,7 +131,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         ordersList.searchAndClickOrder (order2);
         orderStatus.isCorrectPage ();
-        assertEquals (orderStatus.getOrderNum (), order2);
+        assertEquals (orderStatus.getheaderOrderNumber (), order2);
         Logging.testLog ("STEP 8 - The generic order status page is displayed");
 
         ordersList.doOrderSearch (order2);
@@ -140,7 +140,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         String orderName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + order2;
         ordersList.clickOrderName (orderName);
         orderStatus.isCorrectPage ();
-        assertEquals (orderStatus.getOrderNum (), order2);
+        assertEquals (orderStatus.getheaderOrderNumber (), order2);
         Logging.testLog ("STEP 9 - The generic order status page is displayed");
 
         orderStatus.clickOrderDetailsTab ();
@@ -148,14 +148,14 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         orderDetailClonoSeq.clickPatientOrderHistory ();
         orderDetailClonoSeq.clickOrder (order2);
         orderStatus.isCorrectPage ();
-        assertEquals (orderStatus.getOrderNum (), order2);
+        assertEquals (orderStatus.getheaderOrderNumber (), order2);
         Logging.testLog ("STEP 10 - The generic order status page is displayed");
 
         orderDetailClonoSeq.doOrderTestSearch (order2);
         orderTestsList.isCorrectPage ();
         orderTestsList.clickOrderName (orderName);
         orderStatus.isCorrectPage ();
-        assertEquals (orderStatus.getOrderNum (), order2);
+        assertEquals (orderStatus.getheaderOrderNumber (), order2);
         Logging.testLog ("STEP 11 - The generic order status page is displayed");
 
         shipmentList.goToShipments ();
@@ -167,7 +167,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         shipmentDetail.isCorrectPage ();
         shipmentDetail.clickOrderNo ();
         orderStatus.isCorrectPage ();
-        assertEquals (orderStatus.getOrderNum (), order2);
+        assertEquals (orderStatus.getheaderOrderNumber (), order2);
         Logging.testLog ("STEP 12 - The generic order status page is displayed");
 
         shipmentList.goToShipments ();
@@ -181,7 +181,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         accession.isCorrectPage ();
         accession.clickOrderNuber ();
         orderStatus.isCorrectPage ();
-        assertEquals (orderStatus.getOrderNum (), order2);
+        assertEquals (orderStatus.getheaderOrderNumber (), order2);
         Logging.testLog ("STEP 13 - The generic order status page is displayed");
 
         shipmentList.goToShipments ();
@@ -197,7 +197,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         containerDetail.clickAccessionedOrderNo (order2);
         orderDetailClonoSeq.navigateToTab (1);
         orderStatus.isCorrectPage ();
-        assertEquals (orderStatus.getOrderNum (), order2);
+        assertEquals (orderStatus.getheaderOrderNumber (), order2);
         Logging.testLog ("STEP 14 - The generic order status page is displayed");
 
     }

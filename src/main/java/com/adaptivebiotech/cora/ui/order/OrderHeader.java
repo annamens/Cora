@@ -44,6 +44,10 @@ public class OrderHeader extends CoraPage {
         assertTrue (waitUntilVisible (".order-test-report"));
     }
 
+    public String getheaderOrderNumber () {
+        return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
+    }
+
     public boolean isActiveAlertCountPresent () {
         return isElementPresent (alertDashboard + " " + activeAlertCount);
     }
