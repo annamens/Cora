@@ -34,7 +34,7 @@ import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 @Test (groups = "regression")
@@ -47,7 +47,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     private Detail               detail        = new Detail ();
     private History              history       = new History ();
     private MyCustody            myCustody     = new MyCustody ();
-    private Shipment             shipment      = new Shipment ();
+    private NewShipment          shipment      = new NewShipment ();
     private Accession            accession     = new Accession ();
 
     @BeforeMethod

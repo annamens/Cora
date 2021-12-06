@@ -1,13 +1,12 @@
 package com.adaptivebiotech.cora.ui.mira;
 
+import static com.seleniumfy.test.utils.Logging.info;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import static com.seleniumfy.test.utils.Logging.info;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -145,7 +144,7 @@ public class MiraSpecimens extends MirasListBase {
         List <List <String>> rv = new ArrayList <> (rows.size ());
 
         for (WebElement row : rows) {
-            List <WebElement> cols = row.findElements (By.xpath ("td"));
+            List <WebElement> cols = findElements (row, "td");
             List <String> fields = new ArrayList <> ();
             for (WebElement col : cols) {
                 String text = col.getText ();

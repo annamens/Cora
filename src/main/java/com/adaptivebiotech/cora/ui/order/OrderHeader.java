@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -13,7 +14,6 @@ public class OrderHeader extends CoraPage {
 
     protected final String oEntry              = ".order-entry";
     protected final String oDetail             = ".detail-sections";
-    protected final String tabBase             = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
     private final String   newAlert            = ".new-alert";
     private final String   alertDashboard      = ".alert-dashboard-main";
     private final String   activeAlertCount    = ".alert-count";
@@ -28,14 +28,12 @@ public class OrderHeader extends CoraPage {
     }
 
     public void clickOrderStatusTab () {
-        String tab = String.format (tabBase, "Order Status");
-        assertTrue (click (tab));
+        assertTrue (click (format (tabBase, "Order Status")));
         pageLoading ();
     }
 
     public void clickOrderDetailsTab () {
-        String tab = String.format (tabBase, "Order Details");
-        assertTrue (click (tab));
+        assertTrue (click (format (tabBase, "Order Details")));
         pageLoading ();
     }
 
@@ -44,6 +42,10 @@ public class OrderHeader extends CoraPage {
         pageLoading ();
         reportLoading ();
         assertTrue (waitUntilVisible (".order-test-report"));
+    }
+
+    public String getheaderOrderNumber () {
+        return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
     }
 
     public boolean isActiveAlertCountPresent () {
@@ -81,5 +83,18 @@ public class OrderHeader extends CoraPage {
 
     public String getDueDate () {
         return getText ("[ng-bind^='ctrl.orderEntry.orderTests[0].dueDate']");
+    }
+
+    public void clickPatientNotesIcon () {
+        String css = "[ng-click='ctrl.showPatientNotesDialog()']";
+        assertTrue (click (css));
+        assertTrue (isTextInElement (popupTitle, "Patient Note for Patient "));
+    }
+
+    // patient notes popup
+    public String getPatientNotesPopup () {
+        String css = "[ng-bind=\"ctrl.patient.notes\"]";
+        String text = readInput (css);
+        return text;
     }
 }

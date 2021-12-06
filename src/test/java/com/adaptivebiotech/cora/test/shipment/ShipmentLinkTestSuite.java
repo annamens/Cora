@@ -11,7 +11,7 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
@@ -31,7 +31,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
     private Login            login           = new Login ();
     private OrdersList       ordersList      = new OrdersList ();
     private NewOrderClonoSeq diagnostic      = new NewOrderClonoSeq ();
-    private Shipment         shipment        = new Shipment ();
+    private NewShipment      shipment        = new NewShipment ();
     private ShipmentDetail   shipmentDetail  = new ShipmentDetail ();
     private Accession        accession       = new Accession ();
     private NewOrderTDetect  newOrderTDetect = new NewOrderTDetect ();
@@ -63,8 +63,8 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         // accession complete
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
         accession.clickPass ();
         String expIntakeComplete = accession.getIntakeCompleteDate ();
 
@@ -116,8 +116,8 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         // accession complete
         accession.isCorrectPage ();
         accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
         accession.clickPass ();
         String expIntakeComplete = accession.getIntakeCompleteDate ();
 

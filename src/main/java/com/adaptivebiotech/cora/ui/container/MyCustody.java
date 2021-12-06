@@ -24,7 +24,7 @@ public class MyCustody extends ContainerList {
 
     public Containers getContainers () {
         return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
-            List <WebElement> columns = el.findElements (locateBy ("td"));
+            List <WebElement> columns = findElements (el, "td");
             Container c = new Container ();
             c.id = getConId (getAttribute (columns.get (1), "a", "href"));
             c.containerNumber = getText (columns.get (1));

@@ -39,10 +39,6 @@ public class OrderStatus extends OrderHeader {
         return cancellationMsgs;
     }
 
-    public String getOrderNum () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
-    }
-
     public String getOrderName () {
         return getText ("[ng-bind='ctrl.orderEntry.order.name']");
     }
@@ -71,20 +67,6 @@ public class OrderStatus extends OrderHeader {
 
     public boolean kitReportDeliveryStageDisplayed () {
         return waitForElement ("[class='ordertest-list-stage KitReportDelivery']").isDisplayed ();
-    }
-
-    public void clickPatientNotesIcon () {
-        String css = "[ng-click=\"ctrl.showPatientNotesDialog()\"]";
-        assertTrue (click (css));
-        waitForElementVisible (".patient-notes-modal");
-        assertTrue (getText (popupTitle).contains ("Patient Note for Patient "));
-    }
-
-    // patient notes popup
-    public String getPatientNotes () {
-        String css = "[ng-bind=\"ctrl.patient.notes\"]";
-        String text = readInput (css);
-        return text;
     }
 
     public int getClarityStageRequeueCount () {

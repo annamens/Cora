@@ -37,7 +37,7 @@ import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.patient.PatientsList;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
 import com.adaptivebiotech.cora.ui.task.Task;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
@@ -53,7 +53,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
     private Login            login        = new Login ();
     private NewOrderClonoSeq diagnostic   = new NewOrderClonoSeq ();
     private Task             task         = new Task ();
-    private Shipment         shipment     = new Shipment ();
+    private NewShipment      shipment     = new NewShipment ();
     private Batch            batch        = new Batch ();
     private NewMira          mira         = new NewMira ();
     private AddContainer     addContainer = new AddContainer ();
@@ -137,7 +137,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         shipment.isBatchOrGeneral ();
         shipment.enterShippingCondition (Ambient);
         shipment.clickSave ();
-        assertTrue (shipment.getHeaderShipmentNum ().matches ("Batch Shipment # SH-\\d{5,}"));
+        assertTrue (shipment.getHeaderShipmentNumber ().matches ("Batch Shipment # SH-\\d{5,}"));
         testLog ("shipment page was displayed with 'Batch Shipment' in the header");
 
         shipment.selectNewBatchOrder ();
@@ -148,7 +148,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         shipment.isBatchOrGeneral ();
         shipment.enterShippingCondition (Ambient);
         shipment.clickSave ();
-        assertTrue (shipment.getHeaderShipmentNum ().matches ("General Shipment # SH-\\d{5,}"));
+        assertTrue (shipment.getHeaderShipmentNumber ().matches ("General Shipment # SH-\\d{5,}"));
         testLog ("shipment page was displayed with 'General Shipment' in the header");
 
         shipment.selectNewContainer ();
@@ -265,7 +265,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog ("Matt UVT-Physician displayed in the Diagnostic Order page's Ordering Physician section");
 
         diagnostic.clickSave ();
-        String ordernum = diagnostic.getOrderNum ();
+        String ordernum = diagnostic.getOrderNumber ();
         assertTrue (ordernum.matches ("D-\\d{6}"), ordernum);
         testLog (format ("Diagnostic Order page displayed an order number, %s, in the order header", ordernum));
 
@@ -298,7 +298,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         shipment.clickSave ();
         testLog ("batch shipment saved successfully");
 
-        String sh = shipment.getShipmentNum ();
+        String sh = shipment.getShipmentNumber ();
         testLog (format ("%s displayed", sh));
 
         oList.selectNewBatchOrder ();
@@ -321,7 +321,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         shipment.clickSave ();
         testLog ("general shipment saved successfully");
 
-        String sh = shipment.getShipmentNum ();
+        String sh = shipment.getShipmentNumber ();
         testLog (format ("%s displayed", sh));
 
         shipment.selectNewMira ();

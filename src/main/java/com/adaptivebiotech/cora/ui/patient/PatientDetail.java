@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.patient;
 
 import static org.testng.Assert.assertTrue;
+import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
 
 /**
  * @author Harry Soehalim
@@ -61,12 +62,6 @@ public class PatientDetail extends PatientHeader {
         pageLoading ();
     }
 
-    public void clickClose () {
-        String cssForCloseButton = "go-back";
-        assertTrue (click (cssForCloseButton));
-        moduleLoading ();
-    }
-
     public String getPrimaryInsuranceProvider () {
         String xpath = "//*[label=\"Insurance Provider\"]/following-sibling::div";
         return getText (xpath);
@@ -82,9 +77,10 @@ public class PatientDetail extends PatientHeader {
         return getText (xpath);
     }
 
-    public String getPrimaryInsurancePatientRelationship () {
+    public PatientRelationship getPrimaryInsurancePatientRelationship () {
         String xpath = "//*[label='Patient Relationship to Policyholder']/following-sibling::div";
-        return getText (xpath);
+        String value = getText (xpath);
+        return value != null ? PatientRelationship.valueOf (value) : null;
     }
 
     public String getPrimaryInsurancePolicyholderName () {

@@ -2,12 +2,12 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
 import static java.lang.ClassLoader.getSystemResource;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,6 @@ public class OrderDetail extends OrderHeader {
     public void clickPatientOrderHistory () {
         assertTrue (click ("//a[text()='Patient Order History']"));
         pageLoading ();
-        assertEquals (waitForElementVisible ("[uisref=\"main.patient.orders\"]").getText (), "PATIENT ORDER HISTORY");
     }
 
     public Order parseOrder () {
@@ -67,7 +66,7 @@ public class OrderDetail extends OrderHeader {
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
-        order.order_number = getOrderNum ();
+        order.order_number = getOrderNumber ();
         order.data_analysis_group = getDataAnalysisGroup ();
         order.isTrfAttached = toBoolean (isTrfAttached ());
         order.date_signed = getDateSigned ();
@@ -143,7 +142,7 @@ public class OrderDetail extends OrderHeader {
         return OrderStatus.valueOf (getText ("[ng-bind='ctrl.orderEntry.order.status']"));
     }
 
-    public String getOrderNum () {
+    public String getOrderNumber () {
         String css = oDetail + " .ab-panel-first" + " [ng-bind='ctrl.orderEntry.order.orderNumber']";
         return getText (css);
     }
@@ -199,20 +198,9 @@ public class OrderDetail extends OrderHeader {
         return getText (xpath);
     }
 
-    public void enterPatientNotes (String notes) {
-        assertTrue (setText ("[ng-model='ctrl.orderEntry.order.patient.notes']", notes));
-    }
-
     public String getPatientNotes () {
-        String css = "[notes='ctrl.orderEntry.order.patient.notes']";
+        String css = "[data-ng-bind='ctrl.orderEntry.order.patient.notes']";
         return isElementPresent (css) ? getText (css) : null;
-    }
-
-    public void editPatientNotes (String notes) {
-        String css = "[notes='ctrl.orderEntry.order.patient.notes']";
-        assertTrue (click (css + " [ng-click='ctrl.editNotes()']"));
-        assertTrue (setText (css + " textarea", notes));
-        assertTrue (click (css + " [ng-click='ctrl.save()']"));
     }
 
     public List <String> getPatientICD_Codes () {
@@ -297,11 +285,11 @@ public class OrderDetail extends OrderHeader {
     }
 
     private OrderTest getTestState (Assay assay) {
-        String xpath = "//*[@ng-bind='orderTest.test.name' and text()='" + assay.test + "']";
+        String xpath = format ("//*[@ng-bind='orderTest.test.name' and text()='%s']", assay.test);
         boolean selected = isElementPresent (xpath);
-        String sampleName = selected ? getText (xpath + "/..//*[@ng-bind='orderTest.sampleName']") : null;
-        OrderTest orderTest = new OrderTest (assay, selected);
-        orderTest.sampleName = sampleName;
+        OrderTest orderTest = new OrderTest (assay);
+        orderTest.selected = selected;
+        orderTest.sampleName = selected ? getText (xpath + "/..//*[@ng-bind='orderTest.sampleName']") : null;
         return orderTest;
     }
 

@@ -12,7 +12,7 @@ import com.adaptivebiotech.cora.ui.order.BillingNewOrder;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.Logging;
@@ -31,7 +31,7 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
     private OrdersList      ordersList      = new OrdersList ();
     private NewOrderTDetect newOrderTDetect = new NewOrderTDetect ();
     private BillingNewOrder billing         = new BillingNewOrder ();
-    private Shipment        shipment        = new Shipment ();
+    private NewShipment     shipment        = new NewShipment ();
     private Accession       accession       = new Accession ();
 
     /**

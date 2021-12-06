@@ -3,7 +3,9 @@ package com.adaptivebiotech.cora.ui.order;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -147,7 +149,7 @@ public class NewOrder extends OrderHeader {
         return getText (css);
     }
 
-    public String getOrderNum () {
+    public String getOrderNumber () {
         String css = oEntry + " .ab-panel-first" + " [ng-bind='ctrl.orderEntry.order.orderNumber']";
         return getText (css);
     }
@@ -379,15 +381,18 @@ public class NewOrder extends OrderHeader {
         return isElementPresent ("[ng-if='ctrl.orderEntry.order.expectedTestType']") ? getText ("[ng-bind*='order.expectedTestType']") : null;
     }
 
-    protected OrderTest getTestState (Assay assay) {
-        boolean selected = false;
-        String sampleName = null;
-        String labelPath = String.format ("//*[contains(@ng-bind,'%s')]", assay.type);
-        if (isElementPresent (labelPath)) {
-            selected = waitForElement (labelPath + "/../input").isSelected ();
-        }
-        OrderTest orderTest = new OrderTest (assay, selected);
-        orderTest.sampleName = sampleName;
+    public List <OrderTest> getSelectedTests () {
+        return allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ())
+                                  .parallelStream ().filter (t -> t.selected).collect (toList ());
+    }
+
+    private OrderTest getTestState (Assay assay) {
+        OrderTest orderTest = new OrderTest (assay);
+        orderTest.selected = false;
+
+        String labelPath = String.format ("//*[text()='%s']", assay.test);
+        if (isElementPresent (labelPath))
+            orderTest.selected = findElement (labelPath + "/../input").isSelected ();
         return orderTest;
     }
 

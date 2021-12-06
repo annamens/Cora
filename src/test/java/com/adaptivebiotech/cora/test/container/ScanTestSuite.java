@@ -20,7 +20,7 @@ import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
 @Test (groups = "regression")
 public class ScanTestSuite extends ContainerTestBase {
@@ -39,7 +39,7 @@ public class ScanTestSuite extends ContainerTestBase {
     private Login        login      = new Login ();
     private OrdersList   ordersList = new OrdersList ();
     private MyCustody    myCustody  = new MyCustody ();
-    private Shipment     shipment   = new Shipment ();
+    private NewShipment     shipment   = new NewShipment ();
     private Containers   mytestContainers;
     private Containers   shipContainers;
 

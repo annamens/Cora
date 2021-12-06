@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -300,7 +299,7 @@ public class MirasList extends MirasListBase {
     }
 
     private Mira getMiraFromRow (WebElement miraRow) {
-        List <WebElement> columns = miraRow.findElements (By.xpath (".//td"));
+        List <WebElement> columns = findElements (miraRow, ".//td");
         assertEquals (columns.size (), 10);
         Mira mira = new Mira ();
         mira.id = getMiraGuid (getAttribute (columns.get (0), "a", "href"));

@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.patient;
 
+import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
@@ -10,9 +11,15 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 public class PatientHeader extends CoraPage {
 
     public void clickClose () {
-        String cssForCloseButton = "go-back";
-        assertTrue (click (cssForCloseButton));
-        moduleLoading ();
+        assertTrue (click ("go-back"));
+        pageLoading ();
     }
 
+    public void clickPatientDetailsTab () {
+        assertTrue (click (format (tabBase, "Patient Details")));
+    }
+
+    public void clickPatientOrderHistoryTab () {
+        assertTrue (click (format (tabBase, "Patient Order History")));
+    }
 }
