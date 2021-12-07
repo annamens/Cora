@@ -18,7 +18,6 @@ public class OrderAlert extends BasePage {
     private final String resolveTab       = "//span[contains(text(), 'RESOLVED')]";
     private final String activeAlerts     = ".panel.active-alerts";
     private final String resolvedAlerts   = ".resolved-alerts";
-    private final String alertDesc        = ".alert-type-description";
     private final String resolvedBtn      = ".unresolve-alert-button";
     private final String accordionOpen    = "accordion-group[isopen='true']";
     private final String alertDescription = ".alert-type-description";
@@ -65,11 +64,10 @@ public class OrderAlert extends BasePage {
     }
 
     public List <String> getActiveAlertsList () {
-        List <String> activeAlertsList = new ArrayList <> ();
-        for (WebElement element : waitForElements (activeAlerts)) {
-            activeAlertsList.add (getText (element, alertDesc));
+        if (isElementPresent (activeAlerts + " " + alertDescription)) {
+            return getTextList (activeAlerts + " " + alertDescription);
         }
-        return activeAlertsList;
+        return new ArrayList <> ();
     }
 
     public Map <String, String> getResolvedAlerts () {
@@ -77,7 +75,7 @@ public class OrderAlert extends BasePage {
 
         Map <String, String> resolvedAlertsMap = new HashMap <> ();
         for (WebElement element : waitForElements (resolvedAlerts)) {
-            resolvedAlertsMap.put (getText (element, alertDesc), getText (element, resolvedBtn));
+            resolvedAlertsMap.put (getText (element, alertDescription), getText (element, resolvedBtn));
         }
         return resolvedAlertsMap;
     }
