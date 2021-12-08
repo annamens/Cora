@@ -243,4 +243,11 @@ public class PageHelper {
                                                     .get ();
         }
     }
+
+    public enum ExpectedTestType {
+        BCellClonality,
+        TCellClonality,
+        BAndTCellClonality,
+        Tracking;
+    }
 }

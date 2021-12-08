@@ -8,6 +8,7 @@ import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.utils.PageHelper.ExpectedTestType;
 import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -98,19 +99,20 @@ public final class Diagnostic {
 
     public static final class Order {
 
-        public String          name;
-        public OrderStatus     status;
-        public String          salesforceOrderId;
-        public String          salesforceOrderNumber;
-        public String          mrn;
-        public Boolean         postToImmunoSEQ;
-        public OrderProperties properties;
-        public List <CoraTest> tests;
-        public OrderType       orderType;
-        public ChargeType      billingType;
-        public DeliveryType    specimenDeliveryType;
-        public Specimen        specimenDto;
-        public List <Panel>    panels;
+        public String           name;
+        public OrderStatus      status;
+        public String           salesforceOrderId;
+        public String           salesforceOrderNumber;
+        public String           mrn;
+        public Boolean          postToImmunoSEQ;
+        public OrderProperties  properties;
+        public List <CoraTest>  tests;
+        public OrderType        orderType;
+        public ChargeType       billingType;
+        public DeliveryType     specimenDeliveryType;
+        public Specimen         specimenDto;
+        public List <Panel>     panels;
+        public ExpectedTestType expectedTestType;
     }
 
     public static final class Task {
