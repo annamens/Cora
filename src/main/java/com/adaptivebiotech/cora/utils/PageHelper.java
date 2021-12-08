@@ -244,10 +244,4 @@ public class PageHelper {
         }
     }
 
-    public enum ExpectedTestType {
-        BCellClonality,
-        TCellClonality,
-        BAndTCellClonality,
-        Tracking;
-    }
 }

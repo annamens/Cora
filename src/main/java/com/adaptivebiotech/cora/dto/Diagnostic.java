@@ -8,7 +8,6 @@ import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
-import com.adaptivebiotech.cora.utils.PageHelper.ExpectedTestType;
 import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
@@ -135,5 +134,12 @@ public final class Diagnostic {
         public Panel (String id) {
             this.id = id;
         }
+    }
+
+    public enum ExpectedTestType {
+        BCellClonality,
+        TCellClonality,
+        BAndTCellClonality,
+        Tracking;
     }
 }
