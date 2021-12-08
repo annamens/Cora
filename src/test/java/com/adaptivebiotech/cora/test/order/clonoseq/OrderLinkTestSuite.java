@@ -99,7 +99,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         shipment.gotoAccession ();
         accession.isCorrectPage ();
-        accession.clickOrderNuber ();
+        accession.clickOrderNumber ();
         newOrderClonoSeq.isCorrectPage ();
         assertEquals (newOrderClonoSeq.getOrderNumber (), order1);
         Logging.testLog ("STEP 6 - clonoSEQ Order Form is displayed");
@@ -179,7 +179,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         shipmentDetail.isCorrectPage ();
         shipment.gotoAccession ();
         accession.isCorrectPage ();
-        accession.clickOrderNuber ();
+        accession.clickOrderNumber ();
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getheaderOrderNumber (), order2);
         Logging.testLog ("STEP 13 - The generic order status page is displayed");
