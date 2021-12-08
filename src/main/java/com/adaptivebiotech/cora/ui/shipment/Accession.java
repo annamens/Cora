@@ -29,7 +29,7 @@ public class Accession extends ShipmentHeader {
         pageLoading ();
     }
 
-    public void clickOrderNuber () {
+    public void clickOrderNumber () {
         assertTrue (click (orderNo));
     }
 
@@ -161,6 +161,6 @@ public class Accession extends ShipmentHeader {
         clickLabelingComplete ();
         clickLabelVerificationComplete ();
         clickPass ();
-        clickOrderNuber ();
+        clickOrderNumber ();
     }
 }

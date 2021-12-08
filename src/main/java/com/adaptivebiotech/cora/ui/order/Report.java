@@ -97,9 +97,8 @@ public class Report extends OrderHeader {
     }
 
     public void setQCstatus (QC qc) {
-        assertTrue (clickAndSelectValue ("#qcStatus", qc.name ()));
-        assertTrue (click ("[data-ng-click='ctrl.qcComplete()']"));
-        pageLoading ();
+        selectQCStatus (qc);
+        clickQCComplete ();
     }
 
     public void clickReleaseReport () {
