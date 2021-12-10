@@ -40,7 +40,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void clickAssayTest (Assay assay) {
         String type = "[ng-click*='" + assay.type + "']";
-        if (!findElement (type).isSelected ())
+        if (!waitForElement (type).isSelected ())
             assertTrue (click (type));
 
         if (isElementPresent (".ng-hide[ng-show='ctrl.showTestMenu']"))
@@ -64,7 +64,7 @@ public class NewOrderClonoSeq extends NewOrder {
         String trackingCheckbox = "#order-test-type-tracking";
         String[] checkboxes = { tCellCheckbox, bCellCheckbox, trackingCheckbox };
         for (String checkbox : checkboxes)
-            if (findElement (checkbox).isSelected ())
+            if (waitForElementVisible (checkbox).isSelected ())
                 assertTrue (click (checkbox));
 
         assertTrue (isElementPresent ("//*[@class='test-selection-header']//*[text()='No tests selected']"));
@@ -174,8 +174,8 @@ public class NewOrderClonoSeq extends NewOrder {
         waitUntilActivated ();
     }
 
+    @Override
     public void createNewPatient (Patient patient) {
-        clickPickPatient ();
         assertTrue (click ("#new-patient"));
         assertTrue (waitForElementInvisible (".ab-panel.matches"));
         assertTrue (isTextInElement (popupTitle, "Create New Patient"));
@@ -320,7 +320,7 @@ public class NewOrderClonoSeq extends NewOrder {
         isCorrectPage ();
 
         selectPhysician (physician);
-        createNewPatient (patient);
+        searchOrCreatePatient (patient);
         for (String icdCode : icdCodes) {
             enterPatientICD_Codes (icdCode);
         }
@@ -414,4 +414,5 @@ public class NewOrderClonoSeq extends NewOrder {
 
         return orderNum;
     }
+
 }

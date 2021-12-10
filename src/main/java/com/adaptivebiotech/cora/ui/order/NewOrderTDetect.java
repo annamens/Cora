@@ -47,8 +47,8 @@ public class NewOrderTDetect extends NewOrder {
         waitUntilActivated ();
     }
 
+    @Override
     public void createNewPatient (Patient patient) {
-        clickPickPatient ();
         assertTrue (click ("#new-patient"));
         assertTrue (waitForElementInvisible (".ab-panel.matches"));
         assertTrue (isTextInElement (popupTitle, "Create New Patient"));

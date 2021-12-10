@@ -47,7 +47,7 @@ public class ShippingToAdaptiveTestSuite extends CoraBaseBrowser {
         coraApi.login ();
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.selectPhysician (coraApi.getPhysician (non_CLEP_clonoseq));
-        newOrderClonoSeq.createNewPatient (newPatient ());
+        newOrderClonoSeq.searchOrCreatePatient (newPatient ());
         newOrderClonoSeq.enterPatientICD_Codes ("A01.02");
         newOrderClonoSeq.clickSave (); // have to Save first before we can set Specimen info
 
