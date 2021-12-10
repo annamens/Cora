@@ -91,7 +91,8 @@ public final class Physician {
         CLEP_lyme ("CLEP", "Lyme", "SEA_QA Test"),
         CLEP_covid ("CLEP", "Covid", "SEA_QA Test"),
         trial_clonoseq ("Trial", "ClonoSEQ", "SEA_QA Test"),
-        non_trial_clonoseq ("Non-Trial", "ClonoSEQ", "SEA_QA Test");
+        non_trial_clonoseq ("Non-Trial", "ClonoSEQ", "SEA_QA Test"),
+        big_shot ("Big", "Shot", "Test123");
 
         public String firstName;
         public String lastName;
