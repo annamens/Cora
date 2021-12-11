@@ -151,9 +151,15 @@ public class OrcaHistory extends CoraPage {
         return getAttribute ("a[href*='/cora/order/status']", "href");
     }
 
+    public void clickOrder () {
+        assertTrue (navigateTo (getAttribute ("a[href*='/cora/order/auto']", "href")));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
     public void clickOrderTest () {
-        String url = getAttribute ("a[href*='/cora/order/status']", "href");
-        assertTrue (navigateTo (url));
+        assertTrue (navigateTo (getAttribute ("a[href*='/cora/order/status']", "href")));
+        assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
