@@ -1,15 +1,20 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
+import com.seleniumfy.test.utils.Timeout;
 
 public class OrderStatus extends OrderHeader {
 
+    private final long   millisRetry          = 3000000l;                                                                 // 50mins
+    private final long   waitRetry            = 60000l;                                                                   // 60sec
     private final String historyLink          = ".history-link";
     private final String stageActionDots      = "#stageActionsDropdown";
     private final String stageActionsDropdown = "[aria-labelledby='stageActionsDropdown']";
@@ -18,6 +23,8 @@ public class OrderStatus extends OrderHeader {
     private final String submit               = "//button[text()='Submit']";
     private final String actionConfirm        = ".action-confirm";
     private final String confirmYes           = "//button[text()='Yes']";
+    private final String hideShow             = "//*[contains (@class, 'history-link') and text()='%s']";
+    private final String workflowTable        = "table.history";
 
     public OrderStatus () {
         staticNavBarHeight = 200;
@@ -155,5 +162,70 @@ public class OrderStatus extends OrderHeader {
     public String getSpecimenId () {
         String css = "span.order-specimen-id";
         return getText (css);
+    }
+
+    public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {
+        String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
+        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
+        String check = format (xpath, stage, status, substatus == null ? "" : substatus, message);
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        clickHistory ();
+        while (!timer.Timedout () && ! (found = isElementPresent (check))) {
+            clickHide ();
+            timer.Wait ();
+            clickHistory ();
+        }
+        if (!found)
+            fail (format (fail, stage, status, substatus, message));
+    }
+
+    public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus) {
+        String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        clickHistory ();
+        while (!timer.Timedout () && ! (found = isStagePresent (stage, status, substatus))) {
+            clickHide ();
+            timer.Wait ();
+            clickHistory ();
+        }
+        if (!found)
+            fail (format (fail, stage, status, substatus));
+    }
+
+    public void waitFor (StageName stage, StageStatus status) {
+        String fail = "unable to locate Stage: %s, Status: %s";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        clickHistory ();
+        while (!timer.Timedout () && ! (found = isStagePresent (stage, status))) {
+            clickHide ();
+            timer.Wait ();
+            clickHistory ();
+        }
+        if (!found)
+            fail (format (fail, stage, status));
+    }
+
+    public boolean isStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
+        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]";
+        return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
+    }
+
+    public boolean isStagePresent (StageName stage, StageStatus status) {
+        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]";
+        return isElementPresent (format (xpath, stage.name (), status.name ()));
+    }
+
+    public void clickHistory () {
+        assertTrue (click (format (hideShow, "History")));
+        pageLoading ();
+        assertTrue (waitUntilVisible (workflowTable));
+    }
+
+    public void clickHide () {
+        assertTrue (click (format (hideShow, "Hide")));
+        assertTrue (waitForElementInvisible (workflowTable));
     }
 }
