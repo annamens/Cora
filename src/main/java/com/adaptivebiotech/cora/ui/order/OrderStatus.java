@@ -13,8 +13,13 @@ import com.seleniumfy.test.utils.Timeout;
 
 public class OrderStatus extends OrderHeader {
 
+<<<<<<< Upstream, based on origin/release/next
     private final long   millisRetry          = 3000000l;                                                                     // 50mins
     private final long   waitRetry            = 30000l;                                                                       // 30sec
+=======
+    private final long   millisRetry          = 3000000l;                                                                 // 50mins
+    private final long   waitRetry            = 60000l;                                                                   // 60sec
+>>>>>>> c2d4255 adding waitfor stages, statuses and substatuses in order status page
     private final String historyLink          = ".history-link";
     private final String stageActionDots      = "#stageActionsDropdown";
     private final String stageActionsDropdown = "[aria-labelledby='stageActionsDropdown']";
@@ -23,8 +28,13 @@ public class OrderStatus extends OrderHeader {
     private final String submit               = "//button[text()='Submit']";
     private final String actionConfirm        = ".action-confirm";
     private final String confirmYes           = "//button[text()='Yes']";
+<<<<<<< Upstream, based on origin/release/next
     private final String hideShow             = "//tr[td[text()='%s']]//*[contains (@class, 'history-link') and text()='%s']";
     private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]";
+=======
+    private final String hideShow             = "//*[contains (@class, 'history-link') and text()='%s']";
+    private final String workflowTable        = "table.history";
+>>>>>>> c2d4255 adding waitfor stages, statuses and substatuses in order status page
 
     public OrderStatus () {
         staticNavBarHeight = 200;
@@ -164,6 +174,7 @@ public class OrderStatus extends OrderHeader {
         return getText (css);
     }
 
+<<<<<<< Upstream, based on origin/release/next
     public void nudgeWorkflow () {
         assertTrue (click (stageActionDots));
         assertTrue (click (format (dropdownItem, "Nudge workflow")));
@@ -236,5 +247,70 @@ public class OrderStatus extends OrderHeader {
     public void clickHide (String sampleName) {
         assertTrue (click (format (hideShow, sampleName, "Hide")));
         assertTrue (waitForElementInvisible (format (workflowTable, sampleName)));
+=======
+    public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {
+        String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
+        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
+        String check = format (xpath, stage, status, substatus == null ? "" : substatus, message);
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        clickHistory ();
+        while (!timer.Timedout () && ! (found = isElementPresent (check))) {
+            clickHide ();
+            timer.Wait ();
+            clickHistory ();
+        }
+        if (!found)
+            fail (format (fail, stage, status, substatus, message));
+    }
+
+    public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus) {
+        String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        clickHistory ();
+        while (!timer.Timedout () && ! (found = isStagePresent (stage, status, substatus))) {
+            clickHide ();
+            timer.Wait ();
+            clickHistory ();
+        }
+        if (!found)
+            fail (format (fail, stage, status, substatus));
+    }
+
+    public void waitFor (StageName stage, StageStatus status) {
+        String fail = "unable to locate Stage: %s, Status: %s";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        clickHistory ();
+        while (!timer.Timedout () && ! (found = isStagePresent (stage, status))) {
+            clickHide ();
+            timer.Wait ();
+            clickHistory ();
+        }
+        if (!found)
+            fail (format (fail, stage, status));
+    }
+
+    public boolean isStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
+        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]";
+        return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
+    }
+
+    public boolean isStagePresent (StageName stage, StageStatus status) {
+        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]";
+        return isElementPresent (format (xpath, stage.name (), status.name ()));
+    }
+
+    public void clickHistory () {
+        assertTrue (click (format (hideShow, "History")));
+        pageLoading ();
+        assertTrue (waitUntilVisible (workflowTable));
+    }
+
+    public void clickHide () {
+        assertTrue (click (format (hideShow, "Hide")));
+        assertTrue (waitForElementInvisible (workflowTable));
+>>>>>>> c2d4255 adding waitfor stages, statuses and substatuses in order status page
     }
 }
