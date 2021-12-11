@@ -300,16 +300,25 @@ public class OrderStatus extends OrderHeader {
     public void clickHide () {
         assertTrue (click (format (hideShow, "Hide")));
         assertTrue (waitForElementInvisible (workflowTable));
->>>>>>> c2d4255 adding waitfor stages, statuses and substatuses in order status page
-=======
-    public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {
+    }
+
+    public void nudgeWorkflow () {
+        assertTrue (click (stageActionDots));
+        assertTrue (waitUntilVisible (stageActionsDropdown));
+        assertTrue (click (format (dropdownItem, "Nudge workflow")));
+        assertTrue (click (confirmYes));
+    }
+
+    public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus,
+                         String message) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
-        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
-        String check = format (xpath, stage, status, substatus == null ? "" : substatus, message);
+        String xpath = "//tr[td[contains (., '%s')]]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
+        String check = format (xpath, sampleName, stage, status, substatus == null ? "" : substatus, message);
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
         clickHistory ();
         while (!timer.Timedout () && ! (found = isElementPresent (check))) {
+            nudgeWorkflow ();
             clickHide ();
             timer.Wait ();
             clickHistory ();
@@ -318,12 +327,13 @@ public class OrderStatus extends OrderHeader {
             fail (format (fail, stage, status, substatus, message));
     }
 
-    public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus) {
+    public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
         clickHistory ();
-        while (!timer.Timedout () && ! (found = isStagePresent (stage, status, substatus))) {
+        while (!timer.Timedout () && ! (found = isStagePresent (sampleName, stage, status, substatus))) {
+            nudgeWorkflow ();
             clickHide ();
             timer.Wait ();
             clickHistory ();
@@ -332,12 +342,13 @@ public class OrderStatus extends OrderHeader {
             fail (format (fail, stage, status, substatus));
     }
 
-    public void waitFor (StageName stage, StageStatus status) {
+    public void waitFor (String sampleName, StageName stage, StageStatus status) {
         String fail = "unable to locate Stage: %s, Status: %s";
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
         clickHistory ();
-        while (!timer.Timedout () && ! (found = isStagePresent (stage, status))) {
+        while (!timer.Timedout () && ! (found = isStagePresent (sampleName, stage, status))) {
+            nudgeWorkflow ();
             clickHide ();
             timer.Wait ();
             clickHistory ();
@@ -346,80 +357,14 @@ public class OrderStatus extends OrderHeader {
             fail (format (fail, stage, status));
     }
 
-    public boolean isStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
-        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]";
-        return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
+    public boolean isStagePresent (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
+        String xpath = "//tr[td[contains (., '%s')]]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[contains (., '%s')]/following-sibling::td[contains(.,'%s')]";
+        return isElementPresent (format (xpath, sampleName, stage.name (), status.name (), substatus.name ()));
     }
 
-    public boolean isStagePresent (StageName stage, StageStatus status) {
-        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]";
-        return isElementPresent (format (xpath, stage.name (), status.name ()));
-    }
-
-    public void clickHistory () {
-        assertTrue (click (format (hideShow, "History")));
-        pageLoading ();
-        assertTrue (waitUntilVisible (workflowTable));
-    }
-
-    public void clickHide () {
-        assertTrue (click (format (hideShow, "Hide")));
-        assertTrue (waitForElementInvisible (workflowTable));
->>>>>>> ba592b6 adding waitfor stages, statuses and substatuses in order status page
-    }
-
-    public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {
-        String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
-        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
-        String check = format (xpath, stage, status, substatus == null ? "" : substatus, message);
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        boolean found = false;
-        clickHistory ();
-        while (!timer.Timedout () && ! (found = isElementPresent (check))) {
-            clickHide ();
-            timer.Wait ();
-            clickHistory ();
-        }
-        if (!found)
-            fail (format (fail, stage, status, substatus, message));
-    }
-
-    public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus) {
-        String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        boolean found = false;
-        clickHistory ();
-        while (!timer.Timedout () && ! (found = isStagePresent (stage, status, substatus))) {
-            clickHide ();
-            timer.Wait ();
-            clickHistory ();
-        }
-        if (!found)
-            fail (format (fail, stage, status, substatus));
-    }
-
-    public void waitFor (StageName stage, StageStatus status) {
-        String fail = "unable to locate Stage: %s, Status: %s";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        boolean found = false;
-        clickHistory ();
-        while (!timer.Timedout () && ! (found = isStagePresent (stage, status))) {
-            clickHide ();
-            timer.Wait ();
-            clickHistory ();
-        }
-        if (!found)
-            fail (format (fail, stage, status));
-    }
-
-    public boolean isStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
-        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]";
-        return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
-    }
-
-    public boolean isStagePresent (StageName stage, StageStatus status) {
-        String xpath = "//table[contains (@class, 'history')]//tr[td='%s']/following-sibling::td[contains(.,'%s')]";
-        return isElementPresent (format (xpath, stage.name (), status.name ()));
+    public boolean isStagePresent (String sampleName, StageName stage, StageStatus status) {
+        String xpath = "//tr[td[contains (., '%s')]]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[contains (., '%s')]";
+        return isElementPresent (format (xpath, sampleName, stage.name (), status.name ()));
     }
 
     public void clickHistory () {
