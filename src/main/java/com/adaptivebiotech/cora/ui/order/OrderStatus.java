@@ -238,6 +238,9 @@ public class OrderStatus extends OrderHeader {
         assertTrue (waitForElementInvisible (format (workflowTable, sampleName)));
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
         String check = format (xpath, sampleName, stage, status, substatus == null ? "" : substatus, message);
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
@@ -297,9 +300,9 @@ public class OrderStatus extends OrderHeader {
         assertTrue (waitUntilVisible (format (workflowTable, sampleName)));
     }
 
-    public void clickHide () {
-        assertTrue (click (format (hideShow, "Hide")));
-        assertTrue (waitForElementInvisible (workflowTable));
+    public void clickHide (String sampleName) {
+        assertTrue (click (format (hideShow, sampleName, "Hide")));
+        assertTrue (waitForElementInvisible (format (workflowTable, sampleName)));
     }
 
     public void nudgeWorkflow () {
@@ -312,16 +315,16 @@ public class OrderStatus extends OrderHeader {
     public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus,
                          String message) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
-        String xpath = "//tr[td[contains (., '%s')]]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[contains(.,'%s')]/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
         String check = format (xpath, sampleName, stage, status, substatus == null ? "" : substatus, message);
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
-        clickHistory ();
-        while (!timer.Timedout () && ! (found = isElementPresent (check))) {
+        while (!timer.Timedout () && !found) {
+            clickHistory (sampleName);
             nudgeWorkflow ();
-            clickHide ();
             timer.Wait ();
-            clickHistory ();
+            found = isElementPresent (check);
+            clickHide (sampleName);
         }
         if (!found)
             fail (format (fail, stage, status, substatus, message));
@@ -331,12 +334,12 @@ public class OrderStatus extends OrderHeader {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
-        clickHistory ();
-        while (!timer.Timedout () && ! (found = isStagePresent (sampleName, stage, status, substatus))) {
+        while (!timer.Timedout () && !found) {
+            clickHistory (sampleName);
             nudgeWorkflow ();
-            clickHide ();
             timer.Wait ();
-            clickHistory ();
+            found = isStagePresent (sampleName, stage, status, substatus);
+            clickHide (sampleName);
         }
         if (!found)
             fail (format (fail, stage, status, substatus));
@@ -346,35 +349,34 @@ public class OrderStatus extends OrderHeader {
         String fail = "unable to locate Stage: %s, Status: %s";
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
-        clickHistory ();
-        while (!timer.Timedout () && ! (found = isStagePresent (sampleName, stage, status))) {
+        while (!timer.Timedout () && !found) {
+            clickHistory (sampleName);
             nudgeWorkflow ();
-            clickHide ();
             timer.Wait ();
-            clickHistory ();
+            found = isStagePresent (sampleName, stage, status);
+            clickHide (sampleName);
         }
         if (!found)
             fail (format (fail, stage, status));
     }
 
     public boolean isStagePresent (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
-        String xpath = "//tr[td[contains (., '%s')]]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[contains (., '%s')]/following-sibling::td[contains(.,'%s')]";
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]";
         return isElementPresent (format (xpath, sampleName, stage.name (), status.name (), substatus.name ()));
     }
 
     public boolean isStagePresent (String sampleName, StageName stage, StageStatus status) {
-        String xpath = "//tr[td[contains (., '%s')]]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[contains (., '%s')]";
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']";
         return isElementPresent (format (xpath, sampleName, stage.name (), status.name ()));
     }
 
-    public void clickHistory () {
-        assertTrue (click (format (hideShow, "History")));
-        pageLoading ();
-        assertTrue (waitUntilVisible (workflowTable));
+    public void clickHistory (String sampleName) {
+        assertTrue (click (format (hideShow, sampleName, "History")));
+        assertTrue (waitUntilVisible (format (workflowTable, sampleName)));
     }
 
-    public void clickHide () {
-        assertTrue (click (format (hideShow, "Hide")));
-        assertTrue (waitForElementInvisible (workflowTable));
+    public void clickHide (String sampleName) {
+        assertTrue (click (format (hideShow, sampleName, "Hide")));
+        assertTrue (waitForElementInvisible (format (workflowTable, sampleName)));
     }
 }
