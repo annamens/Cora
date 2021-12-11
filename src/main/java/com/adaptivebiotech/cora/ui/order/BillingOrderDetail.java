@@ -3,6 +3,7 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
+import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
@@ -49,8 +50,7 @@ public class BillingOrderDetail extends CoraPage {
 
     protected PatientRelationship getInsurance1Relationship () {
         String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.insuredRelationship']";
-        String value = isElementPresent (css) ? getText (css) : null;
-        return value != null ? PatientRelationship.valueOf (value) : null;
+        return getEnum (PatientRelationship.class, isElementPresent (css) ? getText (css) : null);
     }
 
     protected String getInsurance1PolicyHolder () {

@@ -5,6 +5,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospita
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
+import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -266,8 +267,7 @@ public class BillingNewOrder extends CoraPage {
 
     public PatientRelationship getInsurance1Relationship () {
         String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.insuredRelationship']";
-        String value = isElementPresent (css) ? getFirstSelectedText (css) : null;
-        return value != null ? PatientRelationship.valueOf (value) : null;
+        return getEnum (PatientRelationship.class, isElementPresent (css) ? getFirstSelectedText (css) : null);
     }
 
     public String getInsurance1PolicyHolder () {

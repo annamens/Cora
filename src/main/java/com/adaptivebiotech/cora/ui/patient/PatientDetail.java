@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.patient;
 
+import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
 
@@ -79,8 +80,7 @@ public class PatientDetail extends PatientHeader {
 
     public PatientRelationship getPrimaryInsurancePatientRelationship () {
         String xpath = "//*[label='Patient Relationship to Policyholder']/following-sibling::div";
-        String value = getText (xpath);
-        return value != null ? PatientRelationship.valueOf (value) : null;
+        return getEnum (PatientRelationship.class, getText (xpath));
     }
 
     public String getPrimaryInsurancePolicyholderName () {

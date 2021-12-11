@@ -34,7 +34,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     private NewOrderClonoSeq diagnostic = new NewOrderClonoSeq ();
     private Specimen         specimen;
 
-    @BeforeMethod (alwaysRun = true)
+    @BeforeMethod
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
