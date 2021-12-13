@@ -184,7 +184,8 @@ public class PageHelper {
         public final String text;
 
         public static Ethnicity getEthnicity (String text) {
-            return allOf (Ethnicity.class).parallelStream ().filter (e -> e.text.equals (text)).findAny ().get ();
+            return allOf (Ethnicity.class).parallelStream ().filter (e -> e.text.equals (text)).findFirst ()
+                                          .orElse (null);
         }
 
         private Ethnicity (String text) {
@@ -212,7 +213,7 @@ public class PageHelper {
         public final String text;
 
         public static Race getRace (String text) {
-            return allOf (Race.class).parallelStream ().filter (r -> r.text.equals (text)).findAny ().get ();
+            return allOf (Race.class).parallelStream ().filter (r -> r.text.equals (text)).findFirst ().orElse (null);
         }
 
         private Race (String text) {
@@ -239,7 +240,7 @@ public class PageHelper {
         }
 
         public static FriendlyOrderStatus getFriendlyOrderStatus (String label) {
-            return allOf (FriendlyOrderStatus.class).parallelStream ().filter (a -> a.label.equals (label)).findAny ()
+            return allOf (FriendlyOrderStatus.class).parallelStream ().filter (a -> a.label.equals (label)).findFirst ()
                                                     .get ();
         }
     }

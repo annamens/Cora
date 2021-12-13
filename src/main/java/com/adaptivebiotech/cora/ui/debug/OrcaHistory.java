@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
@@ -151,7 +150,7 @@ public class OrcaHistory extends CoraPage {
                 if (isElementVisible (claim))
                     assertTrue (click (claim + " [name='submit']"));
             }
-        } catch (TimeoutException e) {
+        } catch (Exception e) {
             Logging.error ("doForceClaim exception: " + e);
             navigateTo (orcaHistoryUrl);
             isCorrectPage ();

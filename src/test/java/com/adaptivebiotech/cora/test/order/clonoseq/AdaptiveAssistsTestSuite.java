@@ -50,7 +50,8 @@ public class AdaptiveAssistsTestSuite extends CoraBaseBrowser {
         coraApi.login ();
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.selectPhysician (coraApi.getPhysician (non_CLEP_clonoseq));
-        newOrderClonoSeq.searchOrCreatePatient (newPatient ());
+        newOrderClonoSeq.clickPickPatient ();
+        newOrderClonoSeq.createNewPatient (newPatient ());
         newOrderClonoSeq.enterPatientICD_Codes ("A01.02");
         newOrderClonoSeq.clickSave (); // have to Save first before we can set Specimen info
 

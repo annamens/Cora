@@ -266,9 +266,8 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (setText ("[name='firstName']", patient.firstName));
         assertTrue (setText ("[name='lastName']", patient.lastName));
 
-        // less is actually more accurate ...
-        // assertTrue (setText ("[name='dateOfBirth']", patient.dateofbirth));
-        // assertTrue (setText ("[ng-model='ctrl.mrn']", patient.mrn));
+        assertTrue (setText ("[name='dateOfBirth']", patient.dateOfBirth));
+        assertTrue (setText ("[ng-model='ctrl.mrn']", patient.mrn));
 
         assertTrue (click ("[ng-click='ctrl.search()']"));
         pageLoading ();
