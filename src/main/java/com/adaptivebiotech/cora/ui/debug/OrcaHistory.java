@@ -15,6 +15,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
@@ -88,8 +89,9 @@ public class OrcaHistory extends CoraPage {
         String check = format (xpath, stage, status, substatus == null ? "" : substatus, message);
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
+        String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isElementPresent (check))) {
-            doForceClaim ();
+            doForceClaim (orcaHistoryUrl);
             timer.Wait ();
             refresh ();
         }
@@ -101,8 +103,9 @@ public class OrcaHistory extends CoraPage {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
+        String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status, substatus))) {
-            doForceClaim ();
+            doForceClaim (orcaHistoryUrl);
             timer.Wait ();
             refresh ();
         }
@@ -114,8 +117,9 @@ public class OrcaHistory extends CoraPage {
         String fail = "unable to locate Stage: %s, Status: %s";
         Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
+        String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status))) {
-            doForceClaim ();
+            doForceClaim (orcaHistoryUrl);
             timer.Wait ();
             refresh ();
         }
@@ -133,18 +137,25 @@ public class OrcaHistory extends CoraPage {
         return isElementPresent (format (xpath, stage.name (), status.name ()));
     }
 
-    public void doForceClaim () {
+    public void doForceClaim (String orcaHistoryUrl) {
         String lastClaimed = "//a[text()='Last Claimed']", claim = "#claimDiv";
-        assertTrue (click (lastClaimed));
-
-        // sometimes the click failed
-        if (isElementVisible (claim))
-            assertTrue (click (claim + " [name='submit']"));
-        else {
+        try {
             assertTrue (click (lastClaimed));
+
+            // sometimes the click failed
             if (isElementVisible (claim))
                 assertTrue (click (claim + " [name='submit']"));
+            else {
+                assertTrue (click (lastClaimed));
+                if (isElementVisible (claim))
+                    assertTrue (click (claim + " [name='submit']"));
+            }
+        } catch (Exception e) {
+            Logging.error ("doForceClaim exception: " + e);
+            navigateTo (orcaHistoryUrl);
+            isCorrectPage ();
         }
+
     }
 
     public String getOrderTestId () {

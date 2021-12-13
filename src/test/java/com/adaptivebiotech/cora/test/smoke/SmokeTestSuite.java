@@ -270,6 +270,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog (format ("Diagnostic Order page displayed an order number, %s, in the order header", ordernum));
 
         Patient patient = newPatient ();
+        diagnostic.clickPickPatient ();
         diagnostic.createNewPatient (patient);
         diagnostic.clickSave ();
         assertEquals (diagnostic.getPatientName (), patient.fullname);

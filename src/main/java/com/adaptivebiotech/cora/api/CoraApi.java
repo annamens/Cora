@@ -31,6 +31,7 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
+import com.adaptivebiotech.cora.dto.FeatureFlags;
 import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.Orders.Alert;
 import com.adaptivebiotech.cora.dto.Orders.Order;
@@ -338,4 +339,10 @@ public class CoraApi {
     public void setAlerts (Alert alert) {
         post (coraTestUrl + "/cora/api/v2/alerts/create", body (mapper.writeValueAsString (alert)));
     }
+
+    public FeatureFlags getFeatureFlags () {
+        String url = coraTestUrl + "/cora/api/v2/featureFlags/flagsMap";
+        return mapper.readValue (get (url), FeatureFlags.class);
+    }
+
 }

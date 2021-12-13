@@ -7,7 +7,6 @@ import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import com.seleniumfy.test.utils.Timeout;
  * @author jpatel
  *
  */
-public class NewOrder extends OrderHeader {
+public abstract class NewOrder extends OrderHeader {
 
     private final String   patientMrdStatus = ".patient-status";
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
@@ -42,6 +41,8 @@ public class NewOrder extends OrderHeader {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
         pageLoading ();
     }
+
+    public abstract void createNewPatient (Patient patient);
 
     public String getPatientMRDStatus () {
         return getText (patientMrdStatus);
@@ -237,25 +238,22 @@ public class NewOrder extends OrderHeader {
         return getText ("[ng-bind='ctrl.orderEntry.order.authorizingProvider.account.name']");
     }
 
-    public void selectPatient (Patient patient) {
+    public boolean searchOrCreatePatient (Patient patient) {
+        boolean matchFound = false;
         clickPickPatient ();
         searchPatient (patient);
 
-        // if we don't found a match, one more try ..
-        String noMatch = ".ab-panel.matches .no-items";
-        if (isElementPresent (noMatch)) {
-            assertTrue (click ("[ng-click='ctrl.cancel(orderEntryForm)']"));
+        if (isElementPresent (".ab-panel.matches .row:nth-child(1)")) {
+            assertTrue (click (".ab-panel.matches .row:nth-child(1) > div"));
+            assertTrue (click ("[ng-click='ctrl.save(orderEntryForm)']"));
             moduleLoading ();
-            clickPickPatient ();
-            searchPatient (patient);
-            assertFalse (isElementPresent (noMatch), "patient lastname = " + patient.lastName);
+            assertTrue (waitUntilVisible ("[ng-click='ctrl.removePatient()']"));
+            assertTrue (setText ("[name='mrn']", patient.mrn));
+            matchFound = true;
+        } else {
+            createNewPatient (patient);
         }
-
-        assertTrue (click (".ab-panel.matches .row:nth-child(1) > div"));
-        assertTrue (click ("[ng-click='ctrl.save(orderEntryForm)']"));
-        moduleLoading ();
-        assertTrue (waitUntilVisible ("[ng-click='ctrl.removePatient()']"));
-        assertTrue (setText ("[name='mrn']", patient.mrn));
+        return matchFound;
 
     }
 
@@ -268,9 +266,8 @@ public class NewOrder extends OrderHeader {
         assertTrue (setText ("[name='firstName']", patient.firstName));
         assertTrue (setText ("[name='lastName']", patient.lastName));
 
-        // less is actually more accurate ...
-        // assertTrue (setText ("[name='dateOfBirth']", patient.dateofbirth));
-        // assertTrue (setText ("[ng-model='ctrl.mrn']", patient.mrn));
+        assertTrue (setText ("[name='dateOfBirth']", patient.dateOfBirth));
+        assertTrue (setText ("[ng-model='ctrl.mrn']", patient.mrn));
 
         assertTrue (click ("[ng-click='ctrl.search()']"));
         pageLoading ();
