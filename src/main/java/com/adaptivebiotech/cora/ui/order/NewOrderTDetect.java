@@ -340,7 +340,7 @@ public class NewOrderTDetect extends NewOrder {
             activateOrder ();
         }
 
-        navigateToOrderDetailsPage (getOrderId ());
+        gotoOrderDetailsPage (getOrderId ());
         isCorrectPage ();
 
         return orderNum;

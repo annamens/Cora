@@ -408,11 +408,10 @@ public class NewOrderClonoSeq extends NewOrder {
             isCorrectPage ();
             activateOrder ();
         } else {
-            navigateToOrderDetailsPage (getOrderId ());
+            gotoOrderDetailsPage (getOrderId ());
             isCorrectPage ();
         }
 
         return orderNum;
     }
-
 }

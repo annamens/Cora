@@ -312,13 +312,13 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         Logging.testLog ("T-Detect Order created: " + orderNum);
 
         Order order = orderDetailTDetect.parseOrder ();
-        orderDetailTDetect.navigateToOrderStatusPage (order.id);
+        orderDetailTDetect.gotoOrderStatusPage (order.id);
         orderStatus.isCorrectPage ();
         orderStatus.failWorkflow ("testing failure report");
         history.gotoOrderDebug (order.tests.get (0).sampleName);
         history.waitFor (StageName.DxReport, StageStatus.Awaiting, StageSubstatus.CLINICAL_QC);
 
-        orderDetailTDetect.navigateToOrderDetailsPage (order.id);
+        orderDetailTDetect.gotoOrderDetailsPage (order.id);
         orderDetailTDetect.isCorrectPage ();
         orderDetailTDetect.clickReportTab (assayTest);
 

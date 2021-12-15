@@ -186,7 +186,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         clonoSeqOrderDetail.navigateToTab (0);
         clonoSeqOrderDetail.isCorrectPage ();
         clonoSeqOrderDetail.clickPatientOrderHistory ();
-        clonoSeqOrderDetail.navigateToOrderDetailsPage (activeOrder.id);
+        clonoSeqOrderDetail.gotoOrderDetailsPage (activeOrder.id);
         clonoSeqOrderDetail.isCorrectPage ();
         Logging.testLog ("STEP 5 - Patient order history page is opened");
 
@@ -209,7 +209,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (editOrder.orderAttachments.get (0), coraAttachment);
         Logging.testLog ("STEP 8 - The file is attached to the order");
 
-        orderStatus.navigateToOrderStatusPage (editOrder.id);
+        orderStatus.gotoOrderStatusPage (editOrder.id);
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getSpecimenNumber (), specimenId);
         assertEquals (orderStatus.getDueDate (), expectedDueDate);
@@ -222,7 +222,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         historyPage.gotoOrderDebug (editOrder.tests.get (0).sampleName);
         historyPage.waitFor (StageName.Clarity, StageStatus.Awaiting, StageSubstatus.PROCESSING_SAMPLE);
 
-        orderStatus.navigateToOrderStatusPage (editOrder.id);
+        orderStatus.gotoOrderStatusPage (editOrder.id);
         List <String> stageStatusUrls = orderStatus.getStageStatusUrls ();
         assertTrue (stageStatusUrls.size () == 1);
         Logging.testLog ("STEP 10 - Clarity LIMS search is opened in a new tab for ASID1");
