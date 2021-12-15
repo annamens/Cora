@@ -20,7 +20,6 @@ import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.seleniumfy.test.utils.BasePage;
 
 /**
@@ -230,13 +229,15 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
-    public void navigateToOrderDetailsPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/details/" + orderId));
+    public void gotoOrderDetailsPage (String orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/details/" + orderId));
+        assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
-    public void navigateToOrderStatusPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/status/" + orderId));
+    public void gotoOrderStatusPage (String orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/status/" + orderId));
+        assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
