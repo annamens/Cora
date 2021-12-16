@@ -67,6 +67,10 @@ public class NewOrderTDetect extends NewOrder {
         assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
     }
 
+    public void setPatientMRN (String mrn) {
+        assertTrue (setText ("[formcontrolname='mrn']", mrn));
+    }
+
     public void clickAssayTest (Assay assay) {
         assertTrue (click (format ("//*[@class='test-type-selection']//*[text()='%s']", assay.test)));
     }
@@ -276,16 +280,31 @@ public class NewOrderTDetect extends NewOrder {
         isCorrectPage ();
 
         selectPhysician (physician);
-        createNewPatient (patient);
+        boolean matchFound = searchOrCreatePatient (patient);
         for (String icdCode : icdCodes) {
             enterPatientICD_Codes (icdCode);
         }
 
         enterCollectionDate (collectionDate);
-
         clickAssayTest (assayTest);
-        billing.selectBilling (chargeType);
-        billing.enterPatientAddress (patientAddress);
+
+        switch (chargeType) {
+        case CommercialInsurance:
+            billing.enterInsuranceInfo (patient);
+            break;
+        case Medicare:
+            billing.enterMedicareInfo (patient);
+            break;
+        case Client:
+        case PatientSelfPay:
+            billing.enterBill (patient);
+        default:
+            billing.selectBilling (chargeType);
+            break;
+        }
+
+        if (!matchFound)
+            billing.enterPatientAddress (patientAddress);
         clickSave ();
 
         String orderNum = getOrderNumber ();

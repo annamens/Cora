@@ -16,6 +16,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
+import static java.lang.String.format;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -28,7 +29,8 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 @Test (groups = "regression")
 public class BillingTestSuite extends CoraBaseBrowser {
 
-    private final String[]   icdCodes   = { "A01.02" };
+    private final String     log        = "created an order with billing: %s";
+    private final String[]   icdCodes   = { "V95.43" };
     private Login            login      = new Login ();
     private OrdersList       ordersList = new OrdersList ();
     private NewOrderClonoSeq diagnostic = new NewOrderClonoSeq ();
@@ -57,7 +59,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         specimen.anticoagulant,
                                         Active,
                                         Tube);
-        testLog ("created an order with billing: Insurance (Including Medicare Advantage)");
+        testLog (format (log, patient.billingType.label));
     }
 
     /**
@@ -75,7 +77,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         specimen.anticoagulant,
                                         Active,
                                         Tube);
-        testLog ("created an order with billing: Medicare");
+        testLog (format (log, patient.billingType.label));
     }
 
     public void patientSelfPay () {
@@ -90,7 +92,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         specimen.anticoagulant,
                                         Active,
                                         Tube);
-        testLog ("created an order with billing: Patient Self-Pay");
+        testLog (format (log, patient.billingType.label));
     }
 
     public void billClient () {
@@ -105,7 +107,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         specimen.anticoagulant,
                                         Active,
                                         Tube);
-        testLog ("created an order with billing: Client Bill");
+        testLog (format (log, patient.billingType.label));
     }
 
     public void billPerStudyProtocol () {
@@ -120,6 +122,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         specimen.anticoagulant,
                                         Active,
                                         Tube);
-        testLog ("created an order with billing: Bill per Study Protocol");
+        testLog (format (log, patient.billingType.label));
     }
 }

@@ -239,19 +239,19 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public boolean searchOrCreatePatient (Patient patient) {
-        boolean matchFound = false;
         clickPickPatient ();
         searchPatient (patient);
 
-        if (isElementPresent (".ab-panel.matches .row:nth-child(1)")) {
-            assertTrue (click (".ab-panel.matches .row:nth-child(1) > div"));
-            assertTrue (click ("[ng-click='ctrl.save(orderEntryForm)']"));
-            moduleLoading ();
-            assertTrue (waitUntilVisible ("[ng-click='ctrl.removePatient()']"));
-            assertTrue (setText ("[name='mrn']", patient.mrn));
-            matchFound = true;
-        } else {
+        boolean matchFound = false;
+        String firstrow = ".ab-panel.matches .row:nth-child(1)";
+        if (getText (firstrow).matches ("No patient(s)? found\\."))
             createNewPatient (patient);
+        else {
+            assertTrue (click (firstrow));
+            assertTrue (click ("#select-patient"));
+            moduleLoading ();
+            setPatientMRN (patient.mrn);
+            matchFound = true;
         }
         return matchFound;
 
@@ -263,13 +263,11 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void searchPatient (Patient patient) {
-        assertTrue (setText ("[name='firstName']", patient.firstName));
-        assertTrue (setText ("[name='lastName']", patient.lastName));
-
-        assertTrue (setText ("[name='dateOfBirth']", patient.dateOfBirth));
-        assertTrue (setText ("[ng-model='ctrl.mrn']", patient.mrn));
-
-        assertTrue (click ("[ng-click='ctrl.search()']"));
+        assertTrue (setText ("#patient-firstname", patient.firstName));
+        assertTrue (setText ("#patient-lastname", patient.lastName));
+        assertTrue (setText ("#patient-dateofbirth", patient.dateOfBirth));
+        assertTrue (setText ("#patient-mrn", patient.mrn));
+        assertTrue (click ("#patient-search"));
         pageLoading ();
     }
 
@@ -308,6 +306,8 @@ public abstract class NewOrder extends OrderHeader {
         String xpath = "//*[text()='Patient Code']/..//a[1]/span";
         return getText (xpath);
     }
+
+    public abstract void setPatientMRN (String mrn);
 
     public String getPatientMRN () {
         String css = "[ng-model='ctrl.orderEntry.order.mrn']";

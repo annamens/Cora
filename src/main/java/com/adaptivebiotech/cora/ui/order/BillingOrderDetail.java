@@ -17,9 +17,15 @@ import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
  */
 public class BillingOrderDetail extends CoraPage {
 
+    private final String billing = "#billing-type";
+
+    public void selectBilling (ChargeType type) {
+        assertTrue (clickAndSelectText (billing, type.label));
+    }
+
     public void editBilling (ChargeType type) {
         assertTrue (click ("[ng-click='ctrl.editBilling()']"));
-        new BillingNewOrder ().selectBilling (type);
+        selectBilling (type);
         assertTrue (click ("[ng-click='ctrl.saveBilling()']"));
     }
 

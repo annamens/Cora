@@ -8,7 +8,7 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.BillingNewOrder;
+import com.adaptivebiotech.cora.ui.order.BillingNewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
@@ -27,12 +27,12 @@ import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 @Test (groups = { "regression", "tDetectOrder" })
 public class TDetectOrderTestSuite extends CoraBaseBrowser {
 
-    private Login           login           = new Login ();
-    private OrdersList      ordersList      = new OrdersList ();
-    private NewOrderTDetect newOrderTDetect = new NewOrderTDetect ();
-    private BillingNewOrder billing         = new BillingNewOrder ();
-    private NewShipment     shipment        = new NewShipment ();
-    private Accession       accession       = new Accession ();
+    private Login                  login           = new Login ();
+    private OrdersList             ordersList      = new OrdersList ();
+    private NewOrderTDetect        newOrderTDetect = new NewOrderTDetect ();
+    private BillingNewOrderTDetect billing         = new BillingNewOrderTDetect ();
+    private NewShipment            shipment        = new NewShipment ();
+    private Accession              accession       = new Accession ();
 
     /**
      * NOTE: SR-T3243

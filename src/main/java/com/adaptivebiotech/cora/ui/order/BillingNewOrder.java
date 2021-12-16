@@ -20,7 +20,7 @@ import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class BillingNewOrder extends CoraPage {
+public abstract class BillingNewOrder extends CoraPage {
 
     private final String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
     private final String billing                = "#billing-type";
@@ -50,85 +50,45 @@ public class BillingNewOrder extends CoraPage {
         assertTrue (clickAndSelectValue ("[name='abnStatusType']", "string:" + status));
     }
 
-    public void enterInsurance1Provider (String provider) {
-        assertTrue (setText ("[name='insuranceProvider']", provider));
-    }
+    public abstract void enterInsurance1Provider (String provider);
 
-    public void enterInsurance1GroupNumber (String group) {
-        assertTrue (setText ("[name='groupNumber']", group));
-    }
+    public abstract void enterInsurance1GroupNumber (String group);
 
-    public void enterInsurance1Policy (String policy) {
-        assertTrue (setText ("[name='policyNumber']", policy));
-    }
+    public abstract void enterInsurance1Policy (String policy);
 
-    public void enterInsurance1Relationship (PatientRelationship relationship) {
-        assertTrue (clickAndSelectValue ("[name='insuredRelationship']", "string:" + relationship));
-    }
+    public abstract void enterInsurance1Relationship (PatientRelationship relationship);
 
-    public void enterInsurance1PolicyHolder (String name) {
-        assertTrue (setText ("[name='policyholder']", name));
-    }
+    public abstract void enterInsurance1PolicyHolder (String name);
 
-    public void enterInsurance1PatientStatus (PatientStatus status) {
-        assertTrue (clickAndSelectValue ("[name='hospitalizationStatus']", "string:" + status));
-    }
+    public abstract void enterInsurance1PatientStatus (PatientStatus status);
 
-    public void enterInsurance1Hospital (String hospital) {
-        assertTrue (setText ("[name='billingInstitution']", hospital));
-    }
+    public abstract void enterInsurance1Hospital (String hospital);
 
-    public void enterInsurance1Discharge (String date) {
-        assertTrue (setText ("[name='dischargeDate']", date));
-    }
+    public abstract void enterInsurance1Discharge (String date);
 
-    public void addSecondaryInsurance () {
-        assertTrue (click ("[name='isSecondaryInsurance'][value='true']"));
-    }
+    public abstract void addSecondaryInsurance ();
 
-    public void enterInsurance2Provider (String provider) {
-        assertTrue (setText ("[name='secondaryInsuranceProvider']", provider));
-    }
+    public abstract void enterInsurance2Provider (String provider);
 
-    public void enterInsurance2GroupNumber (String group) {
-        assertTrue (setText ("[name='secondaryGroupNumber']", group));
-    }
+    public abstract void enterInsurance2GroupNumber (String group);
 
-    public void enterInsurance2Policy (String policy) {
-        assertTrue (setText ("[name='secondaryPolicyNumber']", policy));
-    }
+    public abstract void enterInsurance2Policy (String policy);
 
-    public void enterInsurance2Relationship (PatientRelationship relationship) {
-        assertTrue (clickAndSelectValue ("[name='secondaryInsuredRelationship']", "string:" + relationship));
-    }
+    public abstract void enterInsurance2Relationship (PatientRelationship relationship);
 
-    public void enterInsurance2PolicyHolder (String name) {
-        assertTrue (setText ("[name='secondaryPolicyholder']", name));
-    }
+    public abstract void enterInsurance2PolicyHolder (String name);
 
-    public void addTertiaryInsurance () {
-        assertTrue (click ("[name='isTertiaryInsurance'][value='true']"));
-    }
+    public abstract void addTertiaryInsurance ();
 
-    public void enterInsurance3Provider (String provider) {
-        assertTrue (setText ("[name='tertiaryInsuranceProvider']", provider));
-    }
+    public abstract void enterInsurance3Provider (String provider);
 
-    public void enterInsurance3GroupNumber (String group) {
-        assertTrue (setText ("[name='tertiaryGroupNumber']", group));
-    }
+    public abstract void enterInsurance3GroupNumber (String group);
 
-    public void enterInsurance3Policy (String policy) {
-        assertTrue (setText ("[name='tertiaryPolicyNumber']", policy));
-    }
+    public abstract void enterInsurance3Policy (String policy);
 
-    public void enterInsurance3Relationship (PatientRelationship relationship) {
-        assertTrue (clickAndSelectValue ("[name='tertiaryInsuredRelationship']", "string:" + relationship));
-    }
+    public abstract void enterInsurance3Relationship (PatientRelationship relationship);
 
-    public void enterInsurance3PolicyHolder (String name) {
-        assertTrue (setText ("[name='tertiaryPolicyholder']", name));
-    }
+    public abstract void enterInsurance3PolicyHolder (String name);
 
     public void enterPatientAddress1 (String address1) {
         assertTrue (setText ("//*[text()='Address 1']/..//input", address1));

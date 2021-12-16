@@ -188,6 +188,10 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText ("[name='mrn']", patient.mrn));
     }
 
+    public void setPatientMRN (String mrn) {
+        assertTrue (setText ("#mrn-input", mrn));
+    }
+
     public void clickShowContainers () {
         assertTrue (click ("[ng-click^='ctrl.showContainers']"));
     }
