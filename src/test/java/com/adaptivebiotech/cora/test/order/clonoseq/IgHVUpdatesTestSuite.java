@@ -61,11 +61,11 @@ import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.FeatureFlags;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraDbTestBase;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.debug.FeatureFlags;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
@@ -95,7 +95,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     private NewOrderClonoSeq      diagnostic                       = new NewOrderClonoSeq ();
     private ReportClonoSeq        reportClonoSeq                   = new ReportClonoSeq ();
     private OrcaHistory           history                          = new OrcaHistory ();
-    private FeatureFlags          featureFlagsPage                 = new FeatureFlags ();
     private OrderStatus           orderStatus                      = new OrderStatus ();
 
     private final String          c91_10                           = "C91.10";
@@ -145,7 +144,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        coraApi.login ();
         // IgHVPhysician Physician
         IgHVPhysician = coraApi.getPhysician (non_CLEP_clonoseq);
 
@@ -159,17 +157,15 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         new Login ().doLogin ();
         new OrdersList ().isCorrectPage ();
-        featureFlagsPage.navigateToFeatureFlagsPage ();
-        Map <String, String> featureFlags = featureFlagsPage.getFeatureFlags ();
-        isIgHVFlag.set (Boolean.valueOf (featureFlags.get ("IgHV")));
+
+        coraApi.login ();
+        FeatureFlags featureFlags = coraApi.getFeatureFlags ();
+        isIgHVFlag.set (featureFlags.IgHV);
     }
 
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder1CLIAFeatureFlagOn () {
-        if (!isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is OFF, IgHV flag is off, this test is for feature IgHV flag ON");
-        }
+        skipFlagOff ();
 
         // order 1
         Assay assayTest = ID_BCell2_CLIA;
@@ -212,10 +208,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder2CLIAFeatureFlagOn () {
-        if (!isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is OFF, this test is for feature IgHV flag ON");
-        }
+        skipFlagOff ();
 
         // order 2
         Assay assayTest = ID_BCell2_CLIA;
@@ -258,10 +251,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder3IVDFeatureFlagOn () {
-        if (!isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
-        }
+        skipFlagOff ();
 
         // order 3
         Assay assayTest = ID_BCell2_IVD;
@@ -304,10 +294,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder4IVDFeatureFlagOn () {
-        if (!isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
-        }
+        skipFlagOff ();
 
         // order 4
         Assay assayTest = ID_BCell2_IVD;
@@ -350,10 +337,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder5CLIAFeatureFlagOn () {
-        if (!isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
-        }
+        skipFlagOff ();
 
         // order 5
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
@@ -387,10 +371,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder6IVDFeatureFlagOn () {
-        if (!isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
-        }
+        skipFlagOff ();
 
         // order 6
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
@@ -424,10 +405,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder7IVDFeatureFlagOn () {
-        if (!isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
-        }
+        skipFlagOff ();
 
         // order 7
         Map <String, String> orderDetails = createOrder (IgHVPhysician,
@@ -461,10 +439,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     @Test (groups = "featureFlagOff")
     public void verifyIgHVStageAndReportCLIAFeatureFlagOff () {
-        if (isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is on, this test is for feature IgHV flag off");
-        }
+        skipFlagOn ();
 
         // order 8
         Assay assayTest = ID_BCell2_CLIA;
@@ -1266,4 +1241,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         return extractedText;
     }
 
+    private void skipFlagOn () {
+        if (isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is on, this test is for feature IgHV flag off");
+        }
+    }
+
+    private void skipFlagOff () {
+        if (!isIgHVFlag.get ()) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
+        }
+    }
 }
