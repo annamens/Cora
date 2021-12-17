@@ -1,23 +1,34 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
+import com.seleniumfy.test.utils.Timeout;
 
-public class OrderStatus extends Diagnostic {
+public class OrderStatus extends OrderHeader {
 
+    private final long   millisRetry          = 3000000l;                                                                     // 50mins
+    private final long   waitRetry            = 30000l;                                                                       // 30sec
     private final String historyLink          = ".history-link";
     private final String stageActionDots      = "#stageActionsDropdown";
     private final String stageActionsDropdown = "[aria-labelledby='stageActionsDropdown']";
-    private final String failworkflowAction   = "//*[@aria-labelledby='stageActionsDropdown']//a[text()='Fail workflow']";
+    private final String dropdownItem         = "//*[@aria-labelledby='stageActionsDropdown']//a[text()='%s']";
     private final String subStatusMsg         = "[ng-model='ctrl.subStatusMessage']";
     private final String submit               = "//button[text()='Submit']";
     private final String actionConfirm        = ".action-confirm";
     private final String confirmYes           = "//button[text()='Yes']";
+    private final String hideShow             = "//tr[td[text()='%s']]//*[contains (@class, 'history-link') and text()='%s']";
+    private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]";
+
+    public OrderStatus () {
+        staticNavBarHeight = 200;
+    }
 
     @Override
     public void isCorrectPage () {
@@ -35,10 +46,6 @@ public class OrderStatus extends Diagnostic {
         return cancellationMsgs;
     }
 
-    public String getOrderNum () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
-    }
-
     public String getOrderName () {
         return getText ("[ng-bind='ctrl.orderEntry.order.name']");
     }
@@ -49,6 +56,11 @@ public class OrderStatus extends Diagnostic {
 
     public String getTestName () {
         return getText ("[ng-bind='::orderTest.testName']");
+    }
+
+    // aka sample name
+    public String getWorkflowId () {
+        return getText ("[ng-bind=\"::orderTest.workflowName\"]");
     }
 
     public String getLastActivity () {
@@ -62,20 +74,6 @@ public class OrderStatus extends Diagnostic {
 
     public boolean kitReportDeliveryStageDisplayed () {
         return waitForElement ("[class='ordertest-list-stage KitReportDelivery']").isDisplayed ();
-    }
-
-    public void clickPatientNotesIcon () {
-        String css = "[ng-click=\"ctrl.showPatientNotesDialog()\"]";
-        assertTrue (click (css));
-        waitForElementVisible (".patient-notes-modal");
-        assertTrue (getText (popupTitle).contains ("Patient Note for Patient "));
-    }
-
-    // patient notes popup
-    public String getPatientNotes () {
-        String css = "[ng-bind=\"ctrl.patient.notes\"]";
-        String text = readInput (css);
-        return text;
     }
 
     public int getClarityStageRequeueCount () {
@@ -154,11 +152,89 @@ public class OrderStatus extends Diagnostic {
         assertTrue (isTextInElement (historyLink, "Hide"));
         assertTrue (click (stageActionDots));
         assertTrue (waitUntilVisible (stageActionsDropdown));
-        assertTrue (click (failworkflowAction));
+        assertTrue (click (format (dropdownItem, "Fail workflow")));
         assertTrue (setText (subStatusMsg, message));
         assertTrue (click (submit));
         assertTrue (isTextInElement (actionConfirm, "Are you sure you want to fail the workflow?"));
         assertTrue (click (confirmYes));
     }
 
+    public String getSpecimenId () {
+        String css = "span.order-specimen-id";
+        return getText (css);
+    }
+
+    public void nudgeWorkflow () {
+        assertTrue (click (stageActionDots));
+        assertTrue (click (format (dropdownItem, "Nudge workflow")));
+        assertTrue (click (confirmYes));
+    }
+
+    public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus,
+                         String message) {
+        String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
+        String check = format (xpath, sampleName, stage, status, substatus == null ? "" : substatus, message);
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        while (!timer.Timedout () && !found) {
+            clickHistory (sampleName);
+            nudgeWorkflow ();
+            timer.Wait ();
+            found = isElementPresent (check);
+            clickHide (sampleName);
+        }
+        if (!found)
+            fail (format (fail, stage, status, substatus, message));
+    }
+
+    public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
+        String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        while (!timer.Timedout () && !found) {
+            clickHistory (sampleName);
+            nudgeWorkflow ();
+            timer.Wait ();
+            found = isStagePresent (sampleName, stage, status, substatus);
+            clickHide (sampleName);
+        }
+        if (!found)
+            fail (format (fail, stage, status, substatus));
+    }
+
+    public void waitFor (String sampleName, StageName stage, StageStatus status) {
+        String fail = "unable to locate Stage: %s, Status: %s";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        while (!timer.Timedout () && !found) {
+            clickHistory (sampleName);
+            nudgeWorkflow ();
+            timer.Wait ();
+            found = isStagePresent (sampleName, stage, status);
+            clickHide (sampleName);
+        }
+        if (!found)
+            fail (format (fail, stage, status));
+    }
+
+    public boolean isStagePresent (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]";
+        return isElementPresent (format (xpath, sampleName, stage.name (), status.name (), substatus.name ()));
+    }
+
+    public boolean isStagePresent (String sampleName, StageName stage, StageStatus status) {
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']";
+        return isElementPresent (format (xpath, sampleName, stage.name (), status.name ()));
+    }
+
+    public void clickHistory (String sampleName) {
+        assertTrue (click (format (hideShow, sampleName, "History")));
+        assertTrue (waitUntilVisible (format (workflowTable, sampleName)));
+    }
+
+    public void clickHide (String sampleName) {
+        assertTrue (click (format (hideShow, sampleName, "Hide")));
+        assertTrue (waitForElementInvisible (format (workflowTable, sampleName)));
+    }
 }

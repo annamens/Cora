@@ -123,7 +123,7 @@ public class OrdersList extends CoraPage {
             Order o = new Order ();
             o.name = getText (el, "[ng-bind='::orderTest.orderName']");
             o.id = getAttribute (el, "[ng-bind='::orderTest.orderName']", "href").replaceFirst (".*ordertestid=", "");
-            o.tests.add (new OrderTest (getAssay (getText (el, "[ng-bind='::orderTest.testName']")), true));
+            o.tests.add (new OrderTest (getAssay (getText (el, "[ng-bind='::orderTest.testName']"))));
 
             Patient patient = new Patient ();
             patient.patientCode = Integer.valueOf (getText (el, "[ng-bind='::orderTest.patientCode']"));

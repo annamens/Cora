@@ -32,6 +32,7 @@ public class CoraPage extends BasePage {
     private final String   newmenu    = "li:nth-child(1) .new-order #navNewDropdown";
     private final String   utilities  = "li:nth-child(9) .new-order #navNewDropdown";
     protected final String popupTitle = ".modal-header .modal-title";
+    protected final String tabBase    = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
 
     public CoraPage () {
         staticNavBarHeight = 35;
@@ -212,15 +213,7 @@ public class CoraPage extends BasePage {
     }
 
     public void searchContainer (Container container) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=all&search=" + container.containerNumber));
-    }
-
-    public void searchContainerByContainerId (Container container) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber));
-    }
-
-    public void showTodayFreezerContents (Container freezer) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?arrivalDate=today&rootContainerId=" + freezer.id));
+        assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber + "&sort=HoldingContainer&ascending=true&searchType=Container&groupByHoldingContainer=false&includeChildSpecimen=false&offset=0"));
     }
 
     public void gotoMyCustody () {
@@ -259,9 +252,15 @@ public class CoraPage extends BasePage {
     }
 
     protected void moduleLoading () {
-        assertTrue (waitForElementInvisible (".message.ng-hide[ng-show='loading.overlay']"));
+        transactionInProgress ();
         assertTrue (noSuchElementPresent (".modal-dialog"));
         assertTrue (noSuchElementPresent (".modal-backdrop"));
+    }
+
+    // Transaction in progress: Do not leave this page.
+    protected void transactionInProgress () {
+        assertTrue (waitForElementInvisible (".message[ng-show='loading.overlay']"));
+        hasPageLoaded ();
     }
 
     protected String getConId (String href) {
@@ -279,7 +278,7 @@ public class CoraPage extends BasePage {
     }
 
     public void clickFilter () {
-        assertTrue (click ("[ng-click='ctrl.search()']"));
+        assertTrue (click ("//*[text()='Filter list']"));
     }
 
     public Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds, Function <WebDriver, Boolean> func) {
@@ -325,60 +324,6 @@ public class CoraPage extends BasePage {
             throw new RuntimeException (e);
         }
         return dropDownOptions;
-    }
-
-    /**
-     * Get CSS property value
-     * 
-     * @param target
-     *            HTML DOM element (css or xpath)
-     * @param propertyName
-     *            css property name
-     * @return css property value
-     */
-    public String getCssProperty (String target, String propertyName) {
-        return getCssProperty (locateBy (target), propertyName);
-    }
-
-    /**
-     * Get CSS property value
-     * 
-     * @param by
-     *            {@link By}
-     * @param propertyName
-     *            css property name
-     * @return css property value
-     */
-    public String getCssProperty (By by, String propertyName) {
-        return getCssProperty (waitForElement (by), propertyName);
-    }
-
-    /**
-     * Get CSS property value
-     * 
-     * @param element
-     *            {@link WebElement}
-     * @param propertyName
-     *            css property name
-     * @return css property value
-     */
-    public String getCssProperty (WebElement element, String propertyName) {
-        return element.getCssValue (propertyName);
-    }
-
-    /**
-     * Get CSS property value
-     * 
-     * @param element
-     *            {@link WebElement}
-     * @param target
-     *            HTML DOM child element (css or xpath)
-     * @param propertyName
-     *            css property name
-     * @return css property value
-     */
-    public String getCssProperty (WebElement element, String target, String propertyName) {
-        return element.findElement (locateBy (target)).getCssValue (propertyName);
     }
 
     public void navigateToTab (int tabIndex) {

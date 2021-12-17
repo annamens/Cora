@@ -6,14 +6,16 @@ import static com.adaptivebiotech.test.utils.PageHelper.AbnStatus.RequiredInclud
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.CommercialInsurance;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.PatientSelfPay;
+import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.TrialProtocol;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Child;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Other;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Spouse;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.Inpatient;
+import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
-import static java.lang.String.format;
 import static java.util.UUID.randomUUID;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -25,6 +27,7 @@ import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
+import com.github.javafaker.Faker;
 
 public class TestHelper {
 
@@ -33,6 +36,14 @@ public class TestHelper {
         container.id = testdata ().get ("freezerDestroyed_id");
         container.containerNumber = testdata ().get ("freezerDestroyed_num");
         container.name = "[Destroyed]";
+        return container;
+    }
+
+    public static Container dumbwaiter () {
+        Container container = new Container ();
+        container.id = testdata ().get ("dumbwaiter_id");
+        container.containerNumber = testdata ().get ("dumbwaiter_num");
+        container.name = "1165 Dumbwaiter";
         return container;
     }
 
@@ -68,45 +79,6 @@ public class TestHelper {
         return container;
     }
 
-    public static Physician physician1 () {
-        Physician physician = new Physician ();
-        physician.id = "dfb8acb3-37af-474b-bb07-0dc8c6c10668";
-        physician.firstName = "Selenium";
-        physician.lastName = "Test1";
-        physician.accountName = "SEA_QA Test";
-        physician.providerFullName = format ("%s %s", physician.firstName, physician.lastName);
-        physician.address1 = "1234 Main St";
-        physician.city = "Seattle";
-        physician.state = "WA";
-        physician.zip = "98111";
-        physician.phone = "(206) 555-1212";
-        physician.allowInternalOrderUpload = false;
-        physician.email = "selenium.test1@1secmail.com";
-        physician.notificationEmails = "selenium.test1@1secmail.com";
-        physician.portal_emails = "selenium.test1@1secmail.com";
-        return physician;
-    }
-
-    // AllowInternalOrderUpload flag enabled in SalesForce
-    public static Physician physicianTRF () {
-        Physician physician = new Physician ();
-        physician.id = "a1461f9d-29e0-464c-8bf6-a383079f1d62";
-        physician.firstName = "Automated";
-        physician.lastName = "Tests";
-        physician.accountName = "SEA_QA Test";
-        physician.providerFullName = format ("%s %s", physician.firstName, physician.lastName);
-        physician.address1 = "1234 Main St";
-        physician.city = "Seattle";
-        physician.state = "WA";
-        physician.zip = "98111";
-        physician.phone = "(206) 555-1212";
-        physician.allowInternalOrderUpload = true;
-        physician.email = "automated.test@adaptivebiotech.com";
-        physician.notificationEmails = "automated.test@adaptivebiotech.com";
-        physician.portal_emails = "automated.test@adaptivebiotech.com";
-        return physician;
-    }
-
     // clean: no insurance, medicare, address, etc.
     public static Patient newPatient () {
         Patient patient = new Patient ();
@@ -137,12 +109,37 @@ public class TestHelper {
         patient.insurance1.groupNumber = null;
         patient.insurance2 = insurance2 ();
 
-        Address address = address ();
+        Address address = getRandomAddress ();
         patient.address = address.line1;
         patient.phone = address.phone;
         patient.locality = address.city;
         patient.region = address.state;
         patient.postCode = address.postalCode;
+        return patient;
+    }
+
+    // Bill my Institution
+    public static Patient newClientPatient () {
+        Patient patient = newPatient ();
+        patient.billingType = Client;
+        patient.insurance1 = new Insurance ();
+        patient.insurance1.hospitalizationStatus = NonHospital;
+        return patient;
+    }
+
+    // Bill my Study Protocol
+    public static Patient newTrialProtocolPatient () {
+        Patient patient = newPatient ();
+        patient.billingType = TrialProtocol;
+        return patient;
+    }
+
+    // Patient Self-Pay
+    public static Patient newSelfPayPatient () {
+        Patient patient = newPatient ();
+        patient.billingType = PatientSelfPay;
+        patient.insurance1 = new Insurance ();
+        patient.insurance1.hospitalizationStatus = NonHospital;
         return patient;
     }
 
@@ -152,6 +149,7 @@ public class TestHelper {
         patient.billingType = CommercialInsurance;
         patient.insurance1 = insurance1 ();
         patient.insurance2 = insurance2 ();
+        patient.insurance3 = insurance3 ();
         return patient;
     }
 
@@ -163,6 +161,7 @@ public class TestHelper {
         patient.insurance1 = insurance1 ();
         patient.insurance1.groupNumber = null;
         patient.insurance2 = insurance2 ();
+        patient.insurance3 = insurance3 ();
         return patient;
     }
 
@@ -187,13 +186,21 @@ public class TestHelper {
         return patient;
     }
 
-    public static Address address () {
+    /**
+     * Generate random address
+     * 
+     * @return Address
+     */
+    public static Address getRandomAddress () {
+        Faker faker = new Faker ();
         Address address = new Address ();
-        address.line1 = "1551 Eastlake Ave E";
-        address.phone = "206-201-1868";
-        address.city = "Seattle";
-        address.state = "WA";
-        address.postalCode = "98104";
+        address.line1 = faker.address ().streetAddress ();
+        address.line2 = faker.address ().secondaryAddress ();
+        address.phone = faker.phoneNumber ().cellPhone ();
+        address.email = faker.name ().username () + "@gmail.com";
+        address.city = faker.address ().city ();
+        address.state = faker.address ().stateAbbr ();
+        address.postalCode = faker.address ().zipCodeByState (address.state);
         return address;
     }
 
@@ -242,6 +249,8 @@ public class TestHelper {
         data.put ("AB018082_num", "CO-100162");
         data.put ("AB039003_id", "8fba58e9-6d78-4e0f-993a-63c7b9450494");
         data.put ("AB039003_num", "CO-166946");
+        data.put ("dumbwaiter_id", "eec8c896-0cbe-4531-83a6-da958c79c368");
+        data.put ("dumbwaiter_num", "CO-724045");
         return data;
     };
 

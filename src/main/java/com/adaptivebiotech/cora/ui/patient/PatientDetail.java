@@ -1,13 +1,14 @@
 package com.adaptivebiotech.cora.ui.patient;
 
+import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
-import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
 
 /**
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class PatientDetail extends CoraPage {
+public class PatientDetail extends PatientHeader {
 
     public PatientDetail () {
         staticNavBarHeight = 200;
@@ -31,7 +32,7 @@ public class PatientDetail extends CoraPage {
     }
 
     public void clickEditPatientDemographics () {
-        String xpathForEditButton = "//*[@class='demographics-details']/..//button";
+        String xpathForEditButton = "//*[@class='demographics-details']/..//button//*[contains(@class,'glyphicon-pencil')]";
         assertTrue (click (xpathForEditButton));
         String expectedTitle = "Edit Patient Demographics";
         assertTrue (isTextInElement (popupTitle, expectedTitle));
@@ -62,12 +63,6 @@ public class PatientDetail extends CoraPage {
         pageLoading ();
     }
 
-    public void clickClose () {
-        String cssForCloseButton = "go-back";
-        assertTrue (click (cssForCloseButton));
-        moduleLoading ();
-    }
-
     public String getPrimaryInsuranceProvider () {
         String xpath = "//*[label=\"Insurance Provider\"]/following-sibling::div";
         return getText (xpath);
@@ -83,9 +78,9 @@ public class PatientDetail extends CoraPage {
         return getText (xpath);
     }
 
-    public String getPrimaryInsurancePatientRelationship () {
+    public PatientRelationship getPrimaryInsurancePatientRelationship () {
         String xpath = "//*[label='Patient Relationship to Policyholder']/following-sibling::div";
-        return getText (xpath);
+        return getEnum (PatientRelationship.class, getText (xpath));
     }
 
     public String getPrimaryInsurancePolicyholderName () {

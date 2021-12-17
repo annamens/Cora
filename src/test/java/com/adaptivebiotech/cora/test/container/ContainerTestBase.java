@@ -1,99 +1,32 @@
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.utils.TestHelper.dumbwaiter;
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018055;
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018078;
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB039003;
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerDestroyed;
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static com.seleniumfy.test.utils.HttpClientHelper.body;
-import static com.seleniumfy.test.utils.HttpClientHelper.post;
-import static com.seleniumfy.test.utils.HttpClientHelper.put;
-import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
-import java.util.stream.IntStream;
-import org.apache.http.message.BasicHeader;
-import org.testng.annotations.AfterClass;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
-import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
-import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.container.MyCustody;
-import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 public class ContainerTestBase extends CoraBaseBrowser {
 
     protected final Container freezerDestroyed = freezerDestroyed ();
+    protected final Container dumbwaiter       = dumbwaiter ();
     protected final Container freezerAB018055  = freezerAB018055 ();
     protected final Container freezerAB018078  = freezerAB018078 ();
     protected final Container freezerAB039003  = freezerAB039003 ();
 
-    @AfterClass (groups = "regression", alwaysRun = true)
-    public void containerAfterClass () {
-        new Login ().doLogin ();
-        OrdersList oList = new OrdersList ();
-        oList.isCorrectPage ();
-        oList.gotoMyCustody ();
-        MyCustody my = new MyCustody ();
-        my.isCorrectPage ();
-        my.sendAllMyCustody (freezerDestroyed ());
-    }
-
     protected Container container (ContainerType type) {
-        return container (type, null, null);
-    }
-
-    private Container container (ContainerType type, String cbarcode, Container croot) {
         Container container = new Container ();
         container.containerType = type;
         container.contentsLocked = false;
         container.usesBarcodeAsId = false;
-        container.barcode = cbarcode;
-        container.root = croot;
         return container;
-    }
-
-    protected Containers addContainers (ContainerType type, String barcode, Container root, int num) {
-        return addContainers (new Containers (IntStream.range (0, num).mapToObj (i -> {
-            return container (type, barcode, root);
-        }).collect (toList ())));
-    }
-
-    protected Containers addContainers (Containers containers) {
-        try {
-            String url = coraTestUrl + "/cora/api/v1/containers/addEntries";
-            HttpClientHelper.resetheaders ();
-            HttpClientHelper.headers.get ().add (new BasicHeader ("X-Api-UserName", coraTestUser));
-            String result = post (url, body (mapper.writeValueAsString (containers.list)));
-            HttpClientHelper.resetheaders ();
-            return new Containers (
-                    mapper.readValue (result, HttpResponse.class).containers.parallelStream ().map (c -> {
-                        c.location = coraTestUser;
-                        return c;
-                    }).collect (toList ()));
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-    }
-
-    protected Containers deactivateContainers (Containers containers) {
-        try {
-            containers.list.parallelStream ().forEach (c -> c.isActive = false);
-            String url = coraTestUrl + "/cora/api/v1/containers/updateEntries";
-            HttpClientHelper.resetheaders ();
-            HttpClientHelper.headers.get ().add (new BasicHeader ("X-Api-UserName", coraTestUser));
-            String result = put (url, body (mapper.writeValueAsString (containers.list)));
-            HttpClientHelper.resetheaders ();
-            return new Containers (mapper.readValue (result, HttpResponse.class).containers);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
     }
 
     protected void verifyDetails (Container actual, Container expected) {

@@ -3,9 +3,8 @@ package com.adaptivebiotech.cora.ui.shipment;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.openqa.selenium.WebElement;
-import com.adaptivebiotech.cora.ui.CoraPage;
 
-public class DiscrepancyResolutions extends CoraPage {
+public class DiscrepancyResolutions extends ShipmentHeader {
 
     public int getNumberOfDiscrepancies () {
         String css = "[ng-bind=\"ctrl.entry.discrepancies.length\"]";
@@ -20,7 +19,6 @@ public class DiscrepancyResolutions extends CoraPage {
 
         for (WebElement statusDropdown : statusDropdowns) {
             assertTrue (clickAndSelectText (statusDropdown, "Resolved - Yes"));
-            waitForAjaxCalls ();
         }
 
     }

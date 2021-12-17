@@ -1,43 +1,39 @@
 package com.adaptivebiotech.cora.test.shipment;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.Diagnostic;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
-import com.adaptivebiotech.cora.utils.TestHelper;
 
 @Test (groups = "regression")
 public class DoubleClickSaveTest extends CoraBaseBrowser {
 
-    private Diagnostic   diagnostic;
-    private Shipment     shipment;
-    private ShipmentList shipmentList;
-
-    @BeforeMethod (alwaysRun = true)
-    public void beforeMethod () {
-        new Login ().doLogin ();
-        new OrdersList ().isCorrectPage ();
-        diagnostic = new Diagnostic ();
-        shipment = new Shipment ();
-        shipmentList = new ShipmentList ();
-    }
+    private Login            login        = new Login ();
+    private OrdersList       ordersList   = new OrdersList ();
+    private NewOrderClonoSeq diagnostic   = new NewOrderClonoSeq ();
+    private NewShipment      shipment     = new NewShipment ();
+    private ShipmentList     shipmentList = new ShipmentList ();
 
     public void doubleClickSave () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+
+        coraApi.login ();
         diagnostic.selectNewClonoSEQDiagnosticOrder ();
         diagnostic.isCorrectPage ();
-        diagnostic.selectPhysician (TestHelper.physicianTRF ());
+        diagnostic.selectPhysician (coraApi.getPhysician (non_CLEP_clonoseq));
         diagnostic.enterPatientICD_Codes ("A01.02");
         diagnostic.clickSave ();
-        String orderNum = diagnostic.getOrderNum ();
+        String orderNum = diagnostic.getOrderNumber ();
 
         diagnostic.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();

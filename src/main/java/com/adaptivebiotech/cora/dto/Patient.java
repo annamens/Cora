@@ -58,6 +58,11 @@ public final class Patient {
         return toStringOverride (this);
     }
 
+    @Override
+    public boolean equals (Object o) {
+        return equalsOverride (this, (Patient) o);
+    }
+
     public static final class Address {
 
         public String        use;

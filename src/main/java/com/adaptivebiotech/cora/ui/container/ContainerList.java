@@ -7,6 +7,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import java.util.List;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -15,6 +16,7 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author Harry Soehalim
@@ -28,6 +30,7 @@ public class ContainerList extends CoraPage {
     private final String   fail       = ".alert-danger";
     private final String   holdingBtn = "[ng-click*='holdingContainer']";
     private final String   moveBtn    = "[ng-click='ctrl.moveHere()']";
+    private final String   locked     = "//*[contains (@class, 'alert-danger') and contains (text(), 'All containers are locked by another process.')]";
     protected final String scan       = "#container-scan-input";
 
     public ContainerList () {
@@ -54,6 +57,7 @@ public class ContainerList extends CoraPage {
 
     public void searchContainerIdOrName (String containerIdOrName) {
         assertTrue (setText ("[placeholder='CO-000000 or Container Name']", containerIdOrName));
+        assertTrue (click (".search-btn"));
         assertNotNull (waitForElementClickable ("//button[text()='Filter list']"));
     }
 
@@ -79,7 +83,7 @@ public class ContainerList extends CoraPage {
 
     public Containers getContainers () {
         return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
-            List <WebElement> columns = el.findElements (locateBy ("td"));
+            List <WebElement> columns = findElements (el, "td");
             Container c = new Container ();
             c.id = getConId (getAttribute (columns.get (1), "a", "href"));
             c.containerNumber = getText (columns.get (1));
@@ -146,7 +150,20 @@ public class ContainerList extends CoraPage {
         if (comment != null)
             assertTrue (setText (comments, comment));
 
-        selectFreezerTest (freezer);
+        assertTrue (click (format ("//span[text()='%s']", freezer.name)));
+        clickMove ();
+        transactionInProgress ();
+
+        // SR-8459: sometimes we're getting a container locked error msg
+        Timeout timer = new Timeout (millisRetry * 10, waitRetry);
+        boolean isLocked = false;
+        while (!timer.Timedout () && (isLocked = isElementPresent (locked))) {
+            clickMove ();
+            transactionInProgress ();
+        }
+        if (isLocked)
+            fail ("unable to move to freezer");
+
         assertTrue (isTextInElement (pass, success + freezer.name));
         assertTrue (noSuchElementPresent (depleted));
         assertTrue (noSuchElementPresent (comments));
@@ -161,12 +178,8 @@ public class ContainerList extends CoraPage {
             });
 
         clickClose ();
+        moduleLoading ();
         pageLoading ();
-    }
-
-    public void selectFreezerTest (Container freezer) {
-        assertTrue (click (format ("//span[text()='%s']", freezer.name)));
-        clickMove ();
     }
 
     public String getFreezerError () {
@@ -189,7 +202,15 @@ public class ContainerList extends CoraPage {
 
     public void setHoldingContainer (Container child, Container holding) {
         scanAndClickHoldingContainer (child);
-        finalizeHoldingContainer (child, holding);
+
+        // SR-8459: sometimes we're getting a container locked error msg
+        Timeout timer = new Timeout (millisRetry * 20, waitRetry);
+        boolean isSuccessful = true;
+        while (!timer.Timedout () && ! (isSuccessful = finalizeHoldingContainer (child, holding))) {
+            scanAndClickHoldingContainer (child);
+        }
+        if (!isSuccessful)
+            fail ("unable to set holding container");
     }
 
     public void setHoldingContainerTest (Container child, Container holding) {
@@ -209,14 +230,20 @@ public class ContainerList extends CoraPage {
         assertTrue (isTextInElement (".container h5", "Choose Holding Container"));
     }
 
-    public void finalizeHoldingContainer (Container child, Container holding) {
-        String root = child.root != null ? " from " + child.root.containerNumber : "";
+    public boolean finalizeHoldingContainer (Container child, Container holding) {
         chooseHoldingContainer (holding);
         if (holding.containerType.isHolding) {
             assertTrue (waitUntilVisible ("[containers='[ctrl.holdingContainer]']"));
             clickMove ();
+            transactionInProgress ();
+            if (isElementPresent (locked)) {
+                child.root = null;
+                closePopup ();
+                return false;
+            }
 
             if (holding.containerType.type.equals (child.containerType.type)) {
+                String root = child.root != null ? " from " + child.root.containerNumber : "";
                 String success = "Moved container " + child.containerNumber + root + " to " + holding.containerNumber;
                 assertTrue (isTextInElement (pass, success));
                 assertTrue (noSuchElementPresent (depleted));
@@ -238,6 +265,7 @@ public class ContainerList extends CoraPage {
             assertTrue (isTextInElement (".text-danger", err));
         }
         closePopup ();
+        return true;
     }
 
     public void chooseHoldingContainer (Container holding) {
@@ -285,8 +313,9 @@ public class ContainerList extends CoraPage {
     }
 
     public void scanToVerify (String containerNumber) {
-        assertTrue (clear (waitForElement ("#scan_input")));
-        assertTrue (setText ("#scan_input", containerNumber));
+        String scanField = "#scan_input";
+        assertTrue (clear (scanField));
+        assertTrue (setText (scanField, containerNumber));
         assertTrue (pressKey (Keys.ENTER));
     }
 
@@ -318,11 +347,5 @@ public class ContainerList extends CoraPage {
             assertTrue (noSuchElementPresent ("[containers='[ctrl.containerDetail]'] " + depleted));
         } else if (container.depleted != null)
             assertTrue (clickAndSelectValue (depleted, "boolean:" + container.depleted));
-    }
-
-    @Override
-    public void clickFilter () {
-        assertTrue (click ("//button[text()='Filter list']"));
-        doWait (1000); // work around for StaleElementReferenceException
     }
 }

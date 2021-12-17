@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import java.io.Serializable;
 import java.util.List;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
@@ -25,45 +26,38 @@ public final class Containers {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
-    public static final class Container {
+    public static final class Container implements Serializable {
 
-        public String           id;
-        public String           containerNumber;
-        public ContainerType    containerType;
-        public String           contents;
-        public String           location;
-        public String           name;
-        public String           externalId;
-        public String           arrivalDate;
-        public String           orderId;
-        public Boolean          isActive;
-        public Boolean          contentsLocked;
-        public Boolean          depleted;
-        public Boolean          usesBarcodeAsId;
-        public String           barcode;
-        public String           specimenId;
-        public String           specimenName;
-        public String           integrity;
-        public String           comment;
-        public Container        root;
-        public Integer          capacity;
-        public String           shipmentNumber;
-        public List <Container> children;
+        private static final long serialVersionUID = 1L;
+        public String             id;
+        public String             containerNumber;
+        public ContainerType      containerType;
+        public String             contents;
+        public String             location;
+        public String             name;
+        public String             externalId;
+        public String             arrivalDate;
+        public String             orderId;
+        public Boolean            isActive;
+        public Boolean            contentsLocked;
+        public Boolean            depleted;
+        public Boolean            usesBarcodeAsId;
+        public String             barcode;
+        public String             specimenId;
+        public String             specimenName;
+        public String             integrity;
+        public String             comment;
+        public Container          root;
+        public Integer            capacity;
+        public String             shipmentNumber;
+        public List <Container>   children;
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
     }
 }

@@ -1,24 +1,20 @@
 package com.adaptivebiotech.cora.test.shipment;
 
-import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.Billing;
-import com.adaptivebiotech.cora.ui.order.Diagnostic;
-import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
+import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.Shipment;
+import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
-import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
@@ -32,19 +28,19 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 @Test (groups = "regression")
 public class ShipmentLinkTestSuite extends CoraBaseBrowser {
 
-    private OrdersList         ordersList         = new OrdersList ();
-    private Diagnostic         diagnostic         = new Diagnostic ();
-    private Billing            billing            = new Billing ();
-    private Specimen           specimen           = new Specimen ();
-    private Shipment           shipment           = new Shipment ();
-    private ShipmentDetail     shipmentDetail     = new ShipmentDetail ();
-    private Accession          accession          = new Accession ();
-    private OrderDetailTDetect orderDetailTDetect = new OrderDetailTDetect ();
+    private Login            login           = new Login ();
+    private OrdersList       ordersList      = new OrdersList ();
+    private NewOrderClonoSeq diagnostic      = new NewOrderClonoSeq ();
+    private NewShipment      shipment        = new NewShipment ();
+    private ShipmentDetail   shipmentDetail  = new ShipmentDetail ();
+    private Accession        accession       = new Accession ();
+    private NewOrderTDetect  newOrderTDetect = new NewOrderTDetect ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        new Login ().doLogin ();
+        login.doLogin ();
         ordersList.isCorrectPage ();
+        coraApi.login ();
     }
 
     /**
@@ -52,42 +48,23 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      */
     public void verifyClonoSeqShipmentLink () {
         // create clonoSEQ diagnostic order
-        billing.selectNewClonoSEQDiagnosticOrder ();
-        billing.isCorrectPage ();
-
-        billing.selectPhysician (TestHelper.physicianTRF ());
-        billing.createNewPatient (TestHelper.newPatient ());
-        billing.enterPatientICD_Codes ("C90.00");
-        billing.clickAssayTest (Assay.ID_BCell2_CLIA);
-        billing.selectBilling (ChargeType.NoCharge);
-        billing.clickSave ();
-
-        // add specimen details for order
-        specimen.enterSpecimenDelivery (CustomerShipment);
-        specimen.clickEnterSpecimenDetails ();
-        specimen.enterSpecimenType (SpecimenType.Blood);
-        specimen.enterAntiCoagulant (Anticoagulant.EDTA);
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-1));
-        specimen.enterOrderNotes ("SR-T3144 Order Notes");
-        specimen.clickSave ();
-
-        String orderNum = specimen.getOrderNum ();
-        Logging.info ("Order Number: " + orderNum);
+        String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
+                                                          TestHelper.newPatient (),
+                                                          new String[] { "C90.00" },
+                                                          Assay.ID_BCell2_CLIA,
+                                                          ChargeType.NoCharge,
+                                                          SpecimenType.Blood,
+                                                          null,
+                                                          Anticoagulant.EDTA);
 
         // add diagnostic shipment
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
-        shipment.selectDiagnosticSpecimenContainerType (ContainerType.SlideBox5);
-        shipment.clickSave ();
-        shipment.gotoAccession ();
-        accession.isCorrectPage ();
+        shipment.createShipment (orderNum, ContainerType.SlideBox5);
 
         // accession complete
+        accession.isCorrectPage ();
         accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
         accession.clickPass ();
         String expIntakeComplete = accession.getIntakeCompleteDate ();
 
@@ -125,36 +102,22 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      */
     public void verifyTDetectShipmentLink () {
         // create T-Detect diagnostic order
-        orderDetailTDetect.selectNewTDetectDiagnosticOrder ();
-        orderDetailTDetect.isCorrectPage ();
-
-        orderDetailTDetect.selectPhysician (TestHelper.physicianTRF ());
-        orderDetailTDetect.createNewPatient (TestHelper.newPatient ());
-        orderDetailTDetect.clickSave ();
-
-        specimen.enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        orderDetailTDetect.clickAssayTest (Assay.COVID19_DX_IVD);
-        billing.selectBilling (ChargeType.Client);
-        billing.enterPatientAddress (TestHelper.address ());
-        billing.clickSave ();
-
-        String orderNum = orderDetailTDetect.getOrderNum ();
-        Logging.info ("Order Number: " + orderNum);
+        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
+                                                              TestHelper.newPatient (),
+                                                              new String[] {},
+                                                              DateUtils.getPastFutureDate (-1),
+                                                              Assay.COVID19_DX_IVD,
+                                                              ChargeType.Client,
+                                                              TestHelper.getRandomAddress ());
 
         // add diagnostic shipment
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
-        shipment.selectDiagnosticSpecimenContainerType (ContainerType.SlideBox5);
-        shipment.clickSave ();
-        shipment.gotoAccession ();
-        accession.isCorrectPage ();
+        shipment.createShipment (orderNum, ContainerType.SlideBox5);
 
         // accession complete
+        accession.isCorrectPage ();
         accession.clickIntakeComplete ();
-        accession.labelingComplete ();
-        accession.labelVerificationComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
         accession.clickPass ();
         String expIntakeComplete = accession.getIntakeCompleteDate ();
 
@@ -169,20 +132,20 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         String expSpecimenApprovalDateTime = shipmentDetail.getSpecimenApprovalDateTime ();
         Containers expContainers = shipmentDetail.getPrimaryContainers (ContainerType.SlideBox5);
         shipmentDetail.clickOrderNo ();
-        diagnostic.isCorrectPage ();
+        newOrderTDetect.isCorrectPage ();
 
-        orderDetailTDetect.clickShipment ();
-        orderDetailTDetect.clickShowContainers ();
-        assertEquals (diagnostic.getShipmentArrivalDate (), shipment.arrivalDate);
-        assertEquals (diagnostic.getSpecimenId (), expSpecimenId);
+        newOrderTDetect.clickShipment ();
+        newOrderTDetect.clickShowContainers ();
+        assertEquals (newOrderTDetect.getShipmentArrivalDate (), shipment.arrivalDate);
+        assertEquals (newOrderTDetect.getSpecimenId (), expSpecimenId);
         // TODO make changes as per https://sdlc.dna.corp.adaptivebiotech.com:8443/browse/SR-7887
-        // assertEquals (diagnostic.getSpecimenContainerType ().label, expContainerType);
-        assertEquals (diagnostic.getSpecimenContainerQuantity (), expContainerQuantity);
-        assertEquals (diagnostic.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
-        assertEquals (diagnostic.getSpecimenApprovalStatus (), expSpecimenApprovalStatus.toUpperCase ());
-        assertEquals (diagnostic.getSpecimenApprovalDate (), expSpecimenApprovalDateTime);
+        // assertEquals (newOrderTDetect.getSpecimenContainerType ().label, expContainerType);
+        assertEquals (newOrderTDetect.getSpecimenContainerQuantity (), expContainerQuantity);
+        assertEquals (newOrderTDetect.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
+        assertEquals (newOrderTDetect.getSpecimenApprovalStatus (), expSpecimenApprovalStatus.toUpperCase ());
+        assertEquals (newOrderTDetect.getSpecimenApprovalDate (), expSpecimenApprovalDateTime);
 
-        Containers actualContainers = orderDetailTDetect.getContainers ();
+        Containers actualContainers = newOrderTDetect.getContainers ();
         assertEquals (actualContainers.list.size (), expContainers.list.size ());
         assertEquals (actualContainers.list.get (0).containerNumber, expContainers.list.get (0).containerNumber);
 

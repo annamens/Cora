@@ -3,8 +3,6 @@ package com.adaptivebiotech.cora.ui.container;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertTrue;
@@ -82,11 +80,10 @@ public class Detail extends CoraPage {
     }
 
     public void uploadAttachments (String... files) {
-        String attachments = asList (files).parallelStream ()
-                                           .map (f -> getSystemResource (f).getPath ())
-                                           .collect (joining ("\n"));
-        waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
-        pageLoading ();
+        for (String file : files) {
+            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            pageLoading ();
+        }
     }
 
     public String getFileExtErr () {

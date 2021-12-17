@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.container;
 
+import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Freezer;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
@@ -23,7 +24,7 @@ public class MyCustody extends ContainerList {
 
     public Containers getContainers () {
         return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
-            List <WebElement> columns = el.findElements (locateBy ("td"));
+            List <WebElement> columns = findElements (el, "td");
             Container c = new Container ();
             c.id = getConId (getAttribute (columns.get (1), "a", "href"));
             c.containerNumber = getText (columns.get (1));
@@ -38,10 +39,17 @@ public class MyCustody extends ContainerList {
         }).collect (toList ()));
     }
 
-    public void sendAllMyCustody (Container destination) {
+    public void sendAllMyCustody (Container freezer) {
         if (getMyCustodySize () > 0)
-            getContainers ().list.stream ()
-                                 .filter (container -> (container.contents == null && !container.specimenId.contains ("SP-")))
-                                 .forEach (container -> moveToFreezer (container, destination));
+            sendContainersToFreezer (getContainers (), freezer);
+    }
+
+    public void sendContainersToFreezer (Containers containers, Container freezer) {
+        containers.list.stream ()
+                       .filter (container -> container.contents == null)
+                       .filter (container -> container.specimenId == null || (container.specimenId != null && !container.specimenId.contains ("SP-")))
+                       .filter (container -> !Freezer.equals (container.containerType))
+                       .forEach (container -> moveToFreezer (container, freezer));
+
     }
 }
