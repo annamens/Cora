@@ -104,7 +104,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         // create T-Detect diagnostic order
         String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
                                                               TestHelper.newPatient (),
-                                                              new String[] {},
+                                                              null,
                                                               DateUtils.getPastFutureDate (-1),
                                                               Assay.COVID19_DX_IVD,
                                                               ChargeType.Client,

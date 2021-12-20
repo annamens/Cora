@@ -36,7 +36,7 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     }
 
     public void enterInsurance1Hospital (String hospital) {
-        assertTrue (setText ("[formcontrolname='billingInstitution']", hospital));
+        assertTrue (setText ("[formcontrolname='institution']", hospital));
     }
 
     public void enterInsurance1Discharge (String date) {

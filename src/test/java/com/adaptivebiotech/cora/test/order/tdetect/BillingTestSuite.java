@@ -28,7 +28,6 @@ import com.adaptivebiotech.cora.utils.DateUtils;
 public class BillingTestSuite extends CoraBaseBrowser {
 
     private final String    log        = "created an order with billing: %s";
-    private final String[]  icdCodes   = { "Z63.1" };
     private Login           login      = new Login ();
     private OrdersList      ordersList = new OrdersList ();
     private NewOrderTDetect diagnostic = new NewOrderTDetect ();
@@ -50,7 +49,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         Patient patient = newInsurancePatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_insurance),
                                        patient,
-                                       icdCodes,
+                                       null,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
                                        patient.billingType,
@@ -64,7 +63,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         Patient patient = newSelfPayPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                        patient,
-                                       icdCodes,
+                                       null,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
                                        patient.billingType,
@@ -78,7 +77,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         Patient patient = newClientPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                        patient,
-                                       icdCodes,
+                                       null,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
                                        patient.billingType,

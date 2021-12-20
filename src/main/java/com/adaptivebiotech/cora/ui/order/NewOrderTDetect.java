@@ -281,9 +281,10 @@ public class NewOrderTDetect extends NewOrder {
 
         selectPhysician (physician);
         boolean matchFound = searchOrCreatePatient (patient);
-        for (String icdCode : icdCodes) {
-            enterPatientICD_Codes (icdCode);
-        }
+        if (icdCodes != null)
+            for (String icdCode : icdCodes) {
+                enterPatientICD_Codes (icdCode);
+            }
 
         enterCollectionDate (collectionDate);
         clickAssayTest (assayTest);
@@ -297,7 +298,6 @@ public class NewOrderTDetect extends NewOrder {
             break;
         case Client:
         case PatientSelfPay:
-            billing.enterBill (patient);
         default:
             billing.selectBilling (chargeType);
             break;
