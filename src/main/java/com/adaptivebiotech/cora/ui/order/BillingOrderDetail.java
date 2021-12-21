@@ -6,7 +6,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
+import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
 import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
@@ -34,7 +34,7 @@ public class BillingOrderDetail extends CoraPage {
         return ChargeType.getChargeType (getText (css));
     }
 
-    protected AbnStatus getAbnStatus () {
+    public AbnStatus getAbnStatus () {
         String css = "[ng-bind^='ctrl.orderEntry.order.abnStatusType']";
         return AbnStatus.getAbnStatus (getText (css));
     }

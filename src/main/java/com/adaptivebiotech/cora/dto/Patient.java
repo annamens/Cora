@@ -4,9 +4,9 @@ import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
-import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 

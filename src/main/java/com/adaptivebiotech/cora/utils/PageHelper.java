@@ -244,4 +244,21 @@ public class PageHelper {
                                                     .get ();
         }
     }
+
+    public enum AbnStatus {
+        RequiredIncludedBillMedicare ("Required and Included - Bill Medicare"),
+        RequiredIncludedBillPatient ("Required and Included - Bill Patient"),
+        RequiredNotIncluded ("Required and Not Included"),
+        NotRequired ("Not Required");
+
+        public String label;
+
+        private AbnStatus (String label) {
+            this.label = label;
+        }
+
+        public static AbnStatus getAbnStatus (String label) {
+            return allOf (AbnStatus.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ().get ();
+        }
+    }
 }

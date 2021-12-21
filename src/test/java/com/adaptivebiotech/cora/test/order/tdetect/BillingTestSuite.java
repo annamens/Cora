@@ -23,6 +23,10 @@ import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.utils.DateUtils;
 
+/**
+ * Note:
+ * - ICD codes and patient billing address are not required
+ */
 @Test (groups = "regression")
 public class BillingTestSuite extends CoraBaseBrowser {
 
