@@ -26,9 +26,9 @@ public final class Patient {
     public String        mrn;
     public Race          race;
     public Ethnicity     ethnicity;
-    public Insurance     insurance1 = new Insurance ();
-    public Insurance     insurance2 = new Insurance ();
-    public Insurance     insurance3 = new Insurance ();
+    public Insurance     insurance1;
+    public Insurance     insurance2;
+    public Insurance     insurance3;
     public String        address;
     public String        address2;
     public String        locality;

@@ -3,7 +3,6 @@ package com.adaptivebiotech.cora.test.order.tdetect;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_insurance;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
-import static com.adaptivebiotech.cora.utils.TestHelper.getRandomAddress;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
@@ -53,7 +52,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
                                        patient.billingType,
-                                       getRandomAddress (),
+                                       null,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));
@@ -67,7 +66,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
                                        patient.billingType,
-                                       getRandomAddress (),
+                                       null,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));
@@ -81,7 +80,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
                                        patient.billingType,
-                                       getRandomAddress (),
+                                       null,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));

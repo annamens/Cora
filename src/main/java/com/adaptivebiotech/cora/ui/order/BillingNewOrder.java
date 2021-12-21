@@ -2,9 +2,6 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Self;
 import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.getPatientStatus;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
@@ -38,8 +35,7 @@ public abstract class BillingNewOrder extends CoraPage {
     }
 
     public ChargeType getBilling () {
-        String type = getFirstSelectedValue (billing);
-        return type != null && !type.equals ("?") ? ChargeType.valueOf (type.replace ("string:", "")) : null;
+        return getEnum (ChargeType.class, getFirstSelectedValue (billing).replace ("string:", ""));
     }
 
     public List <String> getBillingDropDownOptions () {
@@ -48,6 +44,11 @@ public abstract class BillingNewOrder extends CoraPage {
 
     public void enterABNstatus (AbnStatus status) {
         assertTrue (clickAndSelectValue ("[name='abnStatusType']", "string:" + status));
+    }
+
+    protected AbnStatus getAbnStatus () {
+        String css = "[ng-model^='ctrl.orderEntry.order.abnStatusType']";
+        return AbnStatus.getAbnStatus (getFirstSelectedText (css));
     }
 
     public abstract void enterInsurance1Provider (String provider);
@@ -198,81 +199,5 @@ public abstract class BillingNewOrder extends CoraPage {
     public void clickCompareAndSelectBilling () {
         String css = "[ng-click=\"ctrl.showCompareBillingModal()\"";
         assertTrue (click (css));
-    }
-
-    protected ChargeType getBillingType () {
-        String css = "[ng-model^='ctrl.orderEntry.order.billingType']";
-        return ChargeType.getChargeType (getFirstSelectedText (css));
-    }
-
-    protected AbnStatus getAbnStatus () {
-        String css = "[ng-model^='ctrl.orderEntry.order.abnStatusType']";
-        return AbnStatus.getAbnStatus (getFirstSelectedText (css));
-    }
-
-    public String getInsurance1Provider () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.insuranceProvider']";
-        return isElementPresent (css) ? readInput (css) : null;
-    }
-
-    public String getInsurance1GroupNumber () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.groupNumber']";
-        return isElementPresent (css) ? readInput (css) : null;
-    }
-
-    public String getInsurance1Policy () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.policyNumber']";
-        return isElementPresent (css) ? readInput (css) : null;
-    }
-
-    public PatientRelationship getInsurance1Relationship () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.insuredRelationship']";
-        return getEnum (PatientRelationship.class, isElementPresent (css) ? getFirstSelectedText (css) : null);
-    }
-
-    public String getInsurance1PolicyHolder () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.policyholder']";
-        return isElementPresent (css) ? readInput (css) : null;
-    }
-
-    public PatientStatus getInsurance1PatientStatus () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.hospitalizationStatus']";
-        return isElementPresent (css) ? getPatientStatus (getFirstSelectedText (css)) : null;
-    }
-
-    public String getInsurance1Hospital () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.institution']";
-        return isElementPresent (css) ? readInput (css) : null;
-    }
-
-    public String getInsurance1DischargeDate () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.dischargeDate']";
-        String dt = isElementPresent (css) ? readInput (css) : null;
-        return dt != null ? formatDt1.format (formatDt2.parse (dt)) : dt;
-    }
-
-    public String getInsurance2Provider () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuranceProvider']";
-        return isElementPresent (css) ? readInput (css) : null;
-    }
-
-    public String getInsurance2GroupNumber () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.groupNumber']";
-        return isElementPresent (css) ? readInput (css) : null;
-    }
-
-    public String getInsurance2Policy () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyNumber']";
-        return isElementPresent (css) ? readInput (css) : null;
-    }
-
-    public PatientRelationship getInsurance2Relationship () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuredRelationship']";
-        return isElementPresent (css) ? PatientRelationship.valueOf (getFirstSelectedText (css)) : null;
-    }
-
-    public String getInsurance2PolicyHolder () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyholder']";
-        return isElementPresent (css) ? readInput (css) : null;
     }
 }

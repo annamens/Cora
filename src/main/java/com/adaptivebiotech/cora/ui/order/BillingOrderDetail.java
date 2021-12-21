@@ -30,103 +30,103 @@ public class BillingOrderDetail extends CoraPage {
     }
 
     protected ChargeType getBillingType () {
-        String css = "[ng-model^='ctrl.orderEntry.order.billingType']";
+        String css = "[ng-bind^='ctrl.orderEntry.order.billingType']";
         return ChargeType.getChargeType (getText (css));
     }
 
     protected AbnStatus getAbnStatus () {
-        String css = "[ng-model^='ctrl.orderEntry.order.abnStatusType']";
+        String css = "[ng-bind^='ctrl.orderEntry.order.abnStatusType']";
         return AbnStatus.getAbnStatus (getText (css));
     }
 
     protected String getInsurance1Provider () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.insuranceProvider']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.insuranceProvider']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance1GroupNumber () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.groupNumber']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.groupNumber']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance1Policy () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.policyNumber']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.policyNumber']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected PatientRelationship getInsurance1Relationship () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.insuredRelationship']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.insuredRelationship']";
         return getEnum (PatientRelationship.class, isElementPresent (css) ? getText (css) : null);
     }
 
     protected String getInsurance1PolicyHolder () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.policyholder']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.policyholder']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected PatientStatus getInsurance1PatientStatus () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.hospitalizationStatus']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.hospitalizationStatus']";
         return isElementPresent (css) ? getPatientStatus (getText (css)) : null;
     }
 
     protected String getInsurance1Hospital () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.institution']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.institution']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance1DischargeDate () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.insurance.dischargeDate']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.dischargeDate']";
         String dt = isElementPresent (css) ? getText (css) : null;
         return dt != null ? formatDt1.format (formatDt2.parse (dt)) : dt;
     }
 
     protected String getInsurance2Provider () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuranceProvider']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuranceProvider']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance2GroupNumber () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.groupNumber']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.groupNumber']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance2Policy () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyNumber']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyNumber']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected PatientRelationship getInsurance2Relationship () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuredRelationship']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuredRelationship']";
         return isElementPresent (css) ? PatientRelationship.valueOf (getText (css)) : null;
     }
 
     protected String getInsurance2PolicyHolder () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyholder']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyholder']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getPatientAddress1 () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.address1']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.guarantor.address1']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getPatientPhone () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.phone']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.guarantor.phone']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getPatientCity () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.locality']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.guarantor.locality']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getPatientState () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.region']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.guarantor.region']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getPatientZipcode () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.postCode']";
+        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.guarantor.postCode']";
         return isElementPresent (css) ? getText (css) : null;
     }
 
