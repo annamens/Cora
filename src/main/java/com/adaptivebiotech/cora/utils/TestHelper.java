@@ -1,5 +1,10 @@
 package com.adaptivebiotech.cora.utils;
 
+import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Child;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Other;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Spouse;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.Inpatient;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.NonHospital;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
@@ -8,11 +13,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.CommercialIns
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.PatientSelfPay;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.TrialProtocol;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Child;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Other;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Spouse;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.Inpatient;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;

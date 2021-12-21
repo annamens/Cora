@@ -1,17 +1,17 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Self;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Self;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.NonHospital;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
+import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
+import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
-import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
-import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
 
 /**
  * @author Harry Soehalim

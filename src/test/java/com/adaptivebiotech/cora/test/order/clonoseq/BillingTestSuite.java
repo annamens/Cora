@@ -5,6 +5,7 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_insu
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_medicare;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
+import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
@@ -13,7 +14,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;

@@ -2,8 +2,7 @@ package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
-import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
-import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
+import static java.util.EnumSet.allOf;
 
 /**
  * @author Harry Soehalim
@@ -32,5 +31,27 @@ public final class Insurance {
     @Override
     public boolean equals (Object o) {
         return equalsOverride (this, (Insurance) o);
+    }
+
+    public enum PatientRelationship {
+        Self, Spouse, Child, Other;
+    }
+
+    public enum PatientStatus {
+        Inpatient ("Inpatient - discharged"),
+        InpatientNotDischarged ("Inpatient - not discharged"),
+        Outpatient ("Outpatient"),
+        NonHospital ("Non-Hospital");
+
+        public String label;
+
+        private PatientStatus (String label) {
+            this.label = label;
+        }
+
+        public static PatientStatus getPatientStatus (String label) {
+            return allOf (PatientStatus.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                                              .get ();
+        }
     }
 }

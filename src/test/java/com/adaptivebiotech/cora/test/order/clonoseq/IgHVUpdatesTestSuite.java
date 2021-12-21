@@ -2,13 +2,13 @@ package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
+import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestPass;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUser;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.InternalPharmaBilling;

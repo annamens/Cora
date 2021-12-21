@@ -4,8 +4,8 @@ import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
-import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
-import com.adaptivebiotech.test.utils.PageHelper.PatientStatus;
+import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
+import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 
 /**
  * @author jpatel
