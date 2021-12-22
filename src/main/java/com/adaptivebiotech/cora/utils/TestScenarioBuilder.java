@@ -1,9 +1,9 @@
 package com.adaptivebiotech.cora.utils;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderCategory.Diagnostic;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Orders.OrderCategory.Diagnostic;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSeq2_WorkflowNanny;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;

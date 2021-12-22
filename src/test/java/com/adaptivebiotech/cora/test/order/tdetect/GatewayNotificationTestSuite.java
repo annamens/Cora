@@ -1,10 +1,10 @@
 package com.adaptivebiotech.cora.test.order.tdetect;
 
+import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
+import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.test.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ReportDelivery;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;

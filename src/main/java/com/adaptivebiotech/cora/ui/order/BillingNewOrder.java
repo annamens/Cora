@@ -7,11 +7,11 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 
 /**
  * @author Harry Soehalim

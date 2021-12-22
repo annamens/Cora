@@ -1,9 +1,9 @@
 package com.adaptivebiotech.cora.test.container;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Slide;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -39,7 +39,7 @@ public class ScanTestSuite extends ContainerTestBase {
     private Login        login      = new Login ();
     private OrdersList   ordersList = new OrdersList ();
     private MyCustody    myCustody  = new MyCustody ();
-    private NewShipment     shipment   = new NewShipment ();
+    private NewShipment  shipment   = new NewShipment ();
     private Containers   mytestContainers;
     private Containers   shipContainers;
 
@@ -139,13 +139,13 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.isBatchOrGeneral ();
         shipment.enterShippingCondition (Ambient);
         shipment.clickSave ();
-        shipment.gotoAccession ();
+        shipment.clickAccessionTab ();
 
         Accession accession = new Accession ();
         accession.isCorrectPage ();
         accession.uploadIntakeManifest (getSystemResource ("intakemanifest_full_slidebox.xlsx").getPath ());
         accession.clickIntakeComplete ();
-        accession.gotoShipment ();
+        accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();
 
         // test: container doesn't exist

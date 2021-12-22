@@ -5,11 +5,11 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
 import com.adaptivebiotech.cora.dto.Shipment;
+import com.adaptivebiotech.cora.dto.Shipment.ShippingCondition;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.OrderCategory;
-import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 
 /**
  * @author jpatel

@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.ui.container;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Freezer;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Freezer;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import java.util.List;

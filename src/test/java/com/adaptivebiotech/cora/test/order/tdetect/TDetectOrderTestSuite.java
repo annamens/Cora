@@ -1,11 +1,14 @@
 package com.adaptivebiotech.cora.test.order.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_tdetect_all_tests;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.BillingNewOrderTDetect;
@@ -16,9 +19,6 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 /**
  * @author jpatel
@@ -70,7 +70,7 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
         assertTrue (container.children.get (2).containerNumber.matches ("CO-\\d{6}"));
         Logging.testLog ("STEP 1.2 - Shipment bx and slides have CO-#");
 
-        shipment.gotoAccession ();
+        shipment.clickAccessionTab ();
         accession.completeAccession ();
 
         // activate order

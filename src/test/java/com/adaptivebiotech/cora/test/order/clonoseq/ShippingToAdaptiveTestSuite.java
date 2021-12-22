@@ -1,11 +1,11 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.NoCharge;
+import static com.adaptivebiotech.cora.dto.Orders.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Other;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.NoCharge;
-import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.LymphNode;

@@ -1,8 +1,8 @@
 package com.adaptivebiotech.cora.ui.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Plate;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertNotNull;
@@ -14,8 +14,8 @@ import org.openqa.selenium.WebElement;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.seleniumfy.test.utils.Timeout;
 
 /**

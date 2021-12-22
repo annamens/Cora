@@ -1,8 +1,8 @@
 package com.adaptivebiotech.cora.test.shipment;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
 import java.util.stream.Collectors;

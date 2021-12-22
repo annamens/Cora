@@ -1,16 +1,16 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRB;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_TCRB;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Amended;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
+import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_TCRB;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.MRD_BCell2_CLIA;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.MRD_TCRB;
-import static com.adaptivebiotech.test.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ReportDelivery;

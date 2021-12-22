@@ -13,6 +13,10 @@ public class PageHelper {
         CDx, TDx
     }
 
+    public enum QC {
+        Pass, Fail, Requeue
+    }
+
     public enum DiscrepancyType {
         Documentation, Specimen, General
     }
@@ -260,5 +264,19 @@ public class PageHelper {
         public static AbnStatus getAbnStatus (String label) {
             return allOf (AbnStatus.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ().get ();
         }
+    }
+
+    public enum DateRange {
+        All ("All"), Today ("Today"), Last7 ("Last 7 days"), Last30 ("Last 30 days"), Last90 ("Last 90 days");
+
+        public String label;
+
+        private DateRange (String label) {
+            this.label = label;
+        }
+    }
+
+    public enum LinkType {
+        Project, Account, OrderTestId, Order
     }
 }

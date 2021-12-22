@@ -1,13 +1,22 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.Clarity;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CANCELLED;
+import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.PROCESSING_SAMPLE;
+import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
@@ -27,14 +36,8 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.adaptivebiotech.test.utils.PageHelper.StageName;
-import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
-import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 
 /**
  * @author jpatel
@@ -95,10 +98,10 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         String shipmentNo = shipment.getShipmentNumber ();
         Logging.info ("Shipment No: " + shipmentNo);
         String shipmentArrivalDate = shipment.getArrivalDate ();
-        String shipmentArrivalTime = shipment.getArrivalTime ();
+        String shipmentArrivalTime = shipment.getArrivalTime ().toUpperCase ();
         Logging.info ("Shipment Arrival Date: " + shipmentArrivalDate + ", Time: " + shipmentArrivalTime);
 
-        shipment.gotoAccession ();
+        shipment.clickAccessionTab ();
         accession.isCorrectPage ();
 
         // accession complete
@@ -111,7 +114,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         String specimenApprovalDate = accession.getSpecimenApprovedDate ();
         Logging.info ("Specimen Approved Details: " + specimenApprovalDate);
 
-        accession.gotoShipment ();
+        accession.clickShipmentTab ();
         shipmentDetail.isCorrectPage ();
         String specimenId = shipmentDetail.getSpecimenId ();
         Logging.info ("Specimen ID: " + specimenId);
@@ -127,7 +130,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         Logging.info ("Order Activated Date and Time: " + activateDateTime);
 
         Order activeOrder = clonoSeqOrderDetail.parseOrder ();
-        assertEquals (activeOrder.status, com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
+        assertEquals (activeOrder.status, Active);
         assertEquals (activeOrder.order_number, orderNum);
         String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + orderNum;
         assertEquals (activeOrder.name, expectedName);
@@ -152,8 +155,8 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
 
         assertEquals (clonoSeqOrderDetail.getShipmentArrivalDate (),
                       DateUtils.convertDateFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
-                                                   "MM/dd/yyyy h:mm a",
-                                                   "MM/dd/yyyy hh:mm a"));
+                                                   "MM/dd/uuuu h:mm a",
+                                                   "MM/dd/uuuu hh:mm a"));
         assertEquals (clonoSeqOrderDetail.getIntakeCompleteDate (), intakeCompleteDate.split (",")[0]);
         assertEquals (clonoSeqOrderDetail.getSpecimenApprovalDate (), specimenApprovalDate.split (",")[0]);
         assertEquals (activeOrder.specimenDto.specimenNumber, specimenId);
@@ -209,20 +212,20 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (editOrder.orderAttachments.get (0), coraAttachment);
         Logging.testLog ("STEP 8 - The file is attached to the order");
 
-        orderStatus.gotoOrderStatusPage (editOrder.id);
+        clonoSeqOrderDetail.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getSpecimenNumber (), specimenId);
         assertEquals (orderStatus.getDueDate (), expectedDueDate);
         assertEquals (orderStatus.getTestName (), orderTest.test);
-        assertEquals (orderStatus.getOrderStatusText (),
-                      com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active.name ());
+        assertEquals (orderStatus.getheaderOrderStatus (), Active);
         assertTrue (orderStatus.getLastActivity ().contains (DateUtils.getPastFutureDate (0)));
         Logging.testLog ("STEP 9 - Order status table displays above information");
 
         historyPage.gotoOrderDebug (editOrder.tests.get (0).sampleName);
-        historyPage.waitFor (StageName.Clarity, StageStatus.Awaiting, StageSubstatus.PROCESSING_SAMPLE);
+        historyPage.waitFor (Clarity, Awaiting, PROCESSING_SAMPLE);
+        historyPage.clickOrder ();
+        orderStatus.isCorrectPage ();
 
-        orderStatus.gotoOrderStatusPage (editOrder.id);
         List <String> stageStatusUrls = orderStatus.getStageStatusUrls ();
         assertTrue (stageStatusUrls.size () == 1);
         Logging.testLog ("STEP 10 - Clarity LIMS search is opened in a new tab for ASID1");
@@ -242,14 +245,8 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
 
         diagnostic.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
-        List <String> cancellationMsgs = orderStatus.getCancelOrderMessages ();
-        assertTrue (cancellationMsgs.get (0)
-                                    .contains (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Cancelled.name ()
-                                                                                                              .toUpperCase ()));
-        assertTrue (cancellationMsgs.get (0).contains ("Other - Internal"));
-        assertTrue (cancellationMsgs.get (0).contains ("Specimen - Not Rejected"));
-        assertTrue (cancellationMsgs.get (0).contains ("Other"));
-        assertEquals (cancellationMsgs.get (1), "this is a test");
+        assertEquals (orderStatus.getCancelOrderMessages (),
+                      asList (CANCELLED + " - Other - Internal. Specimen - Not Rejected. Other.", "this is a test"));
         Logging.testLog ("STEP 15 - Cancelled messaging displays Reason1, SStatus1, Disposition1, and Comment1");
     }
 

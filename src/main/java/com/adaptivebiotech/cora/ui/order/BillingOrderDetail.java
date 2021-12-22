@@ -7,9 +7,9 @@ import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 
 /**
  * @author jpatel

@@ -1,5 +1,8 @@
 package com.adaptivebiotech.cora.test.order.tdetect;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_insurance;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
@@ -8,9 +11,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static java.lang.String.format;
 import org.testng.annotations.BeforeMethod;

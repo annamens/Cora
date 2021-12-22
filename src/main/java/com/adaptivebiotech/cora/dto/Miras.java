@@ -2,8 +2,8 @@ package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import java.util.List;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 
 /**
  * @author Harry Soehalim

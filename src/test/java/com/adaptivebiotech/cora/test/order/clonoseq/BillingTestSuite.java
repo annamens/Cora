@@ -1,5 +1,8 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_insurance;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_medicare;
@@ -14,9 +17,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;

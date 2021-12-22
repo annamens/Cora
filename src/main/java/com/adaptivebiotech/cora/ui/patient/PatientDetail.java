@@ -2,7 +2,7 @@ package com.adaptivebiotech.cora.ui.patient;
 
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
-import com.adaptivebiotech.test.utils.PageHelper.PatientRelationship;
+import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 
 /**
  * @author Harry Soehalim

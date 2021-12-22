@@ -14,12 +14,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Miras;
 import com.adaptivebiotech.cora.dto.Miras.Mira;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraCostCenter;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 
 /**
  * @author Harry Soehalim

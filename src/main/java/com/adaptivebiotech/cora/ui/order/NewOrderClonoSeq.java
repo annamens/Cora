@@ -1,6 +1,8 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -9,9 +11,14 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Insurance;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
+import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -19,13 +26,7 @@ import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.utils.DateUtils;
-import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
@@ -374,12 +375,11 @@ public class NewOrderClonoSeq extends NewOrder {
             enterAntiCoagulant (Anticoagulant.EDTA);
 
         enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        enterOrderNotes ("Creating Order in Cora");
         clickAssayTest (assayTest);
         clickSave ();
 
         String orderNum = getOrderNumber ();
-        Logging.info ("ClonoSeq Order Number: " + orderNum);
+        info ("ClonoSeq Order Number: " + orderNum);
         return orderNum;
     }
 
@@ -425,7 +425,7 @@ public class NewOrderClonoSeq extends NewOrder {
         new NewShipment ().createShipment (orderNum, containerType);
 
         // accession complete
-        if (orderStatus.equals (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active)) {
+        if (orderStatus.equals (Active)) {
             new Accession ().completeAccession ();
 
             // activate order

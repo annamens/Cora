@@ -1,5 +1,10 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilling;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
@@ -9,10 +14,6 @@ import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_CLIA;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.ID_BCell2_IVD;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.InternalPharmaBilling;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.LymphNode;
@@ -62,6 +63,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.FeatureFlags;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraDbTestBase;
@@ -71,13 +73,12 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
+import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -919,7 +920,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                                           specimenType,
                                                           specimenSource,
                                                           Blood.equals (specimenType) ? EDTA : null,
-                                                          com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active,
+                                                          Active,
                                                           Tube);
         Logging.info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
 

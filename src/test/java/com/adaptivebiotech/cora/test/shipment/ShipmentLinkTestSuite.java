@@ -5,6 +5,9 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -16,9 +19,6 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 /**
@@ -68,7 +68,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         accession.clickPass ();
         String expIntakeComplete = accession.getIntakeCompleteDate ();
 
-        accession.gotoShipment ();
+        accession.clickShipmentTab ();
         shipmentDetail.isCorrectPage ();
 
         com.adaptivebiotech.cora.dto.Shipment shipment = shipmentDetail.getShipmentDetails ();
@@ -121,7 +121,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         accession.clickPass ();
         String expIntakeComplete = accession.getIntakeCompleteDate ();
 
-        accession.gotoShipment ();
+        accession.clickShipmentTab ();
         shipmentDetail.isCorrectPage ();
 
         com.adaptivebiotech.cora.dto.Shipment shipment = shipmentDetail.getShipmentDetails ();
