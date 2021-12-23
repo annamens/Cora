@@ -1,9 +1,9 @@
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox100;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.TubeBox10x10;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox100;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox10x10;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static java.lang.String.format;
 import static java.lang.String.join;
@@ -19,6 +19,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
@@ -29,7 +30,6 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.GenerateContainerLabels;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 @Test (groups = "regression")
 public class NewContainerTestSuite extends ContainerTestBase {

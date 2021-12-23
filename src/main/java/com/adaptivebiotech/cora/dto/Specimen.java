@@ -1,8 +1,7 @@
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
-import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.TestSkus;
@@ -37,11 +36,7 @@ public final class Specimen {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
     public static final class ProjectProperties {
@@ -51,11 +46,7 @@ public final class Specimen {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
     }
 
@@ -66,7 +57,7 @@ public final class Specimen {
         public String         ApprovalStatus;
         public String         SampleTypeDisplayName;
         public String         Treatment;
-        public String         Anticoagulant;
+        public Anticoagulant  Anticoagulant;
 
         public SpecimenProperties () {}
 
@@ -76,11 +67,7 @@ public final class Specimen {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
     }
 
@@ -92,11 +79,11 @@ public final class Specimen {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
+    }
+
+    public enum Anticoagulant {
+        EDTA, CfdRoche, Other
     }
 }

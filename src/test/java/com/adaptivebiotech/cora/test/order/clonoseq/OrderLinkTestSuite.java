@@ -1,13 +1,19 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Pending;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.Detail;
@@ -22,10 +28,6 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 /**
@@ -58,7 +60,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
      * NOTE: SR-T3025
      */
     public void verifyPendingOrderLinkRedirect () {
-        String order1 = createClonoSeqOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Pending);
+        String order1 = createClonoSeqOrder (Pending);
         Logging.testLog ("Pending Order, order1: " + order1);
         ordersList.searchAndClickOrder (order1);
         newOrderClonoSeq.isCorrectPage ();
@@ -97,7 +99,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         assertEquals (shipment.getOrderNumber (), order1);
         Logging.testLog ("STEP 5 - clonoSEQ Order Form is displayed");
 
-        shipment.gotoAccession ();
+        shipment.clickAccessionTab ();
         accession.isCorrectPage ();
         accession.clickOrderNumber ();
         newOrderClonoSeq.isCorrectPage ();
@@ -126,7 +128,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
      * NOTE: SR-T3025
      */
     public void verifyActiveOrderLinkRedirect () {
-        String order2 = createClonoSeqOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active);
+        String order2 = createClonoSeqOrder (Active);
         Logging.testLog ("Active Order, order2: " + order2);
 
         ordersList.searchAndClickOrder (order2);
@@ -177,7 +179,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
                                  .findFirst ().get ();
         shipmentList.clickShipment (orderShipment.shipmentNumber);
         shipmentDetail.isCorrectPage ();
-        shipment.gotoAccession ();
+        shipment.clickAccessionTab ();
         accession.isCorrectPage ();
         accession.clickOrderNumber ();
         orderStatus.isCorrectPage ();
@@ -202,7 +204,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
     }
 
-    private String createClonoSeqOrder (com.adaptivebiotech.test.utils.PageHelper.OrderStatus orderStatus) {
+    private String createClonoSeqOrder (com.adaptivebiotech.cora.dto.Orders.OrderStatus orderStatus) {
         // create clonoSEQ diagnostic order
         return newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
                                                      TestHelper.newPatient (),

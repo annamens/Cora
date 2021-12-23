@@ -7,7 +7,7 @@ import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.test.utils.PageHelper.LinkType;
+import com.adaptivebiotech.cora.utils.PageHelper.LinkType;
 
 /**
  * @author Harry Soehalim

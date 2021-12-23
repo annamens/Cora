@@ -1,9 +1,9 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
+import static com.adaptivebiotech.cora.dto.Orders.OrderCategory.Diagnostic;
+import static com.adaptivebiotech.cora.utils.PageHelper.DateRange.Last30;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.getAssay;
-import static com.adaptivebiotech.test.utils.PageHelper.DateRange.Last30;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderCategory.Diagnostic;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
@@ -11,13 +11,13 @@ import static org.testng.Assert.fail;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Workflow;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.test.utils.PageHelper.DateRange;
-import com.adaptivebiotech.test.utils.PageHelper.OrderCategory;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
+import com.adaptivebiotech.cora.utils.PageHelper.DateRange;
 import com.seleniumfy.test.utils.Timeout;
 
 /**

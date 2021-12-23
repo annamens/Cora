@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -12,11 +12,11 @@ import org.openqa.selenium.WebElement;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Shipment.ShippingCondition;
 import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.Carrier;
 import com.adaptivebiotech.cora.utils.PageHelper.LinkShipment;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 
 /**
  * @author Harry Soehalim
@@ -52,11 +52,11 @@ public class NewShipment extends ShipmentHeader {
     }
 
     public String getArrivalDate () {
-        return getAttribute ("#arrivalDate", "value");
+        return readInput ("#arrivalDate");
     }
 
     public String getArrivalTime () {
-        return getAttribute ("#arrivalTime", "value");
+        return readInput ("#arrivalTime");
     }
 
     public void enterShippingCondition (ShippingCondition condition) {
@@ -297,7 +297,7 @@ public class NewShipment extends ShipmentHeader {
         enterOrderNumber (orderNumber);
         selectDiagnosticSpecimenContainerType (containerType);
         clickSave ();
-        gotoAccession ();
+        clickAccessionTab ();
     }
 
     public void createShipment (ShippingCondition shippingCondition,
