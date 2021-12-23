@@ -17,23 +17,23 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     private final String insuranceProvider            = "[formcontrolname='insuranceProvider']";
     private final String groupNumber                  = "[formcontrolname='groupNumber']";
     private final String policyNumber                 = "[formcontrolname='policyNumber']";
-    private final String insuredRelationship          = "[formcontrolname='insuredRelationship']";
+    private final String insuredRelationship          = "#primary-bill-relation-type";
     private final String policyholder                 = "[formcontrolname='policyholder']";
-    private final String hospitalizationStatus        = "[formcontrolname='hospitalizationStatus']";
+    private final String hospitalizationStatus        = "#hospitalization-status";
     private final String institution                  = "[formcontrolname='institution']";
     private final String dischargeDate                = "[formcontrolname='dischargeDate']";
     private final String hasSecondaryInsurance        = "[formcontrolname='hasSecondaryInsurance'][ng-reflect-value='true']";
-    private final String secondaryInsuranceProvider   = "[formcontrolname='secondaryInsuranceProvider']";
-    private final String secondaryGroupNumber         = "[formcontrolname='secondaryGroupNumber']";
-    private final String secondaryPolicyNumber        = "[formcontrolname='secondaryPolicyNumber']";
-    private final String secondaryInsuredRelationship = "[formcontrolname='secondaryInsuredRelationship']";
-    private final String secondaryPolicyholder        = "[formcontrolname='secondaryPolicyholder']";
+    private final String secondaryInsuranceProvider   = "#secondaryInsuranceProvider";
+    private final String secondaryGroupNumber         = "#secondaryGroupNumber";
+    private final String secondaryPolicyNumber        = "#secondaryPolicyNumber";
+    private final String secondaryInsuredRelationship = "#second-bill-relation-type";
+    private final String secondaryPolicyholder        = "#secondaryPolicyholder";
     private final String hasTertiaryInsurance         = "[formcontrolname='hasTertiaryInsurance'][ng-reflect-value='true']";
-    private final String tertiaryInsuranceProvider    = "[formcontrolname='tertiaryInsuranceProvider']";
-    private final String tertiaryGroupNumber          = "[formcontrolname='tertiaryGroupNumber']";
-    private final String tertiaryPolicyNumber         = "[formcontrolname='tertiaryPolicyNumber']";
-    private final String tertiaryInsuredRelationship  = "[formcontrolname='tertiaryInsuredRelationship']";
-    private final String tertiaryPolicyholder         = "[formcontrolname='tertiaryPolicyholder']";
+    private final String tertiaryInsuranceProvider    = "#tertiaryInsuranceProvider";
+    private final String tertiaryGroupNumber          = "#tertiaryGroupNumber";
+    private final String tertiaryPolicyNumber         = "#tertiaryPolicyNumber";
+    private final String tertiaryInsuredRelationship  = "#tertiary-bill-relation-type";
+    private final String tertiaryPolicyholder         = "#tertiaryPolicyholder";
 
     public void enterInsurance1Provider (String provider) {
         assertTrue (setText (insuranceProvider, provider));
@@ -133,7 +133,7 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     }
 
     public void enterInsurance2Relationship (PatientRelationship relationship) {
-        assertTrue (clickAndSelectValue (secondaryInsuredRelationship, "string:" + relationship));
+        assertTrue (clickAndSelectValue (secondaryInsuredRelationship, relationship.name ()));
     }
 
     public PatientRelationship getInsurance2Relationship () {
@@ -181,7 +181,7 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     }
 
     public void enterInsurance3Relationship (PatientRelationship relationship) {
-        assertTrue (clickAndSelectValue (tertiaryInsuredRelationship, "string:" + relationship));
+        assertTrue (clickAndSelectValue (tertiaryInsuredRelationship, relationship.name ()));
     }
 
     public PatientRelationship getInsurance3Relationship () {

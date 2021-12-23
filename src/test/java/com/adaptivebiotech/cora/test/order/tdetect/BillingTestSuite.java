@@ -48,6 +48,9 @@ public class BillingTestSuite extends CoraBaseBrowser {
         coraApi.login ();
     }
 
+    /**
+     * @sdlc_requirements SR-7907:R1
+     */
     public void insurance () {
         Patient patient = newInsurancePatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_insurance),
