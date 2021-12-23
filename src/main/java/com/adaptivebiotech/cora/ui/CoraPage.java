@@ -1,9 +1,13 @@
 package com.adaptivebiotech.cora.ui;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
+import static com.seleniumfy.test.utils.Environment.webdriverWait;
+import static com.seleniumfy.test.utils.Logging.info;
+import static com.seleniumfy.test.utils.Logging.warn;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
+import static org.openqa.selenium.support.ui.ExpectedConditions.numberOfElementsToBe;
 import static org.testng.Assert.assertTrue;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -282,7 +286,8 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//*[text()='Filter list']"));
     }
 
-    public Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds, Function <WebDriver, Boolean> func) {
+    protected Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds,
+                                               Function <WebDriver, Boolean> func) {
         Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
                                                                      .withTimeout (Duration.ofSeconds (secondsDuration))
                                                                      .pollingEvery (Duration.ofSeconds (pollSeconds));
@@ -294,7 +299,7 @@ public class CoraPage extends BasePage {
         assertTrue (navigateTo (url));
     }
 
-    public boolean waitUntilVisible (String target, int timeoutInSeconds, int sleepInMillis) {
+    protected boolean waitUntilVisible (String target, int timeoutInSeconds, int sleepInMillis) {
         waitForAjaxCalls ();
         By by = locateBy (target);
         try {
@@ -330,5 +335,22 @@ public class CoraPage extends BasePage {
     public void navigateToTab (int tabIndex) {
         getDriver ().switchTo ()
                     .window (new ArrayList <String> (getDriver ().getWindowHandles ()).get (tabIndex));
+    }
+
+    protected List <WebElement> waitForNumberOfElementsToBe (By by, int numOfElements) {
+        waitForAjaxCalls ();
+        try {
+            return new WebDriverWait (getDriver (), webdriverWait,
+                    sleepInMillis).until (numberOfElementsToBe (by, numOfElements));
+        } catch (Exception e) {
+            warn (String.valueOf (e));
+            info ("let's give waitFornumberOfElementsToBe another try ...");
+            doWait (sleepInMillis);
+            return new WebDriverWait (getDriver (), webdriverWait, sleepInMillis) {
+                {
+                    info ("ok, it's done ...");
+                }
+            }.until (numberOfElementsToBe (by, numOfElements));
+        }
     }
 }

@@ -1,17 +1,11 @@
 package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.seleniumfy.test.utils.Environment.webdriverWait;
-import static com.seleniumfy.test.utils.Logging.info;
-import static com.seleniumfy.test.utils.Logging.warn;
 import static java.util.stream.Collectors.toList;
-import static org.openqa.selenium.support.ui.ExpectedConditions.numberOfElementsToBe;
 import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * @author jpatel
@@ -59,23 +53,6 @@ public class EmrConfigDetails extends CreateEmrConfig {
             if (Arrays.asList (accounts).contains (getText (element).trim ())) {
                 click (element, "./..//button");
             }
-        }
-    }
-
-    private List <WebElement> waitForNumberOfElementsToBe (By by, int numOfElements) {
-        waitForAjaxCalls ();
-        try {
-            return new WebDriverWait (getDriver (), webdriverWait,
-                    sleepInMillis).until (numberOfElementsToBe (by, numOfElements));
-        } catch (Exception e) {
-            warn (String.valueOf (e));
-            info ("let's give waitFornumberOfElementsToBe another try ...");
-            doWait (sleepInMillis);
-            return new WebDriverWait (getDriver (), webdriverWait, sleepInMillis) {
-                {
-                    info ("ok, it's done ...");
-                }
-            }.until (numberOfElementsToBe (by, numOfElements));
         }
     }
 }
