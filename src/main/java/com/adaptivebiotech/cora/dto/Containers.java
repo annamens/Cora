@@ -1,9 +1,9 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import static java.util.EnumSet.allOf;
 import java.io.Serializable;
 import java.util.List;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 /**
  * @author Harry Soehalim
@@ -58,6 +58,54 @@ public final class Containers {
         @Override
         public String toString () {
             return toStringOverride (this);
+        }
+    }
+
+    public enum ContainerType {
+        Tube ("Tube (<2ml)", "tube", "Tube", false),
+        MatrixTube5ml ("Matrix tube (5ml)", "matrix46", "MatrixTube5ml", false),
+        MatrixTube ("Matrix tube", "matrix", "MatrixTube", false),
+        OtherTube ("Other - tube", "othertube", "OtherTube", false),
+        Vacutainer ("Vacutainer", "vacutainer", "Vacutainer", false),
+        Conical ("Conical", "conical", "Conical", false),
+        ConicalBox6x6 ("Conical Box (6x6)", "conical", "ConicalBox", true),
+        Slide ("Slide w/o coverslip", "slidebox", "Slide", false),
+        SlideWithCoverslip ("Slide w/coverslip", "slideboxcs", "SlideWithCoverslip", false),
+        Plate ("96 well plate", "plate", "Plate", true),
+        TubeBox5x5 ("Tube box (5x5)", "tube", "TubeBox", true),
+        TubeBox5x10 ("Tube box (5x10)", "tube", "TubeBox", true),
+        TubeBox9x9 ("Tube box (9x9)", "tube", "TubeBox", true),
+        TubeBox10x10 ("Tube box (10x10)", "tube", "TubeBox", true),
+        MatrixRack4x6 ("Matrix rack (4x6)", "matrix46", "MatrixRack4x6", true),
+        MatrixRack ("Matrix rack (8x12)", "matrix", "MatrixRack", true),
+        VacutainerBox7x7 ("Vacutainer Box (7x7)", "vacutainer", "VacutainerBox", true),
+        SlideBox5 ("5-Slide box w/o coverslips", "slidebox", "SlideBox5", true),
+        SlideBox5CS ("5-Slide box w/coverslips", "slideboxcs", "SlideBox5", true),
+        SlideBox25 ("25-Slide box w/o coverslips", "slidebox", "SlideBox25", true),
+        SlideBox25CS ("25-Slide box w/coverslips", "slideboxcs", "SlideBox25", true),
+        SlideBox100 ("100-Slide box w/o coverslips", "slidebox", "SlideBox100", true),
+        SlideBox100CS ("100-Slide box w/coverslips", "slideboxcs", "SlideBox100", true),
+        SlideTube ("Slide tube w/o coverslips", "slidebox", "SlideTube", true),
+        SlideTubeCS ("Slide tube w/coverslips", "slideboxcs", "SlideTube", true),
+        OtherSlideBox ("Other - slide box w/o coverslips", "slidebox", "OtherSlideBox", true),
+        OtherSlideBoxCS ("Other - slide box w/coverslips", "slideboxcs", "OtherSlideBox", true),
+        Freezer ("Freezer", "freezer", "Freezer", true);
+
+        public String  label;
+        public String  type;
+        public String  typeError;
+        public boolean isHolding;
+
+        private ContainerType (String label, String type, String typeError, boolean isHolding) {
+            this.label = label;
+            this.type = type;
+            this.typeError = typeError;
+            this.isHolding = isHolding;
+        }
+
+        public static ContainerType getContainerType (String label) {
+            return allOf (ContainerType.class).parallelStream ().filter (ct -> ct.label.equals (label)).findAny ()
+                                              .get ();
         }
     }
 }

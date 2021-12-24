@@ -1,6 +1,6 @@
 package com.adaptivebiotech.cora.ui.container;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
@@ -8,8 +8,8 @@ import java.util.List;
 import org.openqa.selenium.Keys;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 /**
  * @author Harry Soehalim

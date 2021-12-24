@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.test.order.tdetect;
 
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_tdetect_all_tests;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
@@ -19,6 +20,9 @@ import java.util.Locale;
 import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -34,15 +38,12 @@ import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskList;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
+import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus;
 import com.adaptivebiotech.pipeline.utils.TestHelper.Locus;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -104,7 +105,6 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
      */
     public void validateTDetectReportData () {
         Assay assayTest = Assay.COVID19_DX_IVD;
-        com.adaptivebiotech.test.utils.PageHelper.OrderStatus active = com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
         Patient patient = TestHelper.newPatient ();
         patient.firstName = "Test" + randomString (5);
         patient.middleName = "test" + randomString (5);
@@ -119,7 +119,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                               assayTest,
                                                               ChargeType.Client,
                                                               TestHelper.getRandomAddress (),
-                                                              active,
+                                                              Active,
                                                               ContainerType.SlideBox5CS);
         Logging.testLog ("T-Detect Order created: " + orderNum);
 
@@ -307,18 +307,18 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                               assayTest,
                                                               ChargeType.Client,
                                                               TestHelper.getRandomAddress (),
-                                                              com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active,
+                                                              Active,
                                                               ContainerType.SlideBox5CS);
         Logging.testLog ("T-Detect Order created: " + orderNum);
 
         Order order = orderDetailTDetect.parseOrder ();
-        orderDetailTDetect.navigateToOrderStatusPage (order.id);
+        orderDetailTDetect.gotoOrderStatusPage (order.id);
         orderStatus.isCorrectPage ();
         orderStatus.failWorkflow ("testing failure report");
         history.gotoOrderDebug (order.tests.get (0).sampleName);
         history.waitFor (StageName.DxReport, StageStatus.Awaiting, StageSubstatus.CLINICAL_QC);
 
-        orderDetailTDetect.navigateToOrderDetailsPage (order.id);
+        orderDetailTDetect.gotoOrderDetailsPage (order.id);
         orderDetailTDetect.isCorrectPage ();
         orderDetailTDetect.clickReportTab (assayTest);
 

@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.test.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
@@ -8,22 +9,23 @@ import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.order;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.shipment;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.specimen;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
-import static com.adaptivebiotech.test.utils.PageHelper.DeliveryType.CustomerShipment;
 import static java.util.Arrays.asList;
 import java.util.ArrayList;
 import com.adaptivebiotech.cora.dto.AssayResponse;
+import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow;
+import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
-import com.adaptivebiotech.test.utils.PageHelper;
 
 public class OrderTestBase extends CoraBaseBrowser {
 
-    protected AssayResponse.CoraTest genCDxTest (PageHelper.Assay assay, String tsvPath) {
+    protected AssayResponse.CoraTest genCDxTest (Assay assay, String tsvPath) {
         AssayResponse.CoraTest test = coraApi.getCDxTest (assay);
         test.workflowProperties = new Workflow.WorkflowProperties ();
         test.workflowProperties.disableHiFreqSave = true;
@@ -33,7 +35,7 @@ public class OrderTestBase extends CoraBaseBrowser {
         return test;
     }
 
-    protected AssayResponse.CoraTest genTcrTest (PageHelper.Assay assay, String flowcell, String tsvPath) {
+    protected AssayResponse.CoraTest genTcrTest (Assay assay, String flowcell, String tsvPath) {
         AssayResponse.CoraTest test = coraApi.getCDxTest (assay);
         test.workflowProperties = new Workflow.WorkflowProperties ();
         test.workflowProperties.notifyGateway = true;
@@ -60,7 +62,7 @@ public class OrderTestBase extends CoraBaseBrowser {
         return diagnostic;
     }
 
-    protected Diagnostic buildDiagnosticOrder (Patient patient, Workflow.Stage stage, AssayResponse.CoraTest... tests) {
+    protected Diagnostic buildDiagnosticOrder (Patient patient, Stage stage, CoraTest... tests) {
         Diagnostic diagnostic = diagnosticOrder (coraApi.getPhysician (clonoSEQ_client),
                                                  patient,
                                                  specimen (),

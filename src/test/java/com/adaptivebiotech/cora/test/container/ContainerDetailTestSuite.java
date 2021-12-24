@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5CS;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5CS;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;

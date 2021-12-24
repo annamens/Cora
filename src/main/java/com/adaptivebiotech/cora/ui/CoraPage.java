@@ -20,7 +20,6 @@ import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.seleniumfy.test.utils.BasePage;
 
 /**
@@ -230,13 +229,15 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
-    public void navigateToOrderDetailsPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/details/" + orderId));
+    public void gotoOrderDetailsPage (String orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/details/" + orderId));
+        assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
-    public void navigateToOrderStatusPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/status/" + orderId));
+    public void gotoOrderStatusPage (String orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/status/" + orderId));
+        assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
@@ -281,7 +282,8 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//*[text()='Filter list']"));
     }
 
-    public Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds, Function <WebDriver, Boolean> func) {
+    protected Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds,
+                                               Function <WebDriver, Boolean> func) {
         Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
                                                                      .withTimeout (Duration.ofSeconds (secondsDuration))
                                                                      .pollingEvery (Duration.ofSeconds (pollSeconds));
@@ -293,7 +295,7 @@ public class CoraPage extends BasePage {
         assertTrue (navigateTo (url));
     }
 
-    public boolean waitUntilVisible (String target, int timeoutInSeconds, int sleepInMillis) {
+    protected boolean waitUntilVisible (String target, int timeoutInSeconds, int sleepInMillis) {
         waitForAjaxCalls ();
         By by = locateBy (target);
         try {

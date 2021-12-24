@@ -10,8 +10,8 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 public class ContainerTestBase extends CoraBaseBrowser {
 

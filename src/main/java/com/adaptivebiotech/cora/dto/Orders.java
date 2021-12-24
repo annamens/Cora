@@ -1,7 +1,8 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,11 +11,6 @@ import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.utils.PageHelper.FriendlyOrderStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
-import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
-import com.adaptivebiotech.test.utils.PageHelper.OrderCategory;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
@@ -52,7 +48,7 @@ public final class Orders {
 
     @Override
     public String toString () {
-        return mapper.writeValueAsString (this);
+        return toStringOverride (this);
     }
 
     public static final class Order {
@@ -115,7 +111,7 @@ public final class Orders {
 
         @Override
         public String toString () {
-            return mapper.writeValueAsString (this);
+            return toStringOverride (this);
         }
     }
 
@@ -208,7 +204,7 @@ public final class Orders {
 
         @Override
         public String toString () {
-            return mapper.writeValueAsString (this);
+            return toStringOverride (this);
         }
 
         @Override
@@ -237,7 +233,7 @@ public final class Orders {
 
         @Override
         public String toString () {
-            return mapper.writeValueAsString (this);
+            return toStringOverride (this);
         }
     }
 
@@ -264,7 +260,92 @@ public final class Orders {
 
         @Override
         public String toString () {
-            return mapper.writeValueAsString (this);
+            return toStringOverride (this);
         }
     }
+
+    public enum ChargeType {
+        Client ("Client Bill", "Bill my Institution"),
+        TrialProtocol ("Bill per Study Protocol"),
+        CommercialInsurance ("Insurance (Including Medicare Advantage)", "Insurance (including Medicare Advantage plans)"),
+        Medicare ("Medicare"),
+        PatientSelfPay ("Patient Self-pay", "Patient Self-Pay"),
+        NoCharge ("No Charge"),
+        InternalPharmaBilling ("Internal Pharma Billing");
+
+        public String label;
+        public String doraLabel;
+
+        private ChargeType (String label) {
+            this.label = label;
+        }
+
+        private ChargeType (String label, String dora) {
+            this.label = label;
+            this.doraLabel = dora;
+        }
+
+        public static ChargeType getChargeType (String label) {
+            return allOf (ChargeType.class).parallelStream ().filter (ct -> ct.label.equals (label)).findAny ().get ();
+        }
+    }
+
+    public enum DeliveryType {
+        CustomerShipment ("Shipping Specimen to Adaptive"),
+        PathRequest ("Adaptive Assists with Specimen Retrieval"),
+        Reflex ("Use specimen stored at Adaptive (Reflex)"),
+        BloodDrawLabCorp ("Adaptive Schedules Patient Blood Draw with LabCorp"),
+        BloodDrawHome ("Adaptive Schedules Patient In-Home Blood Draw");
+
+        public String label;
+
+        private DeliveryType (String label) {
+            this.label = label;
+        }
+
+        public static DeliveryType getDeliveryType (String label) {
+            return allOf (DeliveryType.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                                             .get ();
+        }
+    }
+
+    public enum OrderCategory {
+        All, Diagnostic, Research
+    }
+
+    public enum OrderStatus {
+        All, Pending, Active, Completed, Cancelled, Failed
+    }
+
+    public enum Assay {
+        ID_BCell2_IVD ("BCellClonality", "B-cell 2.0 Clonality (IVD)"),
+        ID_BCell2_IUO ("BCellClonality", "B-cell 2.0 Clonality (IUO CLIA-extract)"),
+        ID_BCell2_CLIA ("BCellClonality", "B-cell 2.0 Clonality (CLIA)"),
+        ID_TCRB ("TCellClonality", "TCRB Clonality (CLIA)"),
+        ID_TCRB_IUO ("TCellClonality", "TCRB Clonality (IUO CLIA-extract)"),
+        ID_TCRG ("TCellClonality", "TCRG Clonality (CLIA)"),
+        ID_TCRG_IUO ("TCellClonality", "TCRG Clonality (IUO CLIA-extract)"),
+        MRD_BCell2_IVD ("Tracking", "B-cell 2.0 Tracking (IVD)"),
+        MRD_BCell2_IUO ("Tracking", "B-cell 2.0 Tracking (IUO CLIA-extract)"),
+        MRD_BCell2_CLIA ("Tracking", "B-cell 2.0 Tracking (CLIA)"),
+        MRD_TCRB ("Tracking", "TCRB Tracking (CLIA)"),
+        MRD_TCRB_IUO ("Tracking", "TCRB Tracking (IUO CLIA-extract)"),
+        MRD_TCRG ("Tracking", "TCRG Tracking (CLIA)"),
+        MRD_TCRG_IUO ("Tracking", "TCRG Tracking (IUO CLIA-extract)"),
+        COVID19_DX_IVD ("Covid19", "T-Detect COVID"),
+        LYME_DX_IVD ("Lyme", "T-Detect Lyme");
+
+        public String type;
+        public String test;
+
+        private Assay (String type, String test) {
+            this.type = type;
+            this.test = test;
+        }
+
+        public static Assay getAssay (String test) {
+            return allOf (Assay.class).parallelStream ().filter (a -> a.test.equals (test)).findAny ().get ();
+        }
+    }
+
 }

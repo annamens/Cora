@@ -1,15 +1,15 @@
 package com.adaptivebiotech.cora.test.smoke;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.TubeBox5x5;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.PageHelper.LinkShipment.SalesforceOrder;
+import static com.adaptivebiotech.cora.utils.PageHelper.LinkType.Project;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox5x5;
-import static com.adaptivebiotech.test.utils.PageHelper.LinkType.Project;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.MrdBatchReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static java.lang.String.format;

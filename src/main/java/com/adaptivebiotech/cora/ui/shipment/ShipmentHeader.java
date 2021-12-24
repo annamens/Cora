@@ -25,12 +25,14 @@ public class ShipmentHeader extends CoraPage {
         return getText (shipmentStatus);
     }
 
-    public void gotoShipment () {
+    public void clickShipmentTab () {
         assertTrue (click ("#shipment-tab-link"));
+        pageLoading ();
     }
 
-    public void gotoAccession () {
+    public void clickAccessionTab () {
         assertTrue (click ("#shipment-accession-tab-link"));
+        pageLoading ();
     }
 
     public void gotoDiscrepancyResolutions () {

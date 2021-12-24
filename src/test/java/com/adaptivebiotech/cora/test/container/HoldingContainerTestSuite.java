@@ -1,16 +1,16 @@
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Conical;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Freezer;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.MatrixTube;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.MatrixTube5ml;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.OtherTube;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Plate;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Slide;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideWithCoverslip;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Conical;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Freezer;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.MatrixTube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.MatrixTube5ml;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.OtherTube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideWithCoverslip;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Vacutainer;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
@@ -24,13 +24,13 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 @Test (groups = "regression")
 public class HoldingContainerTestSuite extends ContainerTestBase {

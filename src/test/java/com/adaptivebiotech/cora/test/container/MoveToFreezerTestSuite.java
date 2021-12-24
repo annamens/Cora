@@ -1,8 +1,8 @@
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Plate;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.DryIce;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.ContainerList;
 import com.adaptivebiotech.cora.ui.container.Detail;
@@ -35,7 +36,6 @@ import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 @Test (groups = "regression")
 public class MoveToFreezerTestSuite extends ContainerTestBase {
@@ -141,12 +141,12 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         shipment.isBatchOrGeneral ();
         shipment.enterShippingCondition (DryIce);
         shipment.clickSave ();
-        shipment.gotoAccession ();
+        shipment.clickAccessionTab ();
 
         accession.isCorrectPage ();
         accession.uploadIntakeManifest (manifestFileName.getAbsolutePath ());
         accession.clickIntakeComplete ();
-        accession.gotoShipment ();
+        accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();
 
         Container freezer;
