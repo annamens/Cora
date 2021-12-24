@@ -51,7 +51,6 @@ import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.seleniumfy.test.utils.HttpClientHelper;
 import com.seleniumfy.test.utils.Timeout;
 
@@ -341,9 +340,9 @@ public class CoraApi {
         return mapper.readValue (put (url, body (mapper.writeValueAsString (patient))), Patient.class);
     }
 
-    public List <Map <String, Object>> getOrdersForPatient (String patientId) {
+    public Order[] getOrdersForPatient (String patientId) {
         String url = coraTestUrl + "/cora/api/v2/patients/list/" + patientId + "/orders";
-        return mapper.readValue (get (url), new TypeReference <List <Map <String, Object>>> () {});
+        return mapper.readValue (get (url), Order[].class);
     }
 
     public void setAlerts (Alert alert) {

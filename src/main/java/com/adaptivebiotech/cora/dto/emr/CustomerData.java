@@ -2,9 +2,7 @@ package com.adaptivebiotech.cora.dto.emr;
 
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties (ignoreUnknown = true)
 public class CustomerData {
     private CustomerPatient  patient1;
     private CustomerPatient  patient2;

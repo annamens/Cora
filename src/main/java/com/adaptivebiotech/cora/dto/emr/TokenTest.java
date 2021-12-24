@@ -1,6 +1,6 @@
 package com.adaptivebiotech.cora.dto.emr;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 
 /**
  * @author jpatel
@@ -13,7 +13,7 @@ public final class TokenTest {
 
     @Override
     public String toString () {
-        return mapper.writeValueAsString (this);
+        return toStringOverride (this);
     }
 
 }

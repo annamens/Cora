@@ -1,6 +1,6 @@
 package com.adaptivebiotech.cora.dto.emr;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
 
 /**
@@ -20,11 +20,7 @@ public final class TokenData {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
     public static final class LaunchParams {
