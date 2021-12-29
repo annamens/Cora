@@ -14,6 +14,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -53,9 +54,11 @@ public final class Orders {
 
     public static final class Order {
 
+        @JsonAlias ("orderId")
         public String              id;
         public String              category_id;
         public String              name;
+        @JsonAlias ("orderStatus")
         public OrderStatus         status;
         public FriendlyOrderStatus friendlyOrderStatus;
         public String              salesforceOrderId;
@@ -108,6 +111,25 @@ public final class Orders {
         public List <Stage>        stages;
         public String              patient_code;
         public String              key;
+
+        // for /cora/api/v2/patients/list/{patientId}/orders
+        public String              providerFirstName;
+        public String              providerLastName;
+        public String              accountName;
+        public String              orderTestStatusType;
+        public String              collectionDate;
+        public String              testName;
+        public String              orderTestId;
+        public String              orderTestResultDisplayValue;
+        public String              workflowId;
+        public LocalDateTime       workflowFinishedTimeStamp;
+        public String              reportFileName;
+        public Object              reportAdditionalComments;
+        public Object              reportNote;
+        public String              reportActor;
+        public Object              correctedReportFileName;
+        public String              reportRelativeUrl;
+        public String              orderStatusDisplay;
 
         @Override
         public String toString () {

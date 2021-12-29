@@ -25,6 +25,8 @@ import java.util.stream.IntStream;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import com.adaptivebiotech.cora.dto.AccountsResponse;
+import com.adaptivebiotech.cora.dto.AlertType;
+import com.adaptivebiotech.cora.dto.Alerts;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -45,6 +47,8 @@ import com.adaptivebiotech.cora.dto.ProvidersResponse;
 import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.emr.Config;
+import com.adaptivebiotech.cora.dto.emr.TokenData;
 import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.seleniumfy.test.utils.HttpClientHelper;
@@ -336,6 +340,11 @@ public class CoraApi {
         return mapper.readValue (put (url, body (mapper.writeValueAsString (patient))), Patient.class);
     }
 
+    public Order[] getOrdersForPatient (String patientId) {
+        String url = coraTestUrl + "/cora/api/v2/patients/list/" + patientId + "/orders";
+        return mapper.readValue (get (url), Order[].class);
+    }
+
     public void setAlerts (Alert alert) {
         post (coraTestUrl + "/cora/api/v2/alerts/create", body (mapper.writeValueAsString (alert)));
     }
@@ -345,4 +354,46 @@ public class CoraApi {
         return mapper.readValue (get (url), FeatureFlags.class);
     }
 
+    public AlertType getAlertType (String name) {
+        return mapper.readValue (get (coraTestUrl + "/cora/api/v2/alertTypes/" + name), AlertType.class);
+    }
+
+    public String renewCoraMemoryCache (TokenData tokenData) {
+        Map <String, String> params = new HashMap <> ();
+        params.put ("tokenData", mapper.writeValueAsString (tokenData));
+        String url = coraTestUrl + "/cora/debug/emrTokenSubmit";
+        post (url, body (mapper.writeValueAsString (params)));
+        return tokenData.id;
+    }
+
+    public Config getEmrConfig (TokenData tokenData) {
+        String response = get (coraTestUrl + "/cora/api/v1/external/getEmrConfig/" + tokenData.configId);
+        return mapper.readValue (response, Config.class);
+    }
+
+    public Alerts getAlertsSummary (String userName) {
+        String url = coraTestUrl + "/cora/api/v1/external/alerts/summary";
+        Map <String, String> params = new HashMap <> ();
+        params.put ("username", userName);
+        return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Alerts.class);
+    }
+
+    public void deleteAlerts (List <String> alertIds) {
+        String url = coraTestUrl + "/cora/api/v2/alerts/delete";
+        Map <String, String> params = new HashMap <> ();
+        params.put ("ids", mapper.writeValueAsString (alertIds));
+        post (url, body (mapper.writeValueAsString (params)));
+    }
+
+    public void deleteAlertsForUserName (String userName) {
+        Alerts userAlerts = getAlertsSummary (userName);
+
+        if (userAlerts != null && userAlerts.orderAlerts.size () > 0) {
+            List <String> alertIds = new ArrayList <> ();
+            for (Alerts.Alert alert : userAlerts.orderAlerts) {
+                alertIds.add (alert.id);
+            }
+            deleteAlerts (alertIds);
+        }
+    }
 }

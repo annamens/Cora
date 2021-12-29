@@ -2,6 +2,7 @@ package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import static java.util.EnumSet.allOf;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
@@ -84,6 +85,25 @@ public final class Patient {
         @Override
         public boolean equals (Object o) {
             return equalsOverride (this, (Address) o);
+        }
+    }
+
+    public enum PatientTestStatus {
+        Pending ("Pending"),
+        ClonalityProcessing ("Clonality (ID) Processing"),
+        TrackingEnabled ("Tracking (MRD) Enabled"),
+        Deceased ("Deceased"),
+        NoClonesFound ("No Calibrated Clones Found");
+
+        public String label;
+
+        private PatientTestStatus (String label) {
+            this.label = label;
+        }
+
+        public static PatientTestStatus getCompartment (String label) {
+            return allOf (PatientTestStatus.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                                                  .get ();
         }
     }
 }
