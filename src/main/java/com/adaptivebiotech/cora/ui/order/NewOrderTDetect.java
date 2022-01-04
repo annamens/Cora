@@ -18,7 +18,6 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
@@ -271,8 +270,7 @@ public class NewOrderTDetect extends NewOrder {
                                       String[] icdCodes,
                                       String collectionDate,
                                       Assay assayTest,
-                                      ChargeType chargeType,
-                                      Address patientAddress) {
+                                      ChargeType chargeType) {
         selectNewTDetectDiagnosticOrder ();
         isCorrectPage ();
 
@@ -286,7 +284,7 @@ public class NewOrderTDetect extends NewOrder {
 
         clickAssayTest (assayTest);
         billing.selectBilling (chargeType);
-        billing.enterPatientAddress (patientAddress);
+        billing.enterPatientAddress (patient);
         clickSave ();
 
         String orderNum = getOrderNumber ();
@@ -317,7 +315,6 @@ public class NewOrderTDetect extends NewOrder {
                                       String collectionDate,
                                       Assay assayTest,
                                       ChargeType chargeType,
-                                      Address patientAddress,
                                       OrderStatus orderStatus,
                                       ContainerType containerType) {
         // create T-Detect order
@@ -326,8 +323,7 @@ public class NewOrderTDetect extends NewOrder {
                                               icdCodes,
                                               collectionDate,
                                               assayTest,
-                                              chargeType,
-                                              patientAddress);
+                                              chargeType);
 
         // add diagnostic shipment
         new NewShipment ().createShipment (orderNum, containerType);

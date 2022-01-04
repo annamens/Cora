@@ -47,8 +47,7 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
                                                               new String[] {},
                                                               DateUtils.getPastFutureDate (-3),
                                                               Assay.COVID19_DX_IVD,
-                                                              ChargeType.Client,
-                                                              TestHelper.getRandomAddress ());
+                                                              ChargeType.Client);
 
         // add diagnostic shipment
         shipment.selectNewDiagnosticShipment ();

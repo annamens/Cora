@@ -4,6 +4,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.lang.String.format;
 import java.time.LocalDateTime;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public final class Physician {
 
+    @JsonAlias ("emrId")
     public String        id;
     public Integer       version;
     @JsonFormat (shape = JsonFormat.Shape.STRING)
@@ -46,6 +48,9 @@ public final class Physician {
     public Boolean       medicareEnrolled;
     public Boolean       needsCLEPApproval;
     public String        key;
+
+    // for EMR use
+    public String        ID;
 
     public Physician () {}
 

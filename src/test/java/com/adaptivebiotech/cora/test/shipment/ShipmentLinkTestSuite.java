@@ -107,8 +107,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
                                                               null,
                                                               DateUtils.getPastFutureDate (-1),
                                                               Assay.COVID19_DX_IVD,
-                                                              ChargeType.Client,
-                                                              TestHelper.getRandomAddress ());
+                                                              ChargeType.Client);
 
         // add diagnostic shipment
         shipment.createShipment (orderNum, ContainerType.SlideBox5);

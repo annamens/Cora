@@ -2,7 +2,6 @@ package com.adaptivebiotech.cora.dto.emr;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
-import com.adaptivebiotech.cora.dto.Patient.Address;
 
 /**
  * @author Harry Soehalim
@@ -15,7 +14,6 @@ public final class TokenDataPatient {
     public RecordDate    dateOfBirth;
     public Record        mrn;
     public Record        gender;
-    public Address       address;
     public String        phone;
     public String        email;
     public PatientSource source;
@@ -49,7 +47,6 @@ public final class TokenDataPatient {
         public String                         gender;
         public String                         birthDate;
         public boolean                        deceasedBoolean;
-        public List <Address>                 address;
         public MaritalStatus                  maritalStatus;
         public List <Communication>           communication;
         public List <CareProvider>            careProvider;

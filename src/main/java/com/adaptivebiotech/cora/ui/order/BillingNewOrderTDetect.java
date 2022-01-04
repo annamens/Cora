@@ -1,6 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import com.adaptivebiotech.cora.dto.Patient.Address;
+import com.adaptivebiotech.cora.dto.Patient;
 
 /**
  * @author jpatel
@@ -43,16 +43,16 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
         return isElementPresent (css) ? readInput (css) : null;
     }
 
-    public Address getPatientBillingAddress () {
-        Address address = new Address ();
-        address.line1 = getPatientAddress1 ();
-        address.line2 = getPatientAddress2 ();
-        address.city = getPatientCity ();
-        address.state = getPatientState ();
-        address.postalCode = getPatientZipcode ();
-        address.phone = getPatientPhone ();
-        address.email = getPatientEmail ();
-        return address;
+    public Patient getPatientBillingAddress () {
+        Patient patient = new Patient ();
+        patient.address = getPatientAddress1 ();
+        patient.address2 = getPatientAddress2 ();
+        patient.locality = getPatientCity ();
+        patient.region = getPatientState ();
+        patient.postCode = getPatientZipcode ();
+        patient.phone = getPatientPhone ();
+        patient.email = getPatientEmail ();
+        return patient;
     }
 
 }

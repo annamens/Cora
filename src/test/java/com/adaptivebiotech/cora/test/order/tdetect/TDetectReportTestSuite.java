@@ -118,7 +118,6 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                               collectionDate,
                                                               assayTest,
                                                               ChargeType.Client,
-                                                              TestHelper.getRandomAddress (),
                                                               Active,
                                                               ContainerType.SlideBox5CS);
         Logging.testLog ("T-Detect Order created: " + orderNum);
@@ -306,7 +305,6 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                               DateUtils.getPastFutureDate (-1),
                                                               assayTest,
                                                               ChargeType.Client,
-                                                              TestHelper.getRandomAddress (),
                                                               Active,
                                                               ContainerType.SlideBox5CS);
         Logging.testLog ("T-Detect Order created: " + orderNum);

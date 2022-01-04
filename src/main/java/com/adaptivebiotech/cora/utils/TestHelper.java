@@ -23,7 +23,6 @@ import java.util.Map;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
@@ -91,6 +90,7 @@ public class TestHelper {
         patient.mrn = randomString (30);
         patient.race = Race.ASKED;
         patient.ethnicity = Ethnicity.ASKED;
+        patient = getRandomAddress (patient);
         return patient;
     }
 
@@ -109,12 +109,12 @@ public class TestHelper {
         patient.insurance1.groupNumber = null;
         patient.insurance2 = insurance2 ();
 
-        Address address = getRandomAddress ();
-        patient.address = address.line1;
-        patient.phone = address.phone;
-        patient.locality = address.city;
-        patient.region = address.state;
-        patient.postCode = address.postalCode;
+        Faker faker = new Faker ();
+        patient.address = faker.address ().streetAddress ();
+        patient.phone = faker.phoneNumber ().cellPhone ();
+        patient.locality = faker.address ().city ();
+        patient.region = faker.address ().stateAbbr ();
+        patient.postCode = faker.address ().zipCodeByState (patient.region);
         return patient;
     }
 
@@ -140,6 +140,7 @@ public class TestHelper {
         patient.billingType = PatientSelfPay;
         patient.insurance1 = new Insurance ();
         patient.insurance1.hospitalizationStatus = NonHospital;
+        patient = getRandomAddress (patient);
         return patient;
     }
 
@@ -191,17 +192,16 @@ public class TestHelper {
      * 
      * @return Address
      */
-    public static Address getRandomAddress () {
+    public static Patient getRandomAddress (Patient patient) {
         Faker faker = new Faker ();
-        Address address = new Address ();
-        address.line1 = faker.address ().streetAddress ();
-        address.line2 = faker.address ().secondaryAddress ();
-        address.phone = faker.phoneNumber ().cellPhone ();
-        address.email = faker.name ().username () + "@gmail.com";
-        address.city = faker.address ().city ();
-        address.state = faker.address ().stateAbbr ();
-        address.postalCode = faker.address ().zipCodeByState (address.state);
-        return address;
+        patient.address = faker.address ().streetAddress ();
+        patient.address2 = faker.address ().secondaryAddress ();
+        patient.phone = faker.phoneNumber ().cellPhone ();
+        patient.email = faker.name ().username () + "@gmail.com";
+        patient.locality = faker.address ().city ();
+        patient.region = faker.address ().stateAbbr ();
+        patient.postCode = faker.address ().zipCodeByState (patient.region);
+        return patient;
     }
 
     public static Insurance insurance1 () {

@@ -12,7 +12,6 @@ import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 
@@ -151,12 +150,12 @@ public class BillingNewOrder extends CoraPage {
         assertTrue (setText ("//*[text()='Zip Code']/..//input", zipcode));
     }
 
-    public void enterPatientAddress (Address address) {
-        enterPatientAddress1 (address.line1);
-        enterPatientPhone (address.phone);
-        enterPatientCity (address.city);
-        enterPatientState (address.state);
-        enterPatientZipcode (address.postalCode);
+    public void enterPatientAddress (Patient patient) {
+        enterPatientAddress1 (patient.address);
+        enterPatientPhone (patient.phone);
+        enterPatientCity (patient.locality);
+        enterPatientState (patient.region);
+        enterPatientZipcode (patient.postCode);
     }
 
     public void enterMedicareInfo (Patient patient) {

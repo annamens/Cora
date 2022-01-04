@@ -6,7 +6,6 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
-import static com.adaptivebiotech.cora.utils.TestHelper.getRandomAddress;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -50,7 +49,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
                                        patient.billingType,
-                                       getRandomAddress (),
                                        Active,
                                        Tube);
         testLog ("created an order with billing: Patient Self-Pay");
@@ -64,7 +62,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
                                        patient.billingType,
-                                       getRandomAddress (),
                                        Active,
                                        Tube);
         testLog ("created an order with billing: Client Bill");
