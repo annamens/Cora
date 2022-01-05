@@ -225,7 +225,7 @@ public class CoraApi {
         return mapper.readValue (get (url), Specimen.class);
     }
 
-    public Specimen getSpecimenByMunber (String specimenNumber) {
+    public Specimen getSpecimenByNumber (String specimenNumber) {
         String url = coraTestUrl + "/cora/api/v1/specimens/specimenNumber/" + specimenNumber;
         return mapper.readValue (get (url), Specimen.class);
     }
@@ -305,7 +305,7 @@ public class CoraApi {
             fail ("workflowName is null");
 
         for (OrderTest test : tests) {
-            test.specimen = getSpecimenByMunber (test.specimenNumber);
+            test.specimen = getSpecimenByNumber (test.specimenNumber);
             test.test = new CoraTest ();
             test.test.name = test.testName;
             if (test.specimen.subjectCode == null)
