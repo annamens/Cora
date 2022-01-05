@@ -45,7 +45,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
         specimen.collectionDate = DateUtils.getPastFutureDate (-3);
-        coraApi.login ();
     }
 
     /**

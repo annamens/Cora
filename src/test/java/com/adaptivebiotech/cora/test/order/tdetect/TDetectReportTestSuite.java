@@ -97,7 +97,6 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         downloadDir = artifacts (this.getClass ().getName (), test.getName ());
         login.doLogin ();
         ordersList.isCorrectPage ();
-        coraApi.login ();
     }
 
     /**
@@ -441,7 +440,6 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         testLog ("PDF File Location: " + pdfFileLocation);
 
         // get file from URL and save it
-        coraApi.login ();
         get (url, new File (pdfFileLocation));
 
         // read PDF and extract text
@@ -466,7 +464,6 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
      */
     private ReportRender getReportDataJsonFile (String fileUrl) {
         // get file using get request
-        coraApi.login ();
         testLog ("File URL: " + fileUrl);
         String getResponse = get (fileUrl);
         testLog ("File URL Response: " + getResponse);

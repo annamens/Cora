@@ -40,7 +40,6 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        coraApi.login ();
     }
 
     /**

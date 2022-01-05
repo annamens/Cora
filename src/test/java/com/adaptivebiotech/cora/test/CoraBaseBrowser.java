@@ -16,16 +16,16 @@ import com.adaptivebiotech.test.TestBase;
 
 public class CoraBaseBrowser extends TestBase {
 
-    protected CoraApi coraApi = new CoraApi ();
+    protected static CoraApi coraApi = new CoraApi ();
 
     static {
         initialization ();
+        coraApi.auth ();
         testLog (format ("Current branch: %s - %s", version, gitcommitId));
     }
 
     @BeforeClass (alwaysRun = true)
     public void baseBeforeClass () {
-        coraApi.login ();
         info (format ("running: %s", getClass ()));
     }
 

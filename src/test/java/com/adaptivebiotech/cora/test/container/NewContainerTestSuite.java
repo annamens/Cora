@@ -103,7 +103,6 @@ public class NewContainerTestSuite extends ContainerTestBase {
             assertEquals (container.name, "");
             assertEquals (container.location, coraTestUser);
         });
-        coraApi.login ();
         coraApi.deactivateContainers (myContainers);
 
         // test: incompatible freezer
@@ -170,7 +169,6 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertEquals (myContainers.list.size (), 1);
         assertEquals (myContainers.list.get (0).containerNumber, c1.containerNumber);
         assertEquals (myContainers.list.get (0).location, c1.location);
-        coraApi.login ();
         coraApi.deactivateContainers (myContainers);
 
         // test: verify we have 1 containers in my custody
@@ -278,7 +276,6 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertEquals (containerHistory.get (0).activityBy, coraTestUser);
         Logging.testLog ("STEP 7 - A row has been added in History Tab");
 
-        coraApi.login ();
         coraApi.deactivateContainers (newContainers);
     }
 }

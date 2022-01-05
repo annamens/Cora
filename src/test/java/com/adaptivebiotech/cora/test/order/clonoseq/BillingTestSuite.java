@@ -49,7 +49,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
         specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
-        coraApi.login ();
     }
 
     public void insurance () {

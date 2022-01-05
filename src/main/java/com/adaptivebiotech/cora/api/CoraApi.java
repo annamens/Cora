@@ -13,9 +13,12 @@ import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import static com.seleniumfy.test.utils.HttpClientHelper.put;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,6 +82,17 @@ public class CoraApi {
     public void resetheaders () {
         HttpClientHelper.resetheaders ();
         HttpClientHelper.headers.get ().add (username);
+    }
+
+    public void auth () {
+        resetheaders ();
+        HttpClientHelper.headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
+        String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
+        HttpClientHelper.headers.get ().add (new BasicHeader ("X-Api-Token", token));
+    }
+
+    public String basicAuth (String user, String pass) {
+        return "Basic " + printBase64Binary (join (":", user, pass).getBytes ());
     }
 
     public Containers addContainers (ContainerType type, String barcode, Container root, int num) {

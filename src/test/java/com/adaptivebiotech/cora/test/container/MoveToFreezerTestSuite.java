@@ -62,7 +62,6 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
      */
     public void move_primary_to_freezer () {
         String comment = randomWords (10);
-        coraApi.login ();
         Containers containers = coraApi.addContainers (new Containers (
                 stream (ContainerType.values ()).filter (t -> !t.isHolding)
                                                 .map (t -> container (t))

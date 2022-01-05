@@ -45,7 +45,6 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        coraApi.login ();
         containers.set (coraApi.addContainers (new Containers (
                 allOf (ContainerType.class).parallelStream ().filter (ct -> !ct.equals (Freezer))
                                            .map (ct -> container (ct)).collect (toList ()))));

@@ -55,7 +55,6 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        coraApi.login ();
         login.doLogin ();
     }
 
