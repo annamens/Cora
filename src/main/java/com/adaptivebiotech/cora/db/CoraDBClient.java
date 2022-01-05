@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.db;
 
+import static com.adaptivebiotech.test.utils.Logging.info;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -81,6 +82,7 @@ public class CoraDBClient {
             Logging.error ("Failed to access Database: " + e);
             throw new RuntimeException (e);
         }
+        info ("Query Results: " + tableData);
         return tableData;
     }
 
