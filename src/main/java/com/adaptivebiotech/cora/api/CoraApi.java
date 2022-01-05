@@ -250,8 +250,8 @@ public class CoraApi {
         args.add ("ascending=false");
         args.add ("limit=500");
 
-        for (String term : terms)
-            args.add (term);
+        if (terms != null)
+            args.addAll (terms);
 
         String url = encodeUrl (coraTestUrl + "/cora/api/v1/orders/search?", args.toArray (new String[] {}));
         return mapper.readValue (get (url), Order[].class);
@@ -266,8 +266,8 @@ public class CoraApi {
         args.add ("sort=DueDate");
         args.add ("limit=500");
 
-        for (String term : terms)
-            args.add (term);
+        if (terms != null)
+            args.addAll (terms);
 
         String url = encodeUrl (coraTestUrl + "/cora/api/v1/orderTests/search?", args.toArray (new String[] {}));
         return mapper.readValue (get (url), OrderTest[].class);
@@ -288,6 +288,29 @@ public class CoraApi {
         for (OrderTest test : tests)
             if (test.specimen.subjectCode == null)
                 test.specimen.subjectCode = getPatientOrSubjectCode (test.id);
+
+        return tests;
+    }
+
+    public OrderTest[] waitForResearchOrderReady (String sampleName) {
+        OrderTest[] tests = searchOrderTests (sampleName);
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.workflowName == null))) {
+            timer.Wait ();
+            tests = searchOrderTests (sampleName);
+        }
+        if (tests.length == 0)
+            fail ("unable to create order");
+        if (stream (tests).anyMatch (ot -> ot.workflowName == null))
+            fail ("workflowName is null");
+
+        for (OrderTest test : tests) {
+            test.specimen = getSpecimenByMunber (test.specimenNumber);
+            test.test = new CoraTest ();
+            test.test.name = test.testName;
+            if (test.specimen.subjectCode == null)
+                test.specimen.subjectCode = getPatientOrSubjectCode (test.id);
+        }
 
         return tests;
     }
