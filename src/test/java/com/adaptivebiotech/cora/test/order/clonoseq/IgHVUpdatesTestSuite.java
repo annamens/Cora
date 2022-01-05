@@ -917,7 +917,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         specimen.sampleSource = specimenSource;
         specimen.anticoagulant = Blood.equals (specimen.sampleType) ? EDTA : null;
         String orderNum = diagnostic.createClonoSeqOrder (physician,
-                                                          TestHelper.newPatientInternalPharma (),
+                                                          TestHelper.newInternalPharmaPatient (),
                                                           icdCodes,
                                                           assayTest,
                                                           specimen,

@@ -170,13 +170,13 @@ public class TestHelper {
         return patient;
     }
     
-    public static Patient newPatientNoCharge () {
+    public static Patient newNoChargePatient () {
         Patient patient = newPatient ();
         patient.billingType = ChargeType.NoCharge;
         return patient;
     }
     
-    public static Patient newPatientInternalPharma () {
+    public static Patient newInternalPharmaPatient () {
         Patient patient = newPatient ();
         patient.billingType = ChargeType.InternalPharmaBilling;
         return patient;

@@ -64,7 +64,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         coraApi.login ();
 
         Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
-        Patient patient = TestHelper.newPatientNoCharge ();
+        Patient patient = TestHelper.newNoChargePatient ();
         String icdCode = "C90.00";
         Assay orderTest = Assay.ID_BCell2_CLIA;
         Specimen specimen = TestHelper.bloodSpecimen ();

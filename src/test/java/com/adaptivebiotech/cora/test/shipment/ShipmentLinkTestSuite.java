@@ -52,7 +52,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         specimen.anticoagulant = EDTA;
         // create clonoSEQ diagnostic order
         String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
-                                                          TestHelper.newPatientNoCharge (),
+                                                          TestHelper.newNoChargePatient (),
                                                           new String[] { "C90.00" },
                                                           Assay.ID_BCell2_CLIA,
                                                           specimen);
