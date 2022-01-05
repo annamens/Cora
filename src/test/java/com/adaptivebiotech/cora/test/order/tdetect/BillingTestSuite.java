@@ -48,7 +48,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        icdCodes,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
-                                       patient.billingType,
                                        Active,
                                        Tube);
         testLog ("created an order with billing: Patient Self-Pay");
@@ -61,7 +60,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        icdCodes,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
-                                       patient.billingType,
                                        Active,
                                        Tube);
         testLog ("created an order with billing: Client Bill");

@@ -104,7 +104,7 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDto = new Specimen ();
         order.specimenDto.specimenNumber = getSpecimenId ();
         order.specimenDto.sampleType = getSpecimenType ();
-        order.specimenDto.sourceType = getSpecimenSource ();
+        order.specimenDto.sampleSource = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
@@ -269,8 +269,7 @@ public class NewOrderTDetect extends NewOrder {
                                       Patient patient,
                                       String[] icdCodes,
                                       String collectionDate,
-                                      Assay assayTest,
-                                      ChargeType chargeType) {
+                                      Assay assayTest) {
         selectNewTDetectDiagnosticOrder ();
         isCorrectPage ();
 
@@ -283,7 +282,7 @@ public class NewOrderTDetect extends NewOrder {
         enterCollectionDate (collectionDate);
 
         clickAssayTest (assayTest);
-        billing.selectBilling (chargeType);
+        billing.selectBilling (patient.billingType);
         billing.enterPatientAddress (patient);
         clickSave ();
 
@@ -314,7 +313,6 @@ public class NewOrderTDetect extends NewOrder {
                                       String[] icdCodes,
                                       String collectionDate,
                                       Assay assayTest,
-                                      ChargeType chargeType,
                                       OrderStatus orderStatus,
                                       ContainerType containerType) {
         // create T-Detect order
@@ -322,8 +320,7 @@ public class NewOrderTDetect extends NewOrder {
                                               patient,
                                               icdCodes,
                                               collectionDate,
-                                              assayTest,
-                                              chargeType);
+                                              assayTest);
 
         // add diagnostic shipment
         new NewShipment ().createShipment (orderNum, containerType);

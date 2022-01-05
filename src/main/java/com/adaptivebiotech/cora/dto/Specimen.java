@@ -5,6 +5,7 @@ import java.util.List;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.TestSkus;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 /**
  * @author Harry Soehalim
@@ -21,8 +22,8 @@ public final class Specimen {
     public String             externalSubjectId;
     public String             sampleName;
     public SpecimenType       sampleType;
+    @JsonAlias ("sourceType")
     public SpecimenSource     sampleSource;
-    public SpecimenSource     sourceType;
     public String             arrivalDate;
     public String             sampleTypeDisplayName;
     public String             approvalStatus;

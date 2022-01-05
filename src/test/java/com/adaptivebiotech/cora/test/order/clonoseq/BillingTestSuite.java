@@ -51,10 +51,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
-                                        patient.billingType,
-                                        specimen.sampleType,
-                                        specimen.sampleSource,
-                                        specimen.anticoagulant,
+                                        specimen,
                                         Active,
                                         Tube);
         testLog ("created an order with billing: Insurance (Including Medicare Advantage)");
@@ -69,10 +66,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
-                                        patient.billingType,
-                                        specimen.sampleType,
-                                        specimen.sampleSource,
-                                        specimen.anticoagulant,
+                                        specimen,
                                         Active,
                                         Tube);
         testLog ("created an order with billing: Medicare");
@@ -84,10 +78,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
-                                        patient.billingType,
-                                        specimen.sampleType,
-                                        specimen.sampleSource,
-                                        specimen.anticoagulant,
+                                        specimen,
                                         Active,
                                         Tube);
         testLog ("created an order with billing: Patient Self-Pay");
@@ -99,10 +90,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
-                                        patient.billingType,
-                                        specimen.sampleType,
-                                        specimen.sampleSource,
-                                        specimen.anticoagulant,
+                                        specimen,
                                         Active,
                                         Tube);
         testLog ("created an order with billing: Client Bill");
@@ -114,10 +102,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                         patient,
                                         icdCodes,
                                         ID_BCell2_CLIA,
-                                        patient.billingType,
-                                        specimen.sampleType,
-                                        specimen.sampleSource,
-                                        specimen.anticoagulant,
+                                        specimen,
                                         Active,
                                         Tube);
         testLog ("created an order with billing: Bill per Study Protocol");

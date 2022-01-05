@@ -22,7 +22,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
-import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -105,7 +104,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
      */
     public void validateTDetectReportData () {
         Assay assayTest = Assay.COVID19_DX_IVD;
-        Patient patient = TestHelper.newPatient ();
+        Patient patient = TestHelper.newClientPatient ();
         patient.firstName = "Test" + randomString (5);
         patient.middleName = "test" + randomString (5);
         patient.lastName = randomString (5);
@@ -117,7 +116,6 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                                               new String[] { icdCode1, icdCode2 },
                                                               collectionDate,
                                                               assayTest,
-                                                              ChargeType.Client,
                                                               Active,
                                                               ContainerType.SlideBox5CS);
         Logging.testLog ("T-Detect Order created: " + orderNum);
@@ -300,11 +298,10 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     public void validateFailedTDetectReportData () {
         Assay assayTest = Assay.COVID19_DX_IVD;
         String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_tdetect_all_tests),
-                                                              TestHelper.newPatient (),
+                                                              TestHelper.newClientPatient (),
                                                               new String[] { "C90.00" },
                                                               DateUtils.getPastFutureDate (-1),
                                                               assayTest,
-                                                              ChargeType.Client,
                                                               Active,
                                                               ContainerType.SlideBox5CS);
         Logging.testLog ("T-Detect Order created: " + orderNum);
@@ -341,7 +338,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         assertEquals (reportDataJson.patientInfo.mrn, order.patient.mrn);
         assertEquals (reportDataJson.patientInfo.gender, order.patient.gender);
 
-        assertEquals (reportDataJson.patientInfo.reportSpecimenSource, order.specimenDto.sourceType);
+        assertEquals (reportDataJson.patientInfo.reportSpecimenSource, order.specimenDto.sampleSource);
         assertEquals (reportDataJson.patientInfo.reportSpecimenType, order.specimenDto.sampleType);
         assertEquals (reportDataJson.patientInfo.reportSpecimenCompartment, "Cellular");
         assertEquals (reportDataJson.patientInfo.reportSpecimenId, order.specimenDto.specimenNumber);

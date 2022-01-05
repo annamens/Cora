@@ -10,9 +10,11 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.CommercialInsurance
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.TrialProtocol;
+import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
@@ -22,8 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.github.javafaker.Faker;
@@ -165,6 +169,18 @@ public class TestHelper {
         patient.insurance3 = insurance3 ();
         return patient;
     }
+    
+    public static Patient newPatientNoCharge () {
+        Patient patient = newPatient ();
+        patient.billingType = ChargeType.NoCharge;
+        return patient;
+    }
+    
+    public static Patient newPatientInternalPharma () {
+        Patient patient = newPatient ();
+        patient.billingType = ChargeType.InternalPharmaBilling;
+        return patient;
+    }
 
     // scenario builder takes only client billingType
     public static Patient scenarioBuilderPatient () {
@@ -271,5 +287,12 @@ public class TestHelper {
         physician.firstName = firstName;
         physician.accountName = accountName;
         return physician;
+    }
+
+    public static Specimen bloodSpecimen () {
+        Specimen specimen = new Specimen ();
+        specimen.sampleType = Blood;
+        specimen.anticoagulant = EDTA;
+        return specimen;
     }
 }

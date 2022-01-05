@@ -89,7 +89,7 @@ public class OrderDetail extends OrderHeader {
         order.specimenDto = new Specimen ();
         order.specimenDto.specimenNumber = getSpecimenId ();
         order.specimenDto.sampleType = getSpecimenType ();
-        order.specimenDto.sourceType = getSpecimenSource ();
+        order.specimenDto.sampleSource = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();

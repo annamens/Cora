@@ -100,7 +100,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto = new Specimen ();
         order.specimenDto.specimenNumber = getSpecimenId ();
         order.specimenDto.sampleType = getSpecimenType ();
-        order.specimenDto.sourceType = getSpecimenSource ();
+        order.specimenDto.sampleSource = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
@@ -312,10 +312,7 @@ public class NewOrderClonoSeq extends NewOrder {
                                        Patient patient,
                                        String[] icdCodes,
                                        Assay assayTest,
-                                       ChargeType chargeType,
-                                       SpecimenType specimenType,
-                                       SpecimenSource specimenSource,
-                                       Anticoagulant anticoagulant) {
+                                       Specimen specimen) {
 
         selectNewClonoSEQDiagnosticOrder ();
         isCorrectPage ();
@@ -326,7 +323,7 @@ public class NewOrderClonoSeq extends NewOrder {
             enterPatientICD_Codes (icdCode);
         }
 
-        switch (chargeType) {
+        switch (patient.billingType) {
         case CommercialInsurance:
             billing.enterInsuranceInfo (patient);
             break;
@@ -337,18 +334,18 @@ public class NewOrderClonoSeq extends NewOrder {
         case PatientSelfPay:
             billing.enterBill (patient);
         default:
-            billing.selectBilling (chargeType);
+            billing.selectBilling (patient.billingType);
             break;
         }
         clickSave ();
 
         clickEnterSpecimenDetails ();
-        enterSpecimenType (specimenType);
+        enterSpecimenType (specimen.sampleType);
 
-        if (specimenSource != null)
-            enterSpecimenSource (specimenSource);
-        if (anticoagulant != null)
-            enterAntiCoagulant (Anticoagulant.EDTA);
+        if (specimen.sampleSource != null)
+            enterSpecimenSource (specimen.sampleSource);
+        if (specimen.anticoagulant != null)
+            enterAntiCoagulant (specimen.anticoagulant);
 
         enterCollectionDate (DateUtils.getPastFutureDate (-3));
         enterOrderNotes ("Creating Order in Cora");
@@ -382,10 +379,7 @@ public class NewOrderClonoSeq extends NewOrder {
                                        Patient patient,
                                        String[] icdCodes,
                                        Assay assayTest,
-                                       ChargeType chargeType,
-                                       SpecimenType specimenType,
-                                       SpecimenSource specimenSource,
-                                       Anticoagulant anticoagulant,
+                                       Specimen specimen,
                                        OrderStatus orderStatus,
                                        ContainerType containerType) {
         // create clonoSEQ diagnostic order
@@ -393,10 +387,7 @@ public class NewOrderClonoSeq extends NewOrder {
                                                patient,
                                                icdCodes,
                                                assayTest,
-                                               chargeType,
-                                               specimenType,
-                                               specimenSource,
-                                               anticoagulant);
+                                               specimen);
 
         // add diagnostic shipment
         new NewShipment ().createShipment (orderNum, containerType);

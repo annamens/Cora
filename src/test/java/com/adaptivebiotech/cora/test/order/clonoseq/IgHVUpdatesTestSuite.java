@@ -3,7 +3,6 @@ package com.adaptivebiotech.cora.test.order.clonoseq;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IVD;
-import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilling;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
@@ -65,6 +64,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.FeatureFlags;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraDbTestBase;
 import com.adaptivebiotech.cora.ui.Login;
@@ -912,14 +912,15 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                               String[] icdCodes,
                                               String orderNotes) {
         // create clonoSEQ diagnostic order
+        Specimen specimen = new Specimen ();
+        specimen.sampleType = specimenType;
+        specimen.sampleSource = specimenSource;
+        specimen.anticoagulant = Blood.equals (specimen.sampleType) ? EDTA : null;
         String orderNum = diagnostic.createClonoSeqOrder (physician,
-                                                          TestHelper.newInsurancePatient (),
+                                                          TestHelper.newPatientInternalPharma (),
                                                           icdCodes,
                                                           assayTest,
-                                                          InternalPharmaBilling,
-                                                          specimenType,
-                                                          specimenSource,
-                                                          Blood.equals (specimenType) ? EDTA : null,
+                                                          specimen,
                                                           Active,
                                                           Tube);
         Logging.info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
