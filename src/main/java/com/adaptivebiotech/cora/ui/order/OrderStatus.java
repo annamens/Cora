@@ -109,11 +109,6 @@ public class OrderStatus extends OrderHeader {
         return false;
     }
 
-    public String getOrderStatusText () {
-        String status = "[ng-bind='ctrl.orderEntry.order.status']";
-        return getText (status);
-    }
-
     public StageSubstatus getStageSubstatus () {
         String css = "span.ng-binding.ng-scope";
         String subStatusName = getText (css);

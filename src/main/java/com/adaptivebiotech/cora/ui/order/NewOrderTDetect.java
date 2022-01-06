@@ -67,6 +67,10 @@ public class NewOrderTDetect extends NewOrder {
         assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
     }
 
+    public void setPatientMRN (String mrn) {
+        assertTrue (setText ("[formcontrolname='mrn']", mrn));
+    }
+
     public void clickAssayTest (Assay assay) {
         assertTrue (click (format ("//*[@class='test-type-selection']//*[text()='%s']", assay.test)));
     }
@@ -96,7 +100,7 @@ public class NewOrderTDetect extends NewOrder {
         order.patient.patientCode = Integer.valueOf (getPatientCode ());
         order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
-        ChargeType chargeType = billing.getBillingType ();
+        ChargeType chargeType = billing.getBilling ();
         order.patient.billingType = chargeType;
         order.patient.abnStatusType = Medicare.equals (chargeType) ? billing.getAbnStatus () : null;
         order.icdcodes = getPatientICD_Codes ();
@@ -109,26 +113,46 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
-        Logging.testLog ("DTO Shipment Arrival Date: " + order.specimenDto.arrivalDate);
         order.expectedTestType = getExpectedTest ();
         order.tests = getSelectedTests ();
         order.orderAttachments = getCoraAttachments ();
         order.doraAttachments = getDoraAttachments ();
-        order.patient.insurance1 = new Insurance ();
-        order.patient.insurance1.provider = billing.getInsurance1Provider ();
-        order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
-        order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
-        order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
-        order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
-        order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
-        order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
-        order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
-        order.patient.insurance2 = new Insurance ();
-        order.patient.insurance2.provider = billing.getInsurance2Provider ();
-        order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
-        order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
-        order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
-        order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+
+        switch (chargeType) {
+        case CommercialInsurance:
+        case Medicare:
+            order.patient.insurance1 = new Insurance ();
+            order.patient.insurance1.provider = billing.getInsurance1Provider ();
+            order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
+            order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
+            order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
+            order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
+            order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
+            order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
+            order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
+
+            if (billing.hasSecondaryInsurance ()) {
+                order.patient.insurance2 = new Insurance ();
+                order.patient.insurance2.provider = billing.getInsurance2Provider ();
+                order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
+                order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
+                order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
+                order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+            }
+
+            if (billing.hasTertiaryInsurance ()) {
+                order.patient.insurance3 = new Insurance ();
+                order.patient.insurance3.provider = billing.getInsurance3Provider ();
+                order.patient.insurance3.groupNumber = billing.getInsurance3GroupNumber ();
+                order.patient.insurance3.policyNumber = billing.getInsurance3Policy ();
+                order.patient.insurance3.insuredRelationship = billing.getInsurance3Relationship ();
+                order.patient.insurance3.policyholder = billing.getInsurance3PolicyHolder ();
+            }
+            break;
+        default:
+            break;
+        }
+
         order.patient.address = billing.getPatientAddress1 ();
         order.patient.phone = billing.getPatientPhone ();
         order.patient.locality = billing.getPatientCity ();
@@ -274,16 +298,32 @@ public class NewOrderTDetect extends NewOrder {
         isCorrectPage ();
 
         selectPhysician (physician);
-        createNewPatient (patient);
-        for (String icdCode : icdCodes) {
-            enterPatientICD_Codes (icdCode);
-        }
+        boolean matchFound = searchOrCreatePatient (patient);
+        if (icdCodes != null)
+            for (String icdCode : icdCodes) {
+                enterPatientICD_Codes (icdCode);
+            }
 
         enterCollectionDate (collectionDate);
-
         clickAssayTest (assayTest);
-        billing.selectBilling (patient.billingType);
-        billing.enterPatientAddress (patient);
+
+        switch (patient.billingType) {
+        case CommercialInsurance:
+            billing.enterInsuranceInfo (patient);
+            break;
+        case Medicare:
+            billing.enterMedicareInfo (patient);
+            break;
+        case Client:
+        case PatientSelfPay:
+        default:
+            billing.selectBilling (patient.billingType);
+            break;
+        }
+
+        if (!matchFound && patient.address != null)
+            billing.enterPatientAddress (patient);
+
         clickSave ();
 
         String orderNum = getOrderNumber ();

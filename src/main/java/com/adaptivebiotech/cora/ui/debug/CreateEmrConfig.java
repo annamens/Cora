@@ -1,18 +1,15 @@
 package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static org.testng.Assert.assertEquals;
+import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.test.utils.Logging;
 
 /**
  * @author jpatel
@@ -20,41 +17,39 @@ import com.adaptivebiotech.test.utils.Logging;
  */
 public class CreateEmrConfig extends CoraPage {
 
-    private final String save                   = "//button[contains(text(),'Save')]";
-    private final String cancel                 = "//button[text()='Cancel']";
+    private final String save                 = "//button[contains(text(),'Save')]";
+    private final String cancel               = "//button[text()='Cancel']";
 
-    private final String configId               = "[name='id']";
-    private final String emrType                = "[name='emrType']";
-    private final String displayName            = "[name='displayName']";
-    private final String clientId               = "[name='clientId']";
-    private final String trustEmail             = "[name='trustEmail']";
-    private final String version                = "[name='version']";
-    private final String iss                    = "[name='iss']";
-    private final String clientSecret           = "[name='clientSecret']";
+    private final String configId             = "[name='id']";
+    private final String emrType              = "[name='emrType']";
+    private final String displayName          = "[name='displayName']";
+    private final String clientId             = "[name='clientId']";
+    private final String trustEmail           = "[name='trustEmail']";
+    private final String version              = "[name='version']";
+    private final String iss                  = "[name='iss']";
+    private final String clientSecret         = "[name='clientSecret']";
 
-    private final String userKey                = "//*[text()='Users Emails']/..//*[@ng-reflect-name='%s']//*[@placeholder='Key']";
-    private final String userEmail              = "[ng-reflect-name='%s'] [placeholder='Email']";
-    private final String deleteUser             = "//*[@ng-reflect-name='%s']//button[text()='Delete User']";
-    private final String addUser                = "//button[contains(text(),'Add User')]";
-    private final String userEmailRows          = "[formarrayname='usersFormDataArr'] [placeholder='Key']";
+    private final String userKey              = "//*[text()='Users Emails']/..//*[@ng-reflect-name='%s']//*[@placeholder='Key']";
+    private final String userEmail            = "[ng-reflect-name='%s'] [placeholder='Email']";
+    private final String deleteUser           = "//*[@ng-reflect-name='%s']//button[text()='Delete User']";
+    private final String addUser              = "//button[contains(text(),'Add User')]";
+    private final String userEmailRows        = "[formarrayname='usersFormDataArr'] [placeholder='Key']";
 
-    private final String propertyKey            = "//*[text()='Properties']/..//*[@ng-reflect-name='%s']//*[@placeholder='Key']";
-    private final String propertyValue          = "[ng-reflect-name='%s'] [placeholder='Value']";
-    private final String deleteProperty         = "//*[@ng-reflect-name='%s']//button[text()='Delete Property']";
-    private final String addProperty            = "//button[contains(text(),'Add Property')]";
-    private final String propertyRows           = "[formarrayname='propertiesFormDataArr'] [placeholder='Key']";
+    private final String propertyKey          = "//*[text()='Properties']/..//*[@ng-reflect-name='%s']//*[@placeholder='Key']";
+    private final String propertyValue        = "[ng-reflect-name='%s'] [placeholder='Value']";
+    private final String deleteProperty       = "//*[@ng-reflect-name='%s']//button[text()='Delete Property']";
+    private final String addProperty          = "//button[contains(text(),'Add Property')]";
+    private final String propertyRows         = "[formarrayname='propertiesFormDataArr'] [placeholder='Key']";
 
-    private final String transforms             = "[name='transforms']";
-    private final String showTransformsAsJson   = "//button[text()='Show Transforms as JSON']";
+    private final String transforms           = "[name='transforms']";
+    private final String showTransformsAsJson = "//button[text()='Show Transforms as JSON']";
 
-    private final String selectAccountsBtn      = "//*[text()='Select Accounts']";
-    private final String selectAccountsDropDown = ".dropdown-menu.multi-select-popup";
-    private final String accountSearch          = "[placeholder='Search...']";
-    private final String accountSearchResults   = "a.dropdown-item";
-    private final String newAccounts            = "//*[text()='New Accounts']/..//span[not(contains(@class, 'glyphicon'))]";
+    private final String selectAccountsBtn    = "//*[text()='Select Accounts']";
+    private final String accountSearch        = "[placeholder='Search...']";
+    private final String newAccounts          = "//*[text()='New Accounts']/..//span[not(contains(@class, 'glyphicon'))]";
 
-    private final String overlayMessage         = "#toast-container .toast-message";
-    private final String fieldError             = ".alert.alert-danger";
+    private final String overlayMessage       = "#toast-container .toast-message";
+    private final String fieldError           = ".alert.alert-danger";
 
     @Override
     public void isCorrectPage () {
@@ -68,6 +63,7 @@ public class CreateEmrConfig extends CoraPage {
 
     public void clickSave () {
         assertTrue (click (save));
+        transactionInProgress ();
     }
 
     public boolean isSaveEnabled () {
@@ -222,46 +218,13 @@ public class CreateEmrConfig extends CoraPage {
 
     public void selectAccounts (String... accounts) {
         assertTrue (click (selectAccountsBtn));
-        assertEquals (getCssValue (selectAccountsDropDown, "display"), "block");
-
-        String previousFirstResult = null;
-        for (int i = 0; i < accounts.length; i++) {
+        for (String account : accounts) {
             assertTrue (clear (accountSearch));
-            assertTrue (setText (accountSearch, accounts[i]));
-
-            if (i != 0) {
-                waitForDropdownToChange (previousFirstResult);
-            }
-
-            for (WebElement element : waitForElements (accountSearchResults)) {
-                previousFirstResult = getText (waitForElements (accountSearchResults).get (0), "label");
-                if (getText (element, "label").trim ().equals (accounts[i])) {
-                    click (element, "input");
-                    break;
-                }
-            }
+            pageLoading ();
+            assertTrue (setText (accountSearch, account));
+            assertTrue (click (format ("//*[@id='%s']", account)));
         }
         assertTrue (click (selectAccountsBtn));
-        assertEquals (getCssValue (selectAccountsDropDown, "display"), "none");
-    }
-
-    private void waitForDropdownToChange (String previousFirstResult) {
-        Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
-            public Boolean apply (WebDriver driver) {
-                String currentFirstResult = getText (waitForElements (accountSearchResults).get (0), "label");
-                Logging.testLog ("waiting for dropdown results to change from previousFirstResult to currentFirstResult");
-                Logging.testLog ("previousFirstResult: " + previousFirstResult + ", currentFirstResult: " + currentFirstResult);
-                if (!previousFirstResult.equals (currentFirstResult)) {
-                    return true;
-                }
-                return false;
-            }
-        };
-        try {
-            waitForBooleanCondition (10, 1, func);
-        } catch (Exception e) {
-            throw new RuntimeException ("Current dropdown doesn't change after 10 seconds", e);
-        }
     }
 
     public List <String> getNewAccounts () {
