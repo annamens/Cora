@@ -94,7 +94,6 @@ public class TestHelper {
         patient.mrn = randomString (30);
         patient.race = Race.ASKED;
         patient.ethnicity = Ethnicity.ASKED;
-        patient = getRandomAddress (patient);
         return patient;
     }
 
@@ -169,13 +168,13 @@ public class TestHelper {
         patient.insurance3 = insurance3 ();
         return patient;
     }
-    
+
     public static Patient newNoChargePatient () {
         Patient patient = newPatient ();
         patient.billingType = ChargeType.NoCharge;
         return patient;
     }
-    
+
     public static Patient newInternalPharmaPatient () {
         Patient patient = newPatient ();
         patient.billingType = ChargeType.InternalPharmaBilling;

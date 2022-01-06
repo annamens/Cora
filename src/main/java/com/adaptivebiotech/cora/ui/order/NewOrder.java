@@ -243,8 +243,8 @@ public abstract class NewOrder extends OrderHeader {
         clickPickPatient ();
         searchPatient (patient);
 
-        if (isElementPresent (".ab-panel.matches .row:nth-child(1)")) {
-            assertTrue (click (".ab-panel.matches .row:nth-child(1) > div"));
+        if (isElementPresent (".ab-panel.matches .row.pick-patient-row:nth-child(1)")) {
+            assertTrue (click (".ab-panel.matches .row.pick-patient-row:nth-child(1) > div"));
             assertTrue (click ("[ng-click='ctrl.save(orderEntryForm)']"));
             moduleLoading ();
             assertTrue (waitUntilVisible ("[ng-click='ctrl.removePatient()']"));
