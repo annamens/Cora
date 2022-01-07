@@ -97,30 +97,6 @@ public class TestHelper {
         return patient;
     }
 
-    // has medicare, secondary insurance, address, etc.
-    public static Patient patientMedicare () {
-        Patient patient = new Patient ();
-        patient.firstName = "Test1";
-        patient.lastName = "Fun";
-        patient.fullname = String.join (" ", patient.firstName, patient.lastName);
-        patient.dateOfBirth = "07/27/1984";
-        patient.gender = "Male";
-        patient.patientCode = 1;
-        patient.mrn = "mrn-000001";
-        patient.billingType = Medicare;
-        patient.insurance1 = insurance1 ();
-        patient.insurance1.groupNumber = null;
-        patient.insurance2 = insurance2 ();
-
-        Faker faker = new Faker ();
-        patient.address = faker.address ().streetAddress ();
-        patient.phone = faker.phoneNumber ().cellPhone ();
-        patient.locality = faker.address ().city ();
-        patient.region = faker.address ().stateAbbr ();
-        patient.postCode = faker.address ().zipCodeByState (patient.region);
-        return patient;
-    }
-
     // Bill my Institution
     public static Patient newClientPatient () {
         Patient patient = newPatient ();
@@ -292,6 +268,7 @@ public class TestHelper {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
+        specimen.collectionDate = DateUtils.getPastFutureDate (-3);
         return specimen;
     }
 }

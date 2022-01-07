@@ -3,6 +3,7 @@ package com.adaptivebiotech.cora.dto;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.lang.String.format;
 import java.time.LocalDateTime;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -69,6 +70,14 @@ public final class Physician {
     @Override
     public String toString () {
         return toStringOverride (this);
+    }
+
+    public boolean equalsPhysicianName (Physician o) {
+        Physician p = (Physician) o;
+        return new EqualsBuilder ().append (this.lastName, p.lastName)
+                                   .append (this.firstName, p.firstName)
+                                   .append (this.accountName, p.accountName)
+                                   .isEquals ();
     }
 
     public enum PhysicianType {

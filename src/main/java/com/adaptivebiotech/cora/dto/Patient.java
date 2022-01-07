@@ -4,6 +4,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import java.time.LocalDateTime;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
@@ -56,10 +57,6 @@ public final class Patient {
     public String        createdBy;
     public String        testStatus;
 
-    // for Emr use
-    // TODO if use case is to read EemtCustomerData.json and parse, then change json attr name
-    public String        diagnosis;
-
     @Override
     public String toString () {
         return toStringOverride (this);
@@ -68,6 +65,14 @@ public final class Patient {
     @Override
     public boolean equals (Object o) {
         return equalsOverride (this, (Patient) o);
+    }
+
+    public boolean equalsNameDob (Object o) {
+        Patient p = (Patient) o;
+        return new EqualsBuilder ().append (this.lastName, p.lastName)
+                                   .append (this.firstName, p.firstName)
+                                   .append (this.dateOfBirth, p.dateOfBirth)
+                                   .isEquals ();
     }
 
     public enum PatientTestStatus {

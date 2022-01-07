@@ -14,6 +14,7 @@ public final class TokenDataPatient {
     public RecordDate    dateOfBirth;
     public Record        mrn;
     public Record        gender;
+    public Address       address;
     public String        phone;
     public String        email;
     public PatientSource source;
@@ -47,6 +48,7 @@ public final class TokenDataPatient {
         public String                         gender;
         public String                         birthDate;
         public boolean                        deceasedBoolean;
+        public List <Address>                 address;
         public MaritalStatus                  maritalStatus;
         public List <Communication>           communication;
         public List <CareProvider>            careProvider;
@@ -128,5 +130,20 @@ public final class TokenDataPatient {
 
         public String display;
         public String reference;
+    }
+
+    public static final class Address {
+
+        public String        use;
+        public String        line1;
+        public String        line2;
+        public List <String> line;
+        public String        phone;
+        public String        email;
+        public String        city;
+        public String        state;
+        public String        postalCode;
+        public String        country;
+
     }
 }
