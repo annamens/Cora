@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public final class Physician {
 
-    @JsonAlias ("emrId")
+    @JsonAlias ({ "emrId", "ID" })
     public String        id;
     public Integer       version;
     @JsonFormat (shape = JsonFormat.Shape.STRING)
@@ -49,9 +49,6 @@ public final class Physician {
     public Boolean       medicareEnrolled;
     public Boolean       needsCLEPApproval;
     public String        key;
-
-    // for EMR use
-    public String        ID;
 
     public Physician () {}
 

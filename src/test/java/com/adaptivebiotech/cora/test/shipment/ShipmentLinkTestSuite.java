@@ -1,15 +1,12 @@
 package com.adaptivebiotech.cora.test.shipment;
 
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
-import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
-import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
-import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -47,15 +44,12 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      * NOTE: SR-T3144
      */
     public void verifyClonoSeqShipmentLink () {
-        Specimen specimen = new Specimen ();
-        specimen.sampleType = Blood;
-        specimen.anticoagulant = EDTA;
         // create clonoSEQ diagnostic order
         String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
                                                           TestHelper.newNoChargePatient (),
                                                           new String[] { "C90.00" },
                                                           Assay.ID_BCell2_CLIA,
-                                                          specimen);
+                                                          TestHelper.bloodSpecimen ());
 
         // add diagnostic shipment
         shipment.createShipment (orderNum, ContainerType.SlideBox5);

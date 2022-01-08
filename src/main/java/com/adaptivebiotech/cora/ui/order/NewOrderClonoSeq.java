@@ -25,7 +25,6 @@ import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
-import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
@@ -371,7 +370,7 @@ public class NewOrderClonoSeq extends NewOrder {
         if (specimen.anticoagulant != null)
             enterAntiCoagulant (specimen.anticoagulant);
 
-        enterCollectionDate (DateUtils.getPastFutureDate (-3));
+        enterCollectionDate (specimen.collectionDate.toString ());
         clickAssayTest (assayTest);
         clickSave ();
 

@@ -73,6 +73,7 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
+import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
@@ -916,6 +917,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         specimen.sampleType = specimenType;
         specimen.sampleSource = specimenSource;
         specimen.anticoagulant = Blood.equals (specimen.sampleType) ? EDTA : null;
+        specimen.collectionDate = DateUtils.getPastFutureDate (-3);
         String orderNum = diagnostic.createClonoSeqOrder (physician,
                                                           TestHelper.newInternalPharmaPatient (),
                                                           icdCodes,

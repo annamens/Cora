@@ -68,12 +68,11 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         String icdCode = "C90.00";
         Assay orderTest = Assay.ID_BCell2_CLIA;
         Specimen specimen = TestHelper.bloodSpecimen ();
-        String collectionDate = DateUtils.getPastFutureDate (-3);
         String orderNum = diagnostic.createClonoSeqOrder (physician,
                                                           patient,
                                                           new String[] { icdCode },
                                                           Assay.ID_BCell2_CLIA,
-                                                          TestHelper.bloodSpecimen ());
+                                                          specimen);
 
         List <String> history = diagnostic.getHistory ();
         String createdDateTime = history.get (0).split ("Created by")[0].trim ();
@@ -144,7 +143,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (activeOrder.specimenDto.sampleType, specimen.sampleType);
         assertEquals (activeOrder.specimenDto.sampleSource, specimen.sampleType);
         assertEquals (activeOrder.specimenDto.anticoagulant, specimen.anticoagulant);
-        assertEquals (activeOrder.specimenDto.collectionDate, collectionDate);
+        assertEquals (activeOrder.specimenDto.collectionDate, specimen.collectionDate);
 
         assertEquals (clonoSeqOrderDetail.getShipmentArrivalDate (),
                       DateUtils.convertDateFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
