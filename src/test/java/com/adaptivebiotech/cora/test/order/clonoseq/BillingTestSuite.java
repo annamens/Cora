@@ -8,16 +8,15 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_insu
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_medicare;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
-import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
@@ -39,16 +38,12 @@ public class BillingTestSuite extends CoraBaseBrowser {
     private OrdersList          ordersList  = new OrdersList ();
     private NewOrderClonoSeq    diagnostic  = new NewOrderClonoSeq ();
     private OrderDetailClonoSeq orderDetail = new OrderDetailClonoSeq ();
-    private Specimen            specimen;
+    private Specimen            specimen    = bloodSpecimen ();
 
     @BeforeMethod
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-
-        specimen = new Specimen ();
-        specimen.sampleType = Blood;
-        specimen.anticoagulant = EDTA;
     }
 
     public void insurance () {
