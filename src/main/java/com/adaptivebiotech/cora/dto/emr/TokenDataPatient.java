@@ -2,7 +2,6 @@ package com.adaptivebiotech.cora.dto.emr;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
-import com.adaptivebiotech.cora.dto.Patient.Address;
 
 /**
  * @author Harry Soehalim
@@ -131,5 +130,20 @@ public final class TokenDataPatient {
 
         public String display;
         public String reference;
+    }
+
+    public static final class Address {
+
+        public String        use;
+        public String        line1;
+        public String        line2;
+        public List <String> line;
+        public String        phone;
+        public String        email;
+        public String        city;
+        public String        state;
+        public String        postalCode;
+        public String        country;
+
     }
 }

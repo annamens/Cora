@@ -7,8 +7,6 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
-import com.adaptivebiotech.cora.dto.Orders.ChargeType;
-import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -19,7 +17,6 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
-import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 /**
  * @author jpatel
@@ -49,13 +46,10 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
     public void verifyClonoSeqShipmentLink () {
         // create clonoSEQ diagnostic order
         String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
-                                                          TestHelper.newPatient (),
+                                                          TestHelper.newNoChargePatient (),
                                                           new String[] { "C90.00" },
                                                           Assay.ID_BCell2_CLIA,
-                                                          ChargeType.NoCharge,
-                                                          SpecimenType.Blood,
-                                                          null,
-                                                          Anticoagulant.EDTA);
+                                                          TestHelper.bloodSpecimen ());
 
         // add diagnostic shipment
         shipment.createShipment (orderNum, ContainerType.SlideBox5);
@@ -103,12 +97,10 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
     public void verifyTDetectShipmentLink () {
         // create T-Detect diagnostic order
         String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
-                                                              TestHelper.newPatient (),
+                                                              TestHelper.newClientPatient (),
                                                               null,
                                                               DateUtils.getPastFutureDate (-1),
-                                                              Assay.COVID19_DX_IVD,
-                                                              ChargeType.Client,
-                                                              TestHelper.getRandomAddress ());
+                                                              Assay.COVID19_DX_IVD);
 
         // add diagnostic shipment
         shipment.createShipment (orderNum, ContainerType.SlideBox5);

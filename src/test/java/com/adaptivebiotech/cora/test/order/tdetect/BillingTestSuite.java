@@ -58,8 +58,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        null,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
-                                       patient.billingType,
-                                       null,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));
@@ -72,8 +70,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        null,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
-                                       patient.billingType,
-                                       null,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));
@@ -86,8 +82,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
                                        null,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
-                                       patient.billingType,
-                                       null,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));

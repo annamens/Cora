@@ -4,11 +4,12 @@ import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import java.time.LocalDateTime;
-import java.util.List;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -17,12 +18,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public final class Patient {
 
+    @JsonAlias ("emrId")
     public String        id;
     public String        firstName;
     public String        middleName;
     public String        lastName;
     public String        fullname;
     public String        gender;
+    @JsonAlias ("dob")
     public String        dateOfBirth;
     public String        mrn;
     public Race          race;
@@ -64,28 +67,12 @@ public final class Patient {
         return equalsOverride (this, (Patient) o);
     }
 
-    public static final class Address {
-
-        public String        use;
-        public String        line1;
-        public String        line2;
-        public List <String> line;
-        public String        phone;
-        public String        email;
-        public String        city;
-        public String        state;
-        public String        postalCode;
-        public String        country;
-
-        @Override
-        public String toString () {
-            return toStringOverride (this);
-        }
-
-        @Override
-        public boolean equals (Object o) {
-            return equalsOverride (this, (Address) o);
-        }
+    public boolean equalsNameDob (Object o) {
+        Patient p = (Patient) o;
+        return new EqualsBuilder ().append (this.lastName, p.lastName)
+                                   .append (this.firstName, p.firstName)
+                                   .append (this.dateOfBirth, p.dateOfBirth)
+                                   .isEquals ();
     }
 
     public enum PatientTestStatus {

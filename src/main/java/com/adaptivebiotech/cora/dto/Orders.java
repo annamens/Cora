@@ -135,6 +135,14 @@ public final class Orders {
         public String toString () {
             return toStringOverride (this);
         }
+
+        public Physician getPhysician () {
+            Physician physician = new Physician ();
+            physician.lastName = providerLastName;
+            physician.firstName = providerFirstName;
+            physician.accountName = accountName;
+            return physician;
+        }
     }
 
     /*

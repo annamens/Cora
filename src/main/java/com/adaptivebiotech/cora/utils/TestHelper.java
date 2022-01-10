@@ -10,9 +10,11 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.CommercialInsurance
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.TrialProtocol;
+import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
@@ -22,9 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.github.javafaker.Faker;
@@ -94,30 +97,6 @@ public class TestHelper {
         return patient;
     }
 
-    // has medicare, secondary insurance, address, etc.
-    public static Patient patientMedicare () {
-        Patient patient = new Patient ();
-        patient.firstName = "Test1";
-        patient.lastName = "Fun";
-        patient.fullname = String.join (" ", patient.firstName, patient.lastName);
-        patient.dateOfBirth = "07/27/1984";
-        patient.gender = "Male";
-        patient.patientCode = 1;
-        patient.mrn = "mrn-000001";
-        patient.billingType = Medicare;
-        patient.insurance1 = insurance1 ();
-        patient.insurance1.groupNumber = null;
-        patient.insurance2 = insurance2 ();
-
-        Address address = getRandomAddress ();
-        patient.address = address.line1;
-        patient.phone = address.phone;
-        patient.locality = address.city;
-        patient.region = address.state;
-        patient.postCode = address.postalCode;
-        return patient;
-    }
-
     // Bill my Institution
     public static Patient newClientPatient () {
         Patient patient = newPatient ();
@@ -140,6 +119,7 @@ public class TestHelper {
         patient.billingType = PatientSelfPay;
         patient.insurance1 = new Insurance ();
         patient.insurance1.hospitalizationStatus = NonHospital;
+        patient = getRandomAddress (patient);
         return patient;
     }
 
@@ -162,6 +142,18 @@ public class TestHelper {
         patient.insurance1.groupNumber = null;
         patient.insurance2 = insurance2 ();
         patient.insurance3 = insurance3 ();
+        return patient;
+    }
+
+    public static Patient newNoChargePatient () {
+        Patient patient = newPatient ();
+        patient.billingType = ChargeType.NoCharge;
+        return patient;
+    }
+
+    public static Patient newInternalPharmaPatient () {
+        Patient patient = newPatient ();
+        patient.billingType = ChargeType.InternalPharmaBilling;
         return patient;
     }
 
@@ -191,17 +183,16 @@ public class TestHelper {
      * 
      * @return Address
      */
-    public static Address getRandomAddress () {
+    public static Patient getRandomAddress (Patient patient) {
         Faker faker = new Faker ();
-        Address address = new Address ();
-        address.line1 = faker.address ().streetAddress ();
-        address.line2 = faker.address ().secondaryAddress ();
-        address.phone = faker.phoneNumber ().cellPhone ();
-        address.email = faker.name ().username () + "@gmail.com";
-        address.city = faker.address ().city ();
-        address.state = faker.address ().stateAbbr ();
-        address.postalCode = faker.address ().zipCodeByState (address.state);
-        return address;
+        patient.address = faker.address ().streetAddress ();
+        patient.address2 = faker.address ().secondaryAddress ();
+        patient.phone = faker.phoneNumber ().cellPhone ();
+        patient.email = faker.name ().username () + "@gmail.com";
+        patient.locality = faker.address ().city ();
+        patient.region = faker.address ().stateAbbr ();
+        patient.postCode = faker.address ().zipCodeByState (patient.region);
+        return patient;
     }
 
     public static Insurance insurance1 () {
@@ -271,5 +262,13 @@ public class TestHelper {
         physician.firstName = firstName;
         physician.accountName = accountName;
         return physician;
+    }
+
+    public static Specimen bloodSpecimen () {
+        Specimen specimen = new Specimen ();
+        specimen.sampleType = Blood;
+        specimen.anticoagulant = EDTA;
+        specimen.collectionDate = DateUtils.getPastFutureDate (-3);
+        return specimen;
     }
 }

@@ -18,7 +18,6 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
@@ -109,7 +108,7 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDto = new Specimen ();
         order.specimenDto.specimenNumber = getSpecimenId ();
         order.specimenDto.sampleType = getSpecimenType ();
-        order.specimenDto.sourceType = getSpecimenSource ();
+        order.specimenDto.sampleSource = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
@@ -294,9 +293,7 @@ public class NewOrderTDetect extends NewOrder {
                                       Patient patient,
                                       String[] icdCodes,
                                       String collectionDate,
-                                      Assay assayTest,
-                                      ChargeType chargeType,
-                                      Address patientAddress) {
+                                      Assay assayTest) {
         selectNewTDetectDiagnosticOrder ();
         isCorrectPage ();
 
@@ -310,7 +307,7 @@ public class NewOrderTDetect extends NewOrder {
         enterCollectionDate (collectionDate);
         clickAssayTest (assayTest);
 
-        switch (chargeType) {
+        switch (patient.billingType) {
         case CommercialInsurance:
             billing.enterInsuranceInfo (patient);
             break;
@@ -320,12 +317,13 @@ public class NewOrderTDetect extends NewOrder {
         case Client:
         case PatientSelfPay:
         default:
-            billing.selectBilling (chargeType);
+            billing.selectBilling (patient.billingType);
             break;
         }
 
-        if (!matchFound && patientAddress != null)
-            billing.enterPatientAddress (patientAddress);
+        if (!matchFound && patient.address != null)
+            billing.enterPatientAddress (patient);
+
         clickSave ();
 
         String orderNum = getOrderNumber ();
@@ -355,8 +353,6 @@ public class NewOrderTDetect extends NewOrder {
                                       String[] icdCodes,
                                       String collectionDate,
                                       Assay assayTest,
-                                      ChargeType chargeType,
-                                      Address patientAddress,
                                       OrderStatus orderStatus,
                                       ContainerType containerType) {
         // create T-Detect order
@@ -364,9 +360,7 @@ public class NewOrderTDetect extends NewOrder {
                                               patient,
                                               icdCodes,
                                               collectionDate,
-                                              assayTest,
-                                              chargeType,
-                                              patientAddress);
+                                              assayTest);
 
         // add diagnostic shipment
         new NewShipment ().createShipment (orderNum, containerType);
