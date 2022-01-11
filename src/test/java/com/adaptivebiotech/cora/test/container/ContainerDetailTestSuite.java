@@ -31,7 +31,6 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
 
     @BeforeMethod
     public void beforeMethod () {
-        coraApi.login ();
         containers.set (coraApi.addContainers (new Containers (asList (container (SlideBox5CS)))));
 
         login.doLogin ();

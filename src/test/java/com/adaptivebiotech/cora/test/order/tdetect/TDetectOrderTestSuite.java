@@ -39,7 +39,6 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
     public void validateTDetectOrderActivation () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        coraApi.login ();
         // create T-Detect diagnostic order
         String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_tdetect_all_tests),
                                                               TestHelper.newClientPatient (),

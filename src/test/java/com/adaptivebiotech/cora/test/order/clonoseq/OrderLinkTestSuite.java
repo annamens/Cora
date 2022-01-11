@@ -50,7 +50,6 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        coraApi.login ();
     }
 
     /**

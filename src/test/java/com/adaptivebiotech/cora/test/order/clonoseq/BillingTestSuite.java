@@ -10,6 +10,7 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_self
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
@@ -27,7 +28,6 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.utils.TestHelper;
 
 @Test (groups = "regression")
 public class BillingTestSuite extends CoraBaseBrowser {
@@ -38,13 +38,12 @@ public class BillingTestSuite extends CoraBaseBrowser {
     private OrdersList          ordersList  = new OrdersList ();
     private NewOrderClonoSeq    diagnostic  = new NewOrderClonoSeq ();
     private OrderDetailClonoSeq orderDetail = new OrderDetailClonoSeq ();
-    private Specimen            specimen    = TestHelper.bloodSpecimen ();
+    private Specimen            specimen    = bloodSpecimen ();
 
     @BeforeMethod
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        coraApi.login ();
     }
 
     public void insurance () {

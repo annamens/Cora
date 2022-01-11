@@ -61,7 +61,6 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
     public void verifyOrderDetailsPage () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        coraApi.login ();
 
         Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
         Patient patient = TestHelper.newNoChargePatient ();

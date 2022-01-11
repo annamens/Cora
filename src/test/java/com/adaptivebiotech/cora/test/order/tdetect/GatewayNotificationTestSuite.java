@@ -39,7 +39,6 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
      * @sdlc_requirements SR-7370
      */
     public void verifyCovidGatewayMessageUpdate () {
-        coraApi.login ();
         AssayResponse.CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
         test.tsvPath = covidTsv;
         test.workflowProperties = new WorkflowProperties ();

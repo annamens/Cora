@@ -45,7 +45,6 @@ public class ScanTestSuite extends ContainerTestBase {
 
     @BeforeClass
     public void beforeClass () {
-        coraApi.login ();
         mytestContainers = coraApi.addContainers (new Containers (asList (container (Slide), container (SlideBox5))));
 
         // setup for shipment is in arrived state
@@ -72,7 +71,6 @@ public class ScanTestSuite extends ContainerTestBase {
 
     @AfterClass
     public void afterClass () {
-        coraApi.login ();
         coraApi.deactivateContainers (mytestContainers);
         coraApi.deactivateContainers (shipContainers);
     }
