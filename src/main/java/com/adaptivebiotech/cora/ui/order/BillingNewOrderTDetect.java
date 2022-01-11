@@ -7,6 +7,7 @@ import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 
 /**
  * @author jpatel
@@ -14,6 +15,7 @@ import com.adaptivebiotech.cora.dto.Patient;
  */
 public class BillingNewOrderTDetect extends BillingNewOrder {
 
+    private final String abnStatus                    = "#abn-status-type";
     private final String insuranceProvider            = "[formcontrolname='insuranceProvider']";
     private final String groupNumber                  = "[formcontrolname='groupNumber']";
     private final String policyNumber                 = "[formcontrolname='policyNumber']";
@@ -34,6 +36,14 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     private final String tertiaryPolicyNumber         = "#tertiaryPolicyNumber";
     private final String tertiaryInsuredRelationship  = "#tertiary-bill-relation-type";
     private final String tertiaryPolicyholder         = "#tertiaryPolicyholder";
+
+    public void enterABNstatus (AbnStatus status) {
+        assertTrue (clickAndSelectValue (abnStatus, status.name ()));
+    }
+
+    protected AbnStatus getAbnStatus () {
+        return getEnum (AbnStatus.class, getFirstSelectedValue (abnStatus));
+    }
 
     public void enterInsurance1Provider (String provider) {
         assertTrue (setText (insuranceProvider, provider));
@@ -80,7 +90,7 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     }
 
     public PatientStatus getInsurance1PatientStatus () {
-        return getEnum (PatientStatus.class, getFirstSelectedText (hospitalizationStatus));
+        return getEnum (PatientStatus.class, getFirstSelectedValue (hospitalizationStatus));
     }
 
     public void enterInsurance1Hospital (String hospital) {

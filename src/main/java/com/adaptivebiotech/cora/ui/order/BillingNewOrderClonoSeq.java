@@ -6,6 +6,7 @@ import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
+import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 
 /**
  * @author jpatel
@@ -13,6 +14,7 @@ import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
  */
 public class BillingNewOrderClonoSeq extends BillingNewOrder {
 
+    private final String abnStatus                    = "[name='abnStatusType']";
     private final String insuranceProvider            = "[name='insuranceProvider']";
     private final String groupNumber                  = "[name='groupNumber']";
     private final String policyNumber                 = "[name='policyNumber']";
@@ -33,6 +35,14 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
     private final String tertiaryPolicyNumber         = "[name='tertiaryPolicyNumber']";
     private final String tertiaryInsuredRelationship  = "[name='tertiaryInsuredRelationship']";
     private final String tertiaryPolicyholder         = "[name='tertiaryPolicyholder']";
+
+    public void enterABNstatus (AbnStatus status) {
+        assertTrue (clickAndSelectValue (abnStatus, "string:" + status));
+    }
+
+    protected AbnStatus getAbnStatus () {
+        return AbnStatus.getAbnStatus (getFirstSelectedText (abnStatus));
+    }
 
     public void enterInsurance1Provider (String provider) {
         assertTrue (setText (insuranceProvider, provider));

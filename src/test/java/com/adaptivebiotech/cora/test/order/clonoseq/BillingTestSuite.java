@@ -48,6 +48,9 @@ public class BillingTestSuite extends CoraBaseBrowser {
 
     public void insurance () {
         Patient patient = newInsurancePatient ();
+        patient.race = null;
+        patient.ethnicity = null;
+
         diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_insurance),
                                         patient,
                                         icdCodes,
@@ -63,6 +66,9 @@ public class BillingTestSuite extends CoraBaseBrowser {
      */
     public void medicare_abn_required () {
         Patient patient = newMedicarePatient ();
+        patient.race = null;
+        patient.ethnicity = null;
+
         diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_medicare),
                                         patient,
                                         icdCodes,
@@ -81,6 +87,10 @@ public class BillingTestSuite extends CoraBaseBrowser {
      */
     public void medicare_abn_not_required () {
         Patient patient = newMedicarePatient ();
+        patient.race = null;
+        patient.ethnicity = null;
+        patient.abnStatusType = null;
+
         diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_medicare),
                                         patient,
                                         new String[] { icdCodes[0], "C91.10" },
@@ -96,6 +106,9 @@ public class BillingTestSuite extends CoraBaseBrowser {
 
     public void patientSelfPay () {
         Patient patient = newSelfPayPatient ();
+        patient.race = null;
+        patient.ethnicity = null;
+
         diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_selfpay),
                                         patient,
                                         icdCodes,
@@ -108,6 +121,9 @@ public class BillingTestSuite extends CoraBaseBrowser {
 
     public void billClient () {
         Patient patient = newClientPatient ();
+        patient.race = null;
+        patient.ethnicity = null;
+
         diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_client),
                                         patient,
                                         icdCodes,
@@ -120,6 +136,9 @@ public class BillingTestSuite extends CoraBaseBrowser {
 
     public void billPerStudyProtocol () {
         Patient patient = newTrialProtocolPatient ();
+        patient.race = null;
+        patient.ethnicity = null;
+
         diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
                                         patient,
                                         icdCodes,

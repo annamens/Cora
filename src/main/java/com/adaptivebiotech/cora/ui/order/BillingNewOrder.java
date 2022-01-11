@@ -41,14 +41,7 @@ public abstract class BillingNewOrder extends CoraPage {
         return getDropdownOptions (billing);
     }
 
-    public void enterABNstatus (AbnStatus status) {
-        assertTrue (clickAndSelectValue ("[name='abnStatusType']", "string:" + status));
-    }
-
-    protected AbnStatus getAbnStatus () {
-        String css = "[ng-model^='ctrl.orderEntry.order.abnStatusType']";
-        return AbnStatus.getAbnStatus (getFirstSelectedText (css));
-    }
+    public abstract void enterABNstatus (AbnStatus status);
 
     public abstract void enterInsurance1Provider (String provider);
 
