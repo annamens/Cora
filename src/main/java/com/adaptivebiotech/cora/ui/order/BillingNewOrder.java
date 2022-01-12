@@ -83,30 +83,25 @@ public abstract class BillingNewOrder extends CoraPage {
 
     public abstract void enterInsurance3PolicyHolder (String name);
 
-    public void enterPatientAddress1 (String address1) {
-        assertTrue (setText ("//*[text()='Address 1']/..//input", address1));
-    }
+    public abstract void enterPatientAddress1 (String address1);
 
-    public void enterPatientPhone (String phone) {
-        assertTrue (setText ("//*[text()='Phone']/..//input", phone));
-    }
+    public abstract void enterPatientAddress2 (String address2);
 
-    public void enterPatientCity (String city) {
-        assertTrue (setText ("//*[text()='City']/..//input", city));
-    }
+    public abstract void enterPatientPhone (String phone);
 
-    public void enterPatientState (String state) {
-        assertTrue (clickAndSelectText ("//*[text()='State']/..//select",
-                                        state == null ? "" : state));
-    }
+    public abstract void enterPatientEmail (String email);
 
-    public void enterPatientZipcode (String zipcode) {
-        assertTrue (setText ("//*[text()='Zip Code']/..//input", zipcode));
-    }
+    public abstract void enterPatientCity (String city);
+
+    public abstract void enterPatientState (String state);
+
+    public abstract void enterPatientZipcode (String zipcode);
 
     public void enterPatientAddress (Patient patient) {
         enterPatientAddress1 (patient.address);
+        enterPatientAddress2 (patient.address2);
         enterPatientPhone (patient.phone);
+        enterPatientEmail (patient.email);
         enterPatientCity (patient.locality);
         enterPatientState (patient.region);
         enterPatientZipcode (patient.postCode);

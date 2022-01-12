@@ -4,6 +4,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
@@ -35,6 +36,13 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
     private final String tertiaryPolicyNumber         = "[name='tertiaryPolicyNumber']";
     private final String tertiaryInsuredRelationship  = "[name='tertiaryInsuredRelationship']";
     private final String tertiaryPolicyholder         = "[name='tertiaryPolicyholder']";
+    private final String patientAddress1              = "[name='guarantorAddress']";
+    private final String patientAddress2              = "[name='guarantorAddress2']";
+    private final String patientPhone                 = "[name='guarantorPhone']";
+    private final String patientEmail                 = "[name='guarantorEmail']";
+    private final String patientCity                  = "[name='guarantorLocality']";
+    private final String patientState                 = "[name='guarantorRegion']";
+    private final String patientZipcode               = "[name='guarantorPostCode']";
 
     public void enterABNstatus (AbnStatus status) {
         assertTrue (clickAndSelectValue (abnStatus, "string:" + status));
@@ -205,28 +213,63 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
         return readInput (tertiaryPolicyholder);
     }
 
+    public void enterPatientAddress1 (String address1) {
+        assertTrue (setText (patientAddress1, address1));
+    }
+
     public String getPatientAddress1 () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.address1']";
-        return isElementPresent (css) ? readInput (css) : null;
+        return readInput (patientAddress1);
+    }
+
+    // address2 is not required
+    public void enterPatientAddress2 (String address2) {
+        if (isNotNullAndNotEmpty (address2))
+            assertTrue (setText (patientAddress2, address2));
+    }
+
+    public String getPatientAddress2 () {
+        return readInput (patientAddress2);
+    }
+
+    public void enterPatientPhone (String phone) {
+        assertTrue (setText (patientPhone, phone));
     }
 
     protected String getPatientPhone () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.phone']";
-        return isElementPresent (css) ? readInput (css) : null;
+        return readInput (patientPhone);
+    }
+
+    // email is not required
+    public void enterPatientEmail (String email) {
+        if (isNotNullAndNotEmpty (email))
+            assertTrue (setText (patientEmail, email));
+    }
+
+    protected String getPatientEmail () {
+        return readInput (patientEmail);
+    }
+
+    public void enterPatientCity (String city) {
+        assertTrue (setText (patientCity, city));
     }
 
     protected String getPatientCity () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.locality']";
-        return isElementPresent (css) ? readInput (css) : null;
+        return readInput (patientCity);
+    }
+
+    public void enterPatientState (String state) {
+        assertTrue (clickAndSelectText (patientState, state));
     }
 
     protected String getPatientState () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.region']";
-        return isElementPresent (css) ? getFirstSelectedText (css) : null;
+        return getFirstSelectedText (patientState);
+    }
+
+    public void enterPatientZipcode (String zipcode) {
+        assertTrue (setText (patientZipcode, zipcode));
     }
 
     protected String getPatientZipcode () {
-        String css = "[ng-model*='ctrl.orderEntry.orderBilling.guarantor.postCode']";
-        return isElementPresent (css) ? readInput (css) : null;
+        return readInput (patientZipcode);
     }
 }
