@@ -119,7 +119,6 @@ public class TestHelper {
         patient.billingType = PatientSelfPay;
         patient.insurance1 = new Insurance ();
         patient.insurance1.hospitalizationStatus = NonHospital;
-        patient = getRandomAddress (patient);
         return patient;
     }
 
@@ -186,9 +185,7 @@ public class TestHelper {
     public static Patient getRandomAddress (Patient patient) {
         Faker faker = new Faker ();
         patient.address = faker.address ().streetAddress ();
-        patient.address2 = faker.address ().secondaryAddress ();
         patient.phone = faker.phoneNumber ().cellPhone ();
-        patient.email = faker.name ().username () + "@gmail.com";
         patient.locality = faker.address ().city ();
         patient.region = faker.address ().stateAbbr ();
         patient.postCode = faker.address ().zipCodeByState (patient.region);

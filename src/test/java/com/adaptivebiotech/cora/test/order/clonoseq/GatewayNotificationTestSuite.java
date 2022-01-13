@@ -33,6 +33,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.OrderDetail;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
+import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
@@ -46,6 +47,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private final String   lastFlowcellId = "HKJVGBGXC";
     private final String   gatewayJson    = "gatewayMessage.json";
     private Login          login          = new Login ();
+    private OrdersList     ordersList     = new OrdersList ();
     private OrcaHistory    history        = new OrcaHistory ();
     private ReportClonoSeq report         = new ReportClonoSeq ();
     private TaskStatus     taskStatus     = new TaskStatus ();
@@ -56,6 +58,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         login.doLogin ();
+        ordersList.isCorrectPage ();
     }
 
     /**

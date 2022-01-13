@@ -4,9 +4,11 @@ import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 
 /**
  * @author jpatel
@@ -14,6 +16,7 @@ import com.adaptivebiotech.cora.dto.Patient;
  */
 public class BillingNewOrderTDetect extends BillingNewOrder {
 
+    private final String abnStatus                    = "#abn-status-type";
     private final String insuranceProvider            = "[formcontrolname='insuranceProvider']";
     private final String groupNumber                  = "[formcontrolname='groupNumber']";
     private final String policyNumber                 = "[formcontrolname='policyNumber']";
@@ -34,6 +37,21 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     private final String tertiaryPolicyNumber         = "#tertiaryPolicyNumber";
     private final String tertiaryInsuredRelationship  = "#tertiary-bill-relation-type";
     private final String tertiaryPolicyholder         = "#tertiaryPolicyholder";
+    private final String patientAddress1              = "[formcontrolname='address1']";
+    private final String patientAddress2              = "[formcontrolname='address2']";
+    private final String patientPhone                 = "[formcontrolname='phone']";
+    private final String patientEmail                 = "[formcontrolname='email']";
+    private final String patientCity                  = "[formcontrolname='locality']";
+    private final String patientState                 = "[formcontrolname='region']";
+    private final String patientZipcode               = "[formcontrolname='postCode']";
+
+    public void enterABNstatus (AbnStatus status) {
+        assertTrue (clickAndSelectValue (abnStatus, status.name ()));
+    }
+
+    protected AbnStatus getAbnStatus () {
+        return getEnum (AbnStatus.class, getFirstSelectedValue (abnStatus));
+    }
 
     public void enterInsurance1Provider (String provider) {
         assertTrue (setText (insuranceProvider, provider));
@@ -80,7 +98,7 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     }
 
     public PatientStatus getInsurance1PatientStatus () {
-        return getEnum (PatientStatus.class, getFirstSelectedText (hospitalizationStatus));
+        return getEnum (PatientStatus.class, getFirstSelectedValue (hospitalizationStatus));
     }
 
     public void enterInsurance1Hospital (String hospital) {
@@ -196,39 +214,64 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
         return readInput (tertiaryPolicyholder);
     }
 
+    public void enterPatientAddress1 (String address1) {
+        assertTrue (setText (patientAddress1, address1));
+    }
+
     public String getPatientAddress1 () {
-        String css = "[formcontrolname='address1']";
-        return isElementPresent (css) ? readInput (css) : null;
+        return readInput (patientAddress1);
+    }
+
+    // address2 is not required
+    public void enterPatientAddress2 (String address2) {
+        if (isNotNullAndNotEmpty (address2))
+            assertTrue (setText (patientAddress2, address2));
     }
 
     public String getPatientAddress2 () {
-        String css = "[formcontrolname='address2']";
-        return isElementPresent (css) ? readInput (css) : null;
+        return readInput (patientAddress2);
     }
 
-    public String getPatientCity () {
-        String css = "[formcontrolname='locality']";
-        return isElementPresent (css) ? readInput (css) : null;
-    }
-
-    public String getPatientState () {
-        String css = "[formcontrolname='region']";
-        return isElementPresent (css) ? getFirstSelectedText (css) : null;
-    }
-
-    public String getPatientZipcode () {
-        String css = "[formcontrolname='postCode']";
-        return isElementPresent (css) ? readInput (css) : null;
+    public void enterPatientPhone (String phone) {
+        assertTrue (setText (patientPhone, phone));
     }
 
     public String getPatientPhone () {
-        String css = "[formcontrolname='phone']";
-        return isElementPresent (css) ? readInput (css) : null;
+        return readInput (patientPhone);
+    }
+
+    // email is not required
+    public void enterPatientEmail (String email) {
+        if (isNotNullAndNotEmpty (email))
+            assertTrue (setText (patientEmail, email));
     }
 
     public String getPatientEmail () {
-        String css = "[formcontrolname='email']";
-        return isElementPresent (css) ? readInput (css) : null;
+        return readInput (patientEmail);
+    }
+
+    public void enterPatientCity (String city) {
+        assertTrue (setText (patientCity, city));
+    }
+
+    public String getPatientCity () {
+        return readInput (patientCity);
+    }
+
+    public void enterPatientState (String state) {
+        assertTrue (clickAndSelectText (patientState, state));
+    }
+
+    public String getPatientState () {
+        return getFirstSelectedText (patientState);
+    }
+
+    public void enterPatientZipcode (String zipcode) {
+        assertTrue (setText (patientZipcode, zipcode));
+    }
+
+    public String getPatientZipcode () {
+        return readInput (patientZipcode);
     }
 
     public Patient getPatientBillingAddress () {
