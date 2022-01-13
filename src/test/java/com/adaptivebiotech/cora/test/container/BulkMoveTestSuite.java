@@ -88,7 +88,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containerList.bulkMoveAllToFreezer (targetFreezer, moveToFreezerComment);
         testLog ("SR-3229:R2: user is able to add custom comment to the Bulk Move to Freezer action");
         testLog ("SR-3229:R4: user is able to add a destination freezer to the Bulk Move to Freezer action");
-        assertTrue (containerList.bulkMoveSuccessMessageDisplayed ());
+        assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
         testLog ("SR-3229:R6: user was presented with a success message after bulk move completion");
         /*
          * disabled for now due to bug SR-8664
@@ -106,29 +106,31 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Containers parsedContainers = containerList.getContainers ();
         for (int i = 0; i < containers.list.size (); i++) {
             Container container = containers.list.get (i);
-            Container parsedContainer = parsedContainers.list.get (i);
-            ordersList.gotoContainerDetail (container);
-            detail.isCorrectPage ();
-            Container actual = detail.parsePrimaryDetail ();
-            actual.comment = moveToFreezerComment;
-            String parsedLocation = parsedContainer.location;
-            assertEquals (actual.location, parsedLocation);
-            assertNotEquals (actual.location, coraTestUser);
-            testLog (format ("SR-3229:R7: containers list location matches location in container details for %s",
-                             container.containerNumber));
-            detail.gotoHistory ();
-            history.isCorrectPage ();
-            List <ContainerHistory> histories = history.getHistories ();
-            assertEquals (histories.size (), 2);
-            verifyMovedToContainer (histories.get (0), actual);
-            verifyTookCustody (histories.get (1));
-            container.location = String.join (" : ",
-                                              histories.get (0).location,
-                                              container.containerNumber);
-            verifyDetails (actual, container);
+            verifyMoveToFreezer (container, moveToFreezerComment);
             testLog (format ("SR-3229:R11: Bulk Move to Freezer action moves selected item, %s, to destination freezer",
                              container.containerNumber));
+            assertEquals (container.location, parsedContainers.list.get (i).location);
+            testLog (format ("SR-3229:R7: containers list location matches location in container details for %s",
+                             container.containerNumber));
         }
+    }
+
+    private void verifyMoveToFreezer (Container container, String comment) {
+        ordersList.gotoContainerDetail (container);
+        detail.isCorrectPage ();
+        Container actual = detail.parsePrimaryDetail ();
+        actual.comment = comment;
+        assertNotEquals (actual.location, String.join (" : ", coraTestUser, container.containerNumber));
+        detail.gotoHistory ();
+        history.isCorrectPage ();
+        List <ContainerHistory> histories = history.getHistories ();
+        assertEquals (histories.size (), 2);
+        verifyMovedToContainer (histories.get (0), actual);
+        verifyTookCustody (histories.get (1));
+        container.location = String.join (" : ",
+                                          histories.get (0).location,
+                                          container.containerNumber);
+        verifyDetails (actual, container);
     }
 
     /**
@@ -143,31 +145,34 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containerList.bulkMoveAllToFreezer (targetFreezer, null);
         containerList.bulkMoveAllToCustody (moveToCustodyComment);
         testLog ("SR-3229:R2: user is able to add custom comment to Bulk Move to My Custody action");
+        doWait (1000); // wait for location to update before parsing
         Containers parsedContainers = containerList.getContainers ();
         for (int i = 0; i < containers.list.size (); i++) {
             Container container = containers.list.get (i);
-            Container parsedContainer = parsedContainers.list.get (i);
-            ordersList.gotoContainerDetail (container);
-            detail.isCorrectPage ();
-            Container actual = detail.parsePrimaryDetail ();
-            actual.comment = moveToCustodyComment;
-            String parsedLocation = parsedContainer.location;
-            assertEquals (actual.location, parsedLocation);
-            assertNotEquals (actual.location, coraTestUser);
-            testLog (format ("SR-3229:R7: containers list location matches location in container details for %s",
-                             container.containerNumber));
-            detail.gotoHistory ();
-            history.isCorrectPage ();
-            List <ContainerHistory> histories = history.getHistories ();
-            assertEquals (histories.size (), 3);
-            verifyTookCustody (histories.get (0), actual);
-            container.location = String.join (" : ",
-                                              histories.get (0).location,
-                                              container.containerNumber);
-            verifyDetails (actual, container);
+            verifyMoveToCustody (container, moveToCustodyComment);
             testLog (format ("SR-3229:R3: Bulk Move to My Custody action moves selected item, %s, to user's custody",
                              container.containerNumber));
+            assertEquals (container.location, parsedContainers.list.get (i).location);
+            testLog (format ("SR-3229:R7: containers list location matches location in container details for %s",
+                             container.containerNumber));
         }
+    }
+
+    private void verifyMoveToCustody (Container container, String comment) {
+        ordersList.gotoContainerDetail (container);
+        detail.isCorrectPage ();
+        Container actual = detail.parsePrimaryDetail ();
+        actual.comment = comment;
+        assertEquals (actual.location, String.join (" : ", coraTestUser, container.containerNumber));
+        detail.gotoHistory ();
+        history.isCorrectPage ();
+        List <ContainerHistory> histories = history.getHistories ();
+        assertEquals (histories.size (), 3);
+        verifyTookCustody (histories.get (0), actual);
+        container.location = String.join (" : ",
+                                          histories.get (0).location,
+                                          container.containerNumber);
+        verifyDetails (actual, container);
     }
 
     private Containers setupContainers () {
@@ -178,5 +183,4 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Logging.info ("created containers: " + containerNumbers);
         return containers;
     }
-
 }

@@ -18,7 +18,7 @@ public class ShipmentHeader extends CoraPage {
     }
 
     public String getShipmentNumber () {
-        return getText ("[ng-bind='ctrl.entry.shipment.shipmentNumber']");
+        return getText ("[data-ng-bind='ctrl.entry.shipment.shipmentNumber']");
     }
 
     public String getShipmentStatus () {

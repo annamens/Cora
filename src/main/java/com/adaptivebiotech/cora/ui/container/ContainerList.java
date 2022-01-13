@@ -72,69 +72,6 @@ public class ContainerList extends CoraPage {
         assertNotNull (waitForElementClickable ("//button[text()='Filter list']"));
     }
 
-    public void clickBulkMoveContainers () {
-        assertTrue (click ("//button[text()='Bulk Move Containers']"));
-        waitForElement (".bulk-move-blue");
-    }
-
-    public void selectBulkMoveAction (BulkMoveAction action) {
-        clickAndSelectText (".bulk-move-container select", action.text);
-    }
-
-    public void bulkMoveAllToFreezer (Container freezer, String comment) {
-        clickBulkMoveContainers ();
-        selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
-        assertTrue (clear ("[placeholder = 'Select Freezer'] input"));
-        assertTrue (setText ("[placeholder = 'Select Freezer'] input", freezer.name));
-        assertTrue (click (format ("//span[text()='%s']", freezer.name)));
-        if (comment != null) {
-            assertTrue (setText ("input[placeholder='Add Comment']", comment));
-        }
-        assertTrue (click (".containers-list th [type='checkbox']"));
-        assertTrue (click ("//button[text()='Bulk Move']"));
-        transactionInProgress ();
-    }
-
-    public void bulkMoveAllToCustody (String comment) {
-        clickBulkMoveContainers ();
-        selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
-        assertTrue (setText ("input[placeholder='Add Comment']", comment));
-        assertTrue (click (".containers-list th [type='checkbox']"));
-        assertTrue (click ("//button[text()='Bulk Move']"));
-        transactionInProgress ();
-    }
-
-    public boolean scanFieldDisplayed () {
-        return isElementPresent (scan);
-    }
-
-    public boolean bulkMoveSuccessMessageDisplayed () {
-        return waitUntilVisible (".toast-success");
-    }
-
-    public void clickSuccessMessageLink () {
-        assertTrue (click (".toast-success a"));
-    }
-
-    public boolean isFreezerDropdownEnabled () {
-        String selectFreezerDropdown = "ng-select[placeholder='Select Freezer']";
-        return !Boolean.parseBoolean (getAttribute (selectFreezerDropdown, "readonly"));
-    }
-
-    public void selectContainerToBulkMove (String containerName) {
-        String checkbox = "//*[@title='%s']/ancestor::tr/descendant::*[@type='checkbox']";
-        assertTrue (click (format (checkbox, containerName)));
-    }
-
-    public boolean rowIsSelected (String containerName) {
-        String row = format ("//*[@title='%s']/ancestor::tr", containerName);
-        return checkClassFor (row, "highlighted-blue");
-    }
-
-    public List <String> getBulkMoveActions () {
-        return getTextList (".bulk-move-container select option");
-    }
-
     public void setCategory (Category category) {
         assertTrue (click ("//*[contains (p,'Category')]//button"));
         assertTrue (click (format ("//*[contains (p,'Category')]//a[text()='%s']", category.name ())));
@@ -421,5 +358,68 @@ public class ContainerList extends CoraPage {
             assertTrue (noSuchElementPresent ("[containers='[ctrl.containerDetail]'] " + depleted));
         } else if (container.depleted != null)
             assertTrue (clickAndSelectValue (depleted, "boolean:" + container.depleted));
+    }
+
+    public void bulkMoveAllToFreezer (Container freezer, String comment) {
+        clickBulkMoveContainers ();
+        selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
+        assertTrue (clear ("[placeholder = 'Select Freezer'] input"));
+        assertTrue (setText ("[placeholder = 'Select Freezer'] input", freezer.name));
+        assertTrue (click (format ("//span[text()='%s']", freezer.name)));
+        if (comment != null) {
+            assertTrue (setText ("input[placeholder='Add Comment']", comment));
+        }
+        assertTrue (click (".containers-list th [type='checkbox']"));
+        assertTrue (click ("//button[text()='Bulk Move']"));
+        transactionInProgress ();
+    }
+
+    public void bulkMoveAllToCustody (String comment) {
+        clickBulkMoveContainers ();
+        selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
+        assertTrue (setText ("input[placeholder='Add Comment']", comment));
+        assertTrue (click (".containers-list th [type='checkbox']"));
+        assertTrue (click ("//button[text()='Bulk Move']"));
+        transactionInProgress ();
+    }
+
+    public void clickBulkMoveContainers () {
+        assertTrue (click ("//button[text()='Bulk Move Containers']"));
+        waitForElement (".bulk-move-blue");
+    }
+
+    public void selectBulkMoveAction (BulkMoveAction action) {
+        clickAndSelectText (".bulk-move-container select", action.text);
+    }
+
+    public boolean scanFieldDisplayed () {
+        return isElementPresent (scan);
+    }
+
+    public boolean isBulkMoveSuccessMessageDisplayed () {
+        return waitUntilVisible (".toast-success");
+    }
+
+    public void clickSuccessMessageLink () {
+        assertTrue (click (".toast-success a"));
+    }
+
+    public boolean isFreezerDropdownEnabled () {
+        String selectFreezerDropdown = "ng-select[placeholder='Select Freezer']";
+        return !Boolean.parseBoolean (getAttribute (selectFreezerDropdown, "readonly"));
+    }
+
+    public void selectContainerToBulkMove (String containerName) {
+        String checkbox = "//*[@title='%s']/ancestor::tr/descendant::*[@type='checkbox']";
+        assertTrue (click (format (checkbox, containerName)));
+    }
+
+    public boolean rowIsSelected (String containerName) {
+        String row = format ("//*[@title='%s']/ancestor::tr", containerName);
+        return checkClassFor (row, "highlighted-blue");
+    }
+
+    public List <String> getBulkMoveActions () {
+        return getTextList (".bulk-move-container select option");
     }
 }
