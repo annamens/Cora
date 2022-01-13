@@ -11,7 +11,7 @@ import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
@@ -30,21 +30,21 @@ import com.adaptivebiotech.test.utils.Logging;
 @Test (groups = "regression")
 public class BulkMoveTestSuite extends ContainerTestBase {
 
-    private Login         login         = new Login ();
-    private OrdersList    ordersList    = new OrdersList ();
-    private ContainerList containerList = new ContainerList ();
-    private Detail        detail        = new Detail ();
-    private History       history       = new History ();
-    private Containers    containers;
+    private Login           login         = new Login ();
+    private OrdersList      ordersList    = new OrdersList ();
+    private ContainerList   containerList = new ContainerList ();
+    private Detail          detail        = new Detail ();
+    private History         history       = new History ();
+    private Containers      containers;
+    private final Container targetFreezer = freezerAB018078;
 
     @BeforeSuite
     public void beforeSuite () {
         coraApi.login ();
-        containers = setupContainers ();
     }
 
-    @AfterSuite
-    public void afterSuite () {
+    @AfterMethod
+    public void afterMethod () {
         coraApi.deactivateContainers (containers);
     }
 
@@ -59,6 +59,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
      * @sdlc.requirements SR-3229:R1, SR-3229:R2
      */
     public void bulkMoveUI () {
+        containers = setupContainers ();
         List <String> containerNumbers = containers.list.stream ().map (container -> container.containerNumber)
                                                         .collect (Collectors.toList ());
         containerList.searchContainerIdOrName (containerNumbers.stream ().collect (Collectors.joining (",")));
@@ -82,13 +83,13 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc.requirements SR-3229:R2, SR-3229:R3, SR-3229:R4, SR-3229:R6, SR-3229:R7, SR-3229:R11
+     * @sdlc.requirements SR-3229:R2, SR-3229:R4, SR-3229:R6, SR-3229:R7, SR-3229:R11
      */
-    public void happyPath () {
+    public void bulkMoveToFreezer () {
+        containers = setupContainers ();
         String containerNumbers = containers.list.stream ().map (container -> container.containerNumber)
                                                  .collect (Collectors.joining (","));
         containerList.searchContainerIdOrName (containerNumbers);
-        Container targetFreezer = freezerAB018078;
         String moveToFreezerComment = randomWords (10);
         containerList.bulkMoveAllToFreezer (targetFreezer, moveToFreezerComment);
         testLog ("SR-3229:R2: user is able to add custom comment to the Bulk Move to Freezer action");
@@ -108,7 +109,6 @@ public class BulkMoveTestSuite extends ContainerTestBase {
          * );
          * getDriver ().switchTo ().window (windows.get (0));
          */
-        // verify each container has expected history and details
         Containers parsedContainers = containerList.getContainers ();
         for (int i = 0; i < containers.list.size (); i++) {
             Container container = containers.list.get (i);
@@ -135,13 +135,21 @@ public class BulkMoveTestSuite extends ContainerTestBase {
             testLog (format ("SR-3229:R11: Bulk Move to Freezer action moves selected item, %s, to destination freezer",
                              container.containerNumber));
         }
-        ordersList.clickContainers ();
+    }
+
+    /**
+     * @sdlc.requirements SR-3229:R2, SR-3229:R3, SR-3229:R7
+     */
+    public void bulkMoveToMyCustody () {
+        containers = setupContainers ();
+        String containerNumbers = containers.list.stream ().map (container -> container.containerNumber)
+                                                 .collect (Collectors.joining (","));
         containerList.searchContainerIdOrName (containerNumbers);
         String moveToCustodyComment = randomWords (10);
+        containerList.bulkMoveAllToFreezer (targetFreezer, null);
         containerList.bulkMoveAllToCustody (moveToCustodyComment);
-        testLog ("SR-3229:R2: user is able to add custom comment to Bulk Move to Freezer action");
-        // verify each container has expected history and details
-        parsedContainers = containerList.getContainers ();
+        testLog ("SR-3229:R2: user is able to add custom comment to Bulk Move to My Custody action");
+        Containers parsedContainers = containerList.getContainers ();
         for (int i = 0; i < containers.list.size (); i++) {
             Container container = containers.list.get (i);
             Container parsedContainer = parsedContainers.list.get (i);
