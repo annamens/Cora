@@ -51,6 +51,17 @@ public class ContainerList extends CoraPage {
         None, HoldingContainer
     }
 
+    public static enum BulkMoveAction {
+        BulkMoveToMyCustody ("Bulk Move to My Custody"),
+        BulkMoveToFreezer ("Bulk Move to Freezer");
+
+        public final String text;
+
+        private BulkMoveAction (String text) {
+            this.text = text;
+        }
+    }
+
     public int getMyCustodySize () {
         return Integer.valueOf (getText ("[uisref='main.containers.custody'] span"));
     }
@@ -59,6 +70,69 @@ public class ContainerList extends CoraPage {
         assertTrue (setText ("[placeholder='CO-000000 or Container Name']", containerIdOrName));
         assertTrue (click (".search-btn"));
         assertNotNull (waitForElementClickable ("//button[text()='Filter list']"));
+    }
+
+    public void clickBulkMoveContainers () {
+        assertTrue (click ("//button[text()='Bulk Move Containers']"));
+        waitForElement (".bulk-move-blue");
+    }
+
+    public void selectBulkMoveAction (BulkMoveAction action) {
+        clickAndSelectText (".bulk-move-container select", action.text);
+    }
+
+    public void bulkMoveAllToFreezer (Container freezer, String comment) {
+        clickBulkMoveContainers ();
+        selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
+        assertTrue (clear ("[placeholder = 'Select Freezer'] input"));
+        assertTrue (setText ("[placeholder = 'Select Freezer'] input", freezer.name));
+        assertTrue (click (format ("//span[text()='%s']", freezer.name)));
+        if (comment != null) {
+            assertTrue (setText ("input[placeholder='Add Comment']", comment));
+        }
+        assertTrue (click (".containers-list th [type='checkbox']"));
+        assertTrue (click ("//button[text()='Bulk Move']"));
+        transactionInProgress ();
+    }
+
+    public void bulkMoveAllToCustody (String comment) {
+        clickBulkMoveContainers ();
+        selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
+        assertTrue (setText ("input[placeholder='Add Comment']", comment));
+        assertTrue (click (".containers-list th [type='checkbox']"));
+        assertTrue (click ("//button[text()='Bulk Move']"));
+        transactionInProgress ();
+    }
+
+    public boolean scanFieldDisplayed () {
+        return isElementPresent (scan);
+    }
+
+    public boolean bulkMoveSuccessMessageDisplayed () {
+        return waitUntilVisible (".toast-success");
+    }
+
+    public void clickSuccessMessageLink () {
+        assertTrue (click (".toast-success a"));
+    }
+
+    public boolean isFreezerDropdownEnabled () {
+        String selectFreezerDropdown = "ng-select[placeholder='Select Freezer']";
+        return !Boolean.parseBoolean (getAttribute (selectFreezerDropdown, "readonly"));
+    }
+
+    public void selectContainerToBulkMove (String containerName) {
+        String checkbox = "//*[@title='%s']/ancestor::tr/descendant::*[@type='checkbox']";
+        assertTrue (click (format (checkbox, containerName)));
+    }
+
+    public boolean rowIsSelected (String containerName) {
+        String row = format ("//*[@title='%s']/ancestor::tr", containerName);
+        return checkClassFor (row, "highlighted-blue");
+    }
+
+    public List <String> getBulkMoveActions () {
+        return getTextList (".bulk-move-container select option");
     }
 
     public void setCategory (Category category) {
@@ -85,14 +159,14 @@ public class ContainerList extends CoraPage {
         return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
             List <WebElement> columns = findElements (el, "td");
             Container c = new Container ();
-            c.id = getConId (getAttribute (columns.get (1), "a", "href"));
-            c.containerNumber = getText (columns.get (1));
-            String containerType = getText (columns.get (2));
+            c.id = getConId (getAttribute (columns.get (2), "a", "href"));
+            c.containerNumber = getText (columns.get (2));
+            String containerType = getText (columns.get (3));
             c.containerType = containerType != null && !containerType.equals ("Unsupported") ? getContainerType (containerType) : null;
-            c.specimenId = getText (columns.get (3));
-            c.name = getText (columns.get (4));
-            c.location = getText (columns.get (5));
-            String capacity = getText (columns.get (6));
+            c.specimenId = getText (columns.get (4));
+            c.name = getText (columns.get (5));
+            c.location = getText (columns.get (6));
+            String capacity = getText (columns.get (7));
             c.capacity = Integer.parseInt (Strings.isNotNullAndNotEmpty (capacity) ? capacity : "0");
             return c;
         }).collect (toList ()));
