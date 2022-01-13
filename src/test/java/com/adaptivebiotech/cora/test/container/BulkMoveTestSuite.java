@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -38,21 +37,16 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     private Containers      containers;
     private final Container targetFreezer = freezerAB018078;
 
-    @BeforeSuite
-    public void beforeSuite () {
-        coraApi.login ();
-    }
-
-    @AfterMethod
-    public void afterMethod () {
-        coraApi.deactivateContainers (containers);
-    }
-
     @BeforeMethod
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.clickContainers ();
+    }
+
+    @AfterMethod
+    public void afterMethod () {
+        coraApi.deactivateContainers (containers);
     }
 
     /**
