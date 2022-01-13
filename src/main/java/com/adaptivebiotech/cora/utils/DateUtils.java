@@ -2,16 +2,20 @@ package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.setDate;
+import static java.time.ZoneId.SHORT_IDS;
+import static java.time.temporal.ChronoField.AMPM_OF_DAY;
+import static java.time.temporal.ChronoField.CLOCK_HOUR_OF_AMPM;
+import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
+import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 
 public class DateUtils {
 
     public static ZoneId utcZoneId = ZoneId.of ("UTC");
-    public static ZoneId pstZoneId = ZoneId.of (ZoneId.SHORT_IDS.get ("PST"));
+    public static ZoneId pstZoneId = ZoneId.of (SHORT_IDS.get ("PST"));
 
     /**
      * Get date from current date in MM/dd/uuuu format
@@ -52,14 +56,14 @@ public class DateUtils {
      */
     public static String convertDateFormat (String dateToConvert, String fromPattern, String toPattern) {
         DateTimeFormatter fromFormat = new DateTimeFormatterBuilder ().appendPattern (fromPattern)
-                                                                      .parseDefaulting (ChronoField.CLOCK_HOUR_OF_AMPM,
-                                                                                        12)
-                                                                      .parseDefaulting (ChronoField.MINUTE_OF_HOUR, 0)
-                                                                      .parseDefaulting (ChronoField.SECOND_OF_MINUTE, 0)
-                                                                      .parseDefaulting (ChronoField.AMPM_OF_DAY, 0)
+                                                                      .parseDefaulting (CLOCK_HOUR_OF_AMPM, 12)
+                                                                      .parseDefaulting (MINUTE_OF_HOUR, 0)
+                                                                      .parseDefaulting (SECOND_OF_MINUTE, 0)
+                                                                      .parseDefaulting (AMPM_OF_DAY, 0)
                                                                       .toFormatter ();
         LocalDateTime parsedDate = LocalDateTime.parse (dateToConvert, fromFormat);
         DateTimeFormatter toFormat = DateTimeFormatter.ofPattern (toPattern);
+        toFormat.withZone (pstZoneId);
         return parsedDate.format (toFormat);
     }
 

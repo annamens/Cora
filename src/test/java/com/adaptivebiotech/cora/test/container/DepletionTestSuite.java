@@ -33,7 +33,6 @@ public class DepletionTestSuite extends ContainerTestBase {
 
     @BeforeMethod
     public void beforeMethod () {
-        coraApi.login ();
         containers.set (coraApi.addContainers (new Containers (asList (container (Tube), container (TubeBox5x5)))));
 
         login.doLogin ();

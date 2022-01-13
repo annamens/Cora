@@ -13,9 +13,12 @@ import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import static com.seleniumfy.test.utils.HttpClientHelper.put;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,6 +82,16 @@ public class CoraApi {
     public void resetheaders () {
         HttpClientHelper.resetheaders ();
         HttpClientHelper.headers.get ().add (username);
+    }
+
+    public String auth () {
+        resetheaders ();
+        HttpClientHelper.headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
+        return get (coraTestUrl + "/cora/api/v1/auth/apiToken");
+    }
+
+    public String basicAuth (String user, String pass) {
+        return "Basic " + printBase64Binary (join (":", user, pass).getBytes ());
     }
 
     public Containers addContainers (ContainerType type, String barcode, Container root, int num) {
@@ -229,7 +242,7 @@ public class CoraApi {
         return mapper.readValue (get (url), Specimen.class);
     }
 
-    public Specimen getSpecimenByMunber (String specimenNumber) {
+    public Specimen getSpecimenByNumber (String specimenNumber) {
         String url = coraTestUrl + "/cora/api/v1/specimens/specimenNumber/" + specimenNumber;
         return mapper.readValue (get (url), Specimen.class);
     }
@@ -254,8 +267,8 @@ public class CoraApi {
         args.add ("ascending=false");
         args.add ("limit=500");
 
-        for (String term : terms)
-            args.add (term);
+        if (terms != null)
+            args.addAll (terms);
 
         String url = encodeUrl (coraTestUrl + "/cora/api/v1/orders/search?", args.toArray (new String[] {}));
         return mapper.readValue (get (url), Order[].class);
@@ -270,8 +283,8 @@ public class CoraApi {
         args.add ("sort=DueDate");
         args.add ("limit=500");
 
-        for (String term : terms)
-            args.add (term);
+        if (terms != null)
+            args.addAll (terms);
 
         String url = encodeUrl (coraTestUrl + "/cora/api/v1/orderTests/search?", args.toArray (new String[] {}));
         return mapper.readValue (get (url), OrderTest[].class);
@@ -292,6 +305,29 @@ public class CoraApi {
         for (OrderTest test : tests)
             if (test.specimen.subjectCode == null)
                 test.specimen.subjectCode = getPatientOrSubjectCode (test.id);
+
+        return tests;
+    }
+
+    public OrderTest[] waitForResearchOrderReady (String sampleName) {
+        OrderTest[] tests = searchOrderTests (sampleName);
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.workflowName == null))) {
+            timer.Wait ();
+            tests = searchOrderTests (sampleName);
+        }
+        if (tests.length == 0)
+            fail ("unable to create order");
+        if (stream (tests).anyMatch (ot -> ot.workflowName == null))
+            fail ("workflowName is null");
+
+        for (OrderTest test : tests) {
+            test.specimen = getSpecimenByNumber (test.specimenNumber);
+            test.test = new CoraTest ();
+            test.test.name = test.testName;
+            if (test.specimen.subjectCode == null)
+                test.specimen.subjectCode = getPatientOrSubjectCode (test.id);
+        }
 
         return tests;
     }

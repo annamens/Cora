@@ -20,7 +20,7 @@ import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
-import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
+import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
@@ -36,8 +36,6 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
-import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 /**
  * @author jpatel
@@ -63,24 +61,17 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
     public void verifyOrderDetailsPage () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        coraApi.login ();
 
         Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
-        Patient patient = TestHelper.newPatient ();
+        Patient patient = TestHelper.newNoChargePatient ();
         String icdCode = "C90.00";
         Assay orderTest = Assay.ID_BCell2_CLIA;
-        ChargeType chargeType = ChargeType.NoCharge;
-        SpecimenType specimenType = SpecimenType.Blood;
-        Anticoagulant anticoagulant = Anticoagulant.EDTA;
-        String collectionDate = DateUtils.getPastFutureDate (-3);
+        Specimen specimen = TestHelper.bloodSpecimen ();
         String orderNum = diagnostic.createClonoSeqOrder (physician,
                                                           patient,
                                                           new String[] { icdCode },
                                                           Assay.ID_BCell2_CLIA,
-                                                          chargeType,
-                                                          SpecimenType.Blood,
-                                                          null,
-                                                          Anticoagulant.EDTA);
+                                                          specimen);
 
         List <String> history = diagnostic.getHistory ();
         String createdDateTime = history.get (0).split ("Created by")[0].trim ();
@@ -148,10 +139,10 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (activeOrder.patient.gender, patient.gender);
         assertEquals (activeOrder.patient.mrn, patient.mrn);
 
-        assertEquals (activeOrder.specimenDto.sampleType, specimenType);
-        assertEquals (activeOrder.specimenDto.sourceType, SpecimenSource.Blood);
-        assertEquals (activeOrder.specimenDto.anticoagulant, anticoagulant);
-        assertEquals (activeOrder.specimenDto.collectionDate, collectionDate);
+        assertEquals (activeOrder.specimenDto.sampleType, specimen.sampleType);
+        assertEquals (activeOrder.specimenDto.sampleSource, specimen.sampleType);
+        assertEquals (activeOrder.specimenDto.anticoagulant, specimen.anticoagulant);
+        assertEquals (activeOrder.specimenDto.collectionDate, specimen.collectionDate);
 
         assertEquals (clonoSeqOrderDetail.getShipmentArrivalDate (),
                       DateUtils.convertDateFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
@@ -163,7 +154,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (clonoSeqOrderDetail.getSpecimenContainerType (), containerType);
 
         assertEquals (activeOrder.tests.get (0).assay, orderTest);
-        assertEquals (activeOrder.properties.BillingType, chargeType);
+        assertEquals (activeOrder.properties.BillingType, patient.billingType);
 
         assertEquals (activeHistory.get (0), createdDateTime + " Created by " + CoraEnvironment.coraTestUser);
         assertEquals (activeHistory.get (2), activateDateTime + "Activated by " + CoraEnvironment.coraTestUser);

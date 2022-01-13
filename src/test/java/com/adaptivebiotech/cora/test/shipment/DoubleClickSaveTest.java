@@ -27,7 +27,6 @@ public class DoubleClickSaveTest extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
 
-        coraApi.login ();
         diagnostic.selectNewClonoSEQDiagnosticOrder ();
         diagnostic.isCorrectPage ();
         diagnostic.selectPhysician (coraApi.getPhysician (non_CLEP_clonoseq));

@@ -11,9 +11,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
-import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Physician;
-import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.Detail;
@@ -28,7 +26,6 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 /**
  * @author jpatel
@@ -53,7 +50,6 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        coraApi.login ();
     }
 
     /**
@@ -207,13 +203,10 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
     private String createClonoSeqOrder (com.adaptivebiotech.cora.dto.Orders.OrderStatus orderStatus) {
         // create clonoSEQ diagnostic order
         return newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
-                                                     TestHelper.newPatient (),
+                                                     TestHelper.newNoChargePatient (),
                                                      new String[] { "C90.00" },
                                                      Assay.ID_BCell2_CLIA,
-                                                     ChargeType.NoCharge,
-                                                     SpecimenType.Blood,
-                                                     null,
-                                                     Anticoagulant.EDTA,
+                                                     TestHelper.bloodSpecimen (),
                                                      orderStatus,
                                                      ContainerType.Tube);
     }

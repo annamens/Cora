@@ -3,7 +3,6 @@ package com.adaptivebiotech.cora.test.order.clonoseq;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IVD;
-import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilling;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
@@ -45,7 +44,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +63,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.FeatureFlags;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.CoraDbTestBase;
 import com.adaptivebiotech.cora.ui.Login;
@@ -73,6 +72,7 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
+import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
@@ -130,9 +130,8 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     private final String          shmDataSourcePathOrcaIgHVO9      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229";
     private final String          workSpaceNameOrcaIgHVO9          = "MDAnderson-Thompson";
 
-    private final byte[]          authBytes                        = (pipelinePortalTestUser + ":" + pipelinePortalTestPass).getBytes ();
-    private final String          portalTestAuth                   = "Basic " + Base64.getEncoder ()
-                                                                                      .encodeToString (authBytes);
+    private final String          portalTestAuth                   = coraApi.basicAuth (pipelinePortalTestUser,
+                                                                                        pipelinePortalTestPass);
 
     private final String          orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
     private final String          shmResultsSchema                 = "SELECT * FROM information_schema.columns WHERE table_name = 'shm_results' ORDER BY ordinal_position ASC";
@@ -159,7 +158,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         new Login ().doLogin ();
         new OrdersList ().isCorrectPage ();
 
-        coraApi.login ();
         FeatureFlags featureFlags = coraApi.getFeatureFlags ();
         isIgHVFlag.set (featureFlags.IgHV);
     }
@@ -912,14 +910,16 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                               String[] icdCodes,
                                               String orderNotes) {
         // create clonoSEQ diagnostic order
+        Specimen specimen = new Specimen ();
+        specimen.sampleType = specimenType;
+        specimen.sampleSource = specimenSource;
+        specimen.anticoagulant = Blood.equals (specimen.sampleType) ? EDTA : null;
+        specimen.collectionDate = DateUtils.getPastFutureDate (-3);
         String orderNum = diagnostic.createClonoSeqOrder (physician,
-                                                          TestHelper.newInsurancePatient (),
+                                                          TestHelper.newInternalPharmaPatient (),
                                                           icdCodes,
                                                           assayTest,
-                                                          InternalPharmaBilling,
-                                                          specimenType,
-                                                          specimenSource,
-                                                          Blood.equals (specimenType) ? EDTA : null,
+                                                          specimen,
                                                           Active,
                                                           Tube);
         Logging.info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
@@ -1083,7 +1083,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         history.gotoOrderDebug (sampleName);
 
         // get file using get request
-        coraApi.login ();
         ReportRender reportDataJson = null;
         try {
             String fileUrl = history.getFileUrl ("reportData.json");
@@ -1219,7 +1218,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         info ("PDF File Location: " + pdfFileLocation);
 
         // get file from URL and save it
-        coraApi.login ();
         get (url, new File (pdfFileLocation));
 
         // read PDF and extract text

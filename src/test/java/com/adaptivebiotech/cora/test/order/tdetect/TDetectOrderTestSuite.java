@@ -8,7 +8,6 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
-import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.BillingNewOrderTDetect;
@@ -40,15 +39,12 @@ public class TDetectOrderTestSuite extends CoraBaseBrowser {
     public void validateTDetectOrderActivation () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        coraApi.login ();
         // create T-Detect diagnostic order
         String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_tdetect_all_tests),
-                                                              TestHelper.newPatient (),
+                                                              TestHelper.newClientPatient (),
                                                               new String[] {},
                                                               DateUtils.getPastFutureDate (-3),
-                                                              Assay.COVID19_DX_IVD,
-                                                              ChargeType.Client,
-                                                              TestHelper.getRandomAddress ());
+                                                              Assay.COVID19_DX_IVD);
 
         // add diagnostic shipment
         shipment.selectNewDiagnosticShipment ();
