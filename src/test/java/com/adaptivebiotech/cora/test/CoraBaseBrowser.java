@@ -9,8 +9,6 @@ import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import java.lang.reflect.Method;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
 import org.slf4j.MDC;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -19,7 +17,6 @@ import com.adaptivebiotech.test.TestBase;
 
 public class CoraBaseBrowser extends TestBase {
 
-    private static Header    apiToken;
     protected static CoraApi coraApi;
 
     static {
@@ -27,7 +24,7 @@ public class CoraBaseBrowser extends TestBase {
         testLog (format ("Current branch: %s - %s", version, gitcommitId));
 
         coraApi = new CoraApi ();
-        apiToken = new BasicHeader ("X-Api-Token", coraApi.auth ());
+        coraApi.auth ();
     }
 
     @BeforeClass (alwaysRun = true)
@@ -41,8 +38,8 @@ public class CoraBaseBrowser extends TestBase {
         MDC.put (jobId, testName);
         info (format ("running: %s()", testName));
 
-        if (!headers.get ().contains (apiToken))
-            headers.get ().add (apiToken);
+        if (!headers.get ().contains (coraApi.apiToken))
+            headers.get ().add (coraApi.apiToken);
         if (!headers.get ().contains (coraApi.username))
             headers.get ().add (coraApi.username);
     }

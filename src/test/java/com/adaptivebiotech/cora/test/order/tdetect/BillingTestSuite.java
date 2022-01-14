@@ -5,13 +5,15 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_insurance;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_medicare;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
-import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
+import static com.adaptivebiotech.cora.utils.TestHelper.getRandomAddress;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
+import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static java.lang.String.format;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -21,7 +23,6 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.utils.DateUtils;
 
 /**
  * Note:
@@ -34,24 +35,20 @@ public class BillingTestSuite extends CoraBaseBrowser {
     private Login           login      = new Login ();
     private OrdersList      ordersList = new OrdersList ();
     private NewOrderTDetect diagnostic = new NewOrderTDetect ();
-    private Specimen        specimen;
+    private Specimen        specimen   = bloodSpecimen ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-
-        specimen = new Specimen ();
-        specimen.sampleType = Blood;
-        specimen.anticoagulant = EDTA;
-        specimen.collectionDate = DateUtils.getPastFutureDate (-3);
     }
 
     /**
      * @sdlc_requirements SR-7907:R1
      */
+    @Test (groups = "corgi")
     public void insurance () {
-        Patient patient = newInsurancePatient ();
+        Patient patient = getRandomAddress (newInsurancePatient ());
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_insurance),
                                        patient,
                                        null,
@@ -62,8 +59,25 @@ public class BillingTestSuite extends CoraBaseBrowser {
         testLog (format (log, patient.billingType.label));
     }
 
+    /**
+     * @sdlc_requirements SR-7907:R1
+     */
+    @Test (groups = "corgi")
+    public void medicare () {
+        Patient patient = getRandomAddress (newMedicarePatient ());
+        patient.abnStatusType = null;
+        diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_medicare),
+                                       patient,
+                                       null,
+                                       specimen.collectionDate.toString (),
+                                       COVID19_DX_IVD,
+                                       Active,
+                                       Tube);
+        testLog (format (log, patient.billingType.label));
+    }
+
     public void patientSelfPay () {
-        Patient patient = newSelfPayPatient ();
+        Patient patient = getRandomAddress (newSelfPayPatient ());
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                        patient,
                                        null,
@@ -75,7 +89,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     public void billClient () {
-        Patient patient = newClientPatient ();
+        Patient patient = getRandomAddress (newClientPatient ());
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                        patient,
                                        null,

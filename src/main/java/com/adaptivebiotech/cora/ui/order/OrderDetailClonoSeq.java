@@ -6,7 +6,7 @@ package com.adaptivebiotech.cora.ui.order;
  */
 public class OrderDetailClonoSeq extends OrderDetail {
 
-    public BillingOrderDetailClonoSeq billing = new BillingOrderDetailClonoSeq ();
+    public BillingOrderDetail billing = new BillingOrderDetail ();
 
     public String getSpecimenDeliverySelectedOption () {
         String css = "[ng-bind^='ctrl.orderEntry.order.specimenDeliveryType']";

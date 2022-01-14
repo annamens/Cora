@@ -66,6 +66,7 @@ public class CoraApi {
     private final long  millisRetry = 3000000l;                                        // 50mins
     private final long  waitRetry   = 5000l;                                           // 5sec
     public final Header username    = new BasicHeader ("X-Api-UserName", coraTestUser);
+    public Header       apiToken;
 
     public void login () {
         resetheaders ();
@@ -87,7 +88,9 @@ public class CoraApi {
     public String auth () {
         resetheaders ();
         HttpClientHelper.headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
-        return get (coraTestUrl + "/cora/api/v1/auth/apiToken");
+        String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
+        apiToken = new BasicHeader ("X-Api-Token", token);
+        return token;
     }
 
     public String basicAuth (String user, String pass) {

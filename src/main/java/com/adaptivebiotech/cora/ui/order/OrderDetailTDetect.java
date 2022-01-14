@@ -11,10 +11,10 @@ import com.adaptivebiotech.cora.utils.PageHelper.Race;
  */
 public class OrderDetailTDetect extends OrderDetail {
 
-    public BillingOrderDetailTDetect billing    = new BillingOrderDetailTDetect ();
+    public BillingOrderDetail billing    = new BillingOrderDetail ();
 
-    private final String             dateSigned = "[ng-bind='ctrl.originalDate']";
-    private final String             orderNotes = "[ng-bind='ctrl.originalNotes']";
+    private final String      dateSigned = "[ng-bind='ctrl.originalDate']";
+    private final String      orderNotes = "[ng-bind='ctrl.originalNotes']";
 
     public String getSpecimenDeliverySelectedOption () {
         String css = "[formcontrolname='specimenDeliveryType']";

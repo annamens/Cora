@@ -341,7 +341,7 @@ public class NewOrderClonoSeq extends NewOrder {
         isCorrectPage ();
 
         selectPhysician (physician);
-        searchOrCreatePatient (patient);
+        boolean matchFound = searchOrCreatePatient (patient);
         for (String icdCode : icdCodes) {
             enterPatientICD_Codes (icdCode);
         }
@@ -356,12 +356,16 @@ public class NewOrderClonoSeq extends NewOrder {
         case Client:
         case PatientSelfPay:
             billing.enterBill (patient);
+            break;
         default:
             billing.selectBilling (patient.billingType);
             break;
         }
-        clickSave ();
 
+        if (!matchFound && patient.address != null)
+            billing.enterPatientAddress (patient);
+
+        clickSave ();
         clickEnterSpecimenDetails ();
         enterSpecimenType (specimen.sampleType);
 
