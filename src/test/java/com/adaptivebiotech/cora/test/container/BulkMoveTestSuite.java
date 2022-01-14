@@ -7,7 +7,6 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,11 +62,11 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containerList.selectContainerToBulkMove (containerNumbers.get (1));
         containerList.rowIsSelected (containerNumbers.get (0));
         containerList.rowIsSelected (containerNumbers.get (1));
-        testLog ("SR-3229:R1: clicking bulk move button enables container selection");
+        testLog ("SR-3229:R1: Clicking bulk move button enables container selection");
         List <String> expectedActions = asList (BulkMoveAction.BulkMoveToMyCustody.text,
                                                 BulkMoveAction.BulkMoveToFreezer.text);
         assertEquals (containerList.getBulkMoveActions (), expectedActions);
-        testLog (format ("SR-3229:R2: containers list page contains actions: %1$s, %2$s",
+        testLog (format ("SR-3229:R2: Containers list page contains actions: %1$s, %2$s",
                          expectedActions.get (0),
                          expectedActions.get (1)));
         containerList.selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
@@ -86,10 +85,10 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containerList.searchContainerIdOrName (containerNumbers);
         String moveToFreezerComment = randomWords (10);
         containerList.bulkMoveAllToFreezer (targetFreezer, moveToFreezerComment);
-        testLog ("SR-3229:R2: user is able to add custom comment to the Bulk Move to Freezer action");
-        testLog ("SR-3229:R4: user is able to add a destination freezer to the Bulk Move to Freezer action");
+        testLog ("SR-3229:R2: User is able to add custom comment to the Bulk Move to Freezer action");
+        testLog ("SR-3229:R4: User is able to add a destination freezer to the Bulk Move to Freezer action");
         assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
-        testLog ("SR-3229:R6: user was presented with a success message after bulk move completion");
+        testLog ("SR-3229:R6: User is presented with a success message after bulk move completion");
         /*
          * disabled for now due to bug SR-8664
          * 
@@ -106,21 +105,21 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Containers parsedContainers = containerList.getContainers ();
         for (int i = 0; i < containers.list.size (); i++) {
             Container container = containers.list.get (i);
-            verifyMoveToFreezer (container, moveToFreezerComment);
+            verifyMoveToFreezer (container, targetFreezer, moveToFreezerComment);
             testLog (format ("SR-3229:R11: Bulk Move to Freezer action moves selected item, %s, to destination freezer",
                              container.containerNumber));
             assertEquals (container.location, parsedContainers.list.get (i).location);
-            testLog (format ("SR-3229:R7: containers list location matches location in container details for %s",
+            testLog (format ("SR-3229:R7: Containers list location matches location in container details for %s",
                              container.containerNumber));
         }
     }
 
-    private void verifyMoveToFreezer (Container container, String comment) {
+    private void verifyMoveToFreezer (Container container, Container freezer, String comment) {
         ordersList.gotoContainerDetail (container);
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
         actual.comment = comment;
-        assertNotEquals (actual.location, String.join (" : ", coraTestUser, container.containerNumber));
+        assertTrue (actual.location.startsWith (freezer.name));
         detail.gotoHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
@@ -144,7 +143,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         String moveToCustodyComment = randomWords (10);
         containerList.bulkMoveAllToFreezer (targetFreezer, null);
         containerList.bulkMoveAllToCustody (moveToCustodyComment);
-        testLog ("SR-3229:R2: user is able to add custom comment to Bulk Move to My Custody action");
+        testLog ("SR-3229:R2: User is able to add custom comment to Bulk Move to My Custody action");
         doWait (1000); // wait for location to update before parsing
         Containers parsedContainers = containerList.getContainers ();
         for (int i = 0; i < containers.list.size (); i++) {
@@ -153,7 +152,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
             testLog (format ("SR-3229:R3: Bulk Move to My Custody action moves selected item, %s, to user's custody",
                              container.containerNumber));
             assertEquals (container.location, parsedContainers.list.get (i).location);
-            testLog (format ("SR-3229:R7: containers list location matches location in container details for %s",
+            testLog (format ("SR-3229:R7: Containers list location matches location in container details for %s",
                              container.containerNumber));
         }
     }
