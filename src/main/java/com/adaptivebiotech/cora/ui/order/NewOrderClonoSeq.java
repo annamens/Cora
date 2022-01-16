@@ -36,7 +36,7 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 public class NewOrderClonoSeq extends NewOrder {
 
     public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq ();
-    private final String           specimenDelivery = "[name='specimenType']";
+    private final String           specimenDelivery = "[ng-model='ctrl.orderEntry.order.specimenDeliveryType']";
 
     public void clickAssayTest (Assay assay) {
         String type = "[ng-click*='" + assay.type + "']";
@@ -158,11 +158,6 @@ public class NewOrderClonoSeq extends NewOrder {
         return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
     }
 
-    private DeliveryType getSpecimenDelivery () {
-        String css = "[ng-model^='ctrl.orderEntry.order.specimenDeliveryType']";
-        return DeliveryType.getDeliveryType (getFirstSelectedText (css));
-    }
-
     public String getPatientGender () {
         return getText ("[ng-bind='ctrl.orderEntry.order.patient.gender']");
     }
@@ -248,6 +243,10 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectValue (specimenDelivery, "string:" + type));
     }
 
+    public DeliveryType getSpecimenDelivery () {
+        return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
+    }
+
     public List <String> getSpecimenDeliveryOptions () {
         return getDropdownOptions (specimenDelivery);
     }
@@ -287,14 +286,6 @@ public class NewOrderClonoSeq extends NewOrder {
     public void enterRetrievalDate (String date) {
         String cssRetrievalDate = "#specimen-entry-retrieval-date";
         assertTrue (setText (cssRetrievalDate, date));
-    }
-
-    public String getSpecimenDeliverySelectedOption () {
-        String css = "[ng-model^='ctrl.orderEntry.order.specimenDeliveryType']";
-        if (isElementVisible (css)) {
-            return getFirstSelectedText (css);
-        }
-        return null;
     }
 
     public String getRetrievalDate () {
@@ -342,9 +333,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
         selectPhysician (physician);
         boolean matchFound = searchOrCreatePatient (patient);
-        for (String icdCode : icdCodes) {
-            enterPatientICD_Codes (icdCode);
-        }
+        enterPatientICD_Codes (icdCodes);
 
         switch (patient.billingType) {
         case CommercialInsurance:

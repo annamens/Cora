@@ -14,8 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.json.JSONObject;
-import org.postgresql.util.PGobject;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.emr.EmrTransforms;
 import com.adaptivebiotech.cora.dto.emr.EmrTransforms.Condition;
@@ -189,10 +187,12 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (queryEmrData.get ("client_id").toString (), clientId);
         assertEquals (queryEmrData.get ("client_secret").toString (), clientSecret);
         assertTrue (Boolean.valueOf (queryEmrData.get ("trust_email").toString ()));
-        assertEquals (toJsonString (queryEmrData.get ("users")), mapper.writeValueAsString (jsonObjUserEmail));
+        assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("users")),
+                      mapper.writeValueAsString (jsonObjUserEmail));
         assertEquals (queryEmrData.get ("version").toString (), "0");
-        assertEquals (toJsonString (queryEmrData.get ("properties")), mapper.writeValueAsString (jsonObjProperty));
-        assertEquals (toEmrTransforms (toJsonString (queryEmrData.get ("transforms"))), transforms);
+        assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("properties")),
+                      mapper.writeValueAsString (jsonObjProperty));
+        assertEquals (toEmrTransforms (coraDBClient.jsonbToString (queryEmrData.get ("transforms"))), transforms);
         testLog ("STEP 8 - Result is 1 row that contains the above values");
 
         queryResults = coraDBClient.executeSelectQuery (String.format (emrAccountsQuery,
@@ -229,10 +229,12 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (queryEmrData.get ("client_id").toString (), clientId);
         assertEquals (queryEmrData.get ("client_secret").toString (), clientSecret);
         assertTrue (Boolean.valueOf (queryEmrData.get ("trust_email").toString ()));
-        assertEquals (toJsonString (queryEmrData.get ("users")), mapper.writeValueAsString (jsonObjUserEmail));
+        assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("users")),
+                      mapper.writeValueAsString (jsonObjUserEmail));
         assertEquals (queryEmrData.get ("version").toString (), "0");
-        assertEquals (toJsonString (queryEmrData.get ("properties")), mapper.writeValueAsString (jsonObjProperty));
-        assertEquals (toEmrTransforms (toJsonString (queryEmrData.get ("transforms"))), transforms);
+        assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("properties")),
+                      mapper.writeValueAsString (jsonObjProperty));
+        assertEquals (toEmrTransforms (coraDBClient.jsonbToString (queryEmrData.get ("transforms"))), transforms);
         testLog ("STEP 11 - Result is 1 row that contains the above values");
 
         queryResults = coraDBClient.executeSelectQuery (String.format (emrAccountsQuery,
@@ -304,14 +306,6 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         Set <String> expectedTables = new HashSet <> (asList ("emr_configs", "emr_config_account_xref"));
         assertTrue (auditTables.containsAll (expectedTables));
         testLog ("STEP 19 - validate audit table entry");
-    }
-
-    private String toJsonString (Object data) {
-        try {
-            return new JSONObject ( ((PGobject) data).getValue ()).toString ();
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
     }
 
     private EmrTransforms genTransforms () {

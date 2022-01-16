@@ -327,14 +327,17 @@ public abstract class NewOrder extends OrderHeader {
         return isElementPresent (css) ? readInput (css) : null;
     }
 
-    public void enterPatientICD_Codes (String codes) {
+    public void enterPatientICD_Codes (String... codes) {
         String css = "//button[text()='Add Code']";
         if (isElementPresent (css) && isElementVisible (css))
             assertTrue (click (css));
-        assertTrue (setText ("//*[text()='ICD Codes']/..//input", codes));
-        assertTrue (waitUntilVisible ("//*[text()='ICD Codes']/..//ul"));
-        assertTrue (click ("//*[contains(text(),'" + codes + "')]"));
-        assertTrue (waitForElementInvisible ("//*[text()='ICD Codes']/..//ul"));
+
+        for (String code : codes) {
+            assertTrue (setText ("//*[text()='ICD Codes']/..//input", code));
+            assertTrue (waitUntilVisible ("//*[text()='ICD Codes']/..//ul"));
+            assertTrue (click ("//*[contains(text(),'" + code + "')]"));
+            assertTrue (waitForElementInvisible ("//*[text()='ICD Codes']/..//ul"));
+        }
     }
 
     public List <String> getPatientICD_Codes () {

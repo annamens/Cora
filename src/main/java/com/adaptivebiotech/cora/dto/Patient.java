@@ -33,6 +33,7 @@ public final class Patient {
     public Insurance     insurance1;
     public Insurance     insurance2;
     public Insurance     insurance3;
+    @JsonAlias ("address1")
     public String        address;
     public String        address2;
     public String        locality;
