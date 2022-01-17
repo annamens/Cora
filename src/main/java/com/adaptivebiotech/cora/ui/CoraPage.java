@@ -171,8 +171,13 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//a[text()='Barcode Comparison Tool']"));
     }
 
-    public void gotoOrderEntry (String orderId) {
+    public void gotoCDxOrderEntry (String orderId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/order/entry/diagnostic/" + orderId));
+        pageLoading ();
+    }
+
+    public void gotoTDxOrderEntry (String orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/dx/" + orderId));
         pageLoading ();
     }
 
