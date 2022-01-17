@@ -316,7 +316,8 @@ public class NewOrderTDetect extends NewOrder {
             break;
         }
 
-        if (!matchFound && patient.address != null)
+        // Patient Billing Address is not required regardless of billing type.
+        if (!matchFound && patient.hasAddress ())
             billing.enterPatientAddress (patient);
 
         clickSave ();
@@ -365,6 +366,8 @@ public class NewOrderTDetect extends NewOrder {
 
             // activate order
             isCorrectPage ();
+            waitForSpecimenDelivery ();
+            waitForHistory ();
             activateOrder ();
         }
 

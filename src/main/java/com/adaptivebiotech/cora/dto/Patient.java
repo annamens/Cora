@@ -3,6 +3,7 @@ package com.adaptivebiotech.cora.dto;
 import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
@@ -74,6 +75,10 @@ public final class Patient {
                                    .append (this.firstName, p.firstName)
                                    .append (this.dateOfBirth, p.dateOfBirth)
                                    .isEquals ();
+    }
+
+    public boolean hasAddress () {
+        return isNotNullAndNotEmpty (address) || isNotNullAndNotEmpty (address2) || isNotNullAndNotEmpty (locality) || isNotNullAndNotEmpty (region) || isNotNullAndNotEmpty (postCode) || isNotNullAndNotEmpty (phone) || isNotNullAndNotEmpty (email);
     }
 
     public enum PatientTestStatus {

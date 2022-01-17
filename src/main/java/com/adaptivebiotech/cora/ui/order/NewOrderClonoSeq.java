@@ -316,10 +316,7 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param patient
      * @param icdCodes
      * @param assayTest
-     * @param chargeType
-     * @param specimenType
-     * @param specimenSource
-     * @param anticoagulant
+     * @param specimen
      * @return
      */
     public String createClonoSeqOrder (Physician physician,
@@ -351,7 +348,8 @@ public class NewOrderClonoSeq extends NewOrder {
             break;
         }
 
-        if (!matchFound && patient.address != null)
+        // Patient Billing Address is not required regardless of billing type.
+        if (!matchFound && patient.hasAddress ())
             billing.enterPatientAddress (patient);
 
         clickSave ();
@@ -382,10 +380,6 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param patient
      * @param icdCodes
      * @param assayTest
-     * @param chargeType
-     * @param specimenType
-     * @param specimenSource
-     * @param anticoagulant
      * @param orderStatus
      * @param containerType
      * @return

@@ -8,7 +8,6 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_insur
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_medicare;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
-import static com.adaptivebiotech.cora.utils.TestHelper.getRandomAddress;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
@@ -48,7 +47,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "corgi")
     public void insurance () {
-        Patient patient = getRandomAddress (newInsurancePatient ());
+        Patient patient = newInsurancePatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_insurance),
                                        patient,
                                        null,
@@ -64,7 +63,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "corgi")
     public void medicare () {
-        Patient patient = getRandomAddress (newMedicarePatient ());
+        Patient patient = newMedicarePatient ();
         patient.abnStatusType = null;
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_medicare),
                                        patient,
@@ -77,7 +76,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     public void patientSelfPay () {
-        Patient patient = getRandomAddress (newSelfPayPatient ());
+        Patient patient = newSelfPayPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                        patient,
                                        null,
@@ -89,7 +88,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     public void billClient () {
-        Patient patient = getRandomAddress (newClientPatient ());
+        Patient patient = newClientPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                        patient,
                                        null,
