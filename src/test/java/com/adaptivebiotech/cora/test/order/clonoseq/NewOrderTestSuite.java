@@ -13,26 +13,26 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 @Test (groups = "regression")
 public class NewOrderTestSuite extends CoraBaseBrowser {
 
-    private final List <String> headers    = asList ("Customer Instructions",
-                                                     "Order Notes",
-                                                     "Ordering Physician",
-                                                     "Patient Information",
-                                                     "Specimen",
-                                                     "Order Test",
-                                                     "Billing",
-                                                     "clonoSEQ Order Authorization",
-                                                     "Attachments",
-                                                     "History");
-    private Login               login      = new Login ();
-    private OrdersList          ordersList = new OrdersList ();
-    private NewOrderClonoSeq    diagnostic = new NewOrderClonoSeq ();
+    private final List <String> headers          = asList ("Customer Instructions",
+                                                           "Order Notes",
+                                                           "Ordering Physician",
+                                                           "Patient Information",
+                                                           "Specimen",
+                                                           "Order Test",
+                                                           "Billing",
+                                                           "clonoSEQ Order Authorization",
+                                                           "Attachments",
+                                                           "History");
+    private Login               login            = new Login ();
+    private OrdersList          ordersList       = new OrdersList ();
+    private NewOrderClonoSeq    newOrderClonoSeq = new NewOrderClonoSeq ();
 
     public void sections_order () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        diagnostic.selectNewClonoSEQDiagnosticOrder ();
-        diagnostic.isCorrectPage ();
-        assertEquals (diagnostic.getSectionHeaders (), headers);
+        newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.getSectionHeaders (), headers);
         testLog ("found the Order Authorization section below the Billing section of the clonoSEQ order form");
     }
 }

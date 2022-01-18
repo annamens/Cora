@@ -54,6 +54,12 @@ public class OrderHeader extends CoraPage {
         return getEnum (OrderStatus.class, getText ("[ng-bind='ctrl.orderEntry.order.status']"));
     }
 
+    public String getPatientId () {
+        String url = getAttribute ("//*[@class='summary']//a[*[@ng-bind='ctrl.orderEntry.order.patient.patientCode']]",
+                                   "href");
+        return url.split ("patient/")[1];
+    }
+
     public boolean isActiveAlertCountPresent () {
         return isElementPresent (alertDashboard + " " + activeAlertCount);
     }

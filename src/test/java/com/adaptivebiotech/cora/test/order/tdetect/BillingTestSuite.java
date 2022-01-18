@@ -75,6 +75,10 @@ public class BillingTestSuite extends CoraBaseBrowser {
         testLog (format (log, patient.billingType.label));
     }
 
+    /**
+     * @sdlc_requirements SR-7907:R1
+     */
+    @Test (groups = "corgi")
     public void patientSelfPay () {
         Patient patient = newSelfPayPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
@@ -87,6 +91,10 @@ public class BillingTestSuite extends CoraBaseBrowser {
         testLog (format (log, patient.billingType.label));
     }
 
+    /**
+     * @sdlc_requirements SR-7907:R1
+     */
+    @Test (groups = "corgi")
     public void billClient () {
         Patient patient = newClientPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_client),

@@ -298,7 +298,8 @@ public class NewOrderTDetect extends NewOrder {
 
         selectPhysician (physician);
         boolean matchFound = searchOrCreatePatient (patient);
-        enterPatientICD_Codes (icdCodes);
+        if (icdCodes != null)
+            enterPatientICD_Codes (icdCodes);
         enterCollectionDate (collectionDate);
         clickAssayTest (assayTest);
 
@@ -371,6 +372,7 @@ public class NewOrderTDetect extends NewOrder {
             activateOrder ();
         }
 
+        // for T-Detect, refreshing the page doesn't automatically take you to order detail
         gotoOrderDetailsPage (getOrderId ());
         isCorrectPage ();
 

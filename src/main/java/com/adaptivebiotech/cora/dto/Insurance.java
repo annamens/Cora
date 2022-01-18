@@ -53,7 +53,7 @@ public final class Insurance {
 
         public static PatientStatus getPatientStatus (String label) {
             return allOf (PatientStatus.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
-                                              .get ();
+                                              .orElse (null);
         }
     }
 }

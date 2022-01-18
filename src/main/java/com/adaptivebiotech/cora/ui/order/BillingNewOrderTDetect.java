@@ -45,6 +45,10 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     private final String patientState                 = "[formcontrolname='region']";
     private final String patientZipcode               = "[formcontrolname='postCode']";
 
+    public boolean isBillingQuestionsVisible () {
+        return isElementPresent ("[ng-if='ctrl.hasInsuranceQuestions() && ctrl.isTdx()']");
+    }
+
     public void enterABNstatus (AbnStatus status) {
         assertTrue (clickAndSelectValue (abnStatus, status.name ()));
     }

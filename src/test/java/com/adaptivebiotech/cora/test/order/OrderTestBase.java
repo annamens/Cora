@@ -11,22 +11,25 @@ import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.specimen;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static java.util.Arrays.asList;
 import java.util.ArrayList;
-import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
-import com.adaptivebiotech.cora.dto.Orders;
+import com.adaptivebiotech.cora.dto.Diagnostic.Panel;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 
 public class OrderTestBase extends CoraBaseBrowser {
 
-    protected AssayResponse.CoraTest genCDxTest (Assay assay, String tsvPath) {
-        AssayResponse.CoraTest test = coraApi.getCDxTest (assay);
+    private final String covidPanel = "132d9440-8f75-46b8-b084-efe06346dfd4";
+
+    protected CoraTest genCDxTest (Assay assay, String tsvPath) {
+        CoraTest test = coraApi.getCDxTest (assay);
         test.workflowProperties = new Workflow.WorkflowProperties ();
         test.workflowProperties.disableHiFreqSave = true;
         test.workflowProperties.disableHiFreqSharing = true;
@@ -35,8 +38,8 @@ public class OrderTestBase extends CoraBaseBrowser {
         return test;
     }
 
-    protected AssayResponse.CoraTest genTcrTest (Assay assay, String flowcell, String tsvPath) {
-        AssayResponse.CoraTest test = coraApi.getCDxTest (assay);
+    protected CoraTest genTcrTest (Assay assay, String flowcell, String tsvPath) {
+        CoraTest test = coraApi.getCDxTest (assay);
         test.workflowProperties = new Workflow.WorkflowProperties ();
         test.workflowProperties.notifyGateway = true;
         test.flowcell = flowcell;
@@ -45,7 +48,7 @@ public class OrderTestBase extends CoraBaseBrowser {
         return test;
     }
 
-    protected Diagnostic buildCovidOrder (Patient patient, Workflow.Stage stage, AssayResponse.CoraTest test) {
+    protected Diagnostic buildCovidOrder (Patient patient, Stage stage, CoraTest test) {
         Diagnostic diagnostic = diagnosticOrder (coraApi.getPhysician (TDetect_client), patient, null, shipment ());
         diagnostic.order = order (null, test);
         diagnostic.order.orderType = TDx;
@@ -55,10 +58,9 @@ public class OrderTestBase extends CoraBaseBrowser {
         diagnostic.order.specimenDto = specimen ();
         diagnostic.order.specimenDto.name = test.workflowProperties.sampleName;
         diagnostic.order.specimenDto.properties = null;
-        diagnostic.order.panels = asList (new Diagnostic.Panel ("132d9440-8f75-46b8-b084-efe06346dfd4"));
+        diagnostic.order.panels = asList (new Panel (covidPanel));
         diagnostic.fastForwardStatus = stage;
         diagnostic.task = null;
-        diagnostic.dxResults = negativeDxResult ();
         return diagnostic;
     }
 
@@ -67,7 +69,7 @@ public class OrderTestBase extends CoraBaseBrowser {
                                                  patient,
                                                  specimen (),
                                                  shipment ());
-        diagnostic.order = order (new Orders.OrderProperties (patient.billingType, CustomerShipment, "C91.00"), tests);
+        diagnostic.order = order (orderProperties (patient, "C91.00"), tests);
         diagnostic.order.mrn = patient.mrn;
         diagnostic.specimen.collectionDate = new int[] { 2019, 4, 1, 18, 6, 59, 639 };
         diagnostic.specimen.reconciliationDate = new int[] { 2019, 5, 10, 18, 6, 59, 639 };
@@ -77,7 +79,27 @@ public class OrderTestBase extends CoraBaseBrowser {
         return diagnostic;
     }
 
-    private ClassifierOutput negativeDxResult () {
+    protected OrderProperties orderProperties (Patient patient, String Icd10Codes) {
+        return new OrderProperties (patient.billingType, CustomerShipment, Icd10Codes);
+    }
+
+    protected WorkflowProperties sample_95268_SN_2205 () {
+        WorkflowProperties workflowProperties = new WorkflowProperties ();
+        workflowProperties.flowcell = "H752HBGXH";
+        workflowProperties.workspaceName = "CLINICAL-CLINICAL";
+        workflowProperties.sampleName = "95268-SN-2205";
+        return workflowProperties;
+    }
+
+    protected WorkflowProperties sample_112770_SN_7929 () {
+        WorkflowProperties workflowProperties = new WorkflowProperties ();
+        workflowProperties.flowcell = "HCYJNBGXJ";
+        workflowProperties.workspaceName = "CLINICAL-CLINICAL";
+        workflowProperties.sampleName = "112770-SN-7929";
+        return workflowProperties;
+    }
+
+    protected ClassifierOutput negativeDxResult () {
         ClassifierOutput dxResult = new ClassifierOutput ();
         dxResult.disease = "COVID19";
         dxResult.classifierVersion = "v1.0";
