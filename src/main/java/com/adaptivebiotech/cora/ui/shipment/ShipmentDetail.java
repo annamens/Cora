@@ -21,7 +21,7 @@ public class ShipmentDetail extends CoraPage {
     private final String activeTab                = "[role='tablist'] .active a";
     private final String arrivalDateTime          = "[data-ng-bind='ctrl.entry.shipment.arrivalDate | localDateTime']";
     private final String category                 = "[data-ng-bind='ctrl.entry.shipment.category']";
-    private final String shipmentNo               = "[data-ng-bind='ctrl.entry.shipment.shipmentNumber']";
+    private final String shipmentNo               = ".shipment-details [data-ng-bind='ctrl.entry.shipment.shipmentNumber']";
     private final String shippingCondition        = "[data-ng-bind='ctrl.entry.shipment.condition']";
     private final String carrier                  = "[data-ng-bind='ctrl.entry.shipment.carrier']";
     private final String trackingNo               = "[data-ng-bind='ctrl.entry.shipment.trackingNumber']";
