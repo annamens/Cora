@@ -176,10 +176,6 @@ public class NewOrderClonoSeq extends NewOrder {
         pageLoading ();
     }
 
-    public boolean isAbnStatusNotRequired () {
-        return (isTextInElement ("div[ng-if^='ctrl.orderEntry.order.abnStatusType']", "Not Required"));
-    }
-
     public void activateOrder () {
         clickSaveAndActivate ();
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
@@ -237,6 +233,10 @@ public class NewOrderClonoSeq extends NewOrder {
             }
             return c;
         }).collect (toList ()));
+    }
+
+    public void waitForSpecimenDelivery () {
+        assertTrue (waitUntilVisible (specimenDelivery));
     }
 
     public void enterSpecimenDelivery (DeliveryType type) {
@@ -407,6 +407,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
             // activate order
             isCorrectPage ();
+            waitForSpecimenDelivery ();
             activateOrder ();
         } else {
             gotoOrderDetailsPage (getOrderId ());

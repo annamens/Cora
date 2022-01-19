@@ -144,6 +144,8 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
+        addCoraToken ();
+
         // IgHVPhysician Physician
         IgHVPhysician = coraApi.getPhysician (non_CLEP_clonoseq);
 
@@ -1094,7 +1096,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
             throw new RuntimeException (e);
         }
         info ("Json File Data " + reportDataJson);
-        HttpClientHelper.resetheaders ();
         return reportDataJson;
     }
 

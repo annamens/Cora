@@ -253,7 +253,7 @@ public class NewOrderTDetect extends NewOrder {
 
     @Override
     public String getOrderNumber () {
-        return getText ("//label[@id='order-number-text']/../div[1]/span");
+        return getText ("//*[@label='Order #']//span");
     }
 
     @Override

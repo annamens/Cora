@@ -48,7 +48,7 @@ public class OrderHeader extends CoraPage {
     }
 
     public String getheaderOrderNumber () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
+        return getText ("//*[label[@id='order-number-text']]//span");
     }
 
     public OrderStatus getheaderOrderStatus () {
