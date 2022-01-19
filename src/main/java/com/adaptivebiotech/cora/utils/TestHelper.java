@@ -1,7 +1,5 @@
 package com.adaptivebiotech.cora.utils;
 
-import static com.adaptivebiotech.cora.dto.BillingSurvey.AnswerType.other;
-import static com.adaptivebiotech.cora.dto.BillingSurvey.AnswerType.radio;
 import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Child;
 import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Other;
 import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Spouse;
@@ -277,18 +275,14 @@ public class TestHelper {
 
     public static BillingSurvey defaultSurvey () {
         BillingSurvey survey = new BillingSurvey ();
+        survey.status = "Eligible for Insurance";
         survey.questionnaires = new ArrayList <> ();
-        survey.questionnaires.add (new Questionnaire ("symptomsV1", radio, asList ("Yes")));
-        survey.questionnaires.add (new Questionnaire ("covidTestV1", radio, asList ("Yes")));
-        survey.questionnaires.add (new Questionnaire ("antibodyTestV1", radio, asList ("No")));
-
-        Questionnaire q4 = new Questionnaire ("justificationV1", other, asList ("Other (describe)"));
-        q4.other = "selenium test";
-        survey.questionnaires.add (q4);
-
-        Questionnaire q5 = new Questionnaire ("testOrderLocationV1", radio, asList ("Critical Access Hospital"));
-        survey.questionnaires.add (q5);
-        survey.questionnaires.add (new Questionnaire ("inNetworkV1", radio, asList ("Unknown")));
+        survey.questionnaires.add (new Questionnaire ("symptomsV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("covidTestV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("antibodyTestV1", asList ("No")));
+        survey.questionnaires.add (new Questionnaire ("justificationV1", asList ("selenium test")));
+        survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
+        survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Unknown")));
         return survey;
     }
 }

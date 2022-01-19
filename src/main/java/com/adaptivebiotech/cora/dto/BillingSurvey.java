@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.dto;
 
+import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
 
@@ -9,31 +10,41 @@ import java.util.List;
  */
 public final class BillingSurvey {
 
+    public String               status;
     public List <Questionnaire> questionnaires;
+
+    public BillingSurvey () {}
+
+    public BillingSurvey (List <Questionnaire> questionnaires) {
+        this.questionnaires = questionnaires;
+    }
 
     @Override
     public String toString () {
         return toStringOverride (this);
     }
 
+    @Override
+    public boolean equals (Object o) {
+        return equalsOverride (this, (BillingSurvey) o);
+    }
+
     public static final class Questionnaire {
 
         public String        name;
         public String        title;
-        public AnswerType    answerType;
         public List <String> answers;
-        public String        other;
 
         public Questionnaire () {}
 
-        public Questionnaire (String name, AnswerType answerType, List <String> answers) {
+        public Questionnaire (String name, List <String> answers) {
             this.name = name;
-            this.answerType = answerType;
             this.answers = answers;
         }
-    }
 
-    public enum AnswerType {
-        radio, checkbox, other
+        @Override
+        public boolean equals (Object o) {
+            return equalsOverride (this, (Questionnaire) o, "title");
+        }
     }
 }
