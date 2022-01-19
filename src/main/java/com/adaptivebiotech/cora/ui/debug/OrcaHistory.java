@@ -3,6 +3,7 @@ package com.adaptivebiotech.cora.ui.debug;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Cancelled;
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import static org.testng.util.Strings.isNullOrEmpty;
@@ -159,7 +160,8 @@ public class OrcaHistory extends CoraPage {
     }
 
     public String getOrderTestId () {
-        return getAttribute ("a[href*='/cora/order/status']", "href");
+        String url = getAttribute ("a[href*='/cora/order/status']", "href");
+        return substringAfterLast (url, "ordertestid=");
     }
 
     public void clickOrder () {

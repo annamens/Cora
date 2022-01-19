@@ -2,9 +2,15 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import static org.testng.util.Strings.isNotNullAndNotEmpty;
+import java.util.ArrayList;
+import java.util.List;
+import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.BillingSurvey;
+import com.adaptivebiotech.cora.dto.BillingSurvey.Questionnaire;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -16,6 +22,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
  */
 public class BillingNewOrderTDetect extends BillingNewOrder {
 
+    private final String billingQuestionnaire         = "//div[*[@class='billing-sub-header' and text()='Insurance Billing Questions']]";
     private final String abnStatus                    = "#abn-status-type";
     private final String insuranceProvider            = "[formcontrolname='insuranceProvider']";
     private final String groupNumber                  = "[formcontrolname='groupNumber']";
@@ -44,6 +51,24 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     private final String patientCity                  = "[formcontrolname='locality']";
     private final String patientState                 = "[formcontrolname='region']";
     private final String patientZipcode               = "[formcontrolname='postCode']";
+
+    public boolean isBillingQuestionsVisible () {
+        return isElementPresent (billingQuestionnaire);
+    }
+
+    public BillingSurvey parseBillingQuestions () {
+        List <Questionnaire> questionnaires = new ArrayList <> ();
+        for (WebElement li : waitForElements (".billing-questionnaire li")) {
+            Questionnaire q = new Questionnaire ();
+            q.name = getAttribute (li, "id");
+            q.title = getText (li).split ("\\n")[0];
+            q.answers = asList (getText (li, ".insurance-questionnaire-answer").split ("\\s*,\\s*"));
+            questionnaires.add (q);
+        }
+        BillingSurvey survey = new BillingSurvey (questionnaires);
+        survey.status = getText (billingQuestionnaire + "/*[contains (@class,'insurance-alert')]");
+        return survey;
+    }
 
     public void enterABNstatus (AbnStatus status) {
         assertTrue (clickAndSelectValue (abnStatus, status.name ()));

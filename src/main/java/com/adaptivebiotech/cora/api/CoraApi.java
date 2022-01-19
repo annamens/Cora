@@ -305,10 +305,11 @@ public class CoraApi {
         if (stream (tests).anyMatch (ot -> ot.sampleName == null))
             fail ("sampleName is null");
 
-        for (OrderTest test : tests)
+        for (OrderTest test : tests) {
+            test.orderId = orderId;
             if (test.specimen.subjectCode == null)
                 test.specimen.subjectCode = getPatientOrSubjectCode (test.id);
-
+        }
         return tests;
     }
 

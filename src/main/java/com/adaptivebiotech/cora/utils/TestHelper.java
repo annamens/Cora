@@ -18,10 +18,14 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
+import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import com.adaptivebiotech.cora.dto.BillingSurvey;
+import com.adaptivebiotech.cora.dto.BillingSurvey.Questionnaire;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
@@ -267,5 +271,18 @@ public class TestHelper {
         specimen.anticoagulant = EDTA;
         specimen.collectionDate = DateUtils.getPastFutureDate (-3);
         return specimen;
+    }
+
+    public static BillingSurvey defaultSurvey () {
+        BillingSurvey survey = new BillingSurvey ();
+        survey.status = "Eligible for Insurance";
+        survey.questionnaires = new ArrayList <> ();
+        survey.questionnaires.add (new Questionnaire ("symptomsV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("covidTestV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("antibodyTestV1", asList ("No")));
+        survey.questionnaires.add (new Questionnaire ("justificationV1", asList ("selenium test")));
+        survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
+        survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Unknown")));
+        return survey;
     }
 }

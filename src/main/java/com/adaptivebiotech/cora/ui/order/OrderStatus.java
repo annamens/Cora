@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
@@ -133,12 +134,7 @@ public class OrderStatus extends OrderHeader {
     }
 
     public String getOrderTestIdFromUrl () {
-        String orderTestId = null;
-        String url = getCurrentUrl ();
-        if (url.contains ("ordertestid")) {
-            orderTestId = url.split ("ordertestid=")[1];
-        }
-        return orderTestId;
+        return substringAfterLast (getCurrentUrl (), "ordertestid=");
     }
 
     public void failWorkflow (String message) {

@@ -3,6 +3,7 @@ package com.adaptivebiotech.cora.dto;
 import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 /**
  * @author Harry Soehalim
@@ -10,6 +11,7 @@ import static java.util.EnumSet.allOf;
  */
 public final class Insurance {
 
+    @JsonAlias ("insuranceProvider")
     public String              provider;
     public String              groupNumber;
     public String              policyNumber;
@@ -51,7 +53,7 @@ public final class Insurance {
 
         public static PatientStatus getPatientStatus (String label) {
             return allOf (PatientStatus.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
-                                              .get ();
+                                              .orElse (null);
         }
     }
 }

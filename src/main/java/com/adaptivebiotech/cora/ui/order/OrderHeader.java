@@ -2,6 +2,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -47,11 +48,16 @@ public class OrderHeader extends CoraPage {
     }
 
     public String getheaderOrderNumber () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
+        return getText ("//*[label[@id='order-number-text']]//span");
     }
 
     public OrderStatus getheaderOrderStatus () {
         return getEnum (OrderStatus.class, getText ("[ng-bind='ctrl.orderEntry.order.status']"));
+    }
+
+    public String getPatientId () {
+        String css = "//*[@class='summary']//a[*[@ng-bind='ctrl.orderEntry.order.patient.patientCode']]";
+        return substringAfterLast (getAttribute (css, "href"), "patient/");
     }
 
     public boolean isActiveAlertCountPresent () {

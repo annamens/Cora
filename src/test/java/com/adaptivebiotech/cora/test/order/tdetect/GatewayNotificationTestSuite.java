@@ -14,11 +14,10 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_R
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.dto.AssayResponse;
+import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.order.OrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -27,27 +26,23 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 @Test (groups = { "akita", "regression" })
 public class GatewayNotificationTestSuite extends OrderTestBase {
 
-    private final String   covidTsv           = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210209_NB551550_0241_AHTT33BGXG/v3.1/20210211_0758/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev3/HTT33BGXG_0_CLINICAL-CLINICAL_95268-SN-2205.adap.txt.results.tsv.gz";
-    private final String   covidWorkspaceName = "CLINICAL-CLINICAL";
-    private final String   covidSampleName    = "95268-SN-2205";
-    private final String   gatewayJson        = "gatewayMessage.json";
-    private Login          login              = new Login ();
-    private OrcaHistory    history            = new OrcaHistory ();
-    private ReportClonoSeq report             = new ReportClonoSeq ();
+    private final String   covidTsv    = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210209_NB551550_0241_AHTT33BGXG/v3.1/20210211_0758/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev3/HTT33BGXG_0_CLINICAL-CLINICAL_95268-SN-2205.adap.txt.results.tsv.gz";
+    private final String   gatewayJson = "gatewayMessage.json";
+    private Login          login       = new Login ();
+    private OrcaHistory    history     = new OrcaHistory ();
+    private ReportClonoSeq report      = new ReportClonoSeq ();
 
     /**
      * @sdlc_requirements SR-7370
      */
     public void verifyCovidGatewayMessageUpdate () {
-        AssayResponse.CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
+        CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
         test.tsvPath = covidTsv;
-        test.workflowProperties = new WorkflowProperties ();
-        test.workflowProperties.flowcell = "H752HBGXH";
-        test.workflowProperties.workspaceName = covidWorkspaceName;
-        test.workflowProperties.sampleName = covidSampleName;
+        test.workflowProperties = sample_95268_SN_2205 ();
 
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCovidOrder (patient, stage (DxReport, Ready), test);
+        diagnostic.dxResults = negativeDxResult ();
         assertEquals (coraApi.newCovidOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
 

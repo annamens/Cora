@@ -2,6 +2,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -22,7 +23,6 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
-import com.adaptivebiotech.test.utils.Logging;
 
 /**
  * @author jpatel
@@ -30,10 +30,11 @@ import com.adaptivebiotech.test.utils.Logging;
  */
 public class NewOrderTDetect extends NewOrder {
 
-    public BillingNewOrderTDetect billing        = new BillingNewOrderTDetect ();
-    private final String          dateSigned     = "[formcontrolname='dateSigned']";
-    private final String          orderNotes     = "#order-notes";
-    private final String          collectionDate = "[formcontrolname='collectionDate']";
+    public BillingNewOrderTDetect billing          = new BillingNewOrderTDetect ();
+    private final String          dateSigned       = "[formcontrolname='dateSigned']";
+    private final String          orderNotes       = "#order-notes";
+    private final String          collectionDate   = "[formcontrolname='collectionDate']";
+    private final String          specimenDelivery = "[formcontrolname='specimenDeliveryType']";
 
     public String getPhysicianOrderCode () {
         String xpath = "input[formcontrolname='externalOrderCode']";
@@ -162,11 +163,6 @@ public class NewOrderTDetect extends NewOrder {
         return order;
     }
 
-    private DeliveryType getSpecimenDelivery () {
-        String css = "[formcontrolname='specimenDeliveryType']";
-        return DeliveryType.getDeliveryType (getFirstSelectedText (css));
-    }
-
     public void addPatientICDCode (String code) {
         String addButton = "//button[text()='Add Code']";
         String icdInput = "//label[text()='ICD Codes']/../input";
@@ -220,12 +216,12 @@ public class NewOrderTDetect extends NewOrder {
         }).collect (toList ()));
     }
 
-    public String getSpecimenDeliverySelectedOption () {
-        String css = "[formcontrolname='specimenDeliveryType']";
-        if (isElementVisible (css)) {
-            return getFirstSelectedText (css);
-        }
-        return null;
+    public void waitForSpecimenDelivery () {
+        assertTrue (waitUntilVisible (specimenDelivery));
+    }
+
+    public DeliveryType getSpecimenDelivery () {
+        return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
     }
 
     public void enterOrderNotes (String notes) {
@@ -257,7 +253,7 @@ public class NewOrderTDetect extends NewOrder {
 
     @Override
     public String getOrderNumber () {
-        return getText ("//label[@id='order-number-text']/../div[1]/span");
+        return getText ("//*[@label='Order #']//span");
     }
 
     @Override
@@ -275,9 +271,14 @@ public class NewOrderTDetect extends NewOrder {
         return getText ("//label[text()='Birth Date']/../div[1]");
     }
 
+    public void waitForHistory () {
+        assertTrue (waitUntilVisible ("order-history"));
+    }
+
     /**
      * Create TDetect Pending Order by filling out all the required fields and passed arguments on
      * New Order TDetect page, and returns order no.
+     * 
      * NOTE: Keep updating this method, and try to always use these methods to create TDetect Order
      * 
      * @param physician
@@ -285,9 +286,7 @@ public class NewOrderTDetect extends NewOrder {
      * @param icdCodes
      * @param collectionDate
      * @param assayTest
-     * @param chargeType
-     * @param patientAddress
-     * @return
+     * @return Cora order number
      */
     public String createTDetectOrder (Physician physician,
                                       Patient patient,
@@ -300,10 +299,7 @@ public class NewOrderTDetect extends NewOrder {
         selectPhysician (physician);
         boolean matchFound = searchOrCreatePatient (patient);
         if (icdCodes != null)
-            for (String icdCode : icdCodes) {
-                enterPatientICD_Codes (icdCode);
-            }
-
+            enterPatientICD_Codes (icdCodes);
         enterCollectionDate (collectionDate);
         clickAssayTest (assayTest);
 
@@ -321,19 +317,21 @@ public class NewOrderTDetect extends NewOrder {
             break;
         }
 
-        if (!matchFound && patient.address != null)
+        // Patient Billing Address is not required regardless of billing type.
+        if (!matchFound && patient.hasAddress ())
             billing.enterPatientAddress (patient);
 
         clickSave ();
 
         String orderNum = getOrderNumber ();
-        Logging.info ("T-Detect Order Number: " + orderNum);
+        info ("T-Detect Order Number: " + orderNum);
         return orderNum;
     }
 
     /**
      * Create TDetect Pending (differs from above method as this method creates shipment as well)
      * or Active Order by passing orderStatus argument. Returns order no.
+     * 
      * NOTE: Keep updating this method, and try to always use these methods to create TDetect
      * Pending Or Active Order
      * 
@@ -342,11 +340,9 @@ public class NewOrderTDetect extends NewOrder {
      * @param icdCodes
      * @param collectionDate
      * @param assayTest
-     * @param chargeType
-     * @param patientAddress
      * @param orderStatus
      * @param containerType
-     * @return
+     * @return Cora order number
      */
     public String createTDetectOrder (Physician physician,
                                       Patient patient,
@@ -371,9 +367,12 @@ public class NewOrderTDetect extends NewOrder {
 
             // activate order
             isCorrectPage ();
+            waitForSpecimenDelivery ();
+            waitForHistory ();
             activateOrder ();
         }
 
+        // for T-Detect, refreshing the page doesn't automatically take you to order detail
         gotoOrderDetailsPage (getOrderId ());
         isCorrectPage ();
 

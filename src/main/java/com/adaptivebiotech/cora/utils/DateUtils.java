@@ -25,8 +25,7 @@ public class DateUtils {
      * @return
      */
     public static String getPastFutureDate (final int days) {
-        return formatDt1.format (setDate (days).getTime ().toInstant ()
-                                               .atZone (ZoneId.systemDefault ()));
+        return formatDt1.format (setDate (days).atZone (ZoneId.systemDefault ()));
     }
 
     /**
@@ -41,8 +40,7 @@ public class DateUtils {
      * @return
      */
     public static String getPastFutureDate (final int days, final DateTimeFormatter formatDate, ZoneId zoneId) {
-        return formatDate.format (setDate (days).getTime ().toInstant ()
-                                                .atZone (zoneId));
+        return formatDate.format (setDate (days).atZone (zoneId));
     }
 
     /**

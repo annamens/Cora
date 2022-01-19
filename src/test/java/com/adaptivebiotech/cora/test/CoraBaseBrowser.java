@@ -37,14 +37,17 @@ public class CoraBaseBrowser extends TestBase {
         String testName = join (".", getClass ().getName (), method.getName ());
         MDC.put (jobId, testName);
         info (format ("running: %s()", testName));
-
-        if (!headers.get ().contains (coraApi.apiToken))
-            headers.get ().add (coraApi.apiToken);
-        if (!headers.get ().contains (coraApi.username))
-            headers.get ().add (coraApi.username);
+        addCoraToken ();
     }
 
     protected String artifacts (String... paths) {
         return join ("/", "target/logs", join ("/", paths));
+    }
+
+    protected void addCoraToken () {
+        if (!headers.get ().contains (coraApi.apiToken))
+            headers.get ().add (coraApi.apiToken);
+        if (!headers.get ().contains (coraApi.username))
+            headers.get ().add (coraApi.username);
     }
 }

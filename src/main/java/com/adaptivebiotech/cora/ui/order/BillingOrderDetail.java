@@ -5,6 +5,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
@@ -77,7 +78,7 @@ public class BillingOrderDetail extends CoraPage {
     protected String getInsurance1DischargeDate () {
         String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.dischargeDate']";
         String dt = isElementPresent (css) ? getText (css) : null;
-        return dt != null ? formatDt1.format (formatDt2.parse (dt)) : dt;
+        return isNotNullAndNotEmpty (dt) ? formatDt1.format (formatDt2.parse (dt)) : dt;
     }
 
     protected String getInsurance2Provider () {

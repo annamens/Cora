@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
@@ -50,6 +51,10 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
 
     protected AbnStatus getAbnStatus () {
         return AbnStatus.getAbnStatus (getFirstSelectedText (abnStatus));
+    }
+
+    public boolean isAbnStatusNotRequired () {
+        return (isTextInElement ("div[ng-if^='ctrl.orderEntry.order.abnStatusType']", NotRequired.label));
     }
 
     public void enterInsurance1Provider (String provider) {
