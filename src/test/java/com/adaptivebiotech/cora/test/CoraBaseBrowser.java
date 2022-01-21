@@ -5,7 +5,6 @@ import static com.adaptivebiotech.test.BaseEnvironment.gitcommitId;
 import static com.adaptivebiotech.test.BaseEnvironment.version;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import java.lang.reflect.Method;
@@ -37,17 +36,10 @@ public class CoraBaseBrowser extends TestBase {
         String testName = join (".", getClass ().getName (), method.getName ());
         MDC.put (jobId, testName);
         info (format ("running: %s()", testName));
-        addCoraToken ();
+        coraApi.addCoraToken ();
     }
 
     protected String artifacts (String... paths) {
         return join ("/", "target/logs", join ("/", paths));
-    }
-
-    protected void addCoraToken () {
-        if (!headers.get ().contains (coraApi.apiToken))
-            headers.get ().add (coraApi.apiToken);
-        if (!headers.get ().contains (coraApi.username))
-            headers.get ().add (coraApi.username);
     }
 }

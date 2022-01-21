@@ -42,7 +42,7 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
                                                           "Specimen",
                                                           "Order Test",
                                                           "Billing",
-                                                          "T-Detect Order Authorization",
+                                                          "Order Authorization",
                                                           "Attachments",
                                                           "Messages",
                                                           "History");

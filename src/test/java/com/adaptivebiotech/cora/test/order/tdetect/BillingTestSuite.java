@@ -7,11 +7,13 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_clien
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_insurance;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_medicare;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_trial;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
+import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.lang.String.format;
 import org.testng.annotations.BeforeMethod;
@@ -79,7 +81,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
      * @sdlc_requirements SR-7907:R1
      */
     @Test (groups = "corgi")
-    public void patientSelfPay () {
+    public void patient_self_pay () {
         Patient patient = newSelfPayPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                        patient,
@@ -95,9 +97,25 @@ public class BillingTestSuite extends CoraBaseBrowser {
      * @sdlc_requirements SR-7907:R1
      */
     @Test (groups = "corgi")
-    public void billClient () {
+    public void client_bill () {
         Patient patient = newClientPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_client),
+                                       patient,
+                                       null,
+                                       specimen.collectionDate.toString (),
+                                       COVID19_DX_IVD,
+                                       Active,
+                                       Tube);
+        testLog (format (log, patient.billingType.label));
+    }
+
+    /**
+     * @sdlc_requirements SR-7907:R20
+     */
+    @Test (groups = "corgi")
+    public void bill_per_study_protocol () {
+        Patient patient = newTrialProtocolPatient ();
+        diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_trial),
                                        patient,
                                        null,
                                        specimen.collectionDate.toString (),
