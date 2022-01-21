@@ -112,7 +112,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc_requirements SR-7907:R20
      */
-    @Test (groups = "corgi", enabled = false)
+    @Test (groups = "corgi")
     public void bill_per_study_protocol () {
         Patient patient = newTrialProtocolPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_trial),
