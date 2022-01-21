@@ -144,7 +144,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        addCoraToken ();
+        coraApi.addCoraToken ();
 
         // IgHVPhysician Physician
         IgHVPhysician = coraApi.getPhysician (non_CLEP_clonoseq);
