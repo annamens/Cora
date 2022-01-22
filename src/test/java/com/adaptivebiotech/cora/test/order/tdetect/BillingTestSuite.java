@@ -60,7 +60,10 @@ public class BillingTestSuite extends CoraBaseBrowser {
         testLog (format (log, patient.billingType.label));
     }
 
-    /**
+    /**o
+     * Note:
+     * - ABN Status is "Not Required" by default
+     * 
      * @sdlc_requirements SR-7907:R1
      */
     @Test (groups = "corgi")
