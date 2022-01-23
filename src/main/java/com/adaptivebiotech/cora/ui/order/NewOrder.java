@@ -93,11 +93,6 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (waitForElementInvisible (pageLoadingBar));
     }
 
-    public String getStatusText () {
-        String xpath = "//*[text()='Status']/..//span";
-        return getText (xpath);
-    }
-
     public void waitUntilActivated () {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         while (!timer.Timedout () && ! (getStatusText ().equals ("Active"))) {
@@ -328,15 +323,16 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterPatientICD_Codes (String... codes) {
+        String dropdown = "//*[*[text()='ICD Codes']]//ul";
         String css = "//button[text()='Add Code']";
         for (String code : codes) {
             if (isElementVisible (css))
                 assertTrue (click (css));
 
-            assertTrue (setText ("//*[text()='ICD Codes']/..//input", code));
-            assertTrue (waitUntilVisible ("//*[text()='ICD Codes']/..//ul"));
+            assertTrue (setText ("//*[*[text()='ICD Codes']]//input", code));
+            assertTrue (waitUntilVisible (dropdown));
             assertTrue (click ("//*[contains(text(),'" + code + "')]"));
-            assertTrue (waitForElementInvisible ("//*[text()='ICD Codes']/..//ul"));
+            assertTrue (waitForElementInvisible (dropdown));
         }
     }
 
