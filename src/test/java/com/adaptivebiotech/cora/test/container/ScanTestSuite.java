@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
@@ -61,7 +61,7 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.setContainerName (2, scanTest);
         shipment.clickSave ();
         shipContainers = shipment.getPrimaryContainers (Tube);
-        closeBrowser ();
+        shipment.closeBrowser ();
     }
 
     @BeforeMethod
@@ -83,7 +83,7 @@ public class ScanTestSuite extends ContainerTestBase {
         ordersList.clickContainers ();
 
         // test: container doesn't exist
-        ContainerList list = new ContainerList ();
+        ContainersList list = new ContainersList ();
         list.scan ("xxxxxx");
         assertEquals (list.getScanError (), format (error1, "xxxxxx"));
 

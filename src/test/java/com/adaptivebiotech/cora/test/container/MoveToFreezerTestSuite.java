@@ -29,7 +29,7 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
@@ -43,7 +43,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     private ThreadLocal <String> downloadDir   = new ThreadLocal <> ();
     private Login                login         = new Login ();
     private OrdersList           ordersList    = new OrdersList ();
-    private ContainerList        containerList = new ContainerList ();
+    private ContainersList       containerList = new ContainersList ();
     private Detail               detail        = new Detail ();
     private History              history       = new History ();
     private MyCustody            myCustody     = new MyCustody ();

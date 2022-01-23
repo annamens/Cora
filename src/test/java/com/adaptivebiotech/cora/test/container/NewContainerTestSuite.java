@@ -22,7 +22,7 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
@@ -41,7 +41,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     private final String            error4                  = "Container name is not unique. Enter another name.";
     private Login                   login                   = new Login ();
     private OrdersList              ordersList              = new OrdersList ();
-    private ContainerList           containerList           = new ContainerList ();
+    private ContainersList          containerList           = new ContainersList ();
     private AddContainer            addContainer            = new AddContainer ();
     private MyCustody               myCustody               = new MyCustody ();
     private GenerateContainerLabels generateContainerLabels = new GenerateContainerLabels ();

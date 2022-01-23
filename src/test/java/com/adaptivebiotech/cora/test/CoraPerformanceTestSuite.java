@@ -14,13 +14,13 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.common.dto.saucelabs.Metrics;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.mira.MirasList;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientsList;
-import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
-import com.adaptivebiotech.cora.ui.task.TaskList;
+import com.adaptivebiotech.cora.ui.shipment.ShipmentsList;
+import com.adaptivebiotech.cora.ui.task.TasksList;
 import com.adaptivebiotech.test.utils.PerformanceHelper;
 import com.adaptivebiotech.test.utils.SauceHelper;
 
@@ -32,16 +32,16 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
     private static final String  PERFORMANCE_SCORE_METRIC_NAME      = "Performance Score";
     private static final double  PERFORMANCE_SCORE_METRIC_THRESHOLD = 0.4;
 
-    private Login                login;
-    private CoraPage             cora;
-    private OrdersList           oList;
-    private OrderTestsList       otList;
-    private ShipmentList         shList;
-    private ContainerList        cList;
-    private TaskList             tList;
-    private MirasList            mList;
-    private PatientsList         pList;
-    private Map <String, String> sauceJobId  = new HashMap <> ();
+    private Login                login                              = new Login ();
+    private CoraPage             cora                               = new CoraPage ();
+    private OrdersList           ordersList                         = new OrdersList ();
+    private OrderTestsList       orderTestsList                     = new OrderTestsList ();
+    private ShipmentsList        shipmentList                       = new ShipmentsList ();
+    private ContainersList       containerList                      = new ContainersList ();
+    private TasksList            taskList                           = new TasksList ();
+    private MirasList            mirasList                          = new MirasList ();
+    private PatientsList         patientsList                       = new PatientsList ();
+    private Map <String, String> sauceJobId                         = new HashMap <> ();
 
     static {
         sauceOptions.put ("extendedDebugging", "true");
@@ -50,15 +50,6 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        login = new Login ();
-        cora = new CoraPage ();
-        oList = new OrdersList ();
-        otList = new OrderTestsList ();
-        shList = new ShipmentList ();
-        cList = new ContainerList ();
-        tList = new TaskList ();
-        mList = new MirasList ();
-        pList = new PatientsList ();
         login.doLogin ();
     }
 
@@ -70,65 +61,65 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
 
     @Test (priority = 1)
     public void loadListOfOrders () {
-        oList.isCorrectTopNavRow2 ();
+        ordersList.isCorrectTopNavRow2 ();
         navigateTo (coraTestUrl + "/cora/orders");
-        oList.isCorrectPage ();
+        ordersList.isCorrectPage ();
         sauceJobId.put ("orders", getSessionId ());
     }
 
     @Test (priority = 1)
     public void loadListOfOrderTests () {
-        oList.isCorrectPage ();
+        ordersList.isCorrectPage ();
         navigateTo (coraTestUrl + "/cora/ordertests");
-        otList.isCorrectPage ();
+        orderTestsList.isCorrectPage ();
         sauceJobId.put ("orderTests", getSessionId ());
     }
 
     @Test (priority = 1)
     public void loadListOfShipments () {
-        oList.isCorrectPage ();
+        ordersList.isCorrectPage ();
         navigateTo (coraTestUrl + "/cora/shipments");
-        shList.isCorrectPage ();
+        shipmentList.isCorrectPage ();
         sauceJobId.put ("shipments", getSessionId ());
     }
 
     @Test (priority = 1)
     public void loadListOfContainers () {
-        oList.isCorrectPage ();
+        ordersList.isCorrectPage ();
         navigateTo (coraTestUrl + "/cora/containers");
-        cList.isCorrectPage ();
+        containerList.isCorrectPage ();
         sauceJobId.put ("containers", getSessionId ());
     }
 
     @Test (priority = 1)
     public void loadListOfTasks () {
-        oList.isCorrectPage ();
+        ordersList.isCorrectPage ();
         navigateTo (coraTestUrl + "/cora/tasks");
-        tList.isCorrectPage ();
+        taskList.isCorrectPage ();
         sauceJobId.put ("tasks", getSessionId ());
     }
 
     @Test (priority = 1)
     public void loadListOfMiras () {
-        oList.isCorrectPage ();
+        ordersList.isCorrectPage ();
         navigateTo (coraTestUrl + "/cora/miras/list");
-        mList.isCorrectPage ();
+        mirasList.isCorrectPage ();
         sauceJobId.put ("miras", getSessionId ());
     }
 
     @Test (priority = 1)
     public void loadListOfPatients () {
-        oList.isCorrectPage ();
+        ordersList.isCorrectPage ();
         navigateTo (coraTestUrl + "/cora/patients/list");
-        pList.isCorrectPage ();
+        patientsList.isCorrectPage ();
         sauceJobId.put ("patients", getSessionId ());
     }
 
     @Test (priority = 1)
     public void filterContainers () {
-        oList.isCorrectPage ();
+        ordersList.isCorrectPage ();
         cora.searchContainer (freezerAB018078 ());
-        cList.isCorrectPage ();
+        containerList.isCorrectPage ();
         sauceJobId.put ("filterContainers", getSessionId ());
     }
 
@@ -152,7 +143,6 @@ public class CoraPerformanceTestSuite extends CoraBaseBrowser {
         }
         softAssert.assertAll ();
     }
-
 
     private Metrics.MetricData getMetricData (Metrics metrics) {
         Metrics.MetricData data = new Metrics.MetricData ();
