@@ -246,6 +246,18 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
+    public void gotoTaskDetail (String taskId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
+    public void gotoTaskStatus (String taskId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId + "?p=status"));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
     // click on (X) icon
     public void closePopup () {
         assertTrue (click ("[ng-click='ctrl.cancel()'] .glyphicon-remove"));

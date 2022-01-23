@@ -123,7 +123,7 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
         String containerNumberPattern = "CO-\\d{6}";
         Container container = containers.list.get (0);
         assertTrue (container.containerNumber.matches (containerNumberPattern));
-        assertTrue (container.children.size () == 3);
+        assertEquals (container.children.size (), 3);
         assertTrue (container.children.get (0).containerNumber.matches (containerNumberPattern));
         assertTrue (container.children.get (1).containerNumber.matches (containerNumberPattern));
         assertTrue (container.children.get (2).containerNumber.matches (containerNumberPattern));

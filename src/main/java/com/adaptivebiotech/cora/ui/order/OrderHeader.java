@@ -93,8 +93,13 @@ public class OrderHeader extends CoraPage {
         return splitUrl[splitUrl.length - 1];
     }
 
-    public String getDueDate () {
-        return getText ("[ng-bind^='ctrl.orderEntry.orderTests[0].dueDate']");
+    public String getStatusText () {
+        String xpath = "//*[text()='Status']/..//span";
+        return getText (xpath);
+    }
+
+    public String getHeaderDueDate () {
+        return getText (".header-alert-dashboard [ng-bind^='ctrl.orderEntry.orderTests[0].dueDate']");
     }
 
     public void clickPatientNotesIcon () {
