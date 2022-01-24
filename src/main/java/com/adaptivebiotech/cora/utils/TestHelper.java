@@ -7,13 +7,10 @@ import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.Inpatient;
 import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.NonHospital;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Client;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.CommercialInsurance;
-import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilling;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
-import static com.adaptivebiotech.cora.dto.Orders.ChargeType.NoCharge;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.TrialProtocol;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
-import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
@@ -31,6 +28,7 @@ import com.adaptivebiotech.cora.dto.BillingSurvey;
 import com.adaptivebiotech.cora.dto.BillingSurvey.Questionnaire;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -152,13 +150,13 @@ public class TestHelper {
 
     public static Patient newNoChargePatient () {
         Patient patient = newPatient ();
-        patient.billingType = NoCharge;
+        patient.billingType = ChargeType.NoCharge;
         return patient;
     }
 
     public static Patient newInternalPharmaPatient () {
         Patient patient = newPatient ();
-        patient.billingType = InternalPharmaBilling;
+        patient.billingType = ChargeType.InternalPharmaBilling;
         return patient;
     }
 
@@ -271,7 +269,7 @@ public class TestHelper {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
-        specimen.collectionDate = getPastFutureDate (-3);
+        specimen.collectionDate = DateUtils.getPastFutureDate (-3);
         return specimen;
     }
 
