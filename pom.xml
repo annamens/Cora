@@ -91,6 +91,7 @@
                     <systemPropertyVariables>
                         <project.version>${git.branch}</project.version>
                         <project.git.commit.id>${git.commit.id}</project.git.commit.id>
+                        <test.tags>${git.branch}</test.tags>
                         <test.env>${test.env}</test.env>
                         <test.webdriver.wait>30</test.webdriver.wait>
                         <path.to.config>config/${test.env}.properties</path.to.config>
