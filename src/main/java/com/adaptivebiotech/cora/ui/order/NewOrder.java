@@ -417,10 +417,6 @@ public abstract class NewOrder extends OrderHeader {
         return result;
     }
 
-    public String getOrderNotes () {
-        return readInput ("[ng-model='ctrl.orderEntry.order.notes']");
-    }
-
     public void enterCollectionDate (String date) {
         assertTrue (setText ("//*[text()='Collection Date']/..//input", date));
     }

@@ -37,6 +37,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq ();
     private Accession              accession        = new Accession ();
+    private final String           orderNotes       = "[ng-model='ctrl.orderEntry.order.notes']";
     private final String           specimenDelivery = "[ng-model='ctrl.orderEntry.order.specimenDeliveryType']";
 
     public void clickAssayTest (Assay assay) {
@@ -305,7 +306,11 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void enterOrderNotes (String notes) {
-        assertTrue (setText ("[ng-model='ctrl.orderEntry.order.notes']", notes));
+        assertTrue (setText (orderNotes, notes));
+    }
+
+    public String getOrderNotes () {
+        return readInput (orderNotes);
     }
 
     /**

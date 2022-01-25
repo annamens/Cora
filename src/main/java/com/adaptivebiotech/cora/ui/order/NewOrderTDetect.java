@@ -229,9 +229,8 @@ public class NewOrderTDetect extends NewOrder {
         assertTrue (setText (orderNotes, notes));
     }
 
-    @Override
     public String getOrderNotes () {
-        return isElementPresent (orderNotes) && isElementVisible (orderNotes) ? readInput (orderNotes) : null;
+        return readInput (orderNotes);
     }
 
     @Override
@@ -241,11 +240,11 @@ public class NewOrderTDetect extends NewOrder {
 
     @Override
     public String getDateSigned () {
-        return isElementPresent (dateSigned) && isElementVisible (dateSigned) ? readInput (dateSigned) : null;
+        return isElementVisible (dateSigned) ? readInput (dateSigned) : null;
     }
 
     public String getCollectionDate () {
-        return isElementPresent (collectionDate) && isElementVisible (collectionDate) ? readInput (collectionDate) : null;
+        return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
     }
 
     public String getPatientGender () {
