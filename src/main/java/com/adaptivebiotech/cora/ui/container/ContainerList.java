@@ -72,7 +72,9 @@ public class ContainerList extends CoraPage {
     }
 
     public void searchContainerIdOrName (String containerIdOrName) {
-        assertTrue (setText ("[placeholder='CO-000000 or Container Name']", containerIdOrName));
+        String containerSearch = "[placeholder='CO-000000 or Container Name']";
+        assertTrue (clear (containerSearch));
+        assertTrue (setText (containerSearch, containerIdOrName));
         assertTrue (click (".search-btn"));
         assertNotNull (waitForElementClickable ("//button[text()='Filter list']"));
     }
@@ -370,8 +372,10 @@ public class ContainerList extends CoraPage {
         selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
         assertTrue (clear (freezerDropdownInput));
         assertTrue (setText (freezerDropdownInput, freezer.name));
-        assertTrue (click (format ("//*[@placeholder='Select Freezer']/descendant::span[text()='%s']", freezer.name)));
+        assertTrue (click (format ("//*[@placeholder='Select Freezer']/descendant::div[@role='option']/span[text()='%s']",
+                                   freezer.name)));
         if (comment != null) {
+            assertTrue (clear (bulkComment));
             assertTrue (setText (bulkComment, comment));
         }
         assertTrue (click (selectAllCheckbox));
@@ -382,7 +386,10 @@ public class ContainerList extends CoraPage {
     public void bulkMoveAllToCustody (String comment) {
         clickBulkMoveContainers ();
         selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
-        assertTrue (setText (bulkComment, comment));
+        if (comment != null) {
+            assertTrue (clear (bulkComment));
+            assertTrue (setText (bulkComment, comment));
+        }
         assertTrue (click (selectAllCheckbox));
         assertTrue (click (bulkMoveBtn));
         transactionInProgress ();

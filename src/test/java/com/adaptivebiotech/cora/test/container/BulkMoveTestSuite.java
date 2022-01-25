@@ -5,6 +5,8 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -30,13 +32,17 @@ import com.seleniumfy.test.utils.Timeout;
 @Test (groups = "regression")
 public class BulkMoveTestSuite extends ContainerTestBase {
 
-    private Login           login         = new Login ();
-    private OrdersList      ordersList    = new OrdersList ();
-    private ContainerList   containerList = new ContainerList ();
-    private Detail          detail        = new Detail ();
-    private History         history       = new History ();
+    private Login           login                = new Login ();
+    private OrdersList      ordersList           = new OrdersList ();
+    private ContainerList   containerList        = new ContainerList ();
+    private Detail          detail               = new Detail ();
+    private History         history              = new History ();
     private Containers      containers;
-    private final Container targetFreezer = freezerAB018078;
+    private final Container targetFreezer        = freezerAB018078;
+    private final Container catchAllFreezer      = dumbwaiter;
+    private final Container platesRacksFreezer   = freezerAB018016;
+    private final Container noPlatesRacksFreezer = freezerAB039003;
+    private final String    noCapacityError      = "Failed to move containers to Freezer %1$s. Unable to find a location for container of type: %2$s.";
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -135,6 +141,127 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         verifyDetails (actual, container);
     }
 
+    public void allContainerTypesToFreezer () {
+        containers = setupAllContainerTypes ();
+        String allContainerNumbers = containers.list.stream ()
+                                                    .map (container -> container.containerNumber)
+                                                    .collect (Collectors.joining (","));
+        String containerNumbers = containers.list.stream ()
+                                                 .filter (container -> !container.containerType.equals (ContainerType.MatrixTube))
+                                                 .map (container -> container.containerNumber)
+                                                 .collect (Collectors.joining (","));
+        String matrixTubeContainer = containers.list.stream ()
+                                                    .filter (container -> container.containerType.equals (ContainerType.MatrixTube))
+                                                    .map (container -> container.containerNumber).findFirst ().get ();
+        containerList.searchContainerIdOrName (containerNumbers);
+        Containers parsedContainers = containerList.getContainers ();
+        containerList.bulkMoveAllToFreezer (catchAllFreezer, null);
+        assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
+        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        containerList.searchContainerIdOrName (matrixTubeContainer);
+        parsedContainers = containerList.getContainers ();
+        containerList.bulkMoveAllToFreezer (freezerAB018055, null);
+        assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
+        containerList.searchContainerIdOrName (allContainerNumbers);
+        parsedContainers = containerList.getContainers ();
+        for (int i = 0; i < containers.list.size (); i++) {
+            Container container = containers.list.get (i);
+            Container freezer;
+            switch (container.containerType) {
+            case MatrixTube:
+                freezer = freezerAB018055;
+                break;
+            default:
+                freezer = dumbwaiter;
+                break;
+            }
+            verifyMoveToFreezer (container, freezer, null);
+            Container parsedContainer = parsedContainers.list.stream ()
+                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
+                                                             .findFirst ().get ();
+            assertEquals (container.location, parsedContainer.location);
+        }
+    }
+
+    public void allContainerTypesToCustody () {
+        containers = setupAllContainerTypes ();
+        String allContainerNumbers = containers.list.stream ()
+                                                    .map (container -> container.containerNumber)
+                                                    .collect (Collectors.joining (","));
+        String containerNumbers = containers.list.stream ()
+                                                 .filter (container -> !container.containerType.equals (ContainerType.MatrixTube))
+                                                 .map (container -> container.containerNumber)
+                                                 .collect (Collectors.joining (","));
+        String matrixTubeContainer = containers.list.stream ()
+                                                    .filter (container -> container.containerType.equals (ContainerType.MatrixTube))
+                                                    .map (container -> container.containerNumber).findFirst ().get ();
+        containerList.searchContainerIdOrName (containerNumbers);
+        Containers parsedContainers = containerList.getContainers ();
+        containerList.bulkMoveAllToFreezer (catchAllFreezer, null);
+        assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
+        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        containerList.searchContainerIdOrName (matrixTubeContainer);
+        parsedContainers = containerList.getContainers ();
+        containerList.bulkMoveAllToFreezer (freezerAB018055, null);
+        assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
+        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        containerList.searchContainerIdOrName (allContainerNumbers);
+        parsedContainers = containerList.getContainers ();
+        containerList.bulkMoveAllToCustody (null);
+        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        for (int i = 0; i < containers.list.size (); i++) {
+            Container container = containers.list.get (i);
+            Container parsedContainer = parsedContainers.list.stream ()
+                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
+                                                             .findFirst ().get ();
+            verifyMoveToCustody (container, null);
+            assertEquals (container.location, parsedContainer.location);
+        }
+    }
+
+    public void allContainersToInvalidFreezers () {
+        containers = setupAllContainerTypes ();
+        String allContainerNumbers = containers.list.stream ()
+                                                    .map (container -> container.containerNumber)
+                                                    .collect (Collectors.joining (","));
+        String nonPlatesRacks = containers.list.stream ()
+                                               .filter (container -> !container.containerType.equals (ContainerType.Plate) ^ !container.containerType.equals (ContainerType.MatrixRack) ^ !container.containerType.equals (ContainerType.MatrixRack4x6))
+                                               .map (container -> container.containerNumber)
+                                               .collect (Collectors.joining (","));
+        String platesRacks = containers.list.stream ()
+                                            .filter (container -> container.containerType.equals (ContainerType.Plate) || container.containerType.equals (ContainerType.MatrixRack) || container.containerType.equals (ContainerType.MatrixRack4x6))
+                                            .map (container -> container.containerNumber)
+                                            .collect (Collectors.joining (","));
+        containerList.searchContainerIdOrName (allContainerNumbers);
+        containerList.bulkMoveAllToFreezer (platesRacksFreezer, null);
+        // failure expected. need to check error message
+        for (Container container : containers.list) {
+            verifyNoMove (container); // is this overkill?
+        }
+        containerList.searchContainerIdOrName (nonPlatesRacks);
+        containerList.bulkMoveAllToFreezer (platesRacksFreezer, null);
+        // failure expected. need to check error message
+        containerList.searchContainerIdOrName (platesRacks);
+        containerList.bulkMoveAllToFreezer (noPlatesRacksFreezer, null);
+        // failure expected. need to check error message
+        for (Container container : containers.list) {
+            verifyNoMove (container); // is this overkill?
+        }
+
+    }
+
+    private void verifyNoMove (Container container) {
+        ordersList.gotoContainerDetail (container);
+        detail.isCorrectPage ();
+        Container actual = detail.parsePrimaryDetail ();
+        assertEquals (actual.location, String.join (" : ", coraTestUser, container.containerNumber));
+        // verify no new history
+        detail.gotoHistory ();
+        history.isCorrectPage ();
+        List <ContainerHistory> histories = history.getHistories ();
+        assertEquals (histories.size (), 1);
+    }
+
     /**
      * @sdlc.requirements SR-3229:R2, SR-3229:R3, SR-3229:R7
      */
@@ -147,6 +274,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Containers parsedContainers = containerList.getContainers ();
         containerList.bulkMoveAllToFreezer (targetFreezer, null);
         parsedContainers = waitForUpdatedContainers (parsedContainers);
+        // do a separate move for matrix tube to AB018014
         containerList.bulkMoveAllToCustody (moveToCustodyComment);
         testLog ("SR-3229:R2: User is able to add custom comment to Bulk Move to My Custody action");
         parsedContainers = waitForUpdatedContainers (parsedContainers);
@@ -181,6 +309,18 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     private Containers setupContainers () {
         Containers containers = coraApi.addContainers (new Containers (
                 asList (container (ContainerType.Plate), container (ContainerType.Plate))));
+        String containerNumbers = containers.list.stream ().map (container -> container.containerNumber)
+                                                 .collect (Collectors.joining (","));
+        Logging.info ("created containers: " + containerNumbers);
+        return containers;
+    }
+
+    private Containers setupAllContainerTypes () {
+        Containers containers = coraApi.addContainers (new Containers (
+                stream (ContainerType.values ())
+                                                .map (t -> container (t))
+                                                .filter (t -> !t.containerType.equals (ContainerType.Freezer))
+                                                .collect (toList ())));
         String containerNumbers = containers.list.stream ().map (container -> container.containerNumber)
                                                  .collect (Collectors.joining (","));
         Logging.info ("created containers: " + containerNumbers);

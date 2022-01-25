@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.test.container;
 
 import static com.adaptivebiotech.cora.utils.TestHelper.dumbwaiter;
+import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018016;
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018055;
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018078;
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB039003;
@@ -20,6 +21,7 @@ public class ContainerTestBase extends CoraBaseBrowser {
     protected final Container freezerAB018055  = freezerAB018055 ();
     protected final Container freezerAB018078  = freezerAB018078 ();
     protected final Container freezerAB039003  = freezerAB039003 ();
+    protected final Container freezerAB018016  = freezerAB018016 ();
 
     protected Container container (ContainerType type) {
         Container container = new Container ();
