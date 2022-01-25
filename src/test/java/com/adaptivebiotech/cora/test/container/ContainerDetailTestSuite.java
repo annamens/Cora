@@ -24,7 +24,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
 
     private final String             error1     = "Only '.pdf,.jpg,.png,.gif,.xlsx' files allowed";
     private Login                    login      = new Login ();
-    private OrdersList               orderList  = new OrdersList ();
+    private OrdersList               ordersList = new OrdersList ();
     private Detail                   detail     = new Detail ();
     private MyCustody                myCustody  = new MyCustody ();
     private ThreadLocal <Containers> containers = new ThreadLocal <> ();
@@ -34,7 +34,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         containers.set (coraApi.addContainers (new Containers (asList (container (SlideBox5CS)))));
 
         login.doLogin ();
-        orderList.isCorrectPage ();
+        ordersList.isCorrectPage ();
     }
 
     @AfterMethod
@@ -46,7 +46,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
      * @sdlc_requirements 126.ContainerDetailsPage
      */
     public void extensionCheck () {
-        orderList.gotoContainerDetail (containers.get ().list.get (0));
+        ordersList.gotoContainerDetail (containers.get ().list.get (0));
 
         // test: unsupported file ext
         detail.isCorrectPage ();
@@ -58,7 +58,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
      * @sdlc_requirements 126.ContainerDetailsPage
      */
     public void happyPath () {
-        orderList.gotoContainerDetail (containers.get ().list.get (0));
+        ordersList.gotoContainerDetail (containers.get ().list.get (0));
 
         // test: view attachment
         String[] files = new String[] { "attachment.gif", "attachment.jpg", "attachment.pdf", "attachment.png" };
@@ -72,7 +72,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
      * @sdlc_requirements 126.ContainerDetailsPage
      */
     public void history () {
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
 
         // test: history section of container detail
         Container testContainer = containers.get ().list.get (0);

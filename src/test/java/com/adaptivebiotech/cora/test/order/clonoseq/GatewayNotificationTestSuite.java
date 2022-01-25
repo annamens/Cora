@@ -9,7 +9,6 @@ import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
@@ -20,7 +19,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_REPORT_NOTIFICATION;
-import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
@@ -95,7 +93,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         report.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
 
-        assertTrue (navigateTo (format ("%s/cora/task/%s?p=status", coraTestUrl, report.getCorrectedReportTaskId ())));
+        taskStatus.gotoTaskStatus (report.getCorrectedReportTaskId ());
         taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();
@@ -135,7 +133,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         report.releaseReportWithSignatureRequired ();
         testLog ("released amended report");
 
-        assertTrue (navigateTo (format ("%s/cora/task/%s?p=status", coraTestUrl, report.getCorrectedReportTaskId ())));
+        taskStatus.gotoTaskStatus (report.getCorrectedReportTaskId ());
         taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();
@@ -179,7 +177,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         report.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
 
-        assertTrue (navigateTo (format ("%s/cora/task/%s?p=status", coraTestUrl, report.getCorrectedReportTaskId ())));
+        taskStatus.gotoTaskStatus (report.getCorrectedReportTaskId ());
         taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();
@@ -220,7 +218,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         report.releaseReportWithSignatureRequired ();
         testLog ("released updated report");
 
-        assertTrue (navigateTo (format ("%s/cora/task/%s?p=status", coraTestUrl, report.getCorrectedReportTaskId ())));
+        taskStatus.gotoTaskStatus (report.getCorrectedReportTaskId ());
         taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();

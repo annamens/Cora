@@ -83,12 +83,12 @@ public class CoraApi {
 
     public void resetheaders () {
         HttpClientHelper.resetheaders ();
-        HttpClientHelper.headers.get ().add (username);
+        headers.get ().add (username);
     }
 
     public String auth () {
         resetheaders ();
-        HttpClientHelper.headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
+        headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
         String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
         apiToken = new BasicHeader ("X-Api-Token", token);
         return token;

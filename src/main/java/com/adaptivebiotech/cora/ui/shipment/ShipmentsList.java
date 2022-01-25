@@ -11,9 +11,9 @@ import com.adaptivebiotech.cora.ui.CoraPage;
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class ShipmentList extends CoraPage {
+public class ShipmentsList extends CoraPage {
 
-    public ShipmentList () {
+    public ShipmentsList () {
         staticNavBarHeight = 90;
     }
 

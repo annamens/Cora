@@ -8,7 +8,6 @@ import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
-import org.openqa.selenium.WebElement;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -194,13 +193,6 @@ public class NewShipment extends ShipmentHeader {
             waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
             pageLoading ();
         }
-    }
-
-    public void doubleClickSave () {
-        WebElement saveButton = waitForElement (locateBy ("[data-ng-click*='shipment-save']"));
-        saveButton.click ();
-        saveButton.click ();
-        pageLoading ();
     }
 
     public void enterCarrier (Carrier coraCarrier) {

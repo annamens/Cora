@@ -36,7 +36,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 public class HoldingContainerTestSuite extends ContainerTestBase {
 
     private Login                    login        = new Login ();
-    private OrdersList               orderList    = new OrdersList ();
+    private OrdersList               ordersList   = new OrdersList ();
     private AddContainer             addContainer = new AddContainer ();
     private MyCustody                myCustody    = new MyCustody ();
     private Detail                   detail       = new Detail ();
@@ -50,12 +50,12 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                                            .map (ct -> container (ct)).collect (toList ()))));
 
         login.doLogin ();
-        orderList.isCorrectPage ();
+        ordersList.isCorrectPage ();
     }
 
     @AfterMethod
     public void afterMethod () {
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         myCustody.isCorrectPage ();
         myCustody.sendContainersToFreezer (containers.get (), freezerDestroyed);
     }
@@ -67,7 +67,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         Containers topContainers = coraApi.addContainers (new Containers (asList (container (Plate))));
         Container child = topContainers.list.get (0);
 
-        orderList.selectNewContainer ();
+        ordersList.selectNewContainer ();
         allOf (ContainerType.class).stream ().filter (ct -> ct.isHolding && !Freezer.equals (ct) && !Plate.equals (ct))
                                    .forEach (ct -> addContainer.addContainer (ct, 1));
         addContainer.clickSave ();
@@ -88,7 +88,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.depleted = true;
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         int pass = 0;
         for (Container holding : containers.get ().list) {
             child.comment = randomWords (10);
@@ -134,7 +134,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comments
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
 
         // test: go to child detail page to verify location
@@ -161,7 +161,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
         assertEquals (child.location, join (" : ", coraTestUser, child.root.containerNumber, "Position A:1"));
 
@@ -189,7 +189,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
         containers.get ().list.add (child);
 
@@ -217,7 +217,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
         assertEquals (child.location, join (" : ", coraTestUser, child.root.containerNumber, "Position A:1"));
 
@@ -245,7 +245,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comments
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
 
         // test: go to child detail page to verify location
@@ -271,7 +271,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.depleted = true;
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         int pass = 0;
         for (Container holding : containers.get ().list) {
             child.comment = randomWords (10);
@@ -331,7 +331,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.depleted = true;
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         int pass = 0;
         for (Container holding : containers.get ().list) {
             child.comment = randomWords (10);

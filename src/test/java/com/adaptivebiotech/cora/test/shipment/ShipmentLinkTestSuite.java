@@ -71,7 +71,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         String expSpecimenApprovalStatus = shipmentDetail.getSpecimenApprovalStatus ();
         String expSpecimenApprovalDateTime = shipmentDetail.getSpecimenApprovalDateTime ();
         Containers expContainers = shipmentDetail.getPrimaryContainers (ContainerType.SlideBox5);
-        shipmentDetail.clickOrderNo ();
+        shipmentDetail.clickOrderNumber ();
         diagnostic.isCorrectPage ();
 
         assertEquals (diagnostic.getShipmentArrivalDate (), shipment.arrivalDate);
@@ -122,7 +122,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         String expSpecimenApprovalStatus = shipmentDetail.getSpecimenApprovalStatus ();
         String expSpecimenApprovalDateTime = shipmentDetail.getSpecimenApprovalDateTime ();
         Containers expContainers = shipmentDetail.getPrimaryContainers (ContainerType.SlideBox5);
-        shipmentDetail.clickOrderNo ();
+        shipmentDetail.clickOrderNumber ();
         newOrderTDetect.isCorrectPage ();
 
         newOrderTDetect.clickShipment ();

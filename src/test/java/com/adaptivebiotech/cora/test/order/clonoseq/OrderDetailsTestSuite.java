@@ -1,9 +1,20 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilling;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.utils.DateUtils.convertDateFormat;
+import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
+import static com.adaptivebiotech.cora.utils.DateUtils.utcZoneId;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
+import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Clarity;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CANCELLED;
@@ -22,7 +33,6 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
-import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -33,9 +43,6 @@ import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
-import com.adaptivebiotech.cora.utils.DateUtils;
-import com.adaptivebiotech.cora.utils.TestHelper;
-import com.adaptivebiotech.test.utils.Logging;
 
 /**
  * @author jpatel
@@ -63,19 +70,13 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         ordersList.isCorrectPage ();
 
         Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
-        Patient patient = TestHelper.newNoChargePatient ();
-        String icdCode = "C90.00";
-        Assay orderTest = Assay.ID_BCell2_CLIA;
-        Specimen specimen = TestHelper.bloodSpecimen ();
-        String orderNum = diagnostic.createClonoSeqOrder (physician,
-                                                          patient,
-                                                          new String[] { icdCode },
-                                                          Assay.ID_BCell2_CLIA,
-                                                          specimen);
-
+        Patient patient = newNoChargePatient ();
+        String[] icdCode = new String[] { "C90.00" };
+        Assay orderTest = ID_BCell2_CLIA;
+        Specimen specimen = bloodSpecimen ();
+        String orderNum = diagnostic.createClonoSeqOrder (physician, patient, icdCode, orderTest, specimen);
         List <String> history = diagnostic.getHistory ();
         String createdDateTime = history.get (0).split ("Created by")[0].trim ();
-        Logging.info ("Order Created Date and Time: " + createdDateTime);
 
         // add diagnostic shipment
         shipment.selectNewDiagnosticShipment ();
@@ -86,30 +87,23 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         shipment.selectDiagnosticSpecimenContainerType (containerType);
         shipment.clickSave ();
 
-        String shipmentNo = shipment.getShipmentNumber ();
-        Logging.info ("Shipment No: " + shipmentNo);
         String shipmentArrivalDate = shipment.getArrivalDate ();
         String shipmentArrivalTime = shipment.getArrivalTime ().toUpperCase ();
-        Logging.info ("Shipment Arrival Date: " + shipmentArrivalDate + ", Time: " + shipmentArrivalTime);
-
         shipment.clickAccessionTab ();
         accession.isCorrectPage ();
 
         // accession complete
         accession.clickIntakeComplete ();
         String intakeCompleteDate = accession.getIntakeCompleteDate ();
-        Logging.info ("Intake complete Details: " + intakeCompleteDate);
         accession.clickLabelingComplete ();
         accession.clickLabelVerificationComplete ();
         accession.clickPass ();
         String specimenApprovalDate = accession.getSpecimenApprovedDate ();
-        Logging.info ("Specimen Approved Details: " + specimenApprovalDate);
 
         accession.clickShipmentTab ();
         shipmentDetail.isCorrectPage ();
         String specimenId = shipmentDetail.getSpecimenId ();
-        Logging.info ("Specimen ID: " + specimenId);
-        shipmentDetail.clickOrderNo ();
+        shipmentDetail.clickOrderNumber ();
 
         // activate order
         diagnostic.isCorrectPage ();
@@ -118,17 +112,13 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         diagnostic.isCorrectPage ();
         List <String> activeHistory = clonoSeqOrderDetail.getHistory ();
         String activateDateTime = activeHistory.get (2).split ("Activated by")[0].trim ();
-        Logging.info ("Order Activated Date and Time: " + activateDateTime);
-
         Order activeOrder = clonoSeqOrderDetail.parseOrder ();
         assertEquals (activeOrder.status, Active);
         assertEquals (activeOrder.order_number, orderNum);
         String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + orderNum;
         assertEquals (activeOrder.name, expectedName);
-        String expectedDueDate = DateUtils.getPastFutureDate (7,
-                                                              DateTimeFormatter.ofPattern ("MM/dd/uu"),
-                                                              DateUtils.utcZoneId);
-        assertEquals (clonoSeqOrderDetail.getDueDate (), expectedDueDate);
+        String expectedDueDate = getPastFutureDate (8, DateTimeFormatter.ofPattern ("M/dd/uu"), utcZoneId);
+        assertEquals (clonoSeqOrderDetail.getHeaderDueDate (), expectedDueDate);
         assertEquals (activeOrder.data_analysis_group, "Clinical");
 
         assertEquals (activeOrder.physician.providerFullName, physician.firstName + " " + physician.lastName);
@@ -139,58 +129,57 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (activeOrder.patient.gender, patient.gender);
         assertEquals (activeOrder.patient.mrn, patient.mrn);
 
+        // for Blood and Fresh Bone Marrow, specimen source is predefined
         assertEquals (activeOrder.specimenDto.sampleType, specimen.sampleType);
-        assertEquals (activeOrder.specimenDto.sampleSource, specimen.sampleType);
+        assertEquals (activeOrder.specimenDto.sampleSource, Blood);
         assertEquals (activeOrder.specimenDto.anticoagulant, specimen.anticoagulant);
         assertEquals (activeOrder.specimenDto.collectionDate, specimen.collectionDate);
 
         assertEquals (clonoSeqOrderDetail.getShipmentArrivalDate (),
-                      DateUtils.convertDateFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
-                                                   "MM/dd/uuuu h:mm a",
-                                                   "MM/dd/uuuu hh:mm a"));
+                      convertDateFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
+                                         "MM/dd/uuuu h:mm a",
+                                         "MM/dd/uuuu hh:mm a"));
         assertEquals (clonoSeqOrderDetail.getIntakeCompleteDate (), intakeCompleteDate.split (",")[0]);
         assertEquals (clonoSeqOrderDetail.getSpecimenApprovalDate (), specimenApprovalDate.split (",")[0]);
         assertEquals (activeOrder.specimenDto.specimenNumber, specimenId);
         assertEquals (clonoSeqOrderDetail.getSpecimenContainerType (), containerType);
-
         assertEquals (activeOrder.tests.get (0).assay, orderTest);
         assertEquals (activeOrder.properties.BillingType, patient.billingType);
-
-        assertEquals (activeHistory.get (0), createdDateTime + " Created by " + CoraEnvironment.coraTestUser);
-        assertEquals (activeHistory.get (2), activateDateTime + "Activated by " + CoraEnvironment.coraTestUser);
-        Logging.testLog ("STEP 1 - validate Order Details Page.");
+        assertEquals (activeHistory.get (0), createdDateTime + " Created by " + coraTestUser);
+        assertEquals (activeHistory.get (2), activateDateTime + "Activated by " + coraTestUser);
+        testLog ("STEP 1 - validate Order Details Page.");
 
         String editOrderNotes = "testing order notes";
         clonoSeqOrderDetail.editOrderNotes (editOrderNotes);
         assertEquals (clonoSeqOrderDetail.getOrderNotes (), editOrderNotes);
-        Logging.testLog ("STEP 2 - Order Notes displays testing order notes.");
+        testLog ("STEP 2 - Order Notes displays testing order notes.");
 
         clonoSeqOrderDetail.clickShipmentArrivalDate ();
         shipmentDetail.isCorrectPage ();
-        Logging.testLog ("STEP 3 - Shipment details page is opened Shipment1");
+        testLog ("STEP 3 - Shipment details page is opened Shipment1");
 
-        shipmentDetail.clickOrderNo ();
+        shipmentDetail.clickOrderNumber ();
         orderStatus.isCorrectPage ();
         orderStatus.clickOrderDetailsTab ();
         clonoSeqOrderDetail.isCorrectPage ();
         clonoSeqOrderDetail.clickPatientCode ();
         patientDetail.isCorrectPage ();
-        Logging.testLog ("STEP 4 - Patient details page is opened in a new tab for Patient1");
+        testLog ("STEP 4 - Patient details page is opened in a new tab for Patient1");
 
         clonoSeqOrderDetail.navigateToTab (0);
         clonoSeqOrderDetail.isCorrectPage ();
         clonoSeqOrderDetail.clickPatientOrderHistory ();
         clonoSeqOrderDetail.gotoOrderDetailsPage (activeOrder.id);
         clonoSeqOrderDetail.isCorrectPage ();
-        Logging.testLog ("STEP 5 - Patient order history page is opened");
+        testLog ("STEP 5 - Patient order history page is opened");
 
-        String expectedLimsUrl = CoraEnvironment.coraTestUrl.replace ("cora",
-                                                                      "lims") + "/clarity/search?scope=Sample&query=" + activeOrder.specimenDto.specimenNumber;
+        String expectedLimsUrl = coraTestUrl.replace ("cora",
+                                                      "lims") + "/clarity/search?scope=Sample&query=" + activeOrder.specimenDto.specimenNumber;
         assertEquals (clonoSeqOrderDetail.getSpecimenIdUrlAttribute ("href"), expectedLimsUrl);
         assertEquals (clonoSeqOrderDetail.getSpecimenIdUrlAttribute ("target"), "_blank");
-        Logging.testLog ("STEP 6 - Clarity LIMS link");
+        testLog ("STEP 6 - Clarity LIMS link");
 
-        ChargeType editChargeType = ChargeType.InternalPharmaBilling;
+        ChargeType editChargeType = InternalPharmaBilling;
         clonoSeqOrderDetail.billing.editBilling (editChargeType);
 
         String coraAttachment = "test1.png";
@@ -198,19 +187,19 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
 
         Order editOrder = clonoSeqOrderDetail.parseOrder ();
         assertEquals (editOrder.properties.BillingType, editChargeType);
-        Logging.testLog ("STEP 7 - Billing section displays Billing2");
+        testLog ("STEP 7 - Billing section displays Billing2");
 
         assertEquals (editOrder.orderAttachments.get (0), coraAttachment);
-        Logging.testLog ("STEP 8 - The file is attached to the order");
+        testLog ("STEP 8 - The file is attached to the order");
 
         clonoSeqOrderDetail.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getSpecimenNumber (), specimenId);
-        assertEquals (orderStatus.getDueDate (), expectedDueDate);
+        assertEquals (orderStatus.getHeaderDueDate (), expectedDueDate);
         assertEquals (orderStatus.getTestName (), orderTest.test);
         assertEquals (orderStatus.getheaderOrderStatus (), Active);
-        assertTrue (orderStatus.getLastActivity ().contains (DateUtils.getPastFutureDate (0)));
-        Logging.testLog ("STEP 9 - Order status table displays above information");
+        assertTrue (orderStatus.getLastActivity ().contains (getPastFutureDate (0)));
+        testLog ("STEP 9 - Order status table displays above information");
 
         historyPage.gotoOrderDebug (editOrder.tests.get (0).sampleName);
         historyPage.waitFor (Clarity, Awaiting, PROCESSING_SAMPLE);
@@ -218,27 +207,26 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         orderStatus.isCorrectPage ();
 
         List <String> stageStatusUrls = orderStatus.getStageStatusUrls ();
-        assertTrue (stageStatusUrls.size () == 1);
-        Logging.testLog ("STEP 10 - Clarity LIMS search is opened in a new tab for ASID1");
+        assertEquals (stageStatusUrls.size (), 1);
+        testLog ("STEP 10 - Clarity LIMS search is opened in a new tab for ASID1");
 
         orderStatus.expandWorkflowHistory ();
         stageStatusUrls = orderStatus.getStageStatusUrls ();
-        Logging.testLog ("STEP 11 - History for order1's order test is displayed.");
+        testLog ("STEP 11 - History for order1's order test is displayed.");
 
-        assertTrue (stageStatusUrls.size () == 2);
+        assertEquals (stageStatusUrls.size (), 2);
         assertEquals (stageStatusUrls.get (0), stageStatusUrls.get (1));
-        Logging.testLog ("STEP 12 - Clarity LIMS search is opened in a new tab for ASID1");
+        testLog ("STEP 12 - Clarity LIMS search is opened in a new tab for ASID1");
 
         orderStatus.clickOrderDetailsTab ();
         diagnostic.isCorrectPage ();
         diagnostic.clickCancelOrder ();
-        Logging.testLog ("STEP 14 - Cancel Order modal appears.");
+        testLog ("STEP 14 - Cancel Order modal appears.");
 
         diagnostic.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getCancelOrderMessages (),
                       asList (CANCELLED + " - Other - Internal. Specimen - Not Rejected. Other.", "this is a test"));
-        Logging.testLog ("STEP 15 - Cancelled messaging displays Reason1, SStatus1, Disposition1, and Comment1");
+        testLog ("STEP 15 - Cancelled messaging displays Reason1, SStatus1, Disposition1, and Comment1");
     }
-
 }

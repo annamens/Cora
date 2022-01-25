@@ -13,7 +13,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB_v4b;
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxAnalysis;
@@ -37,7 +36,6 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
 import static java.lang.Boolean.TRUE;
-import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Locale.US;
 import static java.util.UUID.randomUUID;
@@ -91,7 +89,6 @@ public class TDetectReportTestSuite extends OrderTestBase {
     private TaskDetail         taskDetail          = new TaskDetail ();
     private OrderStatus        orderStatus         = new OrderStatus ();
 
-    private String             downloadDir;
     private final String       todaysDate          = getPastFutureDate (0, formatDt1, pstZoneId);
     private final String       todaysDateDash      = convertDateFormat (todaysDate, "MM/dd/yyyy", "yyyy-MM-dd");
     private final String       result              = "RESULT";
@@ -106,6 +103,7 @@ public class TDetectReportTestSuite extends OrderTestBase {
     private final String       reasonCorrectionStr = "REASON FOR CORRECTION";
     private final String       addCommentsStr      = "ADDITIONAL COMMENTS";
     private final Assay        assayTest           = COVID19_DX_IVD;;
+    private String             downloadDir;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
@@ -163,11 +161,11 @@ public class TDetectReportTestSuite extends OrderTestBase {
 
         String fileContent = getTextFromPDF (reportTDetect.getPreviewReportPdfUrl (), 1);
         validateReportContent (fileContent, order);
-        assertTrue (fileContent.contains (result));
-        assertTrue (fileContent.contains (expTestResult));
-        assertTrue (fileContent.contains (reviewText));
-        assertTrue (fileContent.contains (approvedSignStr));
-        assertTrue (fileContent.contains (approvedBy));
+        validatePdfContent (fileContent, result);
+        validatePdfContent (fileContent, expTestResult);
+        validatePdfContent (fileContent, reviewText);
+        validatePdfContent (fileContent, approvedSignStr);
+        validatePdfContent (fileContent, approvedBy);
         testLog ("STEP 1 - validate preview report");
 
         history.gotoOrderDebug (sample);
@@ -194,12 +192,12 @@ public class TDetectReportTestSuite extends OrderTestBase {
 
         fileContent = getTextFromPDF (reportTDetect.getReleasedReportPdfUrl (), 1);
         validateReportContent (fileContent, order);
-        assertTrue (fileContent.contains (result));
-        assertTrue (fileContent.contains (expTestResult));
-        assertTrue (fileContent.contains (reviewSignStr));
-        assertTrue (fileContent.contains (reviewedReleasedBy + " " + todaysDate));
-        assertTrue (fileContent.contains (approvedSignStr));
-        assertTrue (fileContent.contains (approvedBy + " " + todaysDate));
+        validatePdfContent (fileContent, result);
+        validatePdfContent (fileContent, expTestResult);
+        validatePdfContent (fileContent, reviewSignStr);
+        validatePdfContent (fileContent, reviewedReleasedBy + " " + todaysDate);
+        validatePdfContent (fileContent, approvedSignStr);
+        validatePdfContent (fileContent, approvedBy + " " + todaysDate);
         testLog ("STEP 3 - validate released report");
 
         history.gotoOrderDebug (sample);
@@ -241,41 +239,41 @@ public class TDetectReportTestSuite extends OrderTestBase {
         String correctedPreviewPdfUrl = reportTDetect.getPreviewReportPdfUrl ();
         String correctedPreviewPdfContent = getTextFromPDF (correctedPreviewPdfUrl, 1);
         validateReportContent (correctedPreviewPdfContent, order);
-        assertTrue (correctedPreviewPdfContent.contains (reasonCorrectionStr));
-        assertTrue (correctedPreviewPdfContent.contains (correctedReason));
+        validatePdfContent (correctedPreviewPdfContent, reasonCorrectionStr);
+        validatePdfContent (correctedPreviewPdfContent, correctedReason);
         testLog ("STEP 6.1 - The report pdf Page 1 preview contains values for the following fields as listed above");
 
         correctedPreviewPdfContent = getTextFromPDF (correctedPreviewPdfUrl, 2);
         validateReportContent (correctedPreviewPdfContent, order);
-        assertTrue (correctedPreviewPdfContent.contains (result));
-        assertTrue (correctedPreviewPdfContent.contains (expTestResult));
-        assertTrue (correctedPreviewPdfContent.contains (addCommentsStr));
-        assertTrue (correctedPreviewPdfContent.contains (additionalComments));
-        assertTrue (correctedPreviewPdfContent.contains (reviewText));
-        assertTrue (correctedPreviewPdfContent.contains (approvedSignStr));
-        assertTrue (correctedPreviewPdfContent.contains (approvedBy));
+        validatePdfContent (correctedPreviewPdfContent, result);
+        validatePdfContent (correctedPreviewPdfContent, expTestResult);
+        validatePdfContent (correctedPreviewPdfContent, addCommentsStr);
+        validatePdfContent (correctedPreviewPdfContent, additionalComments);
+        validatePdfContent (correctedPreviewPdfContent, reviewText);
+        validatePdfContent (correctedPreviewPdfContent, approvedSignStr);
+        validatePdfContent (correctedPreviewPdfContent, approvedBy);
         testLog ("STEP 6.2 - The report pdf Page 2 preview contains additional values for the following fields as listed below");
 
         reportTDetect.releaseReportWithSignatureRequired ();
         String correctedReleasePdfContent = getTextFromPDF (reportTDetect.getReleasedReportPdfUrl (), 1);
         validateReportContent (correctedReleasePdfContent, order);
-        assertTrue (correctedReleasePdfContent.contains (reasonCorrectionStr));
-        assertTrue (correctedReleasePdfContent.contains (correctedReason));
+        validatePdfContent (correctedReleasePdfContent, reasonCorrectionStr);
+        validatePdfContent (correctedReleasePdfContent, correctedReason);
         testLog ("STEP 7.1 - The report pdf Page 1 contains values for the following fields as listed below");
 
         correctedReleasePdfContent = getTextFromPDF (correctedPreviewPdfUrl, 2);
         validateReportContent (correctedReleasePdfContent, order);
-        assertTrue (correctedReleasePdfContent.contains (result));
-        assertTrue (correctedReleasePdfContent.contains (expTestResult));
-        assertTrue (correctedReleasePdfContent.contains (addCommentsStr));
-        assertTrue (correctedReleasePdfContent.contains (additionalComments));
-        assertTrue (correctedReleasePdfContent.contains (reviewSignStr));
-        assertTrue (correctedReleasePdfContent.contains (reviewedReleasedBy + " " + todaysDate));
-        assertTrue (correctedReleasePdfContent.contains (approvedSignStr));
-        assertTrue (correctedReleasePdfContent.contains (approvedBy + " " + todaysDate));
+        validatePdfContent (correctedReleasePdfContent, result);
+        validatePdfContent (correctedReleasePdfContent, expTestResult);
+        validatePdfContent (correctedReleasePdfContent, addCommentsStr);
+        validatePdfContent (correctedReleasePdfContent, additionalComments);
+        validatePdfContent (correctedReleasePdfContent, reviewSignStr);
+        validatePdfContent (correctedReleasePdfContent, reviewedReleasedBy + " " + todaysDate);
+        validatePdfContent (correctedReleasePdfContent, approvedSignStr);
+        validatePdfContent (correctedReleasePdfContent, approvedBy + " " + todaysDate);
         testLog ("STEP 7.2 - The report pdf Page 2 contains additional values for the following fields as listed below");
 
-        assertTrue (navigateTo (format ("%s/cora/task/%s", coraTestUrl, reportTDetect.getCorrectedReportTaskId ())));
+        taskDetail.gotoTaskDetail (reportTDetect.getCorrectedReportTaskId ());
         taskDetail.isCorrectPage ();
         assertTrue (taskDetail.taskFiles ().containsKey ("reportData.json"));
 
@@ -304,9 +302,9 @@ public class TDetectReportTestSuite extends OrderTestBase {
         testLog ("submitted a new Covid19 order in Cora");
 
         OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
-        orderDetailTDetect.gotoOrderStatusPage (orderTest.orderId);
+        orderStatus.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
-        orderStatus.failWorkflow ("testing failure report");
+        orderStatus.failWorkflow (orderTest.sampleName, "testing failure report");
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
 
@@ -329,7 +327,6 @@ public class TDetectReportTestSuite extends OrderTestBase {
         assertEquals (reportDataJson.patientInfo.name, order.patient.fullname);
         assertEquals (reportDataJson.patientInfo.dob.toString (),
                       convertDateFormat (order.patient.dateOfBirth, "MM/dd/yyyy", "yyyy-MM-dd"));
-        testLog ("Date stored with Dash: " + reportDataJson.patientInfo.dob);
         assertEquals (reportDataJson.patientInfo.mrn, order.patient.mrn);
         assertEquals (reportDataJson.patientInfo.gender, order.patient.gender);
 
@@ -385,43 +382,41 @@ public class TDetectReportTestSuite extends OrderTestBase {
     }
 
     private void validateReportContent (String fileContent, Order order) {
-        assertTrue (fileContent.contains (join (" ",
-                                                "PATIENT NAME",
-                                                "DATE OF BIRTH",
-                                                "MEDICAL RECORD #",
-                                                "GENDER",
-                                                "REPORT DATE",
-                                                "ORDER #")));
-        assertTrue (fileContent.toUpperCase ().contains (order.patient.fullname.toUpperCase ()));
-        assertTrue (fileContent.contains (order.patient.dateOfBirth));
-        assertTrue (fileContent.contains (order.patient.mrn));
-        assertTrue (fileContent.contains (order.patient.gender));
-        assertTrue (fileContent.contains (todaysDate + " " + order.order_number));
+        validatePdfContent (fileContent,
+                            join (" ",
+                                  "PATIENT NAME",
+                                  "DATE OF BIRTH",
+                                  "MEDICAL RECORD #",
+                                  "GENDER",
+                                  "REPORT DATE",
+                                  "ORDER #"));
+        validatePdfContent (fileContent.toUpperCase (), order.patient.fullname.toUpperCase ());
+        validatePdfContent (fileContent, order.patient.dateOfBirth);
+        validatePdfContent (fileContent, order.patient.mrn);
+        validatePdfContent (fileContent, order.patient.gender);
+        validatePdfContent (fileContent, todaysDate + " " + order.order_number);
 
-        assertTrue (fileContent.contains (join (" ",
-                                                "SPECIMEN TYPE / SPECIMEN SOURCE",
-                                                "COLLECTION DATE",
-                                                "DATE RECEIVED",
-                                                "SAMPLE ID")));
-        info ("##" + join (" ",
-                           SpecimenType.Blood + " / " + SpecimenSource.Blood,
-                           order.specimenDto.collectionDate.toString (),
-                           order.specimenDto.arrivalDate.split ("\\s+")[0],
-                           order.specimenDto.specimenNumber));
-        assertTrue (fileContent.contains (join (" ",
-                                                SpecimenType.Blood + " / " + SpecimenSource.Blood,
-                                                order.specimenDto.collectionDate.toString (),
-                                                order.specimenDto.arrivalDate.split ("\\s+")[0],
-                                                order.specimenDto.specimenNumber)));
+        validatePdfContent (fileContent,
+                            join (" ",
+                                  "SPECIMEN TYPE / SPECIMEN SOURCE",
+                                  "COLLECTION DATE",
+                                  "DATE RECEIVED",
+                                  "SAMPLE ID"));
+        validatePdfContent (fileContent,
+                            join (" ",
+                                  SpecimenType.Blood + " / " + SpecimenSource.Blood,
+                                  order.specimenDto.collectionDate.toString (),
+                                  order.specimenDto.arrivalDate.split ("\\s+")[0],
+                                  order.specimenDto.specimenNumber));
 
-        assertTrue (fileContent.contains ("ICD CODE(S)"));
+        validatePdfContent (fileContent, "ICD CODE(S)");
         assertEquals (order.icdcodes.size (), 2);
-        assertTrue (fileContent.contains (order.icdcodes.get (0).replaceAll ("\\s+", " ")));
-        assertTrue (fileContent.contains (order.icdcodes.get (1).replaceAll ("\\s+", " ")));
+        validatePdfContent (fileContent, order.icdcodes.get (0).replaceAll ("\\s+", " "));
+        validatePdfContent (fileContent, order.icdcodes.get (1).replaceAll ("\\s+", " "));
 
-        assertTrue (fileContent.contains ("ORDERING PHYSICIAN INSTITUTION"));
-        assertTrue (fileContent.contains (order.physician.accountName));
-        assertTrue (fileContent.contains (order.physician.providerFullName));
+        validatePdfContent (fileContent, "ORDERING PHYSICIAN INSTITUTION");
+        validatePdfContent (fileContent, order.physician.accountName);
+        validatePdfContent (fileContent, order.physician.providerFullName);
     }
 
     private String getTextFromPDF (String url, int pageNumber) {
@@ -437,7 +432,6 @@ public class TDetectReportTestSuite extends OrderTestBase {
         try {
             reader = new PdfReader (pdfFileLocation);
             fileContent = PdfTextExtractor.getTextFromPage (reader, pageNumber);
-            info ("File Content: " + fileContent);
         } catch (IOException e) {
             throw new RuntimeException (e);
         } finally {
@@ -456,5 +450,11 @@ public class TDetectReportTestSuite extends OrderTestBase {
         coraApi.login ();
         get (fileUrl, new File (reportDataJson));
         return mapper.readValue (new File (reportDataJson), ReportRender.class);
+    }
+
+    private void validatePdfContent (String fileContent, String stringToValidate) {
+        fileContent = fileContent.replace ("\n", " ");
+        info ("Validate: " + stringToValidate + ", in: " + fileContent);
+        assertTrue (fileContent.contains (stringToValidate));
     }
 }

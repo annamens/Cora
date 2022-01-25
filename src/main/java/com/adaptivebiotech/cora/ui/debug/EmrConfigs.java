@@ -4,8 +4,6 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.adaptivebiotech.cora.dto.emr.EmrConfig;
@@ -20,7 +18,6 @@ public class EmrConfigs extends CoraPage {
     private final String createEmrConfig = "//button[text()='Create EMR Config']";
     private final String backToDebugging = "//button[text()='Back to Debugging']";
     private final String headerRow       = "table thead tr";
-    private final String rows            = "table tbody tr";
 
     @Override
     public void isCorrectPage () {
@@ -61,20 +58,4 @@ public class EmrConfigs extends CoraPage {
         config.properties = mapper.readValue (getText (format (row, 6)), Map.class);
         return config;
     }
-
-    public List <Map <String, String>> getEmrConfigTable () {
-        List <Map <String, String>> tableData = new ArrayList <> ();
-        List <String> headers = getTableHeaders ();
-        waitForElements (rows).forEach (row -> {
-            Map <String, String> map = new HashMap <> ();
-            List <String> rowData = getTextList (row, "td");
-
-            for (int i = 0; i < headers.size (); i++) {
-                map.put (headers.get (i), rowData.get (i));
-            }
-            tableData.add (map);
-        });
-        return tableData;
-    }
-
 }

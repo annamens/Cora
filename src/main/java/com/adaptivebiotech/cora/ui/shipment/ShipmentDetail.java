@@ -17,7 +17,7 @@ import com.adaptivebiotech.cora.ui.CoraPage;
  */
 public class ShipmentDetail extends CoraPage {
 
-    private final String orderNo                  = "[data-ng-bind='ctrl.entry.order.orderNumber']";
+    private final String orderNumber              = "[data-ng-bind='ctrl.entry.order.orderNumber']";
     private final String activeTab                = "[role='tablist'] .active a";
     private final String arrivalDateTime          = "[data-ng-bind='ctrl.entry.shipment.arrivalDate | localDateTime']";
     private final String category                 = "[data-ng-bind='ctrl.entry.shipment.category']";
@@ -35,15 +35,15 @@ public class ShipmentDetail extends CoraPage {
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement (activeTab, "SHIPMENT"));
-        assertTrue (waitUntilVisible (orderNo));
+        assertTrue (waitUntilVisible (orderNumber));
     }
 
-    public String getOrderNo () {
-        return getText (orderNo);
+    public String getOrderNumber () {
+        return getText (orderNumber);
     }
 
-    public void clickOrderNo () {
-        assertTrue (click (orderNo));
+    public void clickOrderNumber () {
+        assertTrue (click (orderNumber));
     }
 
     public Shipment getShipmentDetails () {

@@ -22,7 +22,7 @@ import com.seleniumfy.test.utils.Timeout;
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class ContainerList extends CoraPage {
+public class ContainersList extends CoraPage {
 
     private final String   depleted               = ".select-depletion";
     private final String   comments               = "[ng-model='ctrl.comments']";
@@ -38,7 +38,7 @@ public class ContainerList extends CoraPage {
     private final String   selectAllCheckbox      = ".containers-list th [type='checkbox']";
     private final String   bulkMoveActionDropdown = ".bulk-move-container select";
 
-    public ContainerList () {
+    public ContainersList () {
         staticNavBarHeight = 90;
     }
 

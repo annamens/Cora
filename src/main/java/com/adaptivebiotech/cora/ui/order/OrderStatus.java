@@ -14,18 +14,16 @@ import com.seleniumfy.test.utils.Timeout;
 
 public class OrderStatus extends OrderHeader {
 
-    private final long   millisRetry          = 3000000l;                                                                     // 50mins
-    private final long   waitRetry            = 30000l;                                                                       // 30sec
-    private final String historyLink          = ".history-link";
-    private final String stageActionDots      = "#stageActionsDropdown";
-    private final String stageActionsDropdown = "[aria-labelledby='stageActionsDropdown']";
-    private final String dropdownItem         = "//*[@aria-labelledby='stageActionsDropdown']//a[text()='%s']";
-    private final String subStatusMsg         = "[ng-model='ctrl.subStatusMessage']";
-    private final String submit               = "//button[text()='Submit']";
-    private final String actionConfirm        = ".action-confirm";
-    private final String confirmYes           = "//button[text()='Yes']";
-    private final String hideShow             = "//tr[td[text()='%s']]//*[contains (@class, 'history-link') and text()='%s']";
-    private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]";
+    private final long   millisRetry     = 3000000l;                                                                     // 50mins
+    private final long   waitRetry       = 30000l;                                                                       // 30sec
+    private final String stageActionDots = "#stageActionsDropdown";
+    private final String dropdownItem    = "//*[@aria-labelledby='stageActionsDropdown']//a[text()='%s']";
+    private final String subStatusMsg    = "[ng-model='ctrl.subStatusMessage']";
+    private final String submit          = "//button[text()='Submit']";
+    private final String actionConfirm   = ".action-confirm";
+    private final String confirmYes      = "//button[text()='Yes']";
+    private final String hideShow        = "//tr[td[text()='%s']]//*[contains (@class, 'history-link') and text()='%s']";
+    private final String workflowTable   = "//tr[td[text()='%s']]/following-sibling::tr[1]";
 
     public OrderStatus () {
         staticNavBarHeight = 200;
@@ -137,17 +135,15 @@ public class OrderStatus extends OrderHeader {
         return substringAfterLast (getCurrentUrl (), "ordertestid=");
     }
 
-    public void failWorkflow (String message) {
-        assertTrue (isTextInElement (historyLink, "History"));
-        assertTrue (click (historyLink));
-        assertTrue (isTextInElement (historyLink, "Hide"));
+    public void failWorkflow (String sampleName, String message) {
+        clickHistory (sampleName);
         assertTrue (click (stageActionDots));
-        assertTrue (waitUntilVisible (stageActionsDropdown));
         assertTrue (click (format (dropdownItem, "Fail workflow")));
         assertTrue (setText (subStatusMsg, message));
         assertTrue (click (submit));
         assertTrue (isTextInElement (actionConfirm, "Are you sure you want to fail the workflow?"));
         assertTrue (click (confirmYes));
+        clickHide (sampleName);
     }
 
     public String getSpecimenId () {
