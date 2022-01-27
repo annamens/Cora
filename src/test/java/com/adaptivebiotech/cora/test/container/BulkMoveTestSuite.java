@@ -27,7 +27,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.Logging;
 import com.seleniumfy.test.utils.Timeout;
 
-@Test (groups = "regression")
+@Test (groups = "regression", enabled = false)
 public class BulkMoveTestSuite extends ContainerTestBase {
 
     private Login           login         = new Login ();

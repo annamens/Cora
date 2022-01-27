@@ -28,6 +28,12 @@ public class Report extends OrderHeader {
         staticNavBarHeight = 200;
     }
 
+    @Override
+    public void isCorrectPage () {
+        assertTrue (isTextInElement ("[role='tablist'] .active a", "REPORT"));
+        pageLoading ();
+    }
+
     public String getReportNotes () {
         return readInput (reportNotes);
     }
