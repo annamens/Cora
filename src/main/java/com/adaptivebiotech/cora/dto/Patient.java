@@ -1,10 +1,14 @@
 package com.adaptivebiotech.cora.dto;
 
+import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
+import static java.util.stream.Collectors.toMap;
 import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
@@ -43,10 +47,10 @@ public final class Patient {
     public String        country;
     public String        phone;
     public String        email;
-    public int           patientCode;
-    public int           externalPatientCode;
-    public int           calibrationPatientCode;
-    public boolean       deceased;
+    public Integer       patientCode;
+    public Integer       externalPatientCode;
+    public Integer       calibrationPatientCode;
+    public Boolean       deceased;
     public String        notes;
     public ChargeType    billingType;
     public AbnStatus     abnStatusType;
@@ -69,16 +73,50 @@ public final class Patient {
         return equalsOverride (this, (Patient) o);
     }
 
-    public boolean equalsNameDob (Object o) {
-        Patient p = (Patient) o;
-        return new EqualsBuilder ().append (this.lastName, p.lastName)
-                                   .append (this.firstName, p.firstName)
-                                   .append (this.dateOfBirth, p.dateOfBirth)
-                                   .isEquals ();
+    public boolean equalsNameDob (Patient patient) {
+        Map <String, String> name1 = Stream.of (new String[][] {
+                { "lastName", this.lastName },
+                { "firstName", this.firstName },
+                { "dateOfBirth", this.dateOfBirth }
+        }).collect (toMap (data -> data[0], data -> data[1]));
+        Map <String, String> name2 = Stream.of (new String[][] {
+                { "lastName", patient.lastName },
+                { "firstName", patient.firstName },
+                { "dateOfBirth", patient.dateOfBirth }
+        }).collect (toMap (data -> data[0], data -> data[1]));
+        info ("comparing: " + name1);
+        info ("against: " + name2);
+        return new EqualsBuilder ().append (name1, name2).isEquals ();
     }
 
     public boolean hasAddress () {
         return isNotNullAndNotEmpty (address) || isNotNullAndNotEmpty (address2) || isNotNullAndNotEmpty (locality) || isNotNullAndNotEmpty (region) || isNotNullAndNotEmpty (postCode) || isNotNullAndNotEmpty (phone) || isNotNullAndNotEmpty (email);
+    }
+
+    public boolean equalsAddress (Patient patient) {
+        Map <String, String> address1 = Stream.of (new String[][] {
+                { "address", this.address },
+                { "address2", this.address2 },
+                { "locality", this.locality },
+                { "region", this.region },
+                { "postCode", this.postCode },
+                { "phone", this.phone },
+                { "email", this.email },
+                { "country", this.country }
+        }).collect (toMap (data -> data[0], data -> data[1]));
+        Map <String, String> address2 = Stream.of (new String[][] {
+                { "address", patient.address },
+                { "address2", patient.address2 },
+                { "locality", patient.locality },
+                { "region", patient.region },
+                { "postCode", patient.postCode },
+                { "phone", patient.phone },
+                { "email", patient.email },
+                { "country", patient.country }
+        }).collect (toMap (data -> data[0], data -> data[1]));
+        info ("comparing: " + address1);
+        info ("against: " + address2);
+        return new EqualsBuilder ().append (address1, address2).isEquals ();
     }
 
     public enum PatientTestStatus {
