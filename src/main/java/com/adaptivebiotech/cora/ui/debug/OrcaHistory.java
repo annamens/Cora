@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
-import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Cancelled;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
@@ -46,10 +45,6 @@ public class OrcaHistory extends CoraPage {
     public void gotoOrderDebug (String id) {
         assertTrue (navigateTo (coraTestUrl + "/cora/debug/orcaHistory?workflowId=" + id));
         isCorrectPage ();
-    }
-
-    public void cancelOrder () {
-        forceStatusUpdate (null, Cancelled);
     }
 
     public String getCreated () {
@@ -199,14 +194,10 @@ public class OrcaHistory extends CoraPage {
     public void forceStatusUpdate (StageName stageName, StageStatus stageStatus) {
         String stageNameSelect = "select[name='stageName']";
         String stageStatusSelect = "select[name='stageStatus']";
-
-        if (stageName != null) {
-            assertTrue (clickAndSelectValue (stageNameSelect, stageName.name ()));
-        }
+        assertTrue (clickAndSelectValue (stageNameSelect, stageName.name ()));
         assertTrue (clickAndSelectValue (stageStatusSelect, stageStatus.name ()));
         assertTrue (click ("form[action*='forceWorkflowStatus'] input[type='submit']"));
         assertTrue (hasPageLoaded ());
-
         waitFor (stageName, stageStatus);
     }
 

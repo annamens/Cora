@@ -240,6 +240,7 @@ public class CreateEmrConfig extends CoraPage {
     }
 
     public String getOverlayMessage () {
+        assertTrue (waitUntilVisible (overlayMessage));
         String overlayMsg = getText (overlayMessage);
         waitForElementInvisible (overlayMessage);
         return overlayMsg;

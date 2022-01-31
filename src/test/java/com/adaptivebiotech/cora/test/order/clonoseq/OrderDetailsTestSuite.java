@@ -8,7 +8,7 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clon
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.DateUtils.convertDateFormat;
 import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
-import static com.adaptivebiotech.cora.utils.DateUtils.utcZoneId;
+import static com.adaptivebiotech.cora.utils.DateUtils.pstZoneId;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
@@ -18,7 +18,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Clarity;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CANCELLED;
-import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.PROCESSING_SAMPLE;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -34,7 +33,6 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
@@ -60,10 +58,11 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
     private ShipmentDetail      shipmentDetail      = new ShipmentDetail ();
     private Accession           accession           = new Accession ();
     private PatientDetail       patientDetail       = new PatientDetail ();
-    private OrcaHistory         historyPage         = new OrcaHistory ();
 
     /**
-     * NOTE: SR-T2166
+     * Note: SR-T2166
+     * - we nolonger seeing Clarity/Awaiting/PROCESSING_SAMPLE
+     * - now, we're getting Clarity/Awaiting/SAMPLE_NOT_FOUND, we can't check for Clarity link
      */
     public void verifyOrderDetailsPage () {
         login.doLogin ();
@@ -117,7 +116,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (activeOrder.order_number, orderNum);
         String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + orderNum;
         assertEquals (activeOrder.name, expectedName);
-        String expectedDueDate = getPastFutureDate (8, DateTimeFormatter.ofPattern ("M/dd/uu"), utcZoneId);
+        String expectedDueDate = getPastFutureDate (7, DateTimeFormatter.ofPattern ("M/d/uu"), pstZoneId);
         assertEquals (clonoSeqOrderDetail.getHeaderDueDate (), expectedDueDate);
         assertEquals (activeOrder.data_analysis_group, "Clinical");
 
@@ -201,29 +200,14 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertTrue (orderStatus.getLastActivity ().contains (getPastFutureDate (0)));
         testLog ("STEP 9 - Order status table displays above information");
 
-        historyPage.gotoOrderDebug (editOrder.tests.get (0).sampleName);
-        historyPage.waitFor (Clarity, Awaiting, PROCESSING_SAMPLE);
-        historyPage.clickOrder ();
-        orderStatus.isCorrectPage ();
-
-        List <String> stageStatusUrls = orderStatus.getStageStatusUrls ();
-        assertEquals (stageStatusUrls.size (), 1);
-        testLog ("STEP 10 - Clarity LIMS search is opened in a new tab for ASID1");
-
-        orderStatus.expandWorkflowHistory ();
-        stageStatusUrls = orderStatus.getStageStatusUrls ();
-        testLog ("STEP 11 - History for order1's order test is displayed.");
-
-        assertEquals (stageStatusUrls.size (), 2);
-        assertEquals (stageStatusUrls.get (0), stageStatusUrls.get (1));
-        testLog ("STEP 12 - Clarity LIMS search is opened in a new tab for ASID1");
-
-        orderStatus.clickOrderDetailsTab ();
-        diagnostic.isCorrectPage ();
-        diagnostic.clickCancelOrder ();
+        orderStatus.waitFor (editOrder.tests.get (0).sampleName, Clarity, Awaiting);
+        // unable to cancel until we refresh the page
+        orderStatus.gotoOrderDetailsPage (activeOrder.id);
+        clonoSeqOrderDetail.isCorrectPage ();
+        clonoSeqOrderDetail.clickCancelOrder ();
         testLog ("STEP 14 - Cancel Order modal appears.");
 
-        diagnostic.clickOrderStatusTab ();
+        clonoSeqOrderDetail.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getCancelOrderMessages (),
                       asList (CANCELLED + " - Other - Internal. Specimen - Not Rejected. Other.", "this is a test"));

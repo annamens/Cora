@@ -51,6 +51,19 @@ public class OrderDetail extends OrderHeader {
         pageLoading ();
     }
 
+    public void clickCancelOrder () {
+        assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
+        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
+        assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
+        assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
+        assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
+        assertTrue (setText ("#cancellationNotes", "this is a test"));
+        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
+        pageLoading ();
+        moduleLoading ();
+        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+    }
+
     public String getPatientMRDStatus () {
         return getText (patientMrdStatus);
     }

@@ -94,7 +94,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void waitUntilActivated () {
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisRetry * 10, waitRetry * 2);
         while (!timer.Timedout () && ! (getStatusText ().equals ("Active"))) {
             refresh ();
             timer.Wait ();
