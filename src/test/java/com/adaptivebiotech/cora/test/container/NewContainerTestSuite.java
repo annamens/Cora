@@ -9,6 +9,7 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +101,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertEquals (myContainers.list.size (), 2);
         myContainers.list.parallelStream ().forEach (container -> {
             assertEquals (container.containerType, SlideBox5);
-            assertEquals (container.name, "");
+            assertNull (container.name);
             assertEquals (container.location, coraTestUser);
         });
         coraApi.deactivateContainers (myContainers);
@@ -199,9 +200,9 @@ public class NewContainerTestSuite extends ContainerTestBase {
 
         Containers emptyContainers = addContainer.getContainers ();
         assertTrue (emptyContainers.list.size () == 1);
-        assertTrue (emptyContainers.list.get (0).containerNumber.isEmpty ());
-        assertTrue (emptyContainers.list.get (0).name.isEmpty ());
-        assertTrue (emptyContainers.list.get (0).location.isEmpty ());
+        assertNull (emptyContainers.list.get (0).containerNumber);
+        assertNull (emptyContainers.list.get (0).name);
+        assertNull (emptyContainers.list.get (0).location);
         assertEquals (emptyContainers.list.get (0).containerType, newContainerType);
         Logging.testLog ("STEP 2 - Tube box (9x9) is displayed below the Add Container(s) form with the following fields: Adaptive Container ID, Barcode, Initial Storage Location. All fields are blank");
 
