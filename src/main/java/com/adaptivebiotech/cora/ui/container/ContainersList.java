@@ -8,10 +8,10 @@ import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.util.List;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -109,7 +109,7 @@ public class ContainersList extends CoraPage {
             c.name = getText (columns.get (5));
             c.location = getText (columns.get (6));
             String capacity = getText (columns.get (7));
-            c.capacity = Integer.parseInt (Strings.isNotNullAndNotEmpty (capacity) ? capacity : "0");
+            c.capacity = Integer.parseInt (isNotNullAndNotEmpty (capacity) ? capacity : "0");
             return c;
         }).collect (toList ()));
     }
