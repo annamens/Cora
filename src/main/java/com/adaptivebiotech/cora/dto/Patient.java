@@ -13,6 +13,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Harry Soehalim
@@ -74,11 +75,13 @@ public final class Patient {
         return isNotNullAndNotEmpty (address) || isNotNullAndNotEmpty (address2) || isNotNullAndNotEmpty (locality) || isNotNullAndNotEmpty (region) || isNotNullAndNotEmpty (postCode) || isNotNullAndNotEmpty (phone) || isNotNullAndNotEmpty (email);
     }
 
-    public List <String> nameDob () {
+    @JsonIgnore
+    public List <String> getNameDob () {
         return asList (this.lastName, this.firstName, this.dateOfBirth);
     }
 
-    public List <String> patientAddress () {
+    @JsonIgnore
+    public List <String> getPatientAddress () {
         return asList (this.address,
                        this.address2,
                        this.locality,
