@@ -74,11 +74,11 @@ public final class Patient {
         return isNotNullAndNotEmpty (address) || isNotNullAndNotEmpty (address2) || isNotNullAndNotEmpty (locality) || isNotNullAndNotEmpty (region) || isNotNullAndNotEmpty (postCode) || isNotNullAndNotEmpty (phone) || isNotNullAndNotEmpty (email);
     }
 
-    public List <String> getNameDob () {
+    public List <String> nameDob () {
         return asList (this.lastName, this.firstName, this.dateOfBirth);
     }
 
-    public List <String> getAddress () {
+    public List <String> patientAddress () {
         return asList (this.address,
                        this.address2,
                        this.locality,
