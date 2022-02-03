@@ -62,7 +62,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements 173.Medicare.required, SR-1516
+     * @sdlc.requirements 173.Medicare.required, SR-1516
      */
     public void medicare_abn_required () {
         Patient patient = newMedicarePatient ();
@@ -83,7 +83,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements 173.Medicare.required, SR-1516
+     * @sdlc.requirements 173.Medicare.required, SR-1516
      */
     public void medicare_abn_not_required () {
         Patient patient = newMedicarePatient ();

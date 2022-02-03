@@ -77,7 +77,7 @@ public class ScanTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.ContainersListValidScan
+     * @sdlc.requirements 126.ContainersListValidScan
      */
     public void inventory_list_view () {
         ordersList.clickContainers ();
@@ -102,7 +102,7 @@ public class ScanTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.ContainersListValidScan
+     * @sdlc.requirements 126.ContainersListValidScan
      */
     public void my_custody_view () {
         ordersList.gotoMyCustody ();
@@ -127,7 +127,7 @@ public class ScanTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.TransformHoldingContainer
+     * @sdlc.requirements 126.TransformHoldingContainer
      */
     public void holding_container () {
         Container child = SerializationUtils.clone (mytestContainers.list.get (0));
