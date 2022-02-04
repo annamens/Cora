@@ -58,7 +58,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     }
 
     /**
-     * @sdlc_requirements SR-7287, SR-7369
+     * @sdlc.requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqBcellGatewayMessageUpdate () {
         Patient patient = scenarioBuilderPatient ();
@@ -142,7 +142,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     }
 
     /**
-     * @sdlc_requirements SR-7287, SR-7369
+     * @sdlc.requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqTcellGatewayMessageUpdate () {
         Patient patient = scenarioBuilderPatient ();

@@ -57,7 +57,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.AddNewContainer
+     * @sdlc.requirements 126.AddNewContainer
      */
     public void add_container_validation () {
         // test: missing container type
@@ -130,7 +130,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.AddNewContainer
+     * @sdlc.requirements 126.AddNewContainer
      */
     public void add_remove_containers () {
         String name32 = randomString (32);

@@ -59,7 +59,7 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements SR-7907:R12
+     * @sdlc.requirements SR-7907:R12
      */
     @Test (groups = "corgi")
     public void sections_order () {
@@ -70,7 +70,7 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements SR-7907:R3
+     * @sdlc.requirements SR-7907:R3
      */
     @Test (groups = "corgi")
     public void billing_questions () {

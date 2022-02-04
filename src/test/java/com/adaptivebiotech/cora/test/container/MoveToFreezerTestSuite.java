@@ -58,7 +58,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_primary_to_freezer () {
         String comment = randomWords (10);
@@ -116,7 +116,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_child_to_freezer () {
         String manifestName = "intakemanifest_holding_w_child";

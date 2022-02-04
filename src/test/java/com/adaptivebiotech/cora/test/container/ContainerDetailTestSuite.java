@@ -43,7 +43,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.ContainerDetailsPage
+     * @sdlc.requirements 126.ContainerDetailsPage
      */
     public void extensionCheck () {
         ordersList.gotoContainerDetail (containers.get ().list.get (0));
@@ -55,7 +55,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.ContainerDetailsPage
+     * @sdlc.requirements 126.ContainerDetailsPage
      */
     public void happyPath () {
         ordersList.gotoContainerDetail (containers.get ().list.get (0));
@@ -69,7 +69,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.ContainerDetailsPage
+     * @sdlc.requirements 126.ContainerDetailsPage
      */
     public void history () {
         ordersList.gotoMyCustody ();

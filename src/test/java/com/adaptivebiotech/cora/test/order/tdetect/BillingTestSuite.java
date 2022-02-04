@@ -45,7 +45,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements SR-7907:R1
+     * @sdlc.requirements SR-7907:R1
      */
     @Test (groups = "corgi")
     public void insurance () {
@@ -64,7 +64,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
      * Note:
      * - ABN Status is "Not Required" by default
      * 
-     * @sdlc_requirements SR-7907:R1
+     * @sdlc.requirements SR-7907:R1
      */
     @Test (groups = "corgi")
     public void medicare () {
@@ -81,7 +81,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements SR-7907:R1
+     * @sdlc.requirements SR-7907:R1
      */
     @Test (groups = "corgi")
     public void patient_self_pay () {
@@ -97,7 +97,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements SR-7907:R1
+     * @sdlc.requirements SR-7907:R1
      */
     @Test (groups = "corgi")
     public void client_bill () {
@@ -113,7 +113,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements SR-7907:R20
+     * @sdlc.requirements SR-7907:R20
      */
     @Test (groups = "corgi")
     public void bill_per_study_protocol () {

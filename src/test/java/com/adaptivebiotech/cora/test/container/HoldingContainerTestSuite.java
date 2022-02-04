@@ -61,7 +61,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void holding_containers () {
         Containers topContainers = coraApi.addContainers (new Containers (asList (container (Plate))));
@@ -81,7 +81,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void tube () {
         Container child = coraApi.addContainers (Tube, null, null, 1).list.get (0);
@@ -126,7 +126,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void matrix_tube_5ml () {
         Container child = coraApi.addContainers (MatrixTube5ml, null, null, 1).list.get (0);
@@ -153,7 +153,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void matrix_tube () {
         Container child = coraApi.addContainers (MatrixTube, null, null, 1).list.get (0);
@@ -181,7 +181,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void other_tube () {
         Container child = coraApi.addContainers (OtherTube, null, null, 1).list.get (0);
@@ -209,7 +209,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void vacutainer () {
         Container child = coraApi.addContainers (Vacutainer, null, null, 1).list.get (0);
@@ -237,7 +237,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void conical () {
         Container child = coraApi.addContainers (Conical, null, null, 1).list.get (0);
@@ -264,7 +264,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void slide_wo_coverslip () {
         Container child = coraApi.addContainers (Slide, null, null, 1).list.get (0);
@@ -324,7 +324,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void slide_with_coverslip () {
         Container child = coraApi.addContainers (SlideWithCoverslip, null, null, 1).list.get (0);

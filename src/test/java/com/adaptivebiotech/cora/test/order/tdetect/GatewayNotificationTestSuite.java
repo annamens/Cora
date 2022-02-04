@@ -39,7 +39,7 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private OrcaHistory        history     = new OrcaHistory ();
 
     /**
-     * @sdlc_requirements SR-7370
+     * @sdlc.requirements SR-7370
      */
     public void verifyCovidGatewayMessageUpdate () {
         CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);

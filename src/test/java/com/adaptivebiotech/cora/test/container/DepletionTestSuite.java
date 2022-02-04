@@ -47,7 +47,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_primary_to_freezer () {
 
@@ -75,7 +75,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_child_to_freezer () {
         Container child = SerializationUtils.clone (containers.get ().list.get (0));
@@ -105,7 +105,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_holding_to_freezer () {
         Container child = SerializationUtils.clone (containers.get ().list.get (0));
@@ -163,7 +163,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void set_holding_container () {
         Container holding = SerializationUtils.clone (containers.get ().list.get (1));
@@ -192,7 +192,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void remove_holding_container () {
         Container child = SerializationUtils.clone (containers.get ().list.get (0));
