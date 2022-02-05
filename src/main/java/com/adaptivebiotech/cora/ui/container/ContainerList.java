@@ -9,6 +9,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.testng.util.Strings;
@@ -24,19 +25,22 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class ContainerList extends CoraPage {
 
-    private final String   depleted               = ".select-depletion";
-    private final String   comments               = "[ng-model='ctrl.comments']";
-    private final String   pass                   = ".alert-success";
-    private final String   fail                   = ".alert-danger";
-    private final String   holdingBtn             = "[ng-click*='holdingContainer']";
-    private final String   moveBtn                = "[ng-click='ctrl.moveHere()']";
-    private final String   locked                 = "//*[contains (@class, 'alert-danger') and contains (text(), 'All containers are locked by another process.')]";
-    protected final String scan                   = "#container-scan-input";
-    private final String   freezerDropdownInput   = "[placeholder = 'Select Freezer'] input";
-    private final String   bulkMoveBtn            = "//button[text()='Bulk Move']";
-    private final String   bulkComment            = "input[placeholder='Add Comment']";
-    private final String   selectAllCheckbox      = ".containers-list th [type='checkbox']";
-    private final String   bulkMoveActionDropdown = ".bulk-move-container select";
+    private final String   depleted                 = ".select-depletion";
+    private final String   comments                 = "[ng-model='ctrl.comments']";
+    private final String   pass                     = ".alert-success";
+    private final String   fail                     = ".alert-danger";
+    private final String   holdingBtn               = "[ng-click*='holdingContainer']";
+    private final String   moveBtn                  = "[ng-click='ctrl.moveHere()']";
+    private final String   locked                   = "//*[contains (@class, 'alert-danger') and contains (text(), 'All containers are locked by another process.')]";
+    protected final String scan                     = "#container-scan-input";
+    private final String   freezerDropdownInput     = "[placeholder = 'Select Freezer'] input";
+    private final String   freezerDropdownSelection = "//*[@placeholder='Select Freezer']/descendant::div[@role='option']/span[text()='%s']";
+    private final String   bulkMoveBtn              = "//button[text()='Bulk Move']";
+    private final String   bulkComment              = "input[placeholder='Add Comment']";
+    private final String   selectAllCheckbox        = ".containers-list th [type='checkbox']";
+    private final String   bulkMoveActionDropdown   = ".bulk-move-container select";
+    private final String   bulkMoveSuccess          = ".toast-success";
+    private final String   bulkMoveError            = ".toast-error";
 
     public ContainerList () {
         staticNavBarHeight = 90;
@@ -77,6 +81,10 @@ public class ContainerList extends CoraPage {
         assertTrue (setText (containerSearch, containerIdOrName));
         assertTrue (click (".search-btn"));
         assertNotNull (waitForElementClickable ("//button[text()='Filter list']"));
+    }
+
+    public void searchContainerIdsOrNames (List <String> containerIdsOrNames) {
+        searchContainerIdOrName (containerIdsOrNames.stream ().collect (Collectors.joining (",")));
     }
 
     public void setCategory (Category category) {
@@ -370,9 +378,10 @@ public class ContainerList extends CoraPage {
     public void bulkMoveAllToFreezer (Container freezer, String comment) {
         clickBulkMoveContainers ();
         selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
+        assertTrue (click (freezerDropdownInput));
         assertTrue (clear (freezerDropdownInput));
         assertTrue (setText (freezerDropdownInput, freezer.name));
-        assertTrue (click (format ("//*[@placeholder='Select Freezer']/descendant::div[@role='option']/span[text()='%s']",
+        assertTrue (click (format (freezerDropdownSelection,
                                    freezer.name)));
         if (comment != null) {
             assertTrue (clear (bulkComment));
@@ -409,26 +418,34 @@ public class ContainerList extends CoraPage {
     }
 
     public boolean isBulkMoveSuccessMessageDisplayed () {
-        return waitUntilVisible (".toast-success");
+        return waitUntilVisible (bulkMoveSuccess);
+    }
+
+    public boolean isBulkMoveErrorMessageDisplayed () {
+        return waitUntilVisible (bulkMoveError);
+    }
+
+    public String getBulkMoveErrorMessage () {
+        return getText (bulkMoveError);
     }
 
     public void clickSuccessMessageLink () {
-        assertTrue (click (".toast-success a"));
+        assertTrue (click (bulkMoveSuccess + " a"));
     }
 
     public boolean isFreezerDropdownEnabled () {
-        String freezerDropdown = "ng-select[placeholder='Select Freezer']";
-        return !Boolean.parseBoolean (getAttribute (freezerDropdown, "readonly"));
+        String freezerDropdownContainer = "//*[@placeholder='Select Freezer']/parent::div";
+        return !getAttribute (freezerDropdownContainer, "class").contains ("div-disabled");
     }
 
     public void selectContainerToBulkMove (String containerName) {
-        String checkbox = "//*[@title='%s']/ancestor::tr/descendant::*[@type='checkbox']";
-        assertTrue (click (format (checkbox, containerName)));
+        String checkbox = format ("//*[@title='%s']/ancestor::tr/descendant::*[@type='checkbox']", containerName);
+        assertTrue (click (checkbox));
     }
 
     public boolean rowIsSelected (String containerName) {
         String row = format ("//*[@title='%s']/ancestor::tr", containerName);
-        return checkClassFor (row, "highlighted-blue");
+        return getAttribute (row, "class").contains ("highlighted-blue");
     }
 
     public List <String> getBulkMoveActions () {

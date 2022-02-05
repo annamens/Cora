@@ -86,11 +86,19 @@ public class TestHelper {
         return container;
     }
 
-    public static Container freezerAB018016 () {
+    public static Container freezerAB018018 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB018016_id");
-        container.containerNumber = testdata ().get ("AB018016_num");
-        container.name = "AB018016 (-20C)";
+        container.id = testdata ().get ("AB018018_id");
+        container.containerNumber = testdata ().get ("AB018018_num");
+        container.name = "AB018018 (-20C)";
+        return container;
+    }
+
+    public static Container freezerAB018056 () {
+        Container container = new Container ();
+        container.id = testdata ().get ("AB018056_id");
+        container.containerNumber = testdata ().get ("AB018056_num");
+        container.name = "AB018056 : Validation (-20C)";
         return container;
     }
 
@@ -251,8 +259,10 @@ public class TestHelper {
         data.put ("AB039003_num", "CO-166946");
         data.put ("dumbwaiter_id", "eec8c896-0cbe-4531-83a6-da958c79c368");
         data.put ("dumbwaiter_num", "CO-724045");
-        data.put ("AB018016_id", "a24d3402-0904-4ff4-8eac-ad25708e1a47");
-        data.put ("AB018016_num", "CO-182542");
+        data.put ("AB018018_id", "2c37b67f-45c0-427d-8fa6-9d469d673fff");
+        data.put ("AB018018_num", "CO-522480");
+        data.put ("AB018056_id", "8e2805d5-805b-403b-937b-561837d34ea6");
+        data.put ("AB018056_num", "CO-206634");
         return data;
     };
 
