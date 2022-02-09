@@ -107,13 +107,12 @@ public class BulkMoveTestSuite extends ContainerTestBase {
             Container parsedContainer = parsedContainers.list.stream ()
                                                              .filter (c -> container.containerNumber.equals (c.containerNumber))
                                                              .findFirst ().get ();
-            verifyMoveToFreezer (container, catchAllFreezer, moveToFreezerComment);
+            verifyMoveToFreezer (parsedContainer, catchAllFreezer, moveToFreezerComment);
             testLog (format ("SR-3229:R11: Bulk Move to Freezer action moved selected item, %s, to destination freezer",
                              container.containerNumber));
             testLog (format ("SR-3229:R2: Comment for %1$s matched expected: %2$s",
                              container.containerNumber,
                              moveToFreezerComment));
-            assertEquals (container.location, parsedContainer.location);
             testLog (format ("SR-3229:R7: Containers list location matched location in container details for %s",
                              container.containerNumber));
         }
@@ -128,13 +127,12 @@ public class BulkMoveTestSuite extends ContainerTestBase {
             Container parsedContainer = parsedContainers.list.stream ()
                                                              .filter (c -> container.containerNumber.equals (c.containerNumber))
                                                              .findFirst ().get ();
-            verifyMoveToCustody (container, moveToCustodyComment);
+            verifyMoveToCustody (parsedContainer, moveToCustodyComment);
             testLog (format ("SR-3229:R3: Bulk Move to My Custody action moved selected item, %s, to user's custody",
                              container.containerNumber));
             testLog (format ("SR-3229:R2: Comment for %1$s matched expected: %2$s",
                              container.containerNumber,
                              moveToCustodyComment));
-            assertEquals (container.location, parsedContainer.location);
             testLog (format ("SR-3229:R7: Containers list location matched location in container details for %s",
                              container.containerNumber));
         }
@@ -154,35 +152,42 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         getDriver ().switchTo ().window (windows.get (0));
     }
 
-    private void verifyMoveToFreezer (Container container, Container expectedFreezer, String expectedComment) {
-        ordersList.gotoContainerDetail (container);
+    private void verifyMoveToFreezer (Container containerFromList,
+                                      Container expectedFreezer,
+                                      String expectedComment) {
+        ordersList.gotoContainerDetail (containerFromList);
         detail.isCorrectPage ();
-        Container actual = detail.parsePrimaryDetail ();
-        actual.comment = expectedComment;
-        assertTrue (actual.location.contains (expectedFreezer.name));
+        Container containerFromDetails = detail.parsePrimaryDetail ();
+        assertEquals (containerFromDetails.location, containerFromList.location);
+        assertTrue (containerFromDetails.location.contains (expectedFreezer.name));
         detail.gotoHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
-        verifyMovedToContainer (histories.get (0), actual);
-        String expectedLocation = String.join (" : ",
-                                               histories.get (0).location,
-                                               container.containerNumber);
-        container.location = expectedLocation;
-        verifyDetails (actual, container);
+        containerFromList.comment = expectedComment;
+        containerFromList.name = containerFromList.name.isEmpty () ? null : containerFromList.name;
+        containerFromList.depleted = containerFromList.depleted == null ? false : containerFromList.depleted;
+        verifyMovedToContainer (histories.get (0), containerFromList);
+        verifyDetails (containerFromDetails, containerFromList);
     }
 
-    private void verifyMoveToCustody (Container container, String expectedComment) {
-        ordersList.gotoContainerDetail (container);
+    private void verifyMoveToCustody (Container containerFromList,
+                                      String expectedComment) {
+        ordersList.gotoContainerDetail (containerFromList);
         detail.isCorrectPage ();
-        Container actual = detail.parsePrimaryDetail ();
-        actual.comment = expectedComment;
+        Container containerFromDetails = detail.parsePrimaryDetail ();
+        assertEquals (containerFromDetails.location, containerFromList.location);
+        String expectedLocation = String.join (" : ",
+                                               coraTestUser,
+                                               containerFromList.containerNumber);
+        assertEquals (containerFromDetails.location, expectedLocation);
         detail.gotoHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
-        verifyTookCustody (histories.get (0), actual);
-        String expectedLocation = String.join (" : ", coraTestUser, container.containerNumber);
-        container.location = expectedLocation;
-        verifyDetails (actual, container);
+        containerFromList.comment = expectedComment;
+        containerFromList.name = containerFromList.name.isEmpty () ? null : containerFromList.name;
+        containerFromList.depleted = containerFromList.depleted == null ? false : containerFromList.depleted;
+        verifyTookCustody (histories.get (0), containerFromList);
+        verifyDetails (containerFromDetails, containerFromList);
     }
 
     public void moveAllContainerTypes () {
@@ -195,11 +200,10 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
         parsedContainers = waitForUpdatedContainers (parsedContainers);
         for (Container container : containers.list) {
-            verifyMoveToFreezer (container, catchAllFreezer, null);
             Container parsedContainer = parsedContainers.list.stream ()
                                                              .filter (c -> container.containerNumber.equals (c.containerNumber))
                                                              .findFirst ().get ();
-            assertEquals (container.location, parsedContainer.location);
+            verifyMoveToFreezer (parsedContainer, catchAllFreezer, null);
         }
         history.clickContainers ();
         containerList.searchContainerIdsOrNames (allContainerIDs);
@@ -210,8 +214,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
             Container parsedContainer = parsedContainers.list.stream ()
                                                              .filter (c -> container.containerNumber.equals (c.containerNumber))
                                                              .findFirst ().get ();
-            verifyMoveToCustody (container, null);
-            assertEquals (container.location, parsedContainer.location);
+            verifyMoveToCustody (parsedContainer, null);
         }
     }
 
