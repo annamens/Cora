@@ -9,7 +9,6 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.testng.util.Strings;
@@ -33,6 +32,7 @@ public class ContainerList extends CoraPage {
     private final String   moveBtn                  = "[ng-click='ctrl.moveHere()']";
     private final String   locked                   = "//*[contains (@class, 'alert-danger') and contains (text(), 'All containers are locked by another process.')]";
     protected final String scan                     = "#container-scan-input";
+    private final String   containerSearch          = "[placeholder='CO-000000 or Container Name']";
     private final String   freezerDropdownInput     = "[placeholder = 'Select Freezer'] input";
     private final String   freezerDropdownSelection = "//*[@placeholder='Select Freezer']/descendant::div[@role='option']/span[text()='%s']";
     private final String   bulkMoveBtn              = "//button[text()='Bulk Move']";
@@ -76,7 +76,6 @@ public class ContainerList extends CoraPage {
     }
 
     public void searchContainerIdOrName (String containerIdOrName) {
-        String containerSearch = "[placeholder='CO-000000 or Container Name']";
         assertTrue (clear (containerSearch));
         assertTrue (setText (containerSearch, containerIdOrName));
         assertTrue (click (".search-btn"));
@@ -84,7 +83,7 @@ public class ContainerList extends CoraPage {
     }
 
     public void searchContainerIdsOrNames (List <String> containerIdsOrNames) {
-        searchContainerIdOrName (containerIdsOrNames.stream ().collect (Collectors.joining (",")));
+        searchContainerIdOrName (String.join (",", containerIdsOrNames));
     }
 
     public void setCategory (Category category) {
@@ -375,6 +374,10 @@ public class ContainerList extends CoraPage {
             assertTrue (clickAndSelectValue (depleted, "boolean:" + container.depleted));
     }
 
+    public void bulkMoveAllToFreezer (Container freezer) {
+        bulkMoveAllToFreezer (freezer, null);
+    }
+
     public void bulkMoveAllToFreezer (Container freezer, String comment) {
         clickBulkMoveContainers ();
         selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
@@ -390,6 +393,10 @@ public class ContainerList extends CoraPage {
         assertTrue (click (selectAllCheckbox));
         assertTrue (click (bulkMoveBtn));
         transactionInProgress ();
+    }
+
+    public void bulkMoveAllToCustody () {
+        bulkMoveAllToCustody (null);
     }
 
     public void bulkMoveAllToCustody (String comment) {

@@ -152,6 +152,10 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         getDriver ().switchTo ().window (windows.get (0));
     }
 
+    private void verifyMoveToFreezer (Container containerFromList, Container expectedFreezer) {
+        verifyMoveToFreezer (containerFromList, expectedFreezer, null);
+    }
+
     private void verifyMoveToFreezer (Container containerFromList,
                                       Container expectedFreezer,
                                       String expectedComment) {
@@ -168,6 +172,10 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containerFromList.depleted = containerFromList.depleted == null ? false : containerFromList.depleted;
         verifyMovedToContainer (histories.get (0), containerFromList);
         verifyDetails (containerFromDetails, containerFromList);
+    }
+
+    private void verifyMoveToCustody (Container containerFromList) {
+        verifyMoveToCustody (containerFromList, null);
     }
 
     private void verifyMoveToCustody (Container containerFromList,
@@ -191,38 +199,38 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     }
 
     public void moveAllContainerTypes () {
-        Containers containers = setupAllContainerTypes ();
+        Containers containers = setupAllMoveableContainerTypes ();
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
         containerList.searchContainerIdsOrNames (allContainerIDs);
         Containers parsedContainers = containerList.getContainers ();
-        containerList.bulkMoveAllToFreezer (catchAllFreezer, null);
+        containerList.bulkMoveAllToFreezer (catchAllFreezer);
         assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
         parsedContainers = waitForUpdatedContainers (parsedContainers);
         for (Container container : containers.list) {
             Container parsedContainer = parsedContainers.list.stream ()
                                                              .filter (c -> container.containerNumber.equals (c.containerNumber))
                                                              .findFirst ().get ();
-            verifyMoveToFreezer (parsedContainer, catchAllFreezer, null);
+            verifyMoveToFreezer (parsedContainer, catchAllFreezer);
         }
         history.clickContainers ();
         containerList.searchContainerIdsOrNames (allContainerIDs);
         parsedContainers = containerList.getContainers ();
-        containerList.bulkMoveAllToCustody (null);
+        containerList.bulkMoveAllToCustody ();
         parsedContainers = waitForUpdatedContainers (parsedContainers);
         for (Container container : containers.list) {
             Container parsedContainer = parsedContainers.list.stream ()
                                                              .filter (c -> container.containerNumber.equals (c.containerNumber))
                                                              .findFirst ().get ();
-            verifyMoveToCustody (parsedContainer, null);
+            verifyMoveToCustody (parsedContainer);
         }
     }
 
     /**
      * @sdlc.requirements SR-3229:R5
      */
-    public void moveAllContainersToInvalidFreezers () {
-        Containers containers = setupAllContainerTypes ();
+    public void moveAllContainersToInvalidFreezer () {
+        Containers containers = setupAllMoveableContainerTypes ();
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
         containerList.searchContainerIdsOrNames (allContainerIDs);
@@ -230,10 +238,10 @@ public class BulkMoveTestSuite extends ContainerTestBase {
                                                                              .filter (container -> container.containerType.name ()
                                                                                                                           .equals (ContainerType.MatrixTube.name ()) || container.containerType.equals (ContainerType.ConicalBox6x6))
                                                                              .collect (Collectors.toList ()));
-        containerList.bulkMoveAllToFreezer (invalidFreezer, null);
+        containerList.bulkMoveAllToFreezer (invalidFreezer);
         verifyMoveErrorMessage (expectedContainersFailed);
         for (Container container : containers.list) {
-            verifyNoMove (container);
+            verifyStillInCustody (container);
         }
         testLog ("SR-3229:R5: Moving to freezer without sufficient space resulted in an error message containing all failed containers. No containers were moved");
     }
@@ -246,16 +254,15 @@ public class BulkMoveTestSuite extends ContainerTestBase {
                                                  .allMatch (Container -> errorMessage.contains (Container.containerNumber)));
     }
 
-    private void verifyNoMove (Container container) {
+    private void verifyStillInCustody (Container container) {
         ordersList.gotoContainerDetail (container);
         detail.isCorrectPage ();
-        Container actual = detail.parsePrimaryDetail ();
-        assertEquals (actual.location, String.join (" : ", coraTestUser, container.containerNumber));
+        Container containerFromDetails = detail.parsePrimaryDetail ();
+        assertEquals (containerFromDetails.location, String.join (" : ", coraTestUser, container.containerNumber));
         detail.gotoHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         assertEquals (histories.size (), 1);
-        history.clickContainers ();
     }
 
     private Containers setupTwoPlates () {
@@ -265,7 +272,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         return containers;
     }
 
-    private Containers setupAllContainerTypes () {
+    private Containers setupAllMoveableContainerTypes () {
         Containers containers = coraApi.addContainers (new Containers (
                 stream (ContainerType.values ())
                                                 .map (t -> container (t))
