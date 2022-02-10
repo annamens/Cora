@@ -357,7 +357,6 @@ public class CoraPage extends BasePage {
     }
 
     public void navigateToTab (int tabIndex) {
-        getDriver ().switchTo ()
-                    .window (new ArrayList <String> (getDriver ().getWindowHandles ()).get (tabIndex));
+        getDriver ().switchTo ().window (new ArrayList <> (getDriver ().getWindowHandles ()).get (tabIndex));
     }
 }
