@@ -1,8 +1,10 @@
-package com.adaptivebiotech.cora.test.order.tdetect;
+package com.adaptivebiotech.cora.test.hl7.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
+import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildCovidOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxReport;
@@ -18,7 +20,7 @@ import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.test.order.OrderTestBase;
+import com.adaptivebiotech.cora.test.hl7.HL7TestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
@@ -27,7 +29,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportTDetect;
 
 @Test (groups = { "akita", "regression" })
-public class GatewayNotificationTestSuite extends OrderTestBase {
+public class GatewayNotificationTestSuite extends HL7TestBase {
 
     private final String       covidTsv    = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210209_NB551550_0241_AHTT33BGXG/v3.1/20210211_0758/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev3/HTT33BGXG_0_CLINICAL-CLINICAL_95268-SN-2205.adap.txt.results.tsv.gz";
     private final String       gatewayJson = "gatewayMessage.json";
@@ -47,7 +49,10 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         test.workflowProperties = sample_95268_SN_2205 ();
 
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildCovidOrder (patient, stage (DxReport, Ready), test);
+        Diagnostic diagnostic = buildCovidOrder (coraApi.getPhysician (TDetect_client),
+                                                 patient,
+                                                 stage (DxReport, Ready),
+                                                 test);
         diagnostic.dxResults = negativeDxResult ();
         assertEquals (coraApi.newCovidOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");

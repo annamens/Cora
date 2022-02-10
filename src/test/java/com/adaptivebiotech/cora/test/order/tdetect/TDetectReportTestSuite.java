@@ -11,6 +11,7 @@ import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
+import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildCovidOrder;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB_v4b;
 import static com.adaptivebiotech.test.utils.Logging.info;
@@ -57,7 +58,8 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.test.order.OrderTestBase;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
@@ -78,7 +80,7 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
  *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "tDetectOrder" })
-public class TDetectReportTestSuite extends OrderTestBase {
+public class TDetectReportTestSuite extends CoraBaseBrowser {
 
     private Login              login               = new Login ();
     private OrdersList         ordersList          = new OrdersList ();
@@ -292,11 +294,16 @@ public class TDetectReportTestSuite extends OrderTestBase {
      * NOTE: SR-T3070
      */
     public void validateFailedTDetectReportData () {
+        WorkflowProperties sample_112770_SN_7929 = new WorkflowProperties ();
+        sample_112770_SN_7929.flowcell = "HCYJNBGXJ";
+        sample_112770_SN_7929.workspaceName = "CLINICAL-CLINICAL";
+        sample_112770_SN_7929.sampleName = "112770-SN-7929";
+
         CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
-        test.workflowProperties = sample_112770_SN_7929 ();
+        test.workflowProperties = sample_112770_SN_7929;
 
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildCovidOrder (patient, null, test);
+        Diagnostic diagnostic = buildCovidOrder (coraApi.getPhysician (TDetect_client), patient, null, test);
         diagnostic.dxResults = null;
         assertEquals (coraApi.newCovidOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
