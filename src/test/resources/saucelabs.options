@@ -4,3 +4,6 @@ screenResolution=1920x1200
 maxDuration=10800
 commandTimeout=600
 idleTimeout=600
+timeZone=Los_Angeles
+prerun.background=false
+prerun.executable=https://gist.githubusercontent.com/bertinwong-saucelabs/c8795bc7c26c29604bec4aea1cb38842/raw/631456cb0ff5ee6bf27a5e9ffb91ee1833d502d3/remove-start-menu.bat

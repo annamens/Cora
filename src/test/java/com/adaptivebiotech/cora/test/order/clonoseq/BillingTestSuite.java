@@ -62,7 +62,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements 173.Medicare.required, SR-1516
+     * @sdlc.requirements 173.Medicare.required, SR-1516
      */
     public void medicare_abn_required () {
         Patient patient = newMedicarePatient ();
@@ -83,7 +83,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements 173.Medicare.required, SR-1516
+     * @sdlc.requirements 173.Medicare.required, SR-1516
      */
     public void medicare_abn_not_required () {
         Patient patient = newMedicarePatient ();
@@ -104,7 +104,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         testLog ("ABN Status field value was 'Not required' and was not editable");
     }
 
-    public void patientSelfPay () {
+    public void patient_self_pay () {
         Patient patient = newSelfPayPatient ();
         patient.race = null;
         patient.ethnicity = null;
@@ -119,7 +119,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         testLog (format (log, patient.billingType.label));
     }
 
-    public void billClient () {
+    public void client_bill () {
         Patient patient = newClientPatient ();
         patient.race = null;
         patient.ethnicity = null;
@@ -134,7 +134,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         testLog (format (log, patient.billingType.label));
     }
 
-    public void billPerStudyProtocol () {
+    public void bill_per_study_protocol () {
         Patient patient = newTrialProtocolPatient ();
         patient.race = null;
         patient.ethnicity = null;

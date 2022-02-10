@@ -25,7 +25,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 public class DepletionTestSuite extends ContainerTestBase {
 
     private Login                    login      = new Login ();
-    private OrdersList               orderList  = new OrdersList ();
+    private OrdersList               ordersList = new OrdersList ();
     private MyCustody                myCustody  = new MyCustody ();
     private Detail                   detail     = new Detail ();
     private History                  history    = new History ();
@@ -36,8 +36,8 @@ public class DepletionTestSuite extends ContainerTestBase {
         containers.set (coraApi.addContainers (new Containers (asList (container (Tube), container (TubeBox5x5)))));
 
         login.doLogin ();
-        orderList.isCorrectPage ();
-        orderList.gotoMyCustody ();
+        ordersList.isCorrectPage ();
+        ordersList.gotoMyCustody ();
         myCustody.isCorrectPage ();
     }
 
@@ -47,7 +47,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_primary_to_freezer () {
 
@@ -75,7 +75,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_child_to_freezer () {
         Container child = SerializationUtils.clone (containers.get ().list.get (0));
@@ -105,7 +105,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_holding_to_freezer () {
         Container child = SerializationUtils.clone (containers.get ().list.get (0));
@@ -163,7 +163,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void set_holding_container () {
         Container holding = SerializationUtils.clone (containers.get ().list.get (1));
@@ -192,7 +192,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void remove_holding_container () {
         Container child = SerializationUtils.clone (containers.get ().list.get (0));

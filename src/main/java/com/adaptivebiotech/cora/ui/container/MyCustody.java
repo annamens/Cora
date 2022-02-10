@@ -14,7 +14,7 @@ import com.google.common.base.Strings;
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class MyCustody extends ContainerList {
+public class MyCustody extends ContainersList {
 
     @Override
     public void isCorrectPage () {
@@ -47,7 +47,7 @@ public class MyCustody extends ContainerList {
     public void sendContainersToFreezer (Containers containers, Container freezer) {
         containers.list.stream ()
                        .filter (container -> container.contents == null)
-                       .filter (container -> container.specimenId == null || (container.specimenId != null && !container.specimenId.contains ("SP-")))
+                       .filter (container -> container.specimenId == null || !container.specimenId.contains ("SP-"))
                        .filter (container -> !Freezer.equals (container.containerType))
                        .forEach (container -> moveToFreezer (container, freezer));
 

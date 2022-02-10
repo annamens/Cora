@@ -42,7 +42,7 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
                                                           "Specimen",
                                                           "Order Test",
                                                           "Billing",
-                                                          "T-Detect Order Authorization",
+                                                          "Order Authorization",
                                                           "Attachments",
                                                           "Messages",
                                                           "History");
@@ -59,7 +59,7 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements SR-7907:R12
+     * @sdlc.requirements SR-7907:R12
      */
     @Test (groups = "corgi")
     public void sections_order () {
@@ -70,7 +70,7 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc_requirements SR-7907:R3
+     * @sdlc.requirements SR-7907:R3
      */
     @Test (groups = "corgi")
     public void billing_questions () {
@@ -123,7 +123,7 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
         String containerNumberPattern = "CO-\\d{6}";
         Container container = containers.list.get (0);
         assertTrue (container.containerNumber.matches (containerNumberPattern));
-        assertTrue (container.children.size () == 3);
+        assertEquals (container.children.size (), 3);
         assertTrue (container.children.get (0).containerNumber.matches (containerNumberPattern));
         assertTrue (container.children.get (1).containerNumber.matches (containerNumberPattern));
         assertTrue (container.children.get (2).containerNumber.matches (containerNumberPattern));

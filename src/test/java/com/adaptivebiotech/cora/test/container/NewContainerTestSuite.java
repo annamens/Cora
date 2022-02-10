@@ -9,6 +9,7 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
@@ -41,7 +42,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     private final String            error4                  = "Container name is not unique. Enter another name.";
     private Login                   login                   = new Login ();
     private OrdersList              ordersList              = new OrdersList ();
-    private ContainerList           containerList           = new ContainerList ();
+    private ContainersList          containerList           = new ContainersList ();
     private AddContainer            addContainer            = new AddContainer ();
     private MyCustody               myCustody               = new MyCustody ();
     private GenerateContainerLabels generateContainerLabels = new GenerateContainerLabels ();
@@ -56,7 +57,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.AddNewContainer
+     * @sdlc.requirements 126.AddNewContainer
      */
     public void add_container_validation () {
         // test: missing container type
@@ -100,7 +101,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertEquals (myContainers.list.size (), 2);
         myContainers.list.parallelStream ().forEach (container -> {
             assertEquals (container.containerType, SlideBox5);
-            assertEquals (container.name, "");
+            assertNull (container.name);
             assertEquals (container.location, coraTestUser);
         });
         coraApi.deactivateContainers (myContainers);
@@ -129,7 +130,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.AddNewContainer
+     * @sdlc.requirements 126.AddNewContainer
      */
     public void add_remove_containers () {
         String name32 = randomString (32);
@@ -199,9 +200,9 @@ public class NewContainerTestSuite extends ContainerTestBase {
 
         Containers emptyContainers = addContainer.getContainers ();
         assertTrue (emptyContainers.list.size () == 1);
-        assertTrue (emptyContainers.list.get (0).containerNumber.isEmpty ());
-        assertTrue (emptyContainers.list.get (0).name.isEmpty ());
-        assertTrue (emptyContainers.list.get (0).location.isEmpty ());
+        assertNull (emptyContainers.list.get (0).containerNumber);
+        assertNull (emptyContainers.list.get (0).name);
+        assertNull (emptyContainers.list.get (0).location);
         assertEquals (emptyContainers.list.get (0).containerType, newContainerType);
         Logging.testLog ("STEP 2 - Tube box (9x9) is displayed below the Add Container(s) form with the following fields: Adaptive Container ID, Barcode, Initial Storage Location. All fields are blank");
 

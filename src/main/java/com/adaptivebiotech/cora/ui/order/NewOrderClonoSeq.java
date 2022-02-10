@@ -36,6 +36,8 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 public class NewOrderClonoSeq extends NewOrder {
 
     public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq ();
+    private Accession              accession        = new Accession ();
+    private final String           orderNotes       = "[ng-model='ctrl.orderEntry.order.notes']";
     private final String           specimenDelivery = "[ng-model='ctrl.orderEntry.order.specimenDeliveryType']";
 
     public void clickAssayTest (Assay assay) {
@@ -304,7 +306,11 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void enterOrderNotes (String notes) {
-        assertTrue (setText ("[ng-model='ctrl.orderEntry.order.notes']", notes));
+        assertTrue (setText (orderNotes, notes));
+    }
+
+    public String getOrderNotes () {
+        return readInput (orderNotes);
     }
 
     /**
@@ -392,25 +398,21 @@ public class NewOrderClonoSeq extends NewOrder {
                                        OrderStatus orderStatus,
                                        ContainerType containerType) {
         // create clonoSEQ diagnostic order
-        String orderNum = createClonoSeqOrder (physician,
-                                               patient,
-                                               icdCodes,
-                                               assayTest,
-                                               specimen);
+        String orderNum = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
 
         // add diagnostic shipment
         new NewShipment ().createShipment (orderNum, containerType);
 
         // accession complete
         if (orderStatus.equals (Active)) {
-            new Accession ().completeAccession ();
+            accession.completeAccession ();
 
             // activate order
             isCorrectPage ();
             waitForSpecimenDelivery ();
             activateOrder ();
         } else {
-            gotoOrderDetailsPage (getOrderId ());
+            accession.clickOrderNumber ();
             isCorrectPage ();
         }
 

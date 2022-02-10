@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
+import static org.testng.util.Strings.isNullOrEmpty;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,7 +19,6 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.seleniumfy.test.utils.BasePage;
 
@@ -35,6 +35,18 @@ public class CoraPage extends BasePage {
 
     public CoraPage () {
         staticNavBarHeight = 35;
+    }
+
+    @Override
+    public String getText (WebElement el) {
+        String text = el.getText ();
+        return isNullOrEmpty (text) ? null : isNullOrEmpty (text.trim ()) ? null : text.trim ();
+    }
+
+    @Override
+    public String getAttribute (WebElement el, String attribute) {
+        String attr = el.getAttribute (attribute).trim ();
+        return isNullOrEmpty (attr) ? null : isNullOrEmpty (attr.trim ()) ? null : attr.trim ();
     }
 
     public void isCorrectPage () {
@@ -61,8 +73,7 @@ public class CoraPage extends BasePage {
     }
 
     public List <String> getNewPopupMenu () {
-        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li))
-                                                    .collect (toList ());
+        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !isNullOrEmpty (li)).collect (toList ());
     }
 
     public void selectNewClonoSEQDiagnosticOrder () {
@@ -242,6 +253,18 @@ public class CoraPage extends BasePage {
 
     public void gotoOrderStatusPage (String orderId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/order/status/" + orderId));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
+    public void gotoTaskDetail (String taskId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
+    public void gotoTaskStatus (String taskId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId + "?p=status"));
         assertTrue (hasPageLoaded ());
         pageLoading ();
     }

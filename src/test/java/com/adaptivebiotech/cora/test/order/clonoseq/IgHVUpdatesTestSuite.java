@@ -144,7 +144,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        addCoraToken ();
+        coraApi.addCoraToken ();
 
         // IgHVPhysician Physician
         IgHVPhysician = coraApi.getPhysician (non_CLEP_clonoseq);
@@ -205,7 +205,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * NOTE: SR-T3689
      * 
-     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
+     * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder2CLIAFeatureFlagOn () {
@@ -248,7 +248,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * NOTE: SR-T3689
      * 
-     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
+     * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder3IVDFeatureFlagOn () {
@@ -291,7 +291,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * NOTE: SR-T3689
      * 
-     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
+     * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder4IVDFeatureFlagOn () {
@@ -334,7 +334,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * NOTE: SR-T3689
      * 
-     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
+     * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder5CLIAFeatureFlagOn () {
@@ -368,7 +368,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * NOTE: SR-T3689
      * 
-     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
+     * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder6IVDFeatureFlagOn () {
@@ -402,7 +402,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * NOTE: SR-T3689
      * 
-     * @sdlc_requirements SR-6656:R1, R3, R4, R5, R6
+     * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder7IVDFeatureFlagOn () {
@@ -436,7 +436,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * NOTE: SR-T3689
      * 
-     * @sdlc_requirements SR-6656:R7
+     * @sdlc.requirements SR-6656:R7
      */
     @Test (groups = "featureFlagOff")
     public void verifyIgHVStageAndReportCLIAFeatureFlagOff () {
@@ -475,7 +475,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * @sdlc_requirements SR-7163:R1, R3, R4, SR-7029:R1
+     * @sdlc.requirements SR-7163:R1, R3, R4, SR-7029:R1
      *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
@@ -520,7 +520,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * NOTE: SR-T3728
      * 
-     * @sdlc_requirements SR-7163:R3, SR-7028:R1
+     * @sdlc.requirements SR-7163:R3, SR-7028:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder2 () {
@@ -546,7 +546,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * NOTE: SR-T3728
      * 
-     * @sdlc_requirements SR-7163:R3, SR-7028:R1
+     * @sdlc.requirements SR-7163:R3, SR-7028:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder3 () {
@@ -572,7 +572,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * NOTE: SR-T3728
      * 
-     * @sdlc_requirements SR-7163:R3, SR-7028:R1
+     * @sdlc.requirements SR-7163:R3, SR-7028:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder4 () {
@@ -598,7 +598,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * NOTE: SR-T3728
      * 
-     * @sdlc_requirements SR-7163:R3, SR-7029:R1
+     * @sdlc.requirements SR-7163:R3, SR-7029:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder5 () {
@@ -639,7 +639,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * NOTE: SR-T3728
      * 
-     * @sdlc_requirements SR-7163:R3, SR-7029:R1
+     * @sdlc.requirements SR-7163:R3, SR-7029:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder6 () {
@@ -685,7 +685,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * NOTE: SR-T3728
      * 
-     * @sdlc_requirements SR-7163:R3, SR-7029:R1
+     * @sdlc.requirements SR-7163:R3, SR-7029:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder7 () {
@@ -737,7 +737,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * NOTE: SR-T3728
      * 
-     * @sdlc_requirements SR-7163:R1, R3, R4
+     * @sdlc.requirements SR-7163:R1, R3, R4
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder8 () {
@@ -771,7 +771,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     /**
      * NOTE: SR-T3728
      * 
-     * @sdlc_requirements SR-7163:R1, R3, R4
+     * @sdlc.requirements SR-7163:R1, R3, R4
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder9 () {
@@ -837,7 +837,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * validate shm_results table schema
      * 
-     * @sdlc_requirements SR-7163:R1, R2, R3, R4, SR-7029:R1
+     * @sdlc.requirements SR-7163:R1, R2, R3, R4, SR-7029:R1
      */
     @Test (groups = "orcaighv")
     public void validateShmResultsTableSchema () {

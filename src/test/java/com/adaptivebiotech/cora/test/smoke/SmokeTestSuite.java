@@ -28,7 +28,7 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.mira.MirasList;
 import com.adaptivebiotech.cora.ui.mira.NewMira;
 import com.adaptivebiotech.cora.ui.order.Batch;
@@ -38,11 +38,11 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.patient.PatientsList;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
-import com.adaptivebiotech.cora.ui.shipment.ShipmentList;
+import com.adaptivebiotech.cora.ui.shipment.ShipmentsList;
 import com.adaptivebiotech.cora.ui.task.Task;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
-import com.adaptivebiotech.cora.ui.task.TaskList;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
+import com.adaptivebiotech.cora.ui.task.TasksList;
 import com.adaptivebiotech.cora.ui.utilities.AuditTool;
 import com.adaptivebiotech.cora.ui.utilities.BarcodeComparisonTool;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
@@ -60,7 +60,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
     private OrdersList       oList        = new OrdersList ();
     private PatientsList     pList        = new PatientsList ();
     private MirasList        mList        = new MirasList ();
-    private ContainerList    cList        = new ContainerList ();
+    private ContainersList   cList        = new ContainersList ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -177,7 +177,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog ("'Order Tests' header nav element was highlighted");
 
         oTestList.clickShipments ();
-        ShipmentList sList = new ShipmentList ();
+        ShipmentsList sList = new ShipmentsList ();
         sList.isCorrectPage ();
         testLog ("Shipment List page was displayed");
         assertTrue (sList.isHeaderNavHighlighted ("Shipments"));
@@ -190,7 +190,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog ("'Containers' header nav element was highlighted");
 
         cList.clickTasks ();
-        TaskList tList = new TaskList ();
+        TasksList tList = new TasksList ();
         tList.isCorrectPage ();
         testLog ("Task List page was displayed");
         assertTrue (tList.isHeaderNavHighlighted ("Tasks"));
@@ -406,10 +406,10 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         addContainer.clickContainers ();
         cList.isCorrectPage ();
         cList.searchContainerIdOrName (test.containerNumber);
-        cList.setCategory (ContainerList.Category.Any);
+        cList.setCategory (ContainersList.Category.Any);
         cList.setCurrentLocationFilter (freezer);
         cList.setContainerType (TubeBox5x5);
-        cList.setGroupBy (ContainerList.GroupBy.None);
+        cList.setGroupBy (ContainersList.GroupBy.None);
         cList.clickFilter ();
         containers = cList.getContainers ();
         assertEquals (containers.list.stream ().filter (c -> {

@@ -8,10 +8,10 @@ import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.util.List;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -22,7 +22,7 @@ import com.seleniumfy.test.utils.Timeout;
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class ContainerList extends CoraPage {
+public class ContainersList extends CoraPage {
 
     private final String   depleted                 = ".select-depletion";
     private final String   comments                 = "[ng-model='ctrl.comments']";
@@ -42,7 +42,7 @@ public class ContainerList extends CoraPage {
     private final String   bulkMoveSuccess          = ".toast-success";
     private final String   bulkMoveError            = ".toast-error";
 
-    public ContainerList () {
+    public ContainersList () {
         staticNavBarHeight = 90;
     }
 
@@ -118,7 +118,7 @@ public class ContainerList extends CoraPage {
             c.name = getText (columns.get (5));
             c.location = getText (columns.get (6));
             String capacity = getText (columns.get (7));
-            c.capacity = Integer.parseInt (Strings.isNotNullAndNotEmpty (capacity) ? capacity : "0");
+            c.capacity = Integer.parseInt (isNotNullAndNotEmpty (capacity) ? capacity : "0");
             return c;
         }).collect (toList ()));
     }
@@ -452,7 +452,8 @@ public class ContainerList extends CoraPage {
 
     public boolean rowIsSelected (String containerName) {
         String row = format ("//*[@title='%s']/ancestor::tr", containerName);
-        return getAttribute (row, "class").contains ("highlighted-blue");
+        String rowClass = getAttribute (row, "class");
+        return rowClass != null && rowClass.contains ("highlighted-blue");
     }
 
     public List <String> getBulkMoveActions () {

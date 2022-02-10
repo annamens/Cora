@@ -25,8 +25,8 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
-import com.adaptivebiotech.cora.ui.container.ContainerList.BulkMoveAction;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
+import com.adaptivebiotech.cora.ui.container.ContainersList.BulkMoveAction;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
@@ -38,7 +38,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
 
     private Login                    login                  = new Login ();
     private OrdersList               ordersList             = new OrdersList ();
-    private ContainerList            containerList          = new ContainerList ();
+    private ContainersList           containersList         = new ContainersList ();
     private Detail                   detail                 = new Detail ();
     private History                  history                = new History ();
     private final Container          invalidFreezer         = freezerAB018056;
@@ -64,27 +64,27 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Containers containers = setupTwoPlates ();
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
-        containerList.searchContainerIdsOrNames (allContainerIDs);
-        containerList.clickBulkMoveContainers ();
-        assertFalse (containerList.scanFieldDisplayed ());
-        containerList.selectContainerToBulkMove (allContainerIDs.get (0));
-        assertTrue (containerList.rowIsSelected (allContainerIDs.get (0)));
-        assertFalse (containerList.rowIsSelected (allContainerIDs.get (1)));
-        containerList.selectContainerToBulkMove (allContainerIDs.get (1));
-        assertTrue (containerList.rowIsSelected (allContainerIDs.get (0)));
-        assertTrue (containerList.rowIsSelected (allContainerIDs.get (1)));
+        containersList.searchContainerIdsOrNames (allContainerIDs);
+        containersList.clickBulkMoveContainers ();
+        assertFalse (containersList.scanFieldDisplayed ());
+        containersList.selectContainerToBulkMove (allContainerIDs.get (0));
+        assertTrue (containersList.rowIsSelected (allContainerIDs.get (0)));
+        assertFalse (containersList.rowIsSelected (allContainerIDs.get (1)));
+        containersList.selectContainerToBulkMove (allContainerIDs.get (1));
+        assertTrue (containersList.rowIsSelected (allContainerIDs.get (0)));
+        assertTrue (containersList.rowIsSelected (allContainerIDs.get (1)));
         testLog ("SR-3229:R1: Clicking bulk move button enabled container selection");
         List <String> expectedActions = asList (BulkMoveAction.BulkMoveToMyCustody.text,
                                                 BulkMoveAction.BulkMoveToFreezer.text);
-        assertEquals (containerList.getBulkMoveActions (), expectedActions);
+        assertEquals (containersList.getBulkMoveActions (), expectedActions);
         testLog (format ("SR-3229:R2: Containers list page contained actions: %1$s, %2$s",
                          expectedActions.get (0),
                          expectedActions.get (1)));
-        containerList.selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
-        assertFalse (containerList.isFreezerDropdownEnabled ());
+        containersList.selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
+        assertFalse (containersList.isFreezerDropdownEnabled ());
         testLog ("SR-3229:R4: Bulk Move to My Custody option did not allow user to select freezer");
-        containerList.selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
-        assertTrue (containerList.isFreezerDropdownEnabled ());
+        containersList.selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
+        assertTrue (containersList.isFreezerDropdownEnabled ());
         testLog ("SR-3229:R4: Bulk Move to Freezer option allowed user to select freezer");
     }
 
@@ -95,10 +95,10 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Containers containers = setupTwoPlates ();
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
-        containerList.searchContainerIdsOrNames (allContainerIDs);
-        Containers parsedContainers = containerList.getContainers ();
+        containersList.searchContainerIdsOrNames (allContainerIDs);
+        Containers parsedContainers = containersList.getContainers ();
         String moveToFreezerComment = randomWords (10);
-        containerList.bulkMoveAllToFreezer (catchAllFreezer, moveToFreezerComment);
+        containersList.bulkMoveAllToFreezer (catchAllFreezer, moveToFreezerComment);
         parsedContainers = waitForUpdatedContainers (parsedContainers);
         verifyMoveSuccessMessage (parsedContainers);
         testLog ("SR-3229:R2: User was able to add custom comment to the Bulk Move to Freezer action");
@@ -117,11 +117,11 @@ public class BulkMoveTestSuite extends ContainerTestBase {
                              container.containerNumber));
         }
         history.clickContainers ();
-        containerList.searchContainerIdsOrNames (allContainerIDs);
+        containersList.searchContainerIdsOrNames (allContainerIDs);
         String moveToCustodyComment = randomWords (10);
-        containerList.bulkMoveAllToCustody (moveToCustodyComment);
+        containersList.bulkMoveAllToCustody (moveToCustodyComment);
         parsedContainers = waitForUpdatedContainers (parsedContainers);
-        assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
+        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
         testLog ("SR-3229:R2: User was able to add custom comment to Bulk Move to My Custody action");
         for (Container container : containers.list) {
             Container parsedContainer = parsedContainers.list.stream ()
@@ -139,13 +139,13 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     }
 
     private void verifyMoveSuccessMessage (Containers expectedContainers) {
-        assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
+        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
         testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
-        containerList.clickSuccessMessageLink ();
+        containersList.clickSuccessMessageLink ();
         List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
         getDriver ().switchTo ().window (windows.get (1));
-        containerList.isCorrectPage ();
-        Set <String> parsedContainerIDs = new HashSet <> (getContainerIDs (containerList.getContainers ()));
+        containersList.isCorrectPage ();
+        Set <String> parsedContainerIDs = new HashSet <> (getContainerIDs (containersList.getContainers ()));
         Set <String> expectedContainerIDs = new HashSet <> (getContainerIDs (expectedContainers));
         assertEquals (parsedContainerIDs, expectedContainerIDs);
         testLog ("SR-3229:R6: Clicking the success message link displayed container list filtered to the containers moved");
@@ -168,7 +168,6 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         containerFromList.comment = expectedComment;
-        containerFromList.name = containerFromList.name.isEmpty () ? null : containerFromList.name;
         containerFromList.depleted = containerFromList.depleted == null ? false : containerFromList.depleted;
         verifyMovedToContainer (histories.get (0), containerFromList);
         verifyDetails (containerFromDetails, containerFromList);
@@ -192,7 +191,6 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         containerFromList.comment = expectedComment;
-        containerFromList.name = containerFromList.name.isEmpty () ? null : containerFromList.name;
         containerFromList.depleted = containerFromList.depleted == null ? false : containerFromList.depleted;
         verifyTookCustody (histories.get (0), containerFromList);
         verifyDetails (containerFromDetails, containerFromList);
@@ -202,10 +200,10 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Containers containers = setupAllMoveableContainerTypes ();
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
-        containerList.searchContainerIdsOrNames (allContainerIDs);
-        Containers parsedContainers = containerList.getContainers ();
-        containerList.bulkMoveAllToFreezer (catchAllFreezer);
-        assertTrue (containerList.isBulkMoveSuccessMessageDisplayed ());
+        containersList.searchContainerIdsOrNames (allContainerIDs);
+        Containers parsedContainers = containersList.getContainers ();
+        containersList.bulkMoveAllToFreezer (catchAllFreezer);
+        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
         parsedContainers = waitForUpdatedContainers (parsedContainers);
         for (Container container : containers.list) {
             Container parsedContainer = parsedContainers.list.stream ()
@@ -214,9 +212,9 @@ public class BulkMoveTestSuite extends ContainerTestBase {
             verifyMoveToFreezer (parsedContainer, catchAllFreezer);
         }
         history.clickContainers ();
-        containerList.searchContainerIdsOrNames (allContainerIDs);
-        parsedContainers = containerList.getContainers ();
-        containerList.bulkMoveAllToCustody ();
+        containersList.searchContainerIdsOrNames (allContainerIDs);
+        parsedContainers = containersList.getContainers ();
+        containersList.bulkMoveAllToCustody ();
         parsedContainers = waitForUpdatedContainers (parsedContainers);
         for (Container container : containers.list) {
             Container parsedContainer = parsedContainers.list.stream ()
@@ -233,12 +231,12 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Containers containers = setupAllMoveableContainerTypes ();
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
-        containerList.searchContainerIdsOrNames (allContainerIDs);
+        containersList.searchContainerIdsOrNames (allContainerIDs);
         Containers expectedContainersFailed = new Containers (containers.list.stream ()
                                                                              .filter (container -> container.containerType.name ()
                                                                                                                           .equals (ContainerType.MatrixTube.name ()) || container.containerType.equals (ContainerType.ConicalBox6x6))
                                                                              .collect (Collectors.toList ()));
-        containerList.bulkMoveAllToFreezer (invalidFreezer);
+        containersList.bulkMoveAllToFreezer (invalidFreezer);
         verifyMoveErrorMessage (expectedContainersFailed);
         for (Container container : containers.list) {
             verifyStillInCustody (container);
@@ -247,8 +245,8 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     }
 
     private void verifyMoveErrorMessage (Containers expectedContainersFailed) {
-        assertTrue (containerList.isBulkMoveErrorMessageDisplayed ());
-        String errorMessage = containerList.getBulkMoveErrorMessage ();
+        assertTrue (containersList.isBulkMoveErrorMessageDisplayed ());
+        String errorMessage = containersList.getBulkMoveErrorMessage ();
         assertTrue (errorMessage.contains ("Failed to move containers"));
         assertTrue (expectedContainersFailed.list.stream ()
                                                  .allMatch (Container -> errorMessage.contains (Container.containerNumber)));
@@ -286,7 +284,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Containers parsedContainers = null;
         Timeout timer = new Timeout (millisRetry, waitRetry);
         while (!timer.Timedout ()) {
-            parsedContainers = containerList.getContainers ();
+            parsedContainers = containersList.getContainers ();
             String parsedLocation = parsedContainers.list.get (0).location;
             String previousLocation = previousContainers.list.get (0).location;
             if (!parsedLocation.equals (previousLocation)) {

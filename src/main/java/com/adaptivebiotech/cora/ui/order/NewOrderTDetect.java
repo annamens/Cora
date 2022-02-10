@@ -31,6 +31,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 public class NewOrderTDetect extends NewOrder {
 
     public BillingNewOrderTDetect billing          = new BillingNewOrderTDetect ();
+    private Accession             accession        = new Accession ();
     private final String          dateSigned       = "[formcontrolname='dateSigned']";
     private final String          orderNotes       = "#order-notes";
     private final String          collectionDate   = "[formcontrolname='collectionDate']";
@@ -228,9 +229,8 @@ public class NewOrderTDetect extends NewOrder {
         assertTrue (setText (orderNotes, notes));
     }
 
-    @Override
     public String getOrderNotes () {
-        return isElementPresent (orderNotes) && isElementVisible (orderNotes) ? readInput (orderNotes) : null;
+        return readInput (orderNotes);
     }
 
     @Override
@@ -240,11 +240,11 @@ public class NewOrderTDetect extends NewOrder {
 
     @Override
     public String getDateSigned () {
-        return isElementPresent (dateSigned) && isElementVisible (dateSigned) ? readInput (dateSigned) : null;
+        return isElementVisible (dateSigned) ? readInput (dateSigned) : null;
     }
 
     public String getCollectionDate () {
-        return isElementPresent (collectionDate) && isElementVisible (collectionDate) ? readInput (collectionDate) : null;
+        return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
     }
 
     public String getPatientGender () {
@@ -352,29 +352,28 @@ public class NewOrderTDetect extends NewOrder {
                                       OrderStatus orderStatus,
                                       ContainerType containerType) {
         // create T-Detect order
-        String orderNum = createTDetectOrder (physician,
-                                              patient,
-                                              icdCodes,
-                                              collectionDate,
-                                              assayTest);
+        String orderNum = createTDetectOrder (physician, patient, icdCodes, collectionDate, assayTest);
 
         // add diagnostic shipment
         new NewShipment ().createShipment (orderNum, containerType);
 
         // accession complete
         if (orderStatus.equals (Active)) {
-            new Accession ().completeAccession ();
+            accession.completeAccession ();
 
             // activate order
             isCorrectPage ();
             waitForSpecimenDelivery ();
             waitForHistory ();
             activateOrder ();
-        }
 
-        // for T-Detect, refreshing the page doesn't automatically take you to order detail
-        gotoOrderDetailsPage (getOrderId ());
-        isCorrectPage ();
+            // for T-Detect, refreshing the page doesn't automatically take you to order detail
+            gotoOrderDetailsPage (getOrderId ());
+            isCorrectPage ();
+        } else {
+            accession.clickOrderNumber ();
+            isCorrectPage ();
+        }
 
         return orderNum;
     }

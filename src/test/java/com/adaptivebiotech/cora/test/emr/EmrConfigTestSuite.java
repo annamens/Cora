@@ -8,6 +8,7 @@ import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,7 +48,6 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
     private final String     newEmrSavedMsg    = "New EMR Config successfully saved.";
     private final String     emrUpdatedMsg     = "EMR Config successfully updated.";
     private final String     emrEditedMsg      = "EMR Config Edited Test Suite will be cloned";
-    private final String     fixErrorsMsg      = "Please fix the highlighted errors.";
     private final String     notValidJsonMsg   = "Not valid JSON format.";
 
     private final String     emrConfigId       = randomUUID ().toString ();
@@ -81,22 +81,22 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         testLog ("Create new EMR Config page displays and contains the following elements:");
         testLog ("STEP 3.1 - disabled Save button");
 
-        assertTrue (createEmrConfig.getEmrConfigId ().isEmpty ());
-        assertTrue (createEmrConfig.getEmrType ().isEmpty ());
-        assertTrue (createEmrConfig.getDisplayName ().isEmpty ());
-        assertTrue (createEmrConfig.getClientId ().isEmpty ());
-        assertTrue (createEmrConfig.getIss ().isEmpty ());
-        assertTrue (createEmrConfig.getClientSecret ().isEmpty ());
+        assertNull (createEmrConfig.getEmrConfigId ());
+        assertNull (createEmrConfig.getEmrType ());
+        assertNull (createEmrConfig.getDisplayName ());
+        assertNull (createEmrConfig.getClientId ());
+        assertNull (createEmrConfig.getIss ());
+        assertNull (createEmrConfig.getClientSecret ());
 
         List <Map <String, String>> userEmails = createEmrConfig.getUserEmails ();
-        assertTrue (userEmails.size () == 1);
-        assertTrue (userEmails.get (0).get ("key").isEmpty ());
-        assertTrue (userEmails.get (0).get ("email").isEmpty ());
+        assertEquals (userEmails.size (), 1);
+        assertNull (userEmails.get (0).get ("key"));
+        assertNull (userEmails.get (0).get ("email"));
 
         List <Map <String, String>> properties = createEmrConfig.getProperties ();
-        assertTrue (properties.size () == 1);
-        assertTrue (properties.get (0).get ("key").isEmpty ());
-        assertTrue (properties.get (0).get ("value").isEmpty ());
+        assertEquals (properties.size (), 1);
+        assertNull (properties.get (0).get ("key"));
+        assertNull (properties.get (0).get ("value"));
         testLog ("the following text fields with no default values:");
         testLog ("STEP 3.2 - EMR Config Id, EMR Type, Display Name, Client Id, ISS, Client Secret, 2 Users Emails fields: Key, Email, 2 Properties fields: Key, Value");
 
@@ -109,7 +109,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
 
         createEmrConfig.enterEmrConfigId (emrConfigId);
         createEmrConfig.clickSave ();
-        assertEquals (createEmrConfig.getOverlayMessage (), fixErrorsMsg);
+        assertEquals (createEmrConfig.getOverlayMessage (), "Please fix the highlighted errors.");
 
         Map <String, String> fieldErrors = createEmrConfig.getFieldErrors ();
         String mandatoryFieldError = "Mandatory field.";
@@ -137,7 +137,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         testLog ("STEP 5.2 - Clone button displays");
 
         List <Map <String, Object>> queryResults = coraDBClient.executeSelectQuery (createEmrQuery);
-        assertTrue (queryResults.size () == 1);
+        assertEquals (queryResults.size (), 1);
         Map <String, Object> queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("emr_type").toString (), emrType);
         assertEquals (queryEmrData.get ("display_name").toString (), displayName);
@@ -179,7 +179,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         jsonObjProperty.put (propKey2, propValue2);
 
         queryResults = coraDBClient.executeSelectQuery (createEmrQuery);
-        assertTrue (queryResults.size () == 1);
+        assertEquals (queryResults.size (), 1);
         queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("emr_type").toString (), emrType);
         assertEquals (queryEmrData.get ("display_name").toString (), displayName);
@@ -195,9 +195,8 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (toEmrTransforms (coraDBClient.jsonbToString (queryEmrData.get ("transforms"))), transforms);
         testLog ("STEP 8 - Result is 1 row that contains the above values");
 
-        queryResults = coraDBClient.executeSelectQuery (String.format (emrAccountsQuery,
-                                                                       emrConfigId));
-        assertTrue (queryResults.size () == 2);
+        queryResults = coraDBClient.executeSelectQuery (format (emrAccountsQuery, emrConfigId));
+        assertEquals (queryResults.size (), 2);
         testLog ("STEP 9.1 - Two rows are returned");
         assertEquals (queryResults.get (0).get ("name").toString (), accounts[0]);
         assertEquals (queryResults.get (1).get ("name").toString (), accounts[1]);
@@ -221,7 +220,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         jsonObjProperty.remove (propKey2);
 
         queryResults = coraDBClient.executeSelectQuery (createEmrQuery);
-        assertTrue (queryResults.size () == 1);
+        assertEquals (queryResults.size (), 1);
         queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("emr_type").toString (), emrType);
         assertEquals (queryEmrData.get ("display_name").toString (), updateDisplayName);
@@ -237,9 +236,8 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (toEmrTransforms (coraDBClient.jsonbToString (queryEmrData.get ("transforms"))), transforms);
         testLog ("STEP 11 - Result is 1 row that contains the above values");
 
-        queryResults = coraDBClient.executeSelectQuery (String.format (emrAccountsQuery,
-                                                                       emrConfigId));
-        assertTrue (queryResults.size () == 1);
+        queryResults = coraDBClient.executeSelectQuery (format (emrAccountsQuery, emrConfigId));
+        assertEquals (queryResults.size (), 1);
         testLog ("STEP 12.1 - One row is returned");
         assertEquals (queryResults.get (0).get ("name").toString (), accounts[1]);
         testLog ("STEP 12.2 - Account name is Test Account 1 X");
@@ -259,9 +257,9 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (emrConfigDetails.getOverlayMessage (), emrEditedMsg);
         createEmrConfig.isCorrectPage ();
 
-        assertTrue (createEmrConfig.getEmrConfigId ().isEmpty ());
+        assertNull (createEmrConfig.getEmrConfigId ());
         assertEquals (createEmrConfig.getEmrType (), emrType);
-        assertTrue (createEmrConfig.getDisplayName ().isEmpty ());
+        assertNull (createEmrConfig.getDisplayName ());
         assertEquals (createEmrConfig.getClientId (), clientId);
         assertTrue (createEmrConfig.isTrustEmailChecked ());
         assertEquals (createEmrConfig.getVersion (), "0");
@@ -274,7 +272,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (cloneProperties.get (0).get ("key"), propKey1);
         assertEquals (cloneProperties.get (0).get ("value"), propValue1);
         assertEquals (toEmrTransforms (createEmrConfig.getTransforms ()), transforms);
-        assertTrue (createEmrConfig.getNewAccounts ().size () == 1);
+        assertEquals (createEmrConfig.getNewAccounts ().size (), 1);
         assertEquals (createEmrConfig.getNewAccounts ().get (0), accounts[1]);
         testLog ("STEP 15 - validate cloned fields");
 
@@ -282,8 +280,8 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         String clonedDisplayName = "Cloned Config";
         createEmrConfig.enterDisplayName (clonedDisplayName);
         createEmrConfig.clickSave ();
-        createEmrConfig.clickSave ();
-        assertEquals (emrConfigDetails.getOverlayMessage (), fixErrorsMsg);
+        assertEquals (emrConfigDetails.getOverlayMessage (),
+                      "Backend failed: Error code: 500. Error text: Internal Server Error.");
         testLog ("STEP 16 - Error message displays indicating JSON format is not valid.");
 
         String clonedEmrConfigId = randomUUID ().toString ();

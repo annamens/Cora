@@ -323,7 +323,7 @@ public final class Orders {
     public enum DeliveryType {
         CustomerShipment ("Shipping Specimen to Adaptive"),
         PathRequest ("Adaptive Assists with Specimen Retrieval"),
-        Reflex ("Use specimen stored at Adaptive (Reflex)"),
+        Reflex ("Use Specimen Stored at Adaptive (Reflex)"),
         BloodDrawLabCorp ("Adaptive Schedules Patient Blood Draw with LabCorp"),
         BloodDrawHome ("Adaptive Schedules Patient In-Home Blood Draw");
 

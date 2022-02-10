@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
@@ -45,7 +45,7 @@ public class ScanTestSuite extends ContainerTestBase {
 
     @BeforeClass
     public void beforeClass () {
-        addCoraToken ();
+        coraApi.addCoraToken ();
         mytestContainers = coraApi.addContainers (new Containers (asList (container (Slide), container (SlideBox5))));
 
         // setup for shipment is in arrived state
@@ -61,7 +61,7 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.setContainerName (2, scanTest);
         shipment.clickSave ();
         shipContainers = shipment.getPrimaryContainers (Tube);
-        closeBrowser ();
+        shipment.closeBrowser ();
     }
 
     @BeforeMethod
@@ -77,13 +77,13 @@ public class ScanTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.ContainersListValidScan
+     * @sdlc.requirements 126.ContainersListValidScan
      */
     public void inventory_list_view () {
         ordersList.clickContainers ();
 
         // test: container doesn't exist
-        ContainerList list = new ContainerList ();
+        ContainersList list = new ContainersList ();
         list.scan ("xxxxxx");
         assertEquals (list.getScanError (), format (error1, "xxxxxx"));
 
@@ -102,7 +102,7 @@ public class ScanTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.ContainersListValidScan
+     * @sdlc.requirements 126.ContainersListValidScan
      */
     public void my_custody_view () {
         ordersList.gotoMyCustody ();
@@ -127,7 +127,7 @@ public class ScanTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.TransformHoldingContainer
+     * @sdlc.requirements 126.TransformHoldingContainer
      */
     public void holding_container () {
         Container child = SerializationUtils.clone (mytestContainers.list.get (0));

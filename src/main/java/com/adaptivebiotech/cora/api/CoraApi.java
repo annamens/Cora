@@ -10,6 +10,7 @@ import static com.seleniumfy.test.utils.HttpClientHelper.body;
 import static com.seleniumfy.test.utils.HttpClientHelper.encodeUrl;
 import static com.seleniumfy.test.utils.HttpClientHelper.formPost;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
+import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import static com.seleniumfy.test.utils.HttpClientHelper.put;
 import static java.lang.String.format;
@@ -82,12 +83,12 @@ public class CoraApi {
 
     public void resetheaders () {
         HttpClientHelper.resetheaders ();
-        HttpClientHelper.headers.get ().add (username);
+        headers.get ().add (username);
     }
 
     public String auth () {
         resetheaders ();
-        HttpClientHelper.headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
+        headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
         String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
         apiToken = new BasicHeader ("X-Api-Token", token);
         return token;
@@ -95,6 +96,13 @@ public class CoraApi {
 
     public String basicAuth (String user, String pass) {
         return "Basic " + printBase64Binary (join (":", user, pass).getBytes ());
+    }
+
+    public void addCoraToken () {
+        if (!headers.get ().contains (apiToken))
+            headers.get ().add (apiToken);
+        if (!headers.get ().contains (username))
+            headers.get ().add (username);
     }
 
     public Containers addContainers (ContainerType type, String barcode, Container root, int num) {
