@@ -24,7 +24,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <parallel>methods</parallel>
-        <test.threads>2</test.threads>
+        <test.threads>1</test.threads>
         <test.env>test</test.env>
         <testng.verbose>1</testng.verbose>
     </properties>
