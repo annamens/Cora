@@ -32,6 +32,7 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.test.hl7.HL7TestBase;
 import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
@@ -54,6 +55,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
     private TaskDetail          taskDetail     = new TaskDetail ();
     private OrderStatus         orderStatus    = new OrderStatus ();
     private OrderDetailClonoSeq orderDetail    = new OrderDetailClonoSeq ();
+    private OrcaHistory         history        = new OrcaHistory ();
     private Physician           physician;
 
     @BeforeClass (alwaysRun = true)
@@ -92,6 +94,13 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         testLog ("released ID report");
 
         report.clickOrderStatusTab ();
+        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.isFilePresent (gatewayJson);
+        testLog ("gateway message sent");
+
+        history.clickOrder ();
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         orderStatus.clickReportTab (ID_BCell2_CLIA);
@@ -134,6 +143,13 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         testLog ("released MRD report");
 
         report.clickOrderStatusTab ();
+        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.isFilePresent (gatewayJson);
+        testLog ("gateway message sent");
+
+        history.clickOrder ();
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         orderStatus.clickReportTab (MRD_BCell2_CLIA);
@@ -180,6 +196,13 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
         report.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.isFilePresent (gatewayJson);
+        testLog ("gateway message sent");
+
+        history.clickOrder ();
+        orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         orderStatus.clickReportTab (ID_TCRB);
         report.isCorrectPage ();
@@ -220,6 +243,13 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         testLog ("released TCRB MRD report");
 
         report.clickOrderStatusTab ();
+        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.isFilePresent (gatewayJson);
+        testLog ("gateway message sent");
+
+        history.clickOrder ();
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         orderStatus.clickReportTab (MRD_TCRB);
