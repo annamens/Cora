@@ -118,11 +118,11 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
         testLog ("STEP 1.1 - Shipment saves successfully");
 
         Containers containers = shipment.getPrimaryContainers (SlideBox5CS);
-        assertTrue (containers.list.size () == 1);
+        assertEquals (containers.list.size (), 1);
 
-        String containerNumberPattern = "CO-\\d{6}";
+        String containerNumberPattern = "CO-\\d{7}";
         Container container = containers.list.get (0);
-        assertTrue (container.containerNumber.matches (containerNumberPattern));
+        assertTrue (container.containerNumber.matches (containerNumberPattern), container.containerNumber);
         assertEquals (container.children.size (), 3);
         assertTrue (container.children.get (0).containerNumber.matches (containerNumberPattern));
         assertTrue (container.children.get (1).containerNumber.matches (containerNumberPattern));
