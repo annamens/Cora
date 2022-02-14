@@ -40,6 +40,13 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
 
+/**
+ * Note:
+ * - we only have 1 pipeline node for secondary analysis, set this for single threaded test run
+ * 
+ * @author Olha Tereshchuk
+ *         <a href="mailto:otereshchuk@adaptivebiotech.com">otereshchuk@adaptivebiotech.com</a>
+ */
 @Test (groups = { "regression", "akita" }, singleThreaded = true)
 public class GatewayNotificationTestSuite extends HL7TestBase {
 

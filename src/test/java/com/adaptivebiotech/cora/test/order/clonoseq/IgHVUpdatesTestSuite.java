@@ -49,8 +49,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import static org.testng.ITestResult.SKIP;
-import static org.testng.Reporter.getCurrentTestResult;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -61,7 +59,6 @@ import java.util.UUID;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.json.JSONArray;
-import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -93,6 +90,14 @@ import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
+/**
+ * Note:
+ * - this feature is in Prod, we don't need a test for feature flag off anymore
+ * - we only have 1 pipeline node for secondary analysis, set this for single threaded test run
+ * 
+ * @author Jaydeepkumar Patel
+ *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
+ */
 @Test (groups = { "regression", "nutmeg" }, singleThreaded = true)
 public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
@@ -177,10 +182,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * - icd codes: C83.00
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder1CLIAFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 1
+    public void verifyIgHVStageAndReportFeatureOrder1CLIA () {
         Assay assayTest = ID_BCell2_CLIA;
         Order orderDetails = createOrder (IgHVPhysician,
                                           assayTest,
@@ -222,10 +224,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder2CLIAFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 2
+    public void verifyIgHVStageAndReportFeatureOrder2CLIA () {
         Assay assayTest = ID_BCell2_CLIA;
         Order orderDetails = createOrder (NYPhysician,
                                           assayTest,
@@ -267,10 +266,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder3IVDFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 3
+    public void verifyIgHVStageAndReportFeatureOrder3IVD () {
         Assay assayTest = ID_BCell2_IVD;
         Order orderDetails = createOrder (IgHVPhysician,
                                           assayTest,
@@ -312,10 +308,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder4IVDFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 4
+    public void verifyIgHVStageAndReportFeatureOrder4IVD () {
         Assay assayTest = ID_BCell2_IVD;
         Order orderDetails = createOrder (IgHVPhysician,
                                           assayTest,
@@ -357,10 +350,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder5CLIAFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 5
+    public void verifyIgHVStageAndReportFeatureOrder5CLIA () {
         Order orderDetails = createOrder (IgHVPhysician,
                                           ID_BCell2_CLIA,
                                           FFPEScrolls,
@@ -393,10 +383,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder6IVDFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 6
+    public void verifyIgHVStageAndReportFeatureOrder6IVD () {
         Order orderDetails = createOrder (IgHVPhysician,
                                           ID_BCell2_CLIA,
                                           CellSuspension,
@@ -429,10 +416,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder7IVDFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 7
+    public void verifyIgHVStageAndReportFeatureOrder7IVD () {
         Order orderDetails = createOrder (IgHVPhysician,
                                           ID_BCell2_CLIA,
                                           CellPellet,
@@ -453,52 +437,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order7 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 14 - 2 - order7 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
-    }
-
-    /**
-     * Note:
-     * - SR-T3689
-     * - ask the Cora dev team to turn the IgHV feature flag OFF
-     * - non-CLEP physician
-     * - specimen type / source: Cell pellet / PBMC
-     * - icd codes: C83.00
-     * 
-     * @sdlc.requirements SR-6656:R7
-     */
-    @Test (groups = "featureFlagOff")
-    public void verifyIgHVStageAndReportCLIAFeatureFlagOff () {
-        skipFlagOn ();
-
-        // order 8
-        Assay assayTest = ID_BCell2_CLIA;
-        Order orderDetails = createOrder (IgHVPhysician,
-                                          assayTest,
-                                          CellPellet,
-                                          PBMC,
-                                          new String[] { c83_00, c91_10 },
-                                          "Order 8 Flag Off");
-
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "false", "false");
-
-        forceStatusUpdate (orderDetails.specimenDto.sampleName,
-                           tsvOverridePathO5O6O7O8,
-                           null,
-                           null,
-                           null,
-                           null);
-        testLog ("step 15 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
-
-        validateShmAnalysisStagesDrillDownUrl (true);
-        testLog ("step 16 - 1 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
-        testLog ("step 16 - 2 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
-
-        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
-        assertFalse (isCLIAIGHVFlagPresent);
-        testLog ("step 17 - CLIA-IGHV flag did not appear below the Report tab");
-
-        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
-        assertNull (reportData.shmReportResult);
-        testLog ("step 18 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
     /**
@@ -1229,19 +1167,5 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
             reader.close ();
         }
         return extractedText;
-    }
-
-    private void skipFlagOn () {
-        if (isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is on, this test is for feature IgHV flag off");
-        }
-    }
-
-    private void skipFlagOff () {
-        if (!isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
-        }
     }
 }
