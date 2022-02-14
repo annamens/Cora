@@ -199,7 +199,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         addContainer.addContainer (newContainerType, 1);
 
         Containers emptyContainers = addContainer.getContainers ();
-        assertTrue (emptyContainers.list.size () == 1);
+        assertEquals (emptyContainers.list.size (), 1);
         assertNull (emptyContainers.list.get (0).containerNumber);
         assertNull (emptyContainers.list.get (0).name);
         assertNull (emptyContainers.list.get (0).location);
@@ -220,28 +220,26 @@ public class NewContainerTestSuite extends ContainerTestBase {
 
         Containers newContainers = addContainer.getContainers ();
         String newContainerNo = newContainers.list.get (0).containerNumber;
-        assertTrue (newContainers.list.size () == 1);
-        assertTrue (newContainerNo.matches ("CO-\\d{6}"));
+        assertEquals (newContainers.list.size (), 1);
+        assertTrue (newContainerNo.matches ("CO-\\d{7}"));
         Logging.testLog ("STEP 3.4 - Adaptive Container ID is populated");
 
         addContainer.clickGenerateContainerLabels ();
         generateContainerLabels.isCorrectPage ();
         List <Map <String, String>> tableData = generateContainerLabels.getGenerateContainerLabelDetails ();
-        assertTrue (tableData.size () == 1);
+        assertEquals (tableData.size (), 1);
         Map <String, String> firstRowData = tableData.get (0);
-        assertTrue (firstRowData.containsKey ("Holding Container Type"));
-        assertTrue (firstRowData.containsKey ("Holding Container Name"));
-        assertTrue (firstRowData.containsKey ("Holding CO#"));
-        assertTrue (firstRowData.containsKey ("Container Type"));
-        assertTrue (firstRowData.containsKey ("Container Name"));
-        assertTrue (firstRowData.containsKey ("Loc"));
-        assertTrue (firstRowData.containsKey ("ASID (SP#)"));
-        assertTrue (firstRowData.containsKey ("ACID (CO#)"));
+        assertNull (firstRowData.get ("Holding Container Type"));
+        assertNull (firstRowData.get ("Holding Container Name"));
+        assertNull (firstRowData.get ("Holding CO#"));
+        assertEquals (firstRowData.get ("Container Type"), newContainerType.label);
+        assertNull (firstRowData.get ("Container Name"));
+        assertNull (firstRowData.get ("Loc"));
+        assertNull (firstRowData.get ("ASID (SP#)"));
+        assertEquals (firstRowData.get ("ACID (CO#)"), newContainerNo);
         assertTrue (generateContainerLabels.isPrintersVisible ());
         assertTrue (generateContainerLabels.isPrintVisible ());
         assertTrue (generateContainerLabels.isCloseVisible ());
-        assertEquals (firstRowData.get ("Container Type"), newContainerType.label);
-        assertEquals (firstRowData.get ("ACID (CO#)"), newContainerNo);
         Logging.testLog ("STEP 4 - Validate Generate Container Labels modal");
 
         assertTrue (generateContainerLabels.isCopyToClipboardVisible ());
@@ -259,7 +257,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         Logging.testLog ("STEP 6.2 - verify Container details");
 
         List <String> historyRows = containerDetails.getDetailHistory ();
-        assertTrue (historyRows.size () == 2, "UI History: " + history);
+        assertEquals (historyRows.size (), 2, "UI History: " + history);
         String todaysDate = DateUtils.getPastFutureDate (0);
         assertTrue (historyRows.get (0).startsWith (todaysDate));
         assertTrue (historyRows.get (0).endsWith ("Created by " + coraTestUser));
@@ -270,7 +268,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         containerDetails.gotoHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> containerHistory = history.getHistories ();
-        assertTrue (containerHistory.size () == 1);
+        assertEquals (containerHistory.size (), 1);
         assertTrue (containerHistory.get (0).activityDate.startsWith (todaysDate));
         assertEquals (containerHistory.get (0).activity, "Took Custody");
         assertEquals (containerHistory.get (0).location, coraTestUser);
