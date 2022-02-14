@@ -40,7 +40,7 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
 
-@Test (groups = { "akita", "regression" })
+@Test (groups = { "regression", "akita" }, singleThreaded = true)
 public class GatewayNotificationTestSuite extends HL7TestBase {
 
     private final String        bcellIdTsv     = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.id.tsv.gz";

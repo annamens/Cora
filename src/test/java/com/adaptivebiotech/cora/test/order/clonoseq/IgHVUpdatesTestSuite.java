@@ -12,9 +12,11 @@ import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUs
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.INDETERMINATE;
+import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.MUTATED;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.NO_CLONES;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.QC_FAILURE;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.UNMUTATED;
+import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
@@ -26,7 +28,12 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FFPEScrolls;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Failed;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
@@ -47,7 +54,6 @@ import static org.testng.Reporter.getCurrentTestResult;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -80,17 +86,14 @@ import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
 import com.adaptivebiotech.pipeline.dto.shm.SHMheader.EricSampleCall;
 import com.adaptivebiotech.pipeline.dto.shm.ShmResult;
-import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.adaptivebiotech.test.utils.PageHelper.StageName;
-import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
-@Test (groups = { "regression", "nutmeg" })
+@Test (groups = { "regression", "nutmeg" }, singleThreaded = true)
 public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
     private Physician             IgHVPhysician;
@@ -136,7 +139,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                                                                         pipelinePortalTestPass);
 
     private final String          orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
-    private final String          shmResultsSchema                 = "SELECT * FROM information_schema.columns WHERE table_name = 'shm_results' ORDER BY ordinal_position ASC";
+    private final String          shmResultsSchema                 = "select * from information_schema.columns where table_name = 'shm_results' order by ordinal_position asc";
     private final String          noResultsAvailable               = "No result available";
     private final String          beginIghvMutationStatus          = "IGHV MUTATION STATUS";
     private final String          beginClonalityResult             = "CLONALITY RESULT";
@@ -166,6 +169,13 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         isIgHVFlag.set (featureFlags.IgHV);
     }
 
+    /**
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: Cell pellet / PBMC
+     * - icd codes: C83.00
+     */
     @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder1CLIAFeatureFlagOn () {
         skipFlagOff ();
@@ -203,9 +213,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - CLEP physician
+     * - specimen type / source: Cell pellet / PBMC
+     * - icd codes: C83.00
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
@@ -246,9 +258,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: gDNA / Bone Marrow
+     * - icd codes: C91.10
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
@@ -289,9 +303,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: Blood
+     * - icd codes: C91.10
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
@@ -332,9 +348,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: FFPE Scrolls / Lymph Node
+     * - icd codes: C83.00
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
@@ -366,9 +384,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: Cell Suspension / B cells
+     * - icd codes: C91.10
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
@@ -400,9 +420,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: Cell pellet / PBMC
+     * - icd codes: C90.00
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
@@ -434,9 +456,12 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag OFF
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - ask the Cora dev team to turn the IgHV feature flag OFF
+     * - non-CLEP physician
+     * - specimen type / source: Cell pellet / PBMC
+     * - icd codes: C83.00
      * 
      * @sdlc.requirements SR-6656:R7
      */
@@ -477,8 +502,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
+     * Note:
+     * - SR-T3728
+     * - mutation status: MUTATED
+     * 
      * @sdlc.requirements SR-7163:R1, R3, R4, SR-7029:R1
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder1 () {
@@ -500,26 +528,25 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         releaseReport (assayTest, true);
         ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
-
-        assertTrue (Arrays.stream (ShmMutationStatus.values ())
-                          .anyMatch ( (t) -> t.equals (reportData.shmReportResult.mutationStatus)));
+        assertEquals (reportData.shmReportResult.mutationStatus, MUTATED);
         assertTrue (reportData.shmReportResult.shmSequenceList.size () >= 1);
-        ShmSequence shmSequenceList = reportData.shmReportResult.shmSequenceList.get (0);
-        assertNotNull (shmSequenceList.locus);
-        assertNotNull (shmSequenceList.sequence);
-        assertNotNull (shmSequenceList.percentMutation);
-        assertNotNull (shmSequenceList.productive);
-        assertNotNull (shmSequenceList.vSegment);
+        ShmSequence shmSequence = reportData.shmReportResult.shmSequenceList.get (0);
+        assertEquals (shmSequence.locus, IGH);
+        assertEquals (shmSequence.sequence,
+                      "CAGAGACAACGCCAAGAATTCAGTGTATCTTCAAATGGACAGTTTGAGAGTCGAAGACACGGCTACATATTACTGTGCGAGAGACTTATTAACCTCTAGAGCAGCAGCTGGAACAGTAGCTTTTGACATCTGGGGCCAAGGGACA");
+        assertEquals (shmSequence.percentMutation.doubleValue (), 12.2448980808d);
+        assertTrue (shmSequence.productive);
+        assertEquals (shmSequence.vSegment, "IGHV3-21*01");
         testLog ("step 2 - order 1 - validate mutationStatus, shmSequenceListproperty of shmReportResult");
-        testLog ("step 3 - order 1 - check test method below validateShmResultsTableSchema");
 
         validateShmResultReportType (orderDetails.orderTestId, reportData.shmReportResult.mutationStatus);
         testLog ("step 4 - order 1 - validate DB report_type matches reportData.json shmReportResult.mutationStatus");
-
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: UNMUTATED
      * 
      * @sdlc.requirements SR-7163:R3, SR-7028:R1
      */
@@ -545,7 +572,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: INDETERMINATE
      * 
      * @sdlc.requirements SR-7163:R3, SR-7028:R1
      */
@@ -571,7 +600,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: NO_CLONES
      * 
      * @sdlc.requirements SR-7163:R3, SR-7028:R1
      */
@@ -597,7 +628,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: QC_FAILURE
+     * - Indeterminate SHM analysis result
+     * - primary analysis passed, all clones have qc flags, no results available (QC failure)
      * 
      * @sdlc.requirements SR-7163:R3, SR-7029:R1
      */
@@ -636,7 +671,10 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: QC_FAILURE
+     * - primary analysis failed
      * 
      * @sdlc.requirements SR-7163:R3, SR-7029:R1
      */
@@ -655,15 +693,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         // set workflow property and force status update
         history.setWorkflowProperty (lastAcceptedTsvPath, tsvOverridePathOrcaIgHVO2O6O7);
-
         history.setWorkflowProperty (lastFinishedPipelineJobId, lastFinishedPipelineOrcaIgHVO6);
-
         history.setWorkflowProperty (sampleName, sampleNameOrcaIgHVO2O6O7);
-
-        history.forceStatusUpdate (StageName.NorthQC, StageStatus.Failed);
-
-        history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
-        assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
+        history.forceStatusUpdate (NorthQC, Failed);
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
+        assertTrue (history.isStagePresent (ClonoSEQReport, Awaiting, CLINICAL_QC));
 
         releaseReport (assayTest, false);
         String pdfUrl = reportClonoSeq.getPreviewReportPdfUrl ();
@@ -673,7 +707,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         testLog ("step 11 - order 6 - Clonality Result for workflow with failed Primary Analysis (NorthQC) displays No Result Available");
 
         ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
-        assertEquals (reportData.shmReportResult.mutationStatus, ShmMutationStatus.QC_FAILURE);
+        assertEquals (reportData.shmReportResult.mutationStatus, QC_FAILURE);
         testLog ("step 12 - order 6 - mutationStatus property contains the value QC_FAILURE");
 
         validateQueryReturnsZeroRow (orderDetails.orderTestId);
@@ -682,7 +716,10 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: QC_FAILURE
+     * - Clinical QC failed
      * 
      * @sdlc.requirements SR-7163:R3, SR-7029:R1
      */
@@ -713,9 +750,8 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         reportClonoSeq.setQCstatus (QC.Fail);
 
         history.gotoOrderDebug (orderDetails.specimenDto.sampleName);
-
-        history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
-        assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
+        assertTrue (history.isStagePresent (ClonoSEQReport, Awaiting, CLINICAL_QC));
 
         releaseReport (assayTest, true);
         String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
@@ -733,7 +769,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - no ShmAnalysis
      * 
      * @sdlc.requirements SR-7163:R1, R3, R4
      */
@@ -767,7 +805,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - a sample with 2 SHM analysis results, pass and fail respectively
      * 
      * @sdlc.requirements SR-7163:R1, R3, R4
      */
@@ -820,9 +860,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * NOTE: SR-T3728
-     * 
-     * validate shm_results table schema
+     * Note:
+     * - SR-T3728
+     * - validate shm_results table schema
      * 
      * @sdlc.requirements SR-7163:R1, R2, R3, R4, SR-7029:R1
      */
@@ -833,7 +873,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         for (int i = 0; i < queryResult.size (); i++) {
             Map <String, Object> rowMap = queryResult.get (i);
-            testLog ("Column Details: " + rowMap);
+            info ("Column Details: " + rowMap);
 
             switch (Integer.parseInt (rowMap.get ("ordinal_position").toString ())) {
             case 1:
@@ -905,7 +945,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                                           specimen,
                                                           Active,
                                                           Tube);
-        Logging.info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
+        info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
 
         String sampleName = diagnostic.getSampleName ();
         orderStatus.clickOrderStatusTab ();
@@ -978,16 +1018,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         history.setWorkflowProperty (WorkflowProperty.disableHiFreqSave, TRUE.toString ());
         history.setWorkflowProperty (WorkflowProperty.disableHiFreqSharing, TRUE.toString ());
 
-        history.forceStatusUpdate (StageName.SecondaryAnalysis, Ready);
+        history.forceStatusUpdate (SecondaryAnalysis, Ready);
 
-        history.waitFor (StageName.SecondaryAnalysis, Finished);
-        assertTrue (history.isStagePresent (StageName.SecondaryAnalysis, Finished));
-
-        history.waitFor (StageName.ShmAnalysis, Finished);
-        assertTrue (history.isStagePresent (StageName.ShmAnalysis, Finished));
-
-        history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
-        assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
+        history.waitFor (SecondaryAnalysis, Finished);
+        history.waitFor (ShmAnalysis, Finished);
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
     }
 
@@ -1002,7 +1037,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         List <Stage> stages = history.parseStatusHistory ();
         List <Stage> shmAnalysisStages = new LinkedList <> ();
         for (Stage stage : stages) {
-            if (stage.stageName.equals (StageName.ShmAnalysis))
+            if (stage.stageName.equals (ShmAnalysis))
                 shmAnalysisStages.add (stage);
         }
 
