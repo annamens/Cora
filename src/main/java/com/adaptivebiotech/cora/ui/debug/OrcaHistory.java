@@ -160,14 +160,12 @@ public class OrcaHistory extends CoraPage {
     }
 
     public void clickOrder () {
-        assertTrue (click ("//a[text()='order']"));
-        assertTrue (hasPageLoaded ());
+        assertTrue (navigateTo (getAttribute ("a[href*='/cora/order/auto']", "href")));
         pageLoading ();
     }
 
     public void clickOrderTest () {
-        assertTrue (click ("//a[text()='order test']"));
-        assertTrue (hasPageLoaded ());
+        assertTrue (navigateTo (getAttribute ("a[href*='/cora/order/status']", "href")));
         pageLoading ();
     }
 
