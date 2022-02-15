@@ -95,7 +95,7 @@ public class OrderAlert extends BasePage {
     }
 
     public String getAlertNote () {
-        return getAttribute (getAlertNote, "value");
+        return readInput (getAlertNote);
     }
 
 }
