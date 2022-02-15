@@ -297,8 +297,7 @@ public abstract class NewOrder extends OrderHeader {
         String css = "//*[text()='Patient Code']/parent::div//a";
         assertTrue (click (css));
         assertTrue (waitForChildWindows (2));
-        List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
-        getDriver ().switchTo ().window (windows.get (1));
+        navigateToTab (1);
     }
 
     public String getPatientCode () {

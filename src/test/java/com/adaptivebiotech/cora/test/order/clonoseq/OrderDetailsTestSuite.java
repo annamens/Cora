@@ -6,12 +6,12 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilli
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.limsTestUrl;
 import static com.adaptivebiotech.cora.utils.DateUtils.convertDateFormat;
 import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
 import static com.adaptivebiotech.cora.utils.DateUtils.pstZoneId;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.Blood;
@@ -172,8 +172,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         clonoSeqOrderDetail.isCorrectPage ();
         testLog ("STEP 5 - Patient order history page is opened");
 
-        String expectedLimsUrl = coraTestUrl.replace ("cora",
-                                                      "lims") + "/clarity/search?scope=Sample&query=" + activeOrder.specimenDto.specimenNumber;
+        String expectedLimsUrl = limsTestUrl + "/clarity/search?scope=Sample&query=" + activeOrder.specimenDto.specimenNumber;
         assertEquals (clonoSeqOrderDetail.getSpecimenIdUrlAttribute ("href"), expectedLimsUrl);
         assertEquals (clonoSeqOrderDetail.getSpecimenIdUrlAttribute ("target"), "_blank");
         testLog ("STEP 6 - Clarity LIMS link");

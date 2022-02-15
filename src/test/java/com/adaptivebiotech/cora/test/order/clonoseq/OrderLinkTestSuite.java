@@ -9,7 +9,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
-import java.util.List;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -101,10 +100,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         shipmentList.goToShipments ();
         shipmentList.isCorrectPage ();
-        List <com.adaptivebiotech.cora.dto.Shipment> shipments = shipmentList.getAllShipments ();
-        com.adaptivebiotech.cora.dto.Shipment orderShipment = shipments.stream ().filter (sh -> sh.link.equals (order))
-                                                                       .findFirst ().get ();
-        shipmentList.clickShipment (orderShipment.shipmentNumber);
+        shipmentList.clickShipment (shipmentList.getShipmentForOrder (order).shipmentNumber);
         shipment.isDiagnostic ();
         assertEquals (shipment.getOrderNumber (), order);
         testLog ("STEP 5 - clonoSEQ Order Form is displayed");
@@ -118,9 +114,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         shipmentList.goToShipments ();
         shipmentList.isCorrectPage ();
-        shipments = shipmentList.getAllShipments ();
-        orderShipment = shipments.stream ().filter (sh -> sh.link.equals (order)).findFirst ().get ();
-        shipmentList.clickShipment (orderShipment.shipmentNumber);
+        shipmentList.clickShipment (shipmentList.getShipmentForOrder (order).shipmentNumber);
         shipment.isDiagnostic ();
         Containers containers = shipment.getPrimaryContainers (Tube);
         shipment.clickContainerNo (containers.list.get (0).containerNumber);
@@ -175,10 +169,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         shipmentList.goToShipments ();
         shipmentList.isCorrectPage ();
-        List <com.adaptivebiotech.cora.dto.Shipment> shipments = shipmentList.getAllShipments ();
-        com.adaptivebiotech.cora.dto.Shipment orderShipment = shipments.stream ().filter (sh -> sh.link.equals (order))
-                                                                       .findFirst ().get ();
-        shipmentList.clickShipment (orderShipment.shipmentNumber);
+        shipmentList.clickShipment (shipmentList.getShipmentForOrder (order).shipmentNumber);
         shipmentDetail.isCorrectPage ();
         shipmentDetail.clickOrderNumber ();
         orderStatus.isCorrectPage ();
@@ -187,10 +178,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         shipmentList.goToShipments ();
         shipmentList.isCorrectPage ();
-        shipments = shipmentList.getAllShipments ();
-        orderShipment = shipments.stream ().filter (sh -> sh.link.equals (order))
-                                 .findFirst ().get ();
-        shipmentList.clickShipment (orderShipment.shipmentNumber);
+        shipmentList.clickShipment (shipmentList.getShipmentForOrder (order).shipmentNumber);
         shipmentDetail.isCorrectPage ();
         shipment.clickAccessionTab ();
         accession.isCorrectPage ();
@@ -201,9 +189,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
         shipmentList.goToShipments ();
         shipmentList.isCorrectPage ();
-        shipments = shipmentList.getAllShipments ();
-        orderShipment = shipments.stream ().filter (sh -> sh.link.equals (order)).findFirst ().get ();
-        shipmentList.clickShipment (orderShipment.shipmentNumber);
+        shipmentList.clickShipment (shipmentList.getShipmentForOrder (order).shipmentNumber);
         shipmentDetail.isCorrectPage ();
         Containers containers = shipmentDetail.getPrimaryContainers (Tube);
         shipmentDetail.clickContainerNo (containers.list.get (0).containerNumber);

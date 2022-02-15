@@ -1,13 +1,15 @@
-package com.adaptivebiotech.cora.test.order.clonoseq;
+package com.adaptivebiotech.cora.test.hl7.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRB;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_TCRB;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Amended;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
+import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildDiagnosticOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
@@ -21,13 +23,16 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_REPORT_NOTIFICATION;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.test.order.OrderTestBase;
+import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.test.hl7.HL7TestBase;
 import com.adaptivebiotech.cora.ui.Login;
+import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
@@ -35,8 +40,15 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.cora.ui.task.TaskStatus;
 
-@Test (groups = { "akita", "regression" })
-public class GatewayNotificationTestSuite extends OrderTestBase {
+/**
+ * Note:
+ * - we only have 1 pipeline node for secondary analysis, set this for single threaded test run
+ * 
+ * @author Olha Tereshchuk
+ *         <a href="mailto:otereshchuk@adaptivebiotech.com">otereshchuk@adaptivebiotech.com</a>
+ */
+@Test (groups = { "regression", "akita" }, singleThreaded = true)
+public class GatewayNotificationTestSuite extends HL7TestBase {
 
     private final String        bcellIdTsv     = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.id.tsv.gz";
     private final String        bcellMrdTsv    = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.mrd.tsv.gz";
@@ -50,6 +62,14 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
     private TaskDetail          taskDetail     = new TaskDetail ();
     private OrderStatus         orderStatus    = new OrderStatus ();
     private OrderDetailClonoSeq orderDetail    = new OrderDetailClonoSeq ();
+    private OrcaHistory         history        = new OrcaHistory ();
+    private Physician           physician;
+
+    @BeforeClass (alwaysRun = true)
+    public void beforeClass () {
+        coraApi.addCoraToken ();
+        physician = coraApi.getPhysician (clonoSEQ_client);
+    }
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -62,7 +82,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
      */
     public void verifyClonoSeqBcellGatewayMessageUpdate () {
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildDiagnosticOrder (patient,
+        Diagnostic diagnostic = buildDiagnosticOrder (physician,
+                                                      patient,
                                                       stage (SecondaryAnalysis, Ready),
                                                       genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
         assertEquals (coraApi.newDiagnosticOrder (diagnostic).patientId, patient.id);
@@ -80,6 +101,13 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("released ID report");
 
         report.clickOrderStatusTab ();
+        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.isFilePresent (gatewayJson);
+        testLog ("gateway message sent");
+
+        history.clickOrder ();
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         orderStatus.clickReportTab (ID_BCell2_CLIA);
@@ -103,7 +131,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Finished);
 
-        diagnostic = buildDiagnosticOrder (patient,
+        diagnostic = buildDiagnosticOrder (physician,
+                                           patient,
                                            stage (SecondaryAnalysis, Ready),
                                            genCDxTest (MRD_BCell2_CLIA, bcellMrdTsv));
         assertEquals (coraApi.newDiagnosticOrder (diagnostic).patientId, patient.id);
@@ -121,6 +150,13 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("released MRD report");
 
         report.clickOrderStatusTab ();
+        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.isFilePresent (gatewayJson);
+        testLog ("gateway message sent");
+
+        history.clickOrder ();
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         orderStatus.clickReportTab (MRD_BCell2_CLIA);
@@ -146,7 +182,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
      */
     public void verifyClonoSeqTcellGatewayMessageUpdate () {
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildDiagnosticOrder (patient,
+        Diagnostic diagnostic = buildDiagnosticOrder (physician,
+                                                      patient,
                                                       stage (NorthQC, Ready),
                                                       genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
@@ -165,6 +202,13 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("released TCRB ID report");
 
         report.clickOrderStatusTab ();
+        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.isFilePresent (gatewayJson);
+        testLog ("gateway message sent");
+
+        history.clickOrder ();
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         orderStatus.clickReportTab (ID_TCRB);
@@ -186,7 +230,8 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         taskDetail.clickTaskStatus ();
         taskStatus.waitFor (ReportDelivery, Finished);
 
-        diagnostic = buildDiagnosticOrder (patient,
+        diagnostic = buildDiagnosticOrder (physician,
+                                           patient,
                                            stage (NorthQC, Ready),
                                            genTcrTest (MRD_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
@@ -205,6 +250,13 @@ public class GatewayNotificationTestSuite extends OrderTestBase {
         testLog ("released TCRB MRD report");
 
         report.clickOrderStatusTab ();
+        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.isFilePresent (gatewayJson);
+        testLog ("gateway message sent");
+
+        history.clickOrder ();
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         orderStatus.clickReportTab (MRD_TCRB);
