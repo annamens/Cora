@@ -21,6 +21,7 @@ public final class FeatureFlags {
     public boolean locks;
     public boolean newClonalityOrderAlert;
     public boolean IgHV;
+    public boolean pathologyUpload;
 
     @Override
     public String toString () {

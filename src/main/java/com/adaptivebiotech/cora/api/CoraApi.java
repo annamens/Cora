@@ -444,4 +444,9 @@ public class CoraApi {
             deleteAlerts (alertIds);
         }
     }
+
+    public Order[] getOrderAttachments (String orderIdOrNo) {
+        String url = coraTestUrl + "/cora/api/v1/attachments/orders/" + orderIdOrNo;
+        return mapper.readValue (get (url), Order[].class);
+    }
 }
