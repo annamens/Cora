@@ -187,6 +187,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                           "Order 1 Flag On");
 
         validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        testLog ("step 1 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO1O2,
@@ -194,7 +195,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                            sampleNameO1O2,
                            null,
                            null);
-        testLog ("step 1 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 2 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
@@ -229,6 +229,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                           "Order 2 Flag On");
 
         validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "false", "true");
+        testLog ("step 5 - ighvAnalysisEnabled is true, ighvReportEnabled is false (or absent)");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO1O2,
@@ -236,7 +237,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                            sampleNameO1O2,
                            null,
                            null);
-        testLog ("step 5 - ighvAnalysisEnabled is true, ighvReportEnabled is false (or absent)");
         testLog ("step 6 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
@@ -271,6 +271,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                           "Order 3 Flag On");
 
         validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        testLog ("step 9, order3 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO3O4,
@@ -278,7 +279,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                            sampleNameO3O4,
                            null,
                            null);
-        testLog ("step 9, order3 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 10 - 1 - order3 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
@@ -313,6 +313,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                           "Order 4 Flag On");
 
         validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        testLog ("step 9, order4 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO3O4,
@@ -320,7 +321,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                            sampleNameO3O4,
                            null,
                            null);
-        testLog ("step 9, order4 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 10 - 1 - order4 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
@@ -354,6 +354,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                           "Order 6 Flag On");
 
         validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, null, null);
+        testLog ("step 13, order5 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO5O6O7O8,
@@ -361,7 +362,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                            null,
                            null,
                            null);
-        testLog ("step 13, order5 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order5 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
@@ -387,6 +387,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                           "Order 6 Flag On");
 
         validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, null, null);
+        testLog ("step 13, order6 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO5O6O7O8,
@@ -394,7 +395,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                            null,
                            null,
                            null);
-        testLog ("step 13, order6 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order6 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
@@ -420,6 +420,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                           "Order 7 Flag On");
 
         validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, null, null);
+        testLog ("step 13, order7 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO5O6O7O8,
@@ -427,7 +428,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                            null,
                            null,
                            null);
-        testLog ("step 13, order7 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order7 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
