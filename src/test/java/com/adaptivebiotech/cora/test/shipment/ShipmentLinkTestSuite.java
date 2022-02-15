@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -64,7 +65,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         accession.clickShipmentTab ();
         shipmentDetail.isCorrectPage ();
 
-        com.adaptivebiotech.cora.dto.Shipment shipment = shipmentDetail.getShipmentDetails ();
+        Shipment shipment = shipmentDetail.getShipmentDetails ();
         String expSpecimenId = shipmentDetail.getSpecimenId ();
         String expContainerType = shipmentDetail.getContainerType ();
         String expContainerQuantity = shipmentDetail.getContainerQuantity ();
@@ -87,7 +88,6 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         Containers actualContainers = diagnostic.getContainers ();
         assertEquals (actualContainers.list.size (), expContainers.list.size ());
         assertEquals (actualContainers.list.get (0).containerNumber, expContainers.list.get (0).containerNumber);
-
     }
 
     /**
@@ -115,7 +115,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         accession.clickShipmentTab ();
         shipmentDetail.isCorrectPage ();
 
-        com.adaptivebiotech.cora.dto.Shipment shipment = shipmentDetail.getShipmentDetails ();
+        Shipment shipment = shipmentDetail.getShipmentDetails ();
         String expSpecimenId = shipmentDetail.getSpecimenId ();
         String expContainerType = shipmentDetail.getContainerType ();
         String expContainerQuantity = shipmentDetail.getContainerQuantity ();
@@ -139,7 +139,5 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         Containers actualContainers = newOrderTDetect.getContainers ();
         assertEquals (actualContainers.list.size (), expContainers.list.size ());
         assertEquals (actualContainers.list.get (0).containerNumber, expContainers.list.get (0).containerNumber);
-
     }
-
 }

@@ -87,7 +87,7 @@ public class TestScenarioBuilder {
         container.containerType = Tube;
         container.contentsLocked = true;
         container.integrity = "Pass";
-        shipment.containers.add (container);
+        shipment.containers = asList (container);
         return shipment;
     }
 
