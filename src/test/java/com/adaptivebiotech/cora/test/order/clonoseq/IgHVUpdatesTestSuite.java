@@ -747,8 +747,8 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder9 () {
         Assay assayTest = ID_BCell2_CLIA;
-        String passConsesusSeq = "TTCAGTAGACACGTCCATGAACCGCTTCTCCCTGCACATGACCTCTATGACTGCCGCAGACACGGCCCTGTATTATTGTGTCAGAGATGGACCCCCGGCGTTTTGGGGCCAGGGAACC";
-        String lowBaseConsesusSeq = "CGGCCCAGTTTCATTGTGCGACAGACCCTTAATTTACATTGTGGTGGTGACTCCTATTGCGACTCTTGGGGCCTTGGAACC";
+        String passConsensusSeq = "TTCAGTAGACACGTCCATGAACCGCTTCTCCCTGCACATGACCTCTATGACTGCCGCAGACACGGCCCTGTATTATTGTGTCAGAGATGGACCCCCGGCGTTTTGGGGCCAGGGAACC";
+        String lowBaseConsensusSeq = "CGGCCCAGTTTCATTGTGCGACAGACCCTTAATTTACATTGTGGTGGTGACTCCTATTGCGACTCTTGGGGCCTTGGAACC";
         Order orderDetails = createOrder (IgHVPhysician,
                                           assayTest,
                                           Blood,
@@ -768,10 +768,10 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         releaseReport (assayTest, true);
         ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
-        assertEquals (reportData.shmReportResult.shmSequenceList.get (0).sequence, passConsesusSeq);
+        assertEquals (reportData.shmReportResult.shmSequenceList.get (0).sequence, passConsensusSeq);
         assertEquals (reportData.shmReportResult.shmSequenceList.size (), 1);
-        testLog ("step 21.1 - order 9 - There is only one SHM sequence in shmSequenceList for sequence " + passConsesusSeq + " clone in reportData.json");
-        testLog ("step 21.2 - order 9 - There is no SHM sequence in shmSequenceList for sequence " + lowBaseConsesusSeq + " clone in reportData.json");
+        testLog ("step 21.1 - order 9 - There is only one SHM sequence in shmSequenceList for sequence " + passConsensusSeq + " clone in reportData.json");
+        testLog ("step 21.2 - order 9 - There is no SHM sequence in shmSequenceList for sequence " + lowBaseConsensusSeq + " clone in reportData.json");
 
         String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderDetails.orderTestId);
         List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (query);
@@ -780,16 +780,16 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         ShmResult shmResult = mapper.readValue (queryData.get (0).get ("shm_result").toString (), ShmResult.class);
         assertEquals (shmResult.clones.size (), 2);
         assertEquals (shmResult.clones.stream ()
-                                      .filter (c -> passConsesusSeq.equals (c.Consensus_Sequence))
+                                      .filter (c -> passConsensusSeq.equals (c.Consensus_Sequence))
                                       .filter (c -> "PASS".equals (c.Failure_Flag)).count (),
                       1l);
-        testLog ("step 22.1 - order 9 - The one with consensusSequence: " + passConsesusSeq + " had failureFlag: PASS");
+        testLog ("step 22.1 - order 9 - The one with consensusSequence: " + passConsensusSeq + " had failureFlag: PASS");
 
         assertEquals (shmResult.clones.stream ()
-                                      .filter (c -> lowBaseConsesusSeq.equals (c.Consensus_Sequence))
+                                      .filter (c -> lowBaseConsensusSeq.equals (c.Consensus_Sequence))
                                       .filter (c -> "LOW_BASE_COVERAGE".equals (c.Failure_Flag)).count (),
                       1l);
-        testLog ("step 22.2 - order 9 - The one with consensusSequence: " + lowBaseConsesusSeq + " had failureFlag: LOW_BASE_COVERAGE");
+        testLog ("step 22.2 - order 9 - The one with consensusSequence: " + lowBaseConsensusSeq + " had failureFlag: LOW_BASE_COVERAGE");
     }
 
     /**

@@ -169,12 +169,14 @@ public class OrderStatus extends OrderHeader {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         while (!timer.Timedout ()) {
             clickHistory (sampleName);
-            if (found = isElementPresent (check))
+            if (found = isElementPresent (check)) {
+                clickHide (sampleName);
                 break;
-
-            nudgeWorkflow ();
-            clickHide (sampleName);
-            timer.Wait ();
+            } else {
+                nudgeWorkflow ();
+                clickHide (sampleName);
+                timer.Wait ();
+            }
         }
         if (!found)
             fail (format (fail, stage, status, substatus, message));
@@ -186,12 +188,14 @@ public class OrderStatus extends OrderHeader {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         while (!timer.Timedout () && !found) {
             clickHistory (sampleName);
-            if (found = isStagePresent (sampleName, stage, status, substatus))
+            if (found = isStagePresent (sampleName, stage, status, substatus)) {
+                clickHide (sampleName);
                 break;
-
-            nudgeWorkflow ();
-            clickHide (sampleName);
-            timer.Wait ();
+            } else {
+                nudgeWorkflow ();
+                clickHide (sampleName);
+                timer.Wait ();
+            }
         }
         if (!found)
             fail (format (fail, stage, status, substatus));
@@ -203,12 +207,14 @@ public class OrderStatus extends OrderHeader {
         Timeout timer = new Timeout (millisRetry, waitRetry);
         while (!timer.Timedout ()) {
             clickHistory (sampleName);
-            if (found = isStagePresent (sampleName, stage, status))
+            if (found = isStagePresent (sampleName, stage, status)) {
+                clickHide (sampleName);
                 break;
-
-            nudgeWorkflow ();
-            clickHide (sampleName);
-            timer.Wait ();
+            } else {
+                nudgeWorkflow ();
+                clickHide (sampleName);
+                timer.Wait ();
+            }
         }
         if (!found)
             fail (format (fail, stage, status));
