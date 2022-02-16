@@ -1,11 +1,9 @@
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import java.util.ArrayList;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.test.utils.PageHelper.OrderCategory;
-import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
+import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
 
 /**
  * @author Harry Soehalim
@@ -23,14 +21,14 @@ public final class Shipment {
     public String            carrier;
     public String            trackingNumber;
     public String            expectedRecordType;
-    public List <Container>  containers = new ArrayList <> ();
+    public List <Container>  containers;
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
+    }
+
+    public enum ShippingCondition {
+        Ambient, WetIce, DryIce
     }
 }

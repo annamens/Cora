@@ -4,6 +4,7 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static org.openqa.selenium.Keys.RETURN;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.util.Strings.isNullOrEmpty;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,12 +15,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Miras;
 import com.adaptivebiotech.cora.dto.Miras.Mira;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraCostCenter;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 
 /**
  * @author Harry Soehalim
@@ -305,7 +306,7 @@ public class MirasList extends MirasListBase {
         mira.id = getMiraGuid (getAttribute (columns.get (0), "a", "href"));
         mira.miraId = getText (columns.get (0));
         String panel = getText (columns.get (2));
-        if (panel == null || panel.equals ("")) {
+        if (isNullOrEmpty (panel)) {
             mira.panel = null;
         } else if (knownPanels.contains (panel)) {
             mira.panel = MiraPanel.valueOf (panel);

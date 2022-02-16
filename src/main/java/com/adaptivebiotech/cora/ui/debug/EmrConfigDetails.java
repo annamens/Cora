@@ -1,10 +1,10 @@
 package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
+import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -24,6 +24,7 @@ public class EmrConfigDetails extends CreateEmrConfig {
 
     public void gotoEmrConfigDetailsPage (String emrConfigId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/debug/emr-config-details?id=" + emrConfigId));
+        pageLoading ();
         isCorrectPage ();
     }
 
@@ -35,9 +36,10 @@ public class EmrConfigDetails extends CreateEmrConfig {
         return waitUntilVisible (clone);
     }
 
-    public List <String> getOverlayMessages () {
-        List <String> overlayMsg = waitForElements (overlayMessage).stream ().map (ele -> ele.getText ())
-                                                                   .collect (Collectors.toList ());
+    public List <String> getOverlayMessages (int numOfMessages) {
+        List <String> overlayMsg = waitForNumberOfElementsToBe (locateBy (overlayMessage), numOfMessages).stream ()
+                                                                                                         .map (el -> el.getText ())
+                                                                                                         .collect (toList ());
         waitForElementInvisible (overlayMessage);
         return overlayMsg;
     }

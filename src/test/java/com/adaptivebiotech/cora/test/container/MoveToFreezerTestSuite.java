@@ -1,8 +1,8 @@
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Plate;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.DryIce;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.DryIce;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
@@ -27,15 +27,15 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 @Test (groups = "regression")
 public class MoveToFreezerTestSuite extends ContainerTestBase {
@@ -43,7 +43,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     private ThreadLocal <String> downloadDir   = new ThreadLocal <> ();
     private Login                login         = new Login ();
     private OrdersList           ordersList    = new OrdersList ();
-    private ContainerList        containerList = new ContainerList ();
+    private ContainersList       containerList = new ContainersList ();
     private Detail               detail        = new Detail ();
     private History              history       = new History ();
     private MyCustody            myCustody     = new MyCustody ();
@@ -58,11 +58,10 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_primary_to_freezer () {
         String comment = randomWords (10);
-        coraApi.login ();
         Containers containers = coraApi.addContainers (new Containers (
                 stream (ContainerType.values ()).filter (t -> !t.isHolding)
                                                 .map (t -> container (t))
@@ -117,7 +116,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_child_to_freezer () {
         String manifestName = "intakemanifest_holding_w_child";
@@ -141,12 +140,12 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         shipment.isBatchOrGeneral ();
         shipment.enterShippingCondition (DryIce);
         shipment.clickSave ();
-        shipment.gotoAccession ();
+        shipment.clickAccessionTab ();
 
         accession.isCorrectPage ();
         accession.uploadIntakeManifest (manifestFileName.getAbsolutePath ());
         accession.clickIntakeComplete ();
-        accession.gotoShipment ();
+        accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();
 
         Container freezer;

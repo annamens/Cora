@@ -1,30 +1,39 @@
 package com.adaptivebiotech.cora.utils;
 
+import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Child;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Other;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Spouse;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.Inpatient;
+import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.NonHospital;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Client;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.CommercialInsurance;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilling;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.NoCharge;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.TrialProtocol;
+import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
+import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
+import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
-import static com.adaptivebiotech.test.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Client;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.CommercialInsurance;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.PatientSelfPay;
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.TrialProtocol;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Child;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Other;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientRelationship.Spouse;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.Inpatient;
-import static com.adaptivebiotech.test.utils.PageHelper.PatientStatus.NonHospital;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
+import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import com.adaptivebiotech.cora.dto.BillingSurvey;
+import com.adaptivebiotech.cora.dto.BillingSurvey.Questionnaire;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Patient.Address;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.github.javafaker.Faker;
@@ -94,30 +103,6 @@ public class TestHelper {
         return patient;
     }
 
-    // has medicare, secondary insurance, address, etc.
-    public static Patient patientMedicare () {
-        Patient patient = new Patient ();
-        patient.firstName = "Test1";
-        patient.lastName = "Fun";
-        patient.fullname = String.join (" ", patient.firstName, patient.lastName);
-        patient.dateOfBirth = "07/27/1984";
-        patient.gender = "Male";
-        patient.patientCode = 1;
-        patient.mrn = "mrn-000001";
-        patient.billingType = Medicare;
-        patient.insurance1 = insurance1 ();
-        patient.insurance1.groupNumber = null;
-        patient.insurance2 = insurance2 ();
-
-        Address address = getRandomAddress ();
-        patient.address = address.line1;
-        patient.phone = address.phone;
-        patient.locality = address.city;
-        patient.region = address.state;
-        patient.postCode = address.postalCode;
-        return patient;
-    }
-
     // Bill my Institution
     public static Patient newClientPatient () {
         Patient patient = newPatient ();
@@ -165,6 +150,18 @@ public class TestHelper {
         return patient;
     }
 
+    public static Patient newNoChargePatient () {
+        Patient patient = newPatient ();
+        patient.billingType = NoCharge;
+        return patient;
+    }
+
+    public static Patient newInternalPharmaPatient () {
+        Patient patient = newPatient ();
+        patient.billingType = InternalPharmaBilling;
+        return patient;
+    }
+
     // scenario builder takes only client billingType
     public static Patient scenarioBuilderPatient () {
         Patient patient = new Patient ();
@@ -191,17 +188,14 @@ public class TestHelper {
      * 
      * @return Address
      */
-    public static Address getRandomAddress () {
+    public static Patient getRandomAddress (Patient patient) {
         Faker faker = new Faker ();
-        Address address = new Address ();
-        address.line1 = faker.address ().streetAddress ();
-        address.line2 = faker.address ().secondaryAddress ();
-        address.phone = faker.phoneNumber ().cellPhone ();
-        address.email = faker.name ().username () + "@gmail.com";
-        address.city = faker.address ().city ();
-        address.state = faker.address ().stateAbbr ();
-        address.postalCode = faker.address ().zipCodeByState (address.state);
-        return address;
+        patient.address = faker.address ().streetAddress ();
+        patient.phone = faker.phoneNumber ().cellPhone ();
+        patient.locality = faker.address ().city ();
+        patient.region = faker.address ().stateAbbr ();
+        patient.postCode = faker.address ().zipCodeByState (patient.region);
+        return patient;
     }
 
     public static Insurance insurance1 () {
@@ -271,5 +265,26 @@ public class TestHelper {
         physician.firstName = firstName;
         physician.accountName = accountName;
         return physician;
+    }
+
+    public static Specimen bloodSpecimen () {
+        Specimen specimen = new Specimen ();
+        specimen.sampleType = Blood;
+        specimen.anticoagulant = EDTA;
+        specimen.collectionDate = getPastFutureDate (-3);
+        return specimen;
+    }
+
+    public static BillingSurvey defaultSurvey () {
+        BillingSurvey survey = new BillingSurvey ();
+        survey.status = "Eligible for Insurance";
+        survey.questionnaires = new ArrayList <> ();
+        survey.questionnaires.add (new Questionnaire ("symptomsV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("covidTestV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("antibodyTestV1", asList ("No")));
+        survey.questionnaires.add (new Questionnaire ("justificationV1", asList ("selenium test")));
+        survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
+        survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Unknown")));
+        return survey;
     }
 }

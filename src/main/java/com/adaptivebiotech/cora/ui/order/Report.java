@@ -1,14 +1,14 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.LYME_DX_IVD;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.QC;
+import com.adaptivebiotech.cora.utils.PageHelper.QC;
 
 /**
  * @author jpatel
@@ -26,6 +26,12 @@ public class Report extends OrderHeader {
 
     public Report () {
         staticNavBarHeight = 200;
+    }
+
+    @Override
+    public void isCorrectPage () {
+        assertTrue (isTextInElement ("[role='tablist'] .active a", "REPORT"));
+        pageLoading ();
     }
 
     public String getReportNotes () {

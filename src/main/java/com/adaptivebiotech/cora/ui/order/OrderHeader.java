@@ -1,10 +1,13 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.EnumUtils.getEnum;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import org.apache.commons.lang3.StringUtils;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
 
 /**
  * @author jpatel
@@ -45,7 +48,16 @@ public class OrderHeader extends CoraPage {
     }
 
     public String getheaderOrderNumber () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.orderNumber']");
+        return getText ("//*[label[@id='order-number-text']]//span");
+    }
+
+    public OrderStatus getheaderOrderStatus () {
+        return getEnum (OrderStatus.class, getText ("[ng-bind='ctrl.orderEntry.order.status']"));
+    }
+
+    public String getPatientId () {
+        String css = "//*[@class='summary']//a[*[@ng-bind='ctrl.orderEntry.order.patient.patientCode']]";
+        return substringAfterLast (getAttribute (css, "href"), "patient/");
     }
 
     public boolean isActiveAlertCountPresent () {
@@ -81,8 +93,13 @@ public class OrderHeader extends CoraPage {
         return splitUrl[splitUrl.length - 1];
     }
 
-    public String getDueDate () {
-        return getText ("[ng-bind^='ctrl.orderEntry.orderTests[0].dueDate']");
+    public String getStatusText () {
+        String xpath = "//*[text()='Status']/..//span";
+        return getText (xpath);
+    }
+
+    public String getHeaderDueDate () {
+        return getText (".header-alert-dashboard [ng-bind^='ctrl.orderEntry.orderTests[0].dueDate']");
     }
 
     public void clickPatientNotesIcon () {

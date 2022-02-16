@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
+import static org.testng.util.Strings.isNullOrEmpty;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,9 +19,7 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.test.CoraEnvironment;
 import com.seleniumfy.test.utils.BasePage;
 
 /**
@@ -36,6 +35,18 @@ public class CoraPage extends BasePage {
 
     public CoraPage () {
         staticNavBarHeight = 35;
+    }
+
+    @Override
+    public String getText (WebElement el) {
+        String text = el.getText ();
+        return isNullOrEmpty (text) ? null : isNullOrEmpty (text.trim ()) ? null : text.trim ();
+    }
+
+    @Override
+    public String getAttribute (WebElement el, String attribute) {
+        String attr = el.getAttribute (attribute);
+        return isNullOrEmpty (attr) ? null : isNullOrEmpty (attr.trim ()) ? null : attr.trim ();
     }
 
     public void isCorrectPage () {
@@ -62,8 +73,7 @@ public class CoraPage extends BasePage {
     }
 
     public List <String> getNewPopupMenu () {
-        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !Strings.isNullOrEmpty (li))
-                                                    .collect (toList ());
+        return getTextList ("li:nth-child(1) ul li").stream ().filter (li -> !isNullOrEmpty (li)).collect (toList ());
     }
 
     public void selectNewClonoSEQDiagnosticOrder () {
@@ -172,8 +182,13 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//a[text()='Barcode Comparison Tool']"));
     }
 
-    public void gotoOrderEntry (String orderId) {
+    public void gotoCDxOrderEntry (String orderId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/order/entry/diagnostic/" + orderId));
+        pageLoading ();
+    }
+
+    public void gotoTDxOrderEntry (String orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/dx/" + orderId));
         pageLoading ();
     }
 
@@ -230,13 +245,27 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
-    public void navigateToOrderDetailsPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/details/" + orderId));
+    public void gotoOrderDetailsPage (String orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/details/" + orderId));
+        assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
-    public void navigateToOrderStatusPage (String orderId) {
-        assertTrue (navigateTo (CoraEnvironment.coraTestUrl + "/cora/order/status/" + orderId));
+    public void gotoOrderStatusPage (String orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/status/" + orderId));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
+    public void gotoTaskDetail (String taskId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
+    public void gotoTaskStatus (String taskId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId + "?p=status"));
+        assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
@@ -281,7 +310,8 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//*[text()='Filter list']"));
     }
 
-    public Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds, Function <WebDriver, Boolean> func) {
+    protected Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds,
+                                               Function <WebDriver, Boolean> func) {
         Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
                                                                      .withTimeout (Duration.ofSeconds (secondsDuration))
                                                                      .pollingEvery (Duration.ofSeconds (pollSeconds));
@@ -293,7 +323,7 @@ public class CoraPage extends BasePage {
         assertTrue (navigateTo (url));
     }
 
-    public boolean waitUntilVisible (String target, int timeoutInSeconds, int sleepInMillis) {
+    protected boolean waitUntilVisible (String target, int timeoutInSeconds, int sleepInMillis) {
         waitForAjaxCalls ();
         By by = locateBy (target);
         try {
@@ -327,7 +357,6 @@ public class CoraPage extends BasePage {
     }
 
     public void navigateToTab (int tabIndex) {
-        getDriver ().switchTo ()
-                    .window (new ArrayList <String> (getDriver ().getWindowHandles ()).get (tabIndex));
+        getDriver ().switchTo ().window (new ArrayList <> (getDriver ().getWindowHandles ()).get (tabIndex));
     }
 }

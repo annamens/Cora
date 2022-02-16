@@ -1,16 +1,16 @@
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Conical;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Freezer;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.MatrixTube;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.MatrixTube5ml;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.OtherTube;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Plate;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Slide;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideWithCoverslip;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Conical;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Freezer;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.MatrixTube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.MatrixTube5ml;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.OtherTube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Plate;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideWithCoverslip;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Vacutainer;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
@@ -24,19 +24,19 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 @Test (groups = "regression")
 public class HoldingContainerTestSuite extends ContainerTestBase {
 
     private Login                    login        = new Login ();
-    private OrdersList               orderList    = new OrdersList ();
+    private OrdersList               ordersList   = new OrdersList ();
     private AddContainer             addContainer = new AddContainer ();
     private MyCustody                myCustody    = new MyCustody ();
     private Detail                   detail       = new Detail ();
@@ -45,30 +45,29 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
-        coraApi.login ();
         containers.set (coraApi.addContainers (new Containers (
                 allOf (ContainerType.class).parallelStream ().filter (ct -> !ct.equals (Freezer))
                                            .map (ct -> container (ct)).collect (toList ()))));
 
         login.doLogin ();
-        orderList.isCorrectPage ();
+        ordersList.isCorrectPage ();
     }
 
     @AfterMethod
     public void afterMethod () {
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         myCustody.isCorrectPage ();
         myCustody.sendContainersToFreezer (containers.get (), freezerDestroyed);
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void holding_containers () {
         Containers topContainers = coraApi.addContainers (new Containers (asList (container (Plate))));
         Container child = topContainers.list.get (0);
 
-        orderList.selectNewContainer ();
+        ordersList.selectNewContainer ();
         allOf (ContainerType.class).stream ().filter (ct -> ct.isHolding && !Freezer.equals (ct) && !Plate.equals (ct))
                                    .forEach (ct -> addContainer.addContainer (ct, 1));
         addContainer.clickSave ();
@@ -82,14 +81,14 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void tube () {
         Container child = coraApi.addContainers (Tube, null, null, 1).list.get (0);
         child.depleted = true;
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         int pass = 0;
         for (Container holding : containers.get ().list) {
             child.comment = randomWords (10);
@@ -127,7 +126,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void matrix_tube_5ml () {
         Container child = coraApi.addContainers (MatrixTube5ml, null, null, 1).list.get (0);
@@ -135,7 +134,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comments
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
 
         // test: go to child detail page to verify location
@@ -154,7 +153,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void matrix_tube () {
         Container child = coraApi.addContainers (MatrixTube, null, null, 1).list.get (0);
@@ -162,7 +161,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
         assertEquals (child.location, join (" : ", coraTestUser, child.root.containerNumber, "Position A:1"));
 
@@ -182,7 +181,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void other_tube () {
         Container child = coraApi.addContainers (OtherTube, null, null, 1).list.get (0);
@@ -190,7 +189,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
         containers.get ().list.add (child);
 
@@ -210,7 +209,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void vacutainer () {
         Container child = coraApi.addContainers (Vacutainer, null, null, 1).list.get (0);
@@ -218,7 +217,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
         assertEquals (child.location, join (" : ", coraTestUser, child.root.containerNumber, "Position A:1"));
 
@@ -238,7 +237,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void conical () {
         Container child = coraApi.addContainers (Conical, null, null, 1).list.get (0);
@@ -246,7 +245,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comments
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
 
         // test: go to child detail page to verify location
@@ -265,14 +264,14 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void slide_wo_coverslip () {
         Container child = coraApi.addContainers (Slide, null, null, 1).list.get (0);
         child.depleted = true;
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         int pass = 0;
         for (Container holding : containers.get ().list) {
             child.comment = randomWords (10);
@@ -325,14 +324,14 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata, 126.TransformHoldingContainer
+     * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
     public void slide_with_coverslip () {
         Container child = coraApi.addContainers (SlideWithCoverslip, null, null, 1).list.get (0);
         child.depleted = true;
 
         // test: set holding container, depletion and add comment
-        orderList.gotoMyCustody ();
+        ordersList.gotoMyCustody ();
         int pass = 0;
         for (Container holding : containers.get ().list) {
             child.comment = randomWords (10);

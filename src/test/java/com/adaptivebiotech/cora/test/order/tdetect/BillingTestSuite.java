@@ -1,16 +1,21 @@
 package com.adaptivebiotech.cora.test.order.tdetect;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_insurance;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_medicare;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
-import static com.adaptivebiotech.cora.utils.TestHelper.getRandomAddress;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_trial;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
+import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
+import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
+import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.Anticoagulant.EDTA;
-import static com.adaptivebiotech.test.utils.PageHelper.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active;
-import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
+import static java.lang.String.format;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -19,54 +24,107 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.utils.DateUtils;
 
+/**
+ * Note:
+ * - ICD codes and patient billing address are not required
+ */
 @Test (groups = "regression")
 public class BillingTestSuite extends CoraBaseBrowser {
 
-    private final String[]  icdCodes   = { "A01.02" };
+    private final String    log        = "created an order with billing: %s";
     private Login           login      = new Login ();
     private OrdersList      ordersList = new OrdersList ();
     private NewOrderTDetect diagnostic = new NewOrderTDetect ();
-    private Specimen        specimen;
+    private Specimen        specimen   = bloodSpecimen ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-
-        specimen = new Specimen ();
-        specimen.sampleType = Blood;
-        specimen.anticoagulant = EDTA;
-        specimen.collectionDate = DateUtils.getPastFutureDate (-3);
-        coraApi.login ();
     }
 
-    public void patientSelfPay () {
+    /**
+     * @sdlc.requirements SR-7907:R1
+     */
+    @Test (groups = "corgi")
+    public void insurance () {
+        Patient patient = newInsurancePatient ();
+        diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_insurance),
+                                       patient,
+                                       null,
+                                       specimen.collectionDate.toString (),
+                                       COVID19_DX_IVD,
+                                       Active,
+                                       Tube);
+        testLog (format (log, patient.billingType.label));
+    }
+
+    /**o
+     * Note:
+     * - ABN Status is "Not Required" by default
+     * 
+     * @sdlc.requirements SR-7907:R1
+     */
+    @Test (groups = "corgi")
+    public void medicare () {
+        Patient patient = newMedicarePatient ();
+        patient.abnStatusType = null;
+        diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_medicare),
+                                       patient,
+                                       null,
+                                       specimen.collectionDate.toString (),
+                                       COVID19_DX_IVD,
+                                       Active,
+                                       Tube);
+        testLog (format (log, patient.billingType.label));
+    }
+
+    /**
+     * @sdlc.requirements SR-7907:R1
+     */
+    @Test (groups = "corgi")
+    public void patient_self_pay () {
         Patient patient = newSelfPayPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                        patient,
-                                       icdCodes,
+                                       null,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
-                                       patient.billingType,
-                                       getRandomAddress (),
                                        Active,
                                        Tube);
-        testLog ("created an order with billing: Patient Self-Pay");
+        testLog (format (log, patient.billingType.label));
     }
 
-    public void billClient () {
+    /**
+     * @sdlc.requirements SR-7907:R1
+     */
+    @Test (groups = "corgi")
+    public void client_bill () {
         Patient patient = newClientPatient ();
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                        patient,
-                                       icdCodes,
+                                       null,
                                        specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
-                                       patient.billingType,
-                                       getRandomAddress (),
                                        Active,
                                        Tube);
-        testLog ("created an order with billing: Client Bill");
+        testLog (format (log, patient.billingType.label));
+    }
+
+    /**
+     * @sdlc.requirements SR-7907:R20
+     */
+    @Test (groups = "corgi")
+    public void bill_per_study_protocol () {
+        Patient patient = newTrialProtocolPatient ();
+        diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_trial),
+                                       patient,
+                                       null,
+                                       specimen.collectionDate.toString (),
+                                       COVID19_DX_IVD,
+                                       Active,
+                                       Tube);
+        testLog (format (log, patient.billingType.label));
     }
 }

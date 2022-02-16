@@ -1,22 +1,21 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.util.List;
-import org.openqa.selenium.WebElement;
-import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Shipment.ShippingCondition;
 import com.adaptivebiotech.cora.utils.CoraSelect;
 import com.adaptivebiotech.cora.utils.PageHelper.Carrier;
 import com.adaptivebiotech.cora.utils.PageHelper.LinkShipment;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 
 /**
  * @author Harry Soehalim
@@ -52,11 +51,11 @@ public class NewShipment extends ShipmentHeader {
     }
 
     public String getArrivalDate () {
-        return getAttribute ("#arrivalDate", "value");
+        return readInput ("#arrivalDate");
     }
 
     public String getArrivalTime () {
-        return getAttribute ("#arrivalTime", "value");
+        return readInput ("#arrivalTime");
     }
 
     public void enterShippingCondition (ShippingCondition condition) {
@@ -139,7 +138,7 @@ public class NewShipment extends ShipmentHeader {
                     c.barcode = getText (el1, "[data-ng-bind*='specimen.barcode']");
                     c.specimenId = getText (el1, "[data-ng-bind*='specimen.specimen.specimenNumber']");
                     c.specimenName = getText (el1, "[data-ng-bind*='specimen.specimen.name']");
-                    if (Strings.isNotNullAndNotEmpty (c.specimenName)) {
+                    if (isNotNullAndNotEmpty (c.specimenName)) {
                         c.containerType = ContainerType.getContainerType (c.specimenName.split ("-")[0]);
                     }
                     c.root = container;
@@ -194,13 +193,6 @@ public class NewShipment extends ShipmentHeader {
             waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
             pageLoading ();
         }
-    }
-
-    public void doubleClickSave () {
-        WebElement saveButton = waitForElement (locateBy ("[data-ng-click*='shipment-save']"));
-        saveButton.click ();
-        saveButton.click ();
-        pageLoading ();
     }
 
     public void enterCarrier (Carrier coraCarrier) {
@@ -297,7 +289,7 @@ public class NewShipment extends ShipmentHeader {
         enterOrderNumber (orderNumber);
         selectDiagnosticSpecimenContainerType (containerType);
         clickSave ();
-        gotoAccession ();
+        clickAccessionTab ();
     }
 
     public void createShipment (ShippingCondition shippingCondition,

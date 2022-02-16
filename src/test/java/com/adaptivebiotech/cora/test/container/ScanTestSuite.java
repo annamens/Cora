@@ -1,9 +1,9 @@
 package com.adaptivebiotech.cora.test.container;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Slide;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Slide;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
@@ -39,13 +39,13 @@ public class ScanTestSuite extends ContainerTestBase {
     private Login        login      = new Login ();
     private OrdersList   ordersList = new OrdersList ();
     private MyCustody    myCustody  = new MyCustody ();
-    private NewShipment     shipment   = new NewShipment ();
+    private NewShipment  shipment   = new NewShipment ();
     private Containers   mytestContainers;
     private Containers   shipContainers;
 
     @BeforeClass
     public void beforeClass () {
-        coraApi.login ();
+        coraApi.addCoraToken ();
         mytestContainers = coraApi.addContainers (new Containers (asList (container (Slide), container (SlideBox5))));
 
         // setup for shipment is in arrived state
@@ -61,7 +61,7 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.setContainerName (2, scanTest);
         shipment.clickSave ();
         shipContainers = shipment.getPrimaryContainers (Tube);
-        closeBrowser ();
+        shipment.clickSignOut ();
     }
 
     @BeforeMethod
@@ -72,19 +72,18 @@ public class ScanTestSuite extends ContainerTestBase {
 
     @AfterClass
     public void afterClass () {
-        coraApi.login ();
         coraApi.deactivateContainers (mytestContainers);
         coraApi.deactivateContainers (shipContainers);
     }
 
     /**
-     * @sdlc_requirements 126.ContainersListValidScan
+     * @sdlc.requirements 126.ContainersListValidScan
      */
     public void inventory_list_view () {
         ordersList.clickContainers ();
 
         // test: container doesn't exist
-        ContainerList list = new ContainerList ();
+        ContainersList list = new ContainersList ();
         list.scan ("xxxxxx");
         assertEquals (list.getScanError (), format (error1, "xxxxxx"));
 
@@ -103,7 +102,7 @@ public class ScanTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.ContainersListValidScan
+     * @sdlc.requirements 126.ContainersListValidScan
      */
     public void my_custody_view () {
         ordersList.gotoMyCustody ();
@@ -128,7 +127,7 @@ public class ScanTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.TransformHoldingContainer
+     * @sdlc.requirements 126.TransformHoldingContainer
      */
     public void holding_container () {
         Container child = SerializationUtils.clone (mytestContainers.list.get (0));
@@ -139,13 +138,13 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.isBatchOrGeneral ();
         shipment.enterShippingCondition (Ambient);
         shipment.clickSave ();
-        shipment.gotoAccession ();
+        shipment.clickAccessionTab ();
 
         Accession accession = new Accession ();
         accession.isCorrectPage ();
         accession.uploadIntakeManifest (getSystemResource ("intakemanifest_full_slidebox.xlsx").getPath ());
         accession.clickIntakeComplete ();
-        accession.gotoShipment ();
+        accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();
 
         // test: container doesn't exist

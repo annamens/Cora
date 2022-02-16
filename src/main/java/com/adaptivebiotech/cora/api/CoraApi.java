@@ -10,12 +10,16 @@ import static com.seleniumfy.test.utils.HttpClientHelper.body;
 import static com.seleniumfy.test.utils.HttpClientHelper.encodeUrl;
 import static com.seleniumfy.test.utils.HttpClientHelper.formPost;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
+import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static com.seleniumfy.test.utils.HttpClientHelper.post;
 import static com.seleniumfy.test.utils.HttpClientHelper.put;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,15 +29,19 @@ import java.util.stream.IntStream;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import com.adaptivebiotech.cora.dto.AccountsResponse;
+import com.adaptivebiotech.cora.dto.AlertType;
+import com.adaptivebiotech.cora.dto.Alerts;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.FeatureFlags;
 import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.Orders.Alert;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -43,9 +51,9 @@ import com.adaptivebiotech.cora.dto.ProvidersResponse;
 import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.emr.Config;
+import com.adaptivebiotech.cora.dto.emr.TokenData;
 import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.seleniumfy.test.utils.HttpClientHelper;
 import com.seleniumfy.test.utils.Timeout;
@@ -59,6 +67,7 @@ public class CoraApi {
     private final long  millisRetry = 3000000l;                                        // 50mins
     private final long  waitRetry   = 5000l;                                           // 5sec
     public final Header username    = new BasicHeader ("X-Api-UserName", coraTestUser);
+    public Header       apiToken;
 
     public void login () {
         resetheaders ();
@@ -74,7 +83,26 @@ public class CoraApi {
 
     public void resetheaders () {
         HttpClientHelper.resetheaders ();
-        HttpClientHelper.headers.get ().add (username);
+        headers.get ().add (username);
+    }
+
+    public String auth () {
+        resetheaders ();
+        headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
+        String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
+        apiToken = new BasicHeader ("X-Api-Token", token);
+        return token;
+    }
+
+    public String basicAuth (String user, String pass) {
+        return "Basic " + printBase64Binary (join (":", user, pass).getBytes ());
+    }
+
+    public void addCoraToken () {
+        if (!headers.get ().contains (apiToken))
+            headers.get ().add (apiToken);
+        if (!headers.get ().contains (username))
+            headers.get ().add (username);
     }
 
     public Containers addContainers (ContainerType type, String barcode, Container root, int num) {
@@ -225,7 +253,7 @@ public class CoraApi {
         return mapper.readValue (get (url), Specimen.class);
     }
 
-    public Specimen getSpecimenByMunber (String specimenNumber) {
+    public Specimen getSpecimenByNumber (String specimenNumber) {
         String url = coraTestUrl + "/cora/api/v1/specimens/specimenNumber/" + specimenNumber;
         return mapper.readValue (get (url), Specimen.class);
     }
@@ -250,8 +278,8 @@ public class CoraApi {
         args.add ("ascending=false");
         args.add ("limit=500");
 
-        for (String term : terms)
-            args.add (term);
+        if (terms != null)
+            args.addAll (terms);
 
         String url = encodeUrl (coraTestUrl + "/cora/api/v1/orders/search?", args.toArray (new String[] {}));
         return mapper.readValue (get (url), Order[].class);
@@ -266,8 +294,8 @@ public class CoraApi {
         args.add ("sort=DueDate");
         args.add ("limit=500");
 
-        for (String term : terms)
-            args.add (term);
+        if (terms != null)
+            args.addAll (terms);
 
         String url = encodeUrl (coraTestUrl + "/cora/api/v1/orderTests/search?", args.toArray (new String[] {}));
         return mapper.readValue (get (url), OrderTest[].class);
@@ -285,9 +313,33 @@ public class CoraApi {
         if (stream (tests).anyMatch (ot -> ot.sampleName == null))
             fail ("sampleName is null");
 
-        for (OrderTest test : tests)
+        for (OrderTest test : tests) {
+            test.orderId = orderId;
             if (test.specimen.subjectCode == null)
                 test.specimen.subjectCode = getPatientOrSubjectCode (test.id);
+        }
+        return tests;
+    }
+
+    public OrderTest[] waitForResearchOrderReady (String sampleName) {
+        OrderTest[] tests = searchOrderTests (sampleName);
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.workflowName == null))) {
+            timer.Wait ();
+            tests = searchOrderTests (sampleName);
+        }
+        if (tests.length == 0)
+            fail ("unable to create order");
+        if (stream (tests).anyMatch (ot -> ot.workflowName == null))
+            fail ("workflowName is null");
+
+        for (OrderTest test : tests) {
+            test.specimen = getSpecimenByNumber (test.specimenNumber);
+            test.test = new CoraTest ();
+            test.test.name = test.testName;
+            if (test.specimen.subjectCode == null)
+                test.specimen.subjectCode = getPatientOrSubjectCode (test.id);
+        }
 
         return tests;
     }
@@ -336,6 +388,11 @@ public class CoraApi {
         return mapper.readValue (put (url, body (mapper.writeValueAsString (patient))), Patient.class);
     }
 
+    public Order[] getOrdersForPatient (String patientId) {
+        String url = coraTestUrl + "/cora/api/v2/patients/list/" + patientId + "/orders";
+        return mapper.readValue (get (url), Order[].class);
+    }
+
     public void setAlerts (Alert alert) {
         post (coraTestUrl + "/cora/api/v2/alerts/create", body (mapper.writeValueAsString (alert)));
     }
@@ -345,4 +402,51 @@ public class CoraApi {
         return mapper.readValue (get (url), FeatureFlags.class);
     }
 
+    public AlertType getAlertType (String name) {
+        return mapper.readValue (get (coraTestUrl + "/cora/api/v2/alertTypes/" + name), AlertType.class);
+    }
+
+    public String renewCoraMemoryCache (TokenData tokenData) {
+        Map <String, String> params = new HashMap <> ();
+        params.put ("tokenData", mapper.writeValueAsString (tokenData));
+        String url = coraTestUrl + "/cora/debug/emrTokenSubmit";
+        post (url, body (mapper.writeValueAsString (params)));
+        return tokenData.id;
+    }
+
+    public Config getEmrConfig (TokenData tokenData) {
+        String response = get (coraTestUrl + "/cora/api/v1/external/getEmrConfig/" + tokenData.configId);
+        return mapper.readValue (response, Config.class);
+    }
+
+    public Alerts getAlertsSummary (String userName) {
+        String url = coraTestUrl + "/cora/api/v1/external/alerts/summary";
+        Map <String, String> params = new HashMap <> ();
+        params.put ("username", userName);
+        return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Alerts.class);
+    }
+
+    public void deleteAlerts (List <String> alertIds) {
+        String url = coraTestUrl + "/cora/api/v2/alerts/delete";
+        Map <String, String> params = new HashMap <> ();
+        params.put ("ids", mapper.writeValueAsString (alertIds));
+        post (url, body (mapper.writeValueAsString (params)));
+    }
+
+    public void deleteAlertsForUserName (String userName) {
+        Alerts userAlerts = getAlertsSummary (userName);
+
+        if (userAlerts != null && userAlerts.orderAlerts.size () > 0) {
+            List <String> alertIds = new ArrayList <> ();
+            for (Alerts.Alert alert : userAlerts.orderAlerts) {
+                alertIds.add (alert.id);
+            }
+            deleteAlerts (alertIds);
+        }
+    }
+
+    public Order[] getOrderAttachments (String orderIdOrNo) {
+        String url = coraTestUrl + "/cora/api/v1/attachments/orders/" + orderIdOrNo;
+        return mapper.readValue (get (url), Order[].class);
+    }
 }

@@ -5,11 +5,11 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
 import com.adaptivebiotech.cora.dto.Shipment;
+import com.adaptivebiotech.cora.dto.Shipment.ShippingCondition;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.OrderCategory;
-import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
 
 /**
  * @author jpatel
@@ -17,11 +17,11 @@ import com.adaptivebiotech.test.utils.PageHelper.ShippingCondition;
  */
 public class ShipmentDetail extends CoraPage {
 
-    private final String orderNo                  = "[data-ng-bind='ctrl.entry.order.orderNumber']";
+    private final String orderNumber              = "[data-ng-bind='ctrl.entry.order.orderNumber']";
     private final String activeTab                = "[role='tablist'] .active a";
     private final String arrivalDateTime          = "[data-ng-bind='ctrl.entry.shipment.arrivalDate | localDateTime']";
     private final String category                 = "[data-ng-bind='ctrl.entry.shipment.category']";
-    private final String shipmentNo               = "[data-ng-bind='ctrl.entry.shipment.shipmentNumber']";
+    private final String shipmentNo               = ".shipment-details [data-ng-bind='ctrl.entry.shipment.shipmentNumber']";
     private final String shippingCondition        = "[data-ng-bind='ctrl.entry.shipment.condition']";
     private final String carrier                  = "[data-ng-bind='ctrl.entry.shipment.carrier']";
     private final String trackingNo               = "[data-ng-bind='ctrl.entry.shipment.trackingNumber']";
@@ -35,15 +35,15 @@ public class ShipmentDetail extends CoraPage {
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement (activeTab, "SHIPMENT"));
-        assertTrue (waitUntilVisible (orderNo));
+        assertTrue (waitUntilVisible (orderNumber));
     }
 
-    public String getOrderNo () {
-        return getText (orderNo);
+    public String getOrderNumber () {
+        return getText (orderNumber);
     }
 
-    public void clickOrderNo () {
-        assertTrue (click (orderNo));
+    public void clickOrderNumber () {
+        assertTrue (click (orderNumber));
     }
 
     public Shipment getShipmentDetails () {

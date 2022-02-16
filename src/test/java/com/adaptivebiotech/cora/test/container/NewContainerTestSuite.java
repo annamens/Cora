@@ -1,14 +1,15 @@
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox100;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.TubeBox10x10;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox100;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.SlideBox5;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox10x10;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,10 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.AddContainer;
-import com.adaptivebiotech.cora.ui.container.ContainerList;
+import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
@@ -29,7 +31,6 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.GenerateContainerLabels;
 import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
 
 @Test (groups = "regression")
 public class NewContainerTestSuite extends ContainerTestBase {
@@ -41,7 +42,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     private final String            error4                  = "Container name is not unique. Enter another name.";
     private Login                   login                   = new Login ();
     private OrdersList              ordersList              = new OrdersList ();
-    private ContainerList           containerList           = new ContainerList ();
+    private ContainersList          containerList           = new ContainersList ();
     private AddContainer            addContainer            = new AddContainer ();
     private MyCustody               myCustody               = new MyCustody ();
     private GenerateContainerLabels generateContainerLabels = new GenerateContainerLabels ();
@@ -56,7 +57,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.AddNewContainer
+     * @sdlc.requirements 126.AddNewContainer
      */
     public void add_container_validation () {
         // test: missing container type
@@ -100,10 +101,9 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertEquals (myContainers.list.size (), 2);
         myContainers.list.parallelStream ().forEach (container -> {
             assertEquals (container.containerType, SlideBox5);
-            assertEquals (container.name, "");
+            assertNull (container.name);
             assertEquals (container.location, coraTestUser);
         });
-        coraApi.login ();
         coraApi.deactivateContainers (myContainers);
 
         // test: incompatible freezer
@@ -130,7 +130,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.AddNewContainer
+     * @sdlc.requirements 126.AddNewContainer
      */
     public void add_remove_containers () {
         String name32 = randomString (32);
@@ -170,7 +170,6 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertEquals (myContainers.list.size (), 1);
         assertEquals (myContainers.list.get (0).containerNumber, c1.containerNumber);
         assertEquals (myContainers.list.get (0).location, c1.location);
-        coraApi.login ();
         coraApi.deactivateContainers (myContainers);
 
         // test: verify we have 1 containers in my custody
@@ -200,10 +199,10 @@ public class NewContainerTestSuite extends ContainerTestBase {
         addContainer.addContainer (newContainerType, 1);
 
         Containers emptyContainers = addContainer.getContainers ();
-        assertTrue (emptyContainers.list.size () == 1);
-        assertTrue (emptyContainers.list.get (0).containerNumber.isEmpty ());
-        assertTrue (emptyContainers.list.get (0).name.isEmpty ());
-        assertTrue (emptyContainers.list.get (0).location.isEmpty ());
+        assertEquals (emptyContainers.list.size (), 1);
+        assertNull (emptyContainers.list.get (0).containerNumber);
+        assertNull (emptyContainers.list.get (0).name);
+        assertNull (emptyContainers.list.get (0).location);
         assertEquals (emptyContainers.list.get (0).containerType, newContainerType);
         Logging.testLog ("STEP 2 - Tube box (9x9) is displayed below the Add Container(s) form with the following fields: Adaptive Container ID, Barcode, Initial Storage Location. All fields are blank");
 
@@ -221,28 +220,26 @@ public class NewContainerTestSuite extends ContainerTestBase {
 
         Containers newContainers = addContainer.getContainers ();
         String newContainerNo = newContainers.list.get (0).containerNumber;
-        assertTrue (newContainers.list.size () == 1);
-        assertTrue (newContainerNo.matches ("CO-\\d{6}"));
+        assertEquals (newContainers.list.size (), 1);
+        assertTrue (newContainerNo.matches ("CO-\\d{7}"));
         Logging.testLog ("STEP 3.4 - Adaptive Container ID is populated");
 
         addContainer.clickGenerateContainerLabels ();
         generateContainerLabels.isCorrectPage ();
         List <Map <String, String>> tableData = generateContainerLabels.getGenerateContainerLabelDetails ();
-        assertTrue (tableData.size () == 1);
+        assertEquals (tableData.size (), 1);
         Map <String, String> firstRowData = tableData.get (0);
-        assertTrue (firstRowData.containsKey ("Holding Container Type"));
-        assertTrue (firstRowData.containsKey ("Holding Container Name"));
-        assertTrue (firstRowData.containsKey ("Holding CO#"));
-        assertTrue (firstRowData.containsKey ("Container Type"));
-        assertTrue (firstRowData.containsKey ("Container Name"));
-        assertTrue (firstRowData.containsKey ("Loc"));
-        assertTrue (firstRowData.containsKey ("ASID (SP#)"));
-        assertTrue (firstRowData.containsKey ("ACID (CO#)"));
+        assertNull (firstRowData.get ("Holding Container Type"));
+        assertNull (firstRowData.get ("Holding Container Name"));
+        assertNull (firstRowData.get ("Holding CO#"));
+        assertEquals (firstRowData.get ("Container Type"), newContainerType.label);
+        assertNull (firstRowData.get ("Container Name"));
+        assertNull (firstRowData.get ("Loc"));
+        assertNull (firstRowData.get ("ASID (SP#)"));
+        assertEquals (firstRowData.get ("ACID (CO#)"), newContainerNo);
         assertTrue (generateContainerLabels.isPrintersVisible ());
         assertTrue (generateContainerLabels.isPrintVisible ());
         assertTrue (generateContainerLabels.isCloseVisible ());
-        assertEquals (firstRowData.get ("Container Type"), newContainerType.label);
-        assertEquals (firstRowData.get ("ACID (CO#)"), newContainerNo);
         Logging.testLog ("STEP 4 - Validate Generate Container Labels modal");
 
         assertTrue (generateContainerLabels.isCopyToClipboardVisible ());
@@ -260,7 +257,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         Logging.testLog ("STEP 6.2 - verify Container details");
 
         List <String> historyRows = containerDetails.getDetailHistory ();
-        assertTrue (historyRows.size () == 2, "UI History: " + history);
+        assertEquals (historyRows.size (), 2, "UI History: " + history);
         String todaysDate = DateUtils.getPastFutureDate (0);
         assertTrue (historyRows.get (0).startsWith (todaysDate));
         assertTrue (historyRows.get (0).endsWith ("Created by " + coraTestUser));
@@ -271,14 +268,13 @@ public class NewContainerTestSuite extends ContainerTestBase {
         containerDetails.gotoHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> containerHistory = history.getHistories ();
-        assertTrue (containerHistory.size () == 1);
+        assertEquals (containerHistory.size (), 1);
         assertTrue (containerHistory.get (0).activityDate.startsWith (todaysDate));
         assertEquals (containerHistory.get (0).activity, "Took Custody");
         assertEquals (containerHistory.get (0).location, coraTestUser);
         assertEquals (containerHistory.get (0).activityBy, coraTestUser);
         Logging.testLog ("STEP 7 - A row has been added in History Tab");
 
-        coraApi.login ();
         coraApi.deactivateContainers (newContainers);
     }
 }

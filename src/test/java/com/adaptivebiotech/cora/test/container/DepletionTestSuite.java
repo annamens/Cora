@@ -1,8 +1,8 @@
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.TubeBox5x5;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.Tube;
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.TubeBox5x5;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
@@ -25,7 +25,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 public class DepletionTestSuite extends ContainerTestBase {
 
     private Login                    login      = new Login ();
-    private OrdersList               orderList  = new OrdersList ();
+    private OrdersList               ordersList = new OrdersList ();
     private MyCustody                myCustody  = new MyCustody ();
     private Detail                   detail     = new Detail ();
     private History                  history    = new History ();
@@ -33,12 +33,11 @@ public class DepletionTestSuite extends ContainerTestBase {
 
     @BeforeMethod
     public void beforeMethod () {
-        coraApi.login ();
         containers.set (coraApi.addContainers (new Containers (asList (container (Tube), container (TubeBox5x5)))));
 
         login.doLogin ();
-        orderList.isCorrectPage ();
-        orderList.gotoMyCustody ();
+        ordersList.isCorrectPage ();
+        ordersList.gotoMyCustody ();
         myCustody.isCorrectPage ();
     }
 
@@ -48,7 +47,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_primary_to_freezer () {
 
@@ -76,7 +75,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_child_to_freezer () {
         Container child = SerializationUtils.clone (containers.get ().list.get (0));
@@ -106,7 +105,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void move_holding_to_freezer () {
         Container child = SerializationUtils.clone (containers.get ().list.get (0));
@@ -164,7 +163,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void set_holding_container () {
         Container holding = SerializationUtils.clone (containers.get ().list.get (1));
@@ -193,7 +192,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc_requirements 126.MoveMetadata
+     * @sdlc.requirements 126.MoveMetadata
      */
     public void remove_holding_container () {
         Container child = SerializationUtils.clone (containers.get ().list.get (0));

@@ -18,19 +18,21 @@ public class ShipmentHeader extends CoraPage {
     }
 
     public String getShipmentNumber () {
-        return getText ("[ng-bind='ctrl.entry.shipment.shipmentNumber']");
+        return getText (".shipment-entry-header [data-ng-bind='ctrl.entry.shipment.shipmentNumber']");
     }
 
     public String getShipmentStatus () {
         return getText (shipmentStatus);
     }
 
-    public void gotoShipment () {
+    public void clickShipmentTab () {
         assertTrue (click ("#shipment-tab-link"));
+        pageLoading ();
     }
 
-    public void gotoAccession () {
+    public void clickAccessionTab () {
         assertTrue (click ("#shipment-accession-tab-link"));
+        pageLoading ();
     }
 
     public void gotoDiscrepancyResolutions () {

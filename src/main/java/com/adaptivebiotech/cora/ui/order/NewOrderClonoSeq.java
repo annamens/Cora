@@ -1,6 +1,8 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -9,23 +11,21 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Insurance;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
+import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
+import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
-import com.adaptivebiotech.cora.utils.DateUtils;
-import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
@@ -36,7 +36,9 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 public class NewOrderClonoSeq extends NewOrder {
 
     public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq ();
-    private final String           specimenDelivery = "[name='specimenType']";
+    private Accession              accession        = new Accession ();
+    private final String           orderNotes       = "[ng-model='ctrl.orderEntry.order.notes']";
+    private final String           specimenDelivery = "[ng-model='ctrl.orderEntry.order.specimenDeliveryType']";
 
     public void clickAssayTest (Assay assay) {
         String type = "[ng-click*='" + assay.type + "']";
@@ -91,7 +93,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.patient.patientCode = Integer.valueOf (getPatientCode ());
         order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
-        ChargeType chargeType = billing.getBillingType ();
+        ChargeType chargeType = billing.getBilling ();
         order.patient.billingType = chargeType;
         order.patient.abnStatusType = Medicare.equals (chargeType) ? billing.getAbnStatus () : null;
         order.icdcodes = getPatientICD_Codes ();
@@ -99,31 +101,51 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto = new Specimen ();
         order.specimenDto.specimenNumber = getSpecimenId ();
         order.specimenDto.sampleType = getSpecimenType ();
-        order.specimenDto.sourceType = getSpecimenSource ();
+        order.specimenDto.sampleSource = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
-        Logging.testLog ("DTO Shipment Arrival Date: " + order.specimenDto.arrivalDate);
         order.expectedTestType = getExpectedTest ();
         order.tests = getSelectedTests ();
         order.orderAttachments = getCoraAttachments ();
         order.doraAttachments = getDoraAttachments ();
-        order.patient.insurance1 = new Insurance ();
-        order.patient.insurance1.provider = billing.getInsurance1Provider ();
-        order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
-        order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
-        order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
-        order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
-        order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
-        order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
-        order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
-        order.patient.insurance2 = new Insurance ();
-        order.patient.insurance2.provider = billing.getInsurance2Provider ();
-        order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
-        order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
-        order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
-        order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+
+        switch (chargeType) {
+        case CommercialInsurance:
+        case Medicare:
+            order.patient.insurance1 = new Insurance ();
+            order.patient.insurance1.provider = billing.getInsurance1Provider ();
+            order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
+            order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
+            order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
+            order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
+            order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
+            order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
+            order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
+
+            if (billing.hasSecondaryInsurance ()) {
+                order.patient.insurance2 = new Insurance ();
+                order.patient.insurance2.provider = billing.getInsurance2Provider ();
+                order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
+                order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
+                order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
+                order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+            }
+
+            if (billing.hasTertiaryInsurance ()) {
+                order.patient.insurance3 = new Insurance ();
+                order.patient.insurance3.provider = billing.getInsurance3Provider ();
+                order.patient.insurance3.groupNumber = billing.getInsurance3GroupNumber ();
+                order.patient.insurance3.policyNumber = billing.getInsurance3Policy ();
+                order.patient.insurance3.insuredRelationship = billing.getInsurance3Relationship ();
+                order.patient.insurance3.policyholder = billing.getInsurance3PolicyHolder ();
+            }
+            break;
+        default:
+            break;
+        }
+
         order.patient.address = billing.getPatientAddress1 ();
         order.patient.phone = billing.getPatientPhone ();
         order.patient.locality = billing.getPatientCity ();
@@ -136,11 +158,6 @@ public class NewOrderClonoSeq extends NewOrder {
     public String getCollectionDate () {
         String css = "[ng-model^='ctrl.orderEntry.specimen.collectionDate']";
         return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
-    }
-
-    private DeliveryType getSpecimenDelivery () {
-        String css = "[ng-model^='ctrl.orderEntry.order.specimenDeliveryType']";
-        return DeliveryType.getDeliveryType (getFirstSelectedText (css));
     }
 
     public String getPatientGender () {
@@ -159,10 +176,6 @@ public class NewOrderClonoSeq extends NewOrder {
         String editPatientLink = "a[ui-sref^='main.patient.details']";
         assertTrue (click (editPatientLink));
         pageLoading ();
-    }
-
-    public boolean isAbnStatusNotRequired () {
-        return (isTextInElement ("div[ng-if^='ctrl.orderEntry.order.abnStatusType']", "Not Required"));
     }
 
     public void activateOrder () {
@@ -186,6 +199,10 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectValue ("[name='gender']", "string:" + patient.gender));
         assertTrue (click ("//button[text()='Save']"));
         assertTrue (setText ("[name='mrn']", patient.mrn));
+    }
+
+    public void setPatientMRN (String mrn) {
+        assertTrue (setText ("#mrn-input", mrn));
     }
 
     public void clickShowContainers () {
@@ -220,8 +237,16 @@ public class NewOrderClonoSeq extends NewOrder {
         }).collect (toList ()));
     }
 
+    public void waitForSpecimenDelivery () {
+        assertTrue (waitUntilVisible (specimenDelivery));
+    }
+
     public void enterSpecimenDelivery (DeliveryType type) {
         assertTrue (clickAndSelectValue (specimenDelivery, "string:" + type));
+    }
+
+    public DeliveryType getSpecimenDelivery () {
+        return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
     }
 
     public List <String> getSpecimenDeliveryOptions () {
@@ -265,14 +290,6 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText (cssRetrievalDate, date));
     }
 
-    public String getSpecimenDeliverySelectedOption () {
-        String css = "[ng-model^='ctrl.orderEntry.order.specimenDeliveryType']";
-        if (isElementVisible (css)) {
-            return getFirstSelectedText (css);
-        }
-        return null;
-    }
-
     public String getRetrievalDate () {
         String css = "[ng-model^='ctrl.orderEntry.specimen.retrievalDate']";
         if (isElementVisible (css)) {
@@ -289,7 +306,11 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void enterOrderNotes (String notes) {
-        assertTrue (setText ("[ng-model='ctrl.orderEntry.order.notes']", notes));
+        assertTrue (setText (orderNotes, notes));
+    }
+
+    public String getOrderNotes () {
+        return readInput (orderNotes);
     }
 
     /**
@@ -301,31 +322,23 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param patient
      * @param icdCodes
      * @param assayTest
-     * @param chargeType
-     * @param specimenType
-     * @param specimenSource
-     * @param anticoagulant
+     * @param specimen
      * @return
      */
     public String createClonoSeqOrder (Physician physician,
                                        Patient patient,
                                        String[] icdCodes,
                                        Assay assayTest,
-                                       ChargeType chargeType,
-                                       SpecimenType specimenType,
-                                       SpecimenSource specimenSource,
-                                       Anticoagulant anticoagulant) {
+                                       Specimen specimen) {
 
         selectNewClonoSEQDiagnosticOrder ();
         isCorrectPage ();
 
         selectPhysician (physician);
-        searchOrCreatePatient (patient);
-        for (String icdCode : icdCodes) {
-            enterPatientICD_Codes (icdCode);
-        }
+        boolean matchFound = searchOrCreatePatient (patient);
+        enterPatientICD_Codes (icdCodes);
 
-        switch (chargeType) {
+        switch (patient.billingType) {
         case CommercialInsurance:
             billing.enterInsuranceInfo (patient);
             break;
@@ -335,27 +348,31 @@ public class NewOrderClonoSeq extends NewOrder {
         case Client:
         case PatientSelfPay:
             billing.enterBill (patient);
+            break;
         default:
-            billing.selectBilling (chargeType);
+            billing.selectBilling (patient.billingType);
             break;
         }
+
+        // Patient Billing Address is not required regardless of billing type.
+        if (!matchFound && patient.hasAddress ())
+            billing.enterPatientAddress (patient);
+
         clickSave ();
-
         clickEnterSpecimenDetails ();
-        enterSpecimenType (specimenType);
+        enterSpecimenType (specimen.sampleType);
 
-        if (specimenSource != null)
-            enterSpecimenSource (specimenSource);
-        if (anticoagulant != null)
-            enterAntiCoagulant (Anticoagulant.EDTA);
+        if (specimen.sampleSource != null)
+            enterSpecimenSource (specimen.sampleSource);
+        if (specimen.anticoagulant != null)
+            enterAntiCoagulant (specimen.anticoagulant);
 
-        enterCollectionDate (DateUtils.getPastFutureDate (-3));
-        enterOrderNotes ("Creating Order in Cora");
+        enterCollectionDate (specimen.collectionDate.toString ());
         clickAssayTest (assayTest);
         clickSave ();
 
         String orderNum = getOrderNumber ();
-        Logging.info ("ClonoSeq Order Number: " + orderNum);
+        info ("ClonoSeq Order Number: " + orderNum);
         return orderNum;
     }
 
@@ -369,10 +386,6 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param patient
      * @param icdCodes
      * @param assayTest
-     * @param chargeType
-     * @param specimenType
-     * @param specimenSource
-     * @param anticoagulant
      * @param orderStatus
      * @param containerType
      * @return
@@ -381,38 +394,28 @@ public class NewOrderClonoSeq extends NewOrder {
                                        Patient patient,
                                        String[] icdCodes,
                                        Assay assayTest,
-                                       ChargeType chargeType,
-                                       SpecimenType specimenType,
-                                       SpecimenSource specimenSource,
-                                       Anticoagulant anticoagulant,
+                                       Specimen specimen,
                                        OrderStatus orderStatus,
                                        ContainerType containerType) {
         // create clonoSEQ diagnostic order
-        String orderNum = createClonoSeqOrder (physician,
-                                               patient,
-                                               icdCodes,
-                                               assayTest,
-                                               chargeType,
-                                               specimenType,
-                                               specimenSource,
-                                               anticoagulant);
+        String orderNum = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
 
         // add diagnostic shipment
         new NewShipment ().createShipment (orderNum, containerType);
 
         // accession complete
-        if (orderStatus.equals (com.adaptivebiotech.test.utils.PageHelper.OrderStatus.Active)) {
-            new Accession ().completeAccession ();
+        if (orderStatus.equals (Active)) {
+            accession.completeAccession ();
 
             // activate order
             isCorrectPage ();
+            waitForSpecimenDelivery ();
             activateOrder ();
         } else {
-            navigateToOrderDetailsPage (getOrderId ());
+            accession.clickOrderNumber ();
             isCorrectPage ();
         }
 
         return orderNum;
     }
-
 }

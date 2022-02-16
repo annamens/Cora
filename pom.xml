@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adaptivebiotech.test.functional</groupId>
     <artifactId>cora</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <name>Adaptive Biotechnologies Functional Tests for Cora</name>
     <repositories>
         <repository>
@@ -81,7 +81,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>2.21.0</version>
                 <configuration>
                     <parallel>${parallel}</parallel>
                     <threadCount>${test.threads}</threadCount>
@@ -91,6 +91,7 @@
                     <systemPropertyVariables>
                         <project.version>${git.branch}</project.version>
                         <project.git.commit.id>${git.commit.id}</project.git.commit.id>
+                        <test.tags>${git.branch}</test.tags>
                         <test.env>${test.env}</test.env>
                         <test.webdriver.wait>30</test.webdriver.wait>
                         <path.to.config>config/${test.env}.properties</path.to.config>
@@ -164,12 +165,12 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.33</version>
+            <version>1.1.35</version>
         </dependency>
         <dependency>
             <groupId>com.adaptivebiotech.test.functional</groupId>
             <artifactId>picasso</artifactId>
-            <version>2.7.3</version>
+            <version>2.7.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>

@@ -12,13 +12,13 @@ import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.StaleElementReferenceException;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.seleniumfy.test.utils.Timeout;
@@ -40,6 +40,10 @@ public abstract class NewOrder extends OrderHeader {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
         pageLoading ();
+    }
+
+    public List <String> getSectionHeaders () {
+        return getTextList (".order-entry h2");
     }
 
     public abstract void createNewPatient (Patient patient);
@@ -89,13 +93,8 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (waitForElementInvisible (pageLoadingBar));
     }
 
-    public String getStatusText () {
-        String xpath = "//*[text()='Status']/..//span";
-        return getText (xpath);
-    }
-
     public void waitUntilActivated () {
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisRetry * 10, waitRetry * 2);
         while (!timer.Timedout () && ! (getStatusText ().equals ("Active"))) {
             refresh ();
             timer.Wait ();
@@ -151,7 +150,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getOrderNumber () {
-        String css = oEntry + " .ab-panel-first" + " [ng-bind='ctrl.orderEntry.order.orderNumber']";
+        String css = oEntry + " .ab-panel-first [ng-bind='ctrl.orderEntry.order.orderNumber']";
         return getText (css);
     }
 
@@ -165,7 +164,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public String getDateSigned () {
         String css = "[ng-model^='ctrl.orderEntry.order.dateSigned']";
-        return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
+        return isElementVisible (css) ? readInput (css) : null;
     }
 
     public void enterInstruction (String instruction) {
@@ -239,19 +238,19 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public boolean searchOrCreatePatient (Patient patient) {
-        boolean matchFound = false;
         clickPickPatient ();
         searchPatient (patient);
 
-        if (isElementPresent (".ab-panel.matches .row:nth-child(1)")) {
-            assertTrue (click (".ab-panel.matches .row:nth-child(1) > div"));
-            assertTrue (click ("[ng-click='ctrl.save(orderEntryForm)']"));
-            moduleLoading ();
-            assertTrue (waitUntilVisible ("[ng-click='ctrl.removePatient()']"));
-            assertTrue (setText ("[name='mrn']", patient.mrn));
-            matchFound = true;
-        } else {
+        boolean matchFound = false;
+        String firstrow = ".ab-panel.matches .row:nth-child(1)";
+        if (getText (firstrow).matches ("No patient(s)? found\\."))
             createNewPatient (patient);
+        else {
+            assertTrue (click (firstrow));
+            assertTrue (click ("#select-patient"));
+            moduleLoading ();
+            setPatientMRN (patient.mrn);
+            matchFound = true;
         }
         return matchFound;
 
@@ -263,13 +262,11 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void searchPatient (Patient patient) {
-        assertTrue (setText ("[name='firstName']", patient.firstName));
-        assertTrue (setText ("[name='lastName']", patient.lastName));
-
-        assertTrue (setText ("[name='dateOfBirth']", patient.dateOfBirth));
-        assertTrue (setText ("[ng-model='ctrl.mrn']", patient.mrn));
-
-        assertTrue (click ("[ng-click='ctrl.search()']"));
+        assertTrue (setText ("#patient-firstname", patient.firstName));
+        assertTrue (setText ("#patient-lastname", patient.lastName));
+        assertTrue (setText ("#patient-dateofbirth", patient.dateOfBirth));
+        assertTrue (setText ("#patient-mrn", patient.mrn));
+        assertTrue (click ("#patient-search"));
         pageLoading ();
     }
 
@@ -300,14 +297,15 @@ public abstract class NewOrder extends OrderHeader {
         String css = "//*[text()='Patient Code']/parent::div//a";
         assertTrue (click (css));
         assertTrue (waitForChildWindows (2));
-        List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
-        getDriver ().switchTo ().window (windows.get (1));
+        navigateToTab (1);
     }
 
     public String getPatientCode () {
         String xpath = "//*[text()='Patient Code']/..//a[1]/span";
         return getText (xpath);
     }
+
+    public abstract void setPatientMRN (String mrn);
 
     public String getPatientMRN () {
         String css = "[ng-model='ctrl.orderEntry.order.mrn']";
@@ -323,20 +321,24 @@ public abstract class NewOrder extends OrderHeader {
         return isElementPresent (css) ? readInput (css) : null;
     }
 
-    public void enterPatientICD_Codes (String codes) {
+    public void enterPatientICD_Codes (String... codes) {
+        String dropdown = "//*[*[text()='ICD Codes']]//ul";
         String css = "//button[text()='Add Code']";
-        if (isElementPresent (css) && isElementVisible (css))
-            assertTrue (click (css));
-        assertTrue (setText ("//*[text()='ICD Codes']/..//input", codes));
-        assertTrue (waitUntilVisible ("//*[text()='ICD Codes']/..//ul"));
-        assertTrue (click ("//*[contains(text(),'" + codes + "')]"));
-        assertTrue (waitForElementInvisible ("//*[text()='ICD Codes']/..//ul"));
+        for (String code : codes) {
+            if (isElementVisible (css))
+                assertTrue (click (css));
+
+            assertTrue (setText ("//*[*[text()='ICD Codes']]//input", code));
+            assertTrue (waitUntilVisible (dropdown));
+            assertTrue (click ("//*[contains(text(),'" + code + "')]"));
+            assertTrue (waitForElementInvisible (dropdown));
+        }
     }
 
     public List <String> getPatientICD_Codes () {
         String searchBox = "[ng-show='ctrl.searchBoxVisible'] input";
         String css = "[ng-model*='ctrl.orderEntry.icdCodes'] span";
-        return isElementPresent (searchBox) && isElementVisible (searchBox) ? null : isElementPresent (css) ? getTextList (css) : null;
+        return isElementVisible (searchBox) ? null : isElementPresent (css) ? getTextList (css) : null;
     }
 
     public String getSpecimenId () {
@@ -345,27 +347,27 @@ public abstract class NewOrder extends OrderHeader {
 
     public SpecimenType getSpecimenType () {
         String css = "[ng-model^='ctrl.orderEntry.specimen.sampleType']";
-        return isElementPresent (css) && isElementVisible (css) ? SpecimenType.getSpecimenType (getFirstSelectedText (css)) : null;
+        return isElementVisible (css) ? SpecimenType.getSpecimenType (getFirstSelectedText (css)) : null;
     }
 
     public SpecimenSource getSpecimenSource () {
         String css = "[ng-model^='ctrl.orderEntry.specimen.sourceType']";
-        return isElementPresent (css) && isElementVisible (css) ? SpecimenSource.getSpecimenSource (getFirstSelectedText (css)) : null;
+        return isElementVisible (css) ? SpecimenSource.getSpecimenSource (getFirstSelectedText (css)) : null;
     }
 
     public Anticoagulant getAnticoagulant () {
         String css = "[ng-model^='ctrl.orderEntry.specimen | specimenAnticoagulant']";
-        return isElementPresent (css) && isElementVisible (css) ? Anticoagulant.valueOf (getFirstSelectedText (css)) : null;
+        return isElementVisible (css) ? Anticoagulant.valueOf (getFirstSelectedText (css)) : null;
     }
 
     protected String getReconciliationDate () {
         String rDate = "[ng-bind*='ctrl.orderEntry.specimen.reconciliationDate']";
-        return isElementPresent (rDate) && isElementVisible (rDate) ? getText (rDate) : null;
+        return isElementVisible (rDate) ? getText (rDate) : null;
     }
 
     public String getShipmentArrivalDate () {
         String xpath = "//*[text()='Shipment Arrival']/..//span";
-        String arrivalDate = isElementPresent (xpath) && isElementVisible (xpath) ? getText (xpath) : null;
+        String arrivalDate = isElementVisible (xpath) ? getText (xpath) : null;
         Logging.testLog ("Shipment Arrival Date from UI: " + arrivalDate);
         return arrivalDate;
     }
@@ -412,10 +414,6 @@ public abstract class NewOrder extends OrderHeader {
         if (isElementPresent (files + " .attachments-table-row"))
             result.addAll (getTextList (files + " a [ng-bind='attachment.name']"));
         return result;
-    }
-
-    public String getOrderNotes () {
-        return readInput ("[ng-model='ctrl.orderEntry.order.notes']");
     }
 
     public void enterCollectionDate (String date) {

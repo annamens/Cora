@@ -1,6 +1,6 @@
 package com.adaptivebiotech.cora.ui.container;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ContainerType.getContainerType;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;

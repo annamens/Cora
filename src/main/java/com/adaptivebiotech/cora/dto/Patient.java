@@ -2,13 +2,18 @@ package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import static java.util.Arrays.asList;
+import static java.util.EnumSet.allOf;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
+import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
-import com.adaptivebiotech.test.utils.PageHelper.AbnStatus;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Harry Soehalim
@@ -16,19 +21,22 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public final class Patient {
 
+    @JsonAlias ("emrId")
     public String        id;
     public String        firstName;
     public String        middleName;
     public String        lastName;
     public String        fullname;
     public String        gender;
+    @JsonAlias ("dob")
     public String        dateOfBirth;
     public String        mrn;
     public Race          race;
     public Ethnicity     ethnicity;
-    public Insurance     insurance1 = new Insurance ();
-    public Insurance     insurance2 = new Insurance ();
-    public Insurance     insurance3 = new Insurance ();
+    public Insurance     insurance1;
+    public Insurance     insurance2;
+    public Insurance     insurance3;
+    @JsonAlias ("address1")
     public String        address;
     public String        address2;
     public String        locality;
@@ -37,10 +45,10 @@ public final class Patient {
     public String        country;
     public String        phone;
     public String        email;
-    public int           patientCode;
-    public int           externalPatientCode;
-    public int           calibrationPatientCode;
-    public boolean       deceased;
+    public Integer       patientCode;
+    public Integer       externalPatientCode;
+    public Integer       calibrationPatientCode;
+    public Boolean       deceased;
     public String        notes;
     public ChargeType    billingType;
     public AbnStatus     abnStatusType;
@@ -63,27 +71,43 @@ public final class Patient {
         return equalsOverride (this, (Patient) o);
     }
 
-    public static final class Address {
+    public boolean hasAddress () {
+        return isNotNullAndNotEmpty (address) || isNotNullAndNotEmpty (address2) || isNotNullAndNotEmpty (locality) || isNotNullAndNotEmpty (region) || isNotNullAndNotEmpty (postCode) || isNotNullAndNotEmpty (phone) || isNotNullAndNotEmpty (email);
+    }
 
-        public String        use;
-        public String        line1;
-        public String        line2;
-        public List <String> line;
-        public String        phone;
-        public String        email;
-        public String        city;
-        public String        state;
-        public String        postalCode;
-        public String        country;
+    @JsonIgnore
+    public List <String> getNameDob () {
+        return asList (this.lastName, this.firstName, this.dateOfBirth);
+    }
 
-        @Override
-        public String toString () {
-            return toStringOverride (this);
+    @JsonIgnore
+    public List <String> getPatientAddress () {
+        return asList (this.address,
+                       this.address2,
+                       this.locality,
+                       this.region,
+                       this.postCode,
+                       this.phone,
+                       this.email,
+                       this.country);
+    }
+
+    public enum PatientTestStatus {
+        Pending ("Pending"),
+        ClonalityProcessing ("Clonality (ID) Processing"),
+        TrackingEnabled ("Tracking (MRD) Enabled"),
+        Deceased ("Deceased"),
+        NoClonesFound ("No Calibrated Clones Found");
+
+        public String label;
+
+        private PatientTestStatus (String label) {
+            this.label = label;
         }
 
-        @Override
-        public boolean equals (Object o) {
-            return equalsOverride (this, (Address) o);
+        public static PatientTestStatus getCompartment (String label) {
+            return allOf (PatientTestStatus.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                                                  .get ();
         }
     }
 }

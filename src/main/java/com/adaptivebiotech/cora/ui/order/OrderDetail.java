@@ -1,6 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import static com.adaptivebiotech.test.utils.PageHelper.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -12,20 +12,19 @@ import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Insurance;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
+import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
-import com.adaptivebiotech.test.utils.Logging;
-import com.adaptivebiotech.test.utils.PageHelper.Anticoagulant;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
-import com.adaptivebiotech.test.utils.PageHelper.ChargeType;
-import com.adaptivebiotech.test.utils.PageHelper.ContainerType;
-import com.adaptivebiotech.test.utils.PageHelper.DeliveryType;
-import com.adaptivebiotech.test.utils.PageHelper.OrderStatus;
+import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.seleniumfy.test.utils.Timeout;
@@ -36,10 +35,11 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class OrderDetail extends OrderHeader {
 
-    public BillingOrderDetail billing          = new BillingOrderDetail ();
+    public BillingOrderDetail billing             = new BillingOrderDetail ();
 
-    private final String      patientMrdStatus = ".patient-status";
-    private final String      specimenNumber   = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
+    private final String      patientMrdStatus    = ".patient-status";
+    private final String      specimenNumber      = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
+    private final String      specimenArrivalDate = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
 
     public OrderDetail () {
         staticNavBarHeight = 200;
@@ -49,6 +49,19 @@ public class OrderDetail extends OrderHeader {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
         pageLoading ();
+    }
+
+    public void clickCancelOrder () {
+        assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
+        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
+        assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
+        assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
+        assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
+        assertTrue (setText ("#cancellationNotes", "this is a test"));
+        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
+        pageLoading ();
+        moduleLoading ();
+        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
     }
 
     public String getPatientMRDStatus () {
@@ -89,7 +102,7 @@ public class OrderDetail extends OrderHeader {
         order.specimenDto = new Specimen ();
         order.specimenDto.specimenNumber = getSpecimenId ();
         order.specimenDto.sampleType = getSpecimenType ();
-        order.specimenDto.sourceType = getSpecimenSource ();
+        order.specimenDto.sampleSource = getSpecimenSource ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
@@ -143,7 +156,7 @@ public class OrderDetail extends OrderHeader {
     }
 
     public String getOrderNumber () {
-        String css = oDetail + " .ab-panel-first" + " [ng-bind='ctrl.orderEntry.order.orderNumber']";
+        String css = oDetail + " [ng-bind='ctrl.orderEntry.order.orderNumber']";
         return getText (css);
     }
 
@@ -157,7 +170,7 @@ public class OrderDetail extends OrderHeader {
 
     public String getDateSigned () {
         String css = "[ng-bind^='ctrl.orderEntry.order.dateSigned']";
-        return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
+        return isElementVisible (css) ? readInput (css) : null;
     }
 
     private String getInstructions () {
@@ -189,8 +202,7 @@ public class OrderDetail extends OrderHeader {
         String css = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
         assertTrue (click (css));
         assertTrue (waitForChildWindows (2));
-        List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
-        getDriver ().switchTo ().window (windows.get (1));
+        navigateToTab (1);
     }
 
     public String getPatientCode () {
@@ -206,7 +218,7 @@ public class OrderDetail extends OrderHeader {
     public List <String> getPatientICD_Codes () {
         String searchBox = "[ng-show='ctrl.searchBoxVisible'] input";
         String css = "[ng-repeat*='ctrl.orderEntry.icdCodes']";
-        return isElementPresent (searchBox) && isElementVisible (searchBox) ? null : isElementPresent (css) ? getTextList (css) : null;
+        return isElementVisible (searchBox) ? null : isElementPresent (css) ? getTextList (css) : null;
     }
 
     private DeliveryType getSpecimenDelivery () {
@@ -220,7 +232,7 @@ public class OrderDetail extends OrderHeader {
 
     public String getSpecimenIdUrlAttribute (String attribute) {
         String xpath = "//*[text()='Adaptive Specimen ID']/..//a";
-        return isElementPresent (xpath) && isElementVisible (xpath) ? getAttribute (xpath, attribute) : null;
+        return isElementVisible (xpath) ? getAttribute (xpath, attribute) : null;
     }
 
     public String getPatientMRN () {
@@ -230,38 +242,35 @@ public class OrderDetail extends OrderHeader {
 
     public SpecimenType getSpecimenType () {
         String css = "[ng-bind^='ctrl.orderEntry.specimen.sampleType']";
-        return isElementPresent (css) && isElementVisible (css) ? SpecimenType.getSpecimenType (getText (css)) : null;
+        return isElementVisible (css) ? SpecimenType.getSpecimenType (getText (css)) : null;
     }
 
     public SpecimenSource getSpecimenSource () {
         String css = "[ng-bind^='ctrl.orderEntry.specimen.sourceType']";
-        return isElementPresent (css) && isElementVisible (css) ? SpecimenSource.valueOf (getText (css)) : null;
+        return isElementVisible (css) ? SpecimenSource.valueOf (getText (css)) : null;
     }
 
     public Anticoagulant getAnticoagulant () {
         String css = "[ng-bind^='ctrl.orderEntry.specimen | specimenAnticoagulant']";
-        return isElementPresent (css) && isElementVisible (css) ? Anticoagulant.valueOf (getText (css)) : null;
+        return isElementVisible (css) ? Anticoagulant.valueOf (getText (css)) : null;
     }
 
     public String getCollectionDate () {
         String css = "[ng-bind^='ctrl.orderEntry.specimen.collectionDate']";
-        return isElementPresent (css) && isElementVisible (css) ? getText (css) : null;
+        return isElementVisible (css) ? getText (css) : null;
     }
 
     private String getReconciliationDate () {
         String rDate = "[ng-bind*='ctrl.orderEntry.specimen.reconciliationDate']";
-        return isElementPresent (rDate) && isElementVisible (rDate) ? getText (rDate) : null;
+        return isElementVisible (rDate) ? getText (rDate) : null;
     }
 
     public String getShipmentArrivalDate () {
-        String xpath = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
-        String arrivalDate = isElementPresent (xpath) && isElementVisible (xpath) ? getText (xpath) : null;
-        Logging.testLog ("Shipment Arrival Date from UI: " + arrivalDate);
-        return arrivalDate;
+        return isElementVisible (specimenArrivalDate) ? getText (specimenArrivalDate) : null;
     }
 
     public void clickShipmentArrivalDate () {
-        assertTrue (click ("[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']"));
+        assertTrue (click (specimenArrivalDate));
     }
 
     public String getIntakeCompleteDate () {

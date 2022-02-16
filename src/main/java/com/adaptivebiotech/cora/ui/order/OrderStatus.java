@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ public class OrderStatus extends OrderHeader {
 
     private final long   millisRetry          = 3000000l;                                                                     // 50mins
     private final long   waitRetry            = 30000l;                                                                       // 30sec
-    private final String historyLink          = ".history-link";
     private final String stageActionDots      = "#stageActionsDropdown";
     private final String stageActionsDropdown = "[aria-labelledby='stageActionsDropdown']";
     private final String dropdownItem         = "//*[@aria-labelledby='stageActionsDropdown']//a[text()='%s']";
@@ -24,7 +24,7 @@ public class OrderStatus extends OrderHeader {
     private final String actionConfirm        = ".action-confirm";
     private final String confirmYes           = "//button[text()='Yes']";
     private final String hideShow             = "//tr[td[text()='%s']]//*[contains (@class, 'history-link') and text()='%s']";
-    private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]";
+    private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]//table";
 
     public OrderStatus () {
         staticNavBarHeight = 200;
@@ -109,11 +109,6 @@ public class OrderStatus extends OrderHeader {
         return false;
     }
 
-    public String getOrderStatusText () {
-        String status = "[ng-bind='ctrl.orderEntry.order.status']";
-        return getText (status);
-    }
-
     public StageSubstatus getStageSubstatus () {
         String css = "span.ng-binding.ng-scope";
         String subStatusName = getText (css);
@@ -138,18 +133,11 @@ public class OrderStatus extends OrderHeader {
     }
 
     public String getOrderTestIdFromUrl () {
-        String orderTestId = null;
-        String url = getCurrentUrl ();
-        if (url.contains ("ordertestid")) {
-            orderTestId = url.split ("ordertestid=")[1];
-        }
-        return orderTestId;
+        return substringAfterLast (getCurrentUrl (), "ordertestid=");
     }
 
-    public void failWorkflow (String message) {
-        assertTrue (isTextInElement (historyLink, "History"));
-        assertTrue (click (historyLink));
-        assertTrue (isTextInElement (historyLink, "Hide"));
+    public void failWorkflow (String sampleName, String message) {
+        clickHistory (sampleName);
         assertTrue (click (stageActionDots));
         assertTrue (waitUntilVisible (stageActionsDropdown));
         assertTrue (click (format (dropdownItem, "Fail workflow")));
@@ -157,6 +145,7 @@ public class OrderStatus extends OrderHeader {
         assertTrue (click (submit));
         assertTrue (isTextInElement (actionConfirm, "Are you sure you want to fail the workflow?"));
         assertTrue (click (confirmYes));
+        clickHide (sampleName);
     }
 
     public String getSpecimenId () {
@@ -166,6 +155,7 @@ public class OrderStatus extends OrderHeader {
 
     public void nudgeWorkflow () {
         assertTrue (click (stageActionDots));
+        assertTrue (waitUntilVisible (stageActionsDropdown));
         assertTrue (click (format (dropdownItem, "Nudge workflow")));
         assertTrue (click (confirmYes));
     }
@@ -175,14 +165,18 @@ public class OrderStatus extends OrderHeader {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
         String check = format (xpath, sampleName, stage, status, substatus == null ? "" : substatus, message);
-        Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
-        while (!timer.Timedout () && !found) {
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        while (!timer.Timedout ()) {
             clickHistory (sampleName);
-            nudgeWorkflow ();
-            timer.Wait ();
-            found = isElementPresent (check);
-            clickHide (sampleName);
+            if (found = isElementPresent (check)) {
+                clickHide (sampleName);
+                break;
+            } else {
+                nudgeWorkflow ();
+                clickHide (sampleName);
+                timer.Wait ();
+            }
         }
         if (!found)
             fail (format (fail, stage, status, substatus, message));
@@ -190,14 +184,18 @@ public class OrderStatus extends OrderHeader {
 
     public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
+        Timeout timer = new Timeout (millisRetry, waitRetry);
         while (!timer.Timedout () && !found) {
             clickHistory (sampleName);
-            nudgeWorkflow ();
-            timer.Wait ();
-            found = isStagePresent (sampleName, stage, status, substatus);
-            clickHide (sampleName);
+            if (found = isStagePresent (sampleName, stage, status, substatus)) {
+                clickHide (sampleName);
+                break;
+            } else {
+                nudgeWorkflow ();
+                clickHide (sampleName);
+                timer.Wait ();
+            }
         }
         if (!found)
             fail (format (fail, stage, status, substatus));
@@ -205,14 +203,18 @@ public class OrderStatus extends OrderHeader {
 
     public void waitFor (String sampleName, StageName stage, StageStatus status) {
         String fail = "unable to locate Stage: %s, Status: %s";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
         boolean found = false;
-        while (!timer.Timedout () && !found) {
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        while (!timer.Timedout ()) {
             clickHistory (sampleName);
-            nudgeWorkflow ();
-            timer.Wait ();
-            found = isStagePresent (sampleName, stage, status);
-            clickHide (sampleName);
+            if (found = isStagePresent (sampleName, stage, status)) {
+                clickHide (sampleName);
+                break;
+            } else {
+                nudgeWorkflow ();
+                clickHide (sampleName);
+                timer.Wait ();
+            }
         }
         if (!found)
             fail (format (fail, stage, status));

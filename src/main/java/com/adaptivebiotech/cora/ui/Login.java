@@ -6,6 +6,7 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static org.testng.Assert.assertTrue;
 import com.seleniumfy.test.utils.BasePage;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author Harry Soehalim
@@ -33,18 +34,29 @@ public class Login extends BasePage {
         assertTrue (click ("button[type='submit']"));
     }
 
+    public void clickSignOut () {
+        assertTrue (click ("//*[text()='sign out']"));
+    }
+
     public void doLogin () {
         doLogin (coraTestUser, coraTestPass);
     }
 
     public void doLogin (String user, String pass) {
+        String url = coraTestUrl + "/cora/login";
         info ("logging-in to Cora");
-        openBrowser (coraTestUrl + "/cora/login");
+        openBrowser (url);
         isCorrectPage ();
         enterUsername (user);
         enterPassword (pass);
-        clickSignIn ();
-        assertTrue (hasPageLoaded ());
+
+        // sometimes login is stuck, give it a retry
+        Timeout timer = new Timeout (millisRetry * 4, waitRetry * 5);
+        while (!timer.Timedout () && getCurrentUrl ().equals (url)) {
+            clickSignIn ();
+            assertTrue (hasPageLoaded ());
+            timer.Wait ();
+        }
     }
 
     public String getLoginError () {

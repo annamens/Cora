@@ -5,8 +5,8 @@ import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.HttpResponse.Meta;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
-import com.adaptivebiotech.test.utils.PageHelper.Assay;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
