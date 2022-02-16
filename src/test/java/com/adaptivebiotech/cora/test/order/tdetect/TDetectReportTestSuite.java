@@ -90,7 +90,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     private OrcaHistory        history             = new OrcaHistory ();
     private TaskDetail         taskDetail          = new TaskDetail ();
     private OrderStatus        orderStatus         = new OrderStatus ();
-
+    private OrderDetailTDetect orderDetail         = new OrderDetailTDetect ();
     private final String       todaysDate          = getPastFutureDate (0, formatDt1, pstZoneId);
     private final String       todaysDateDash      = convertDateFormat (todaysDate, "MM/dd/yyyy", "yyyy-MM-dd");
     private final String       result              = "RESULT";
@@ -138,6 +138,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         Order order = orderDetailTDetect.parseOrder ();
         String sample = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sample);
+        history.isCorrectPage ();
         order.orderTestId = history.getOrderTestId ();
 
         Map <WorkflowProperty, String> properties = new HashMap <> ();
@@ -151,15 +152,18 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
 
         history.setWorkflowProperties (properties);
         history.forceStatusUpdate (DxAnalysis, Ready);
-        history.waitFor (DxAnalysis, Finished);
-        history.waitFor (DxContamination, Finished);
-        history.waitFor (DxReport, Awaiting, CLINICAL_QC);
+        history.clickOrder ();
+        testLog ("set workflow properties and force workflow to move to DxAnalysis/Ready stage");
 
-        history.isCorrectPage ();
-        history.clickOrderTest ();
         orderStatus.isCorrectPage ();
-        orderDetailTDetect.clickReportTab (assayTest);
+        orderStatus.waitFor (sample, DxAnalysis, Finished);
+        orderStatus.waitFor (sample, DxContamination, Finished);
+        orderStatus.waitFor (sample, DxReport, Awaiting, CLINICAL_QC);
+        orderStatus.gotoOrderDetailsPage (order.id);
+        orderDetail.isCorrectPage ();
+        orderDetail.clickReportTab (assayTest);
         reportTDetect.setQCstatus (Pass);
+        testLog ("set QC status to Pass");
 
         String fileContent = getTextFromPDF (reportTDetect.getPreviewReportPdfUrl (), 1);
         validateReportContent (fileContent, order);

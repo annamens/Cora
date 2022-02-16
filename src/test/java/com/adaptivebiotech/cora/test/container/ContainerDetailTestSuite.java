@@ -19,7 +19,7 @@ import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 
-@Test (groups = { "regression" })
+@Test (groups = "regression")
 public class ContainerDetailTestSuite extends ContainerTestBase {
 
     private final String             error1     = "Only '.pdf,.jpg,.png,.gif,.xlsx' files allowed";
