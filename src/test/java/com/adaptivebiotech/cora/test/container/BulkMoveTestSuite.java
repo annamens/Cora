@@ -11,11 +11,12 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -138,18 +139,65 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         }
     }
 
+    public void moveAllContainerTypes () {
+        Containers containers = setupAllMoveableContainerTypes ();
+        containersToDeactivate.set (containers);
+        List <String> allContainerIDs = getContainerIDs (containers);
+        containersList.searchContainerIdsOrNames (allContainerIDs);
+        Containers parsedContainers = containersList.getContainers ();
+        containersList.bulkMoveAllToFreezer (catchAllFreezer);
+        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
+        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        for (Container container : containers.list) {
+            Container parsedContainer = parsedContainers.list.stream ()
+                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
+                                                             .findFirst ().get ();
+            verifyMoveToFreezer (parsedContainer, catchAllFreezer);
+        }
+        history.clickContainers ();
+        containersList.searchContainerIdsOrNames (allContainerIDs);
+        parsedContainers = containersList.getContainers ();
+        containersList.bulkMoveAllToCustody ();
+        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        for (Container container : containers.list) {
+            Container parsedContainer = parsedContainers.list.stream ()
+                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
+                                                             .findFirst ().get ();
+            verifyMoveToCustody (parsedContainer);
+        }
+    }
+
+    /**
+     * @sdlc.requirements SR-3229:R5
+     */
+    public void moveAllContainersToInvalidFreezer () {
+        Containers containers = setupAllMoveableContainerTypes ();
+        containersToDeactivate.set (containers);
+        List <String> allContainerIDs = getContainerIDs (containers);
+        containersList.searchContainerIdsOrNames (allContainerIDs);
+        Containers expectedContainersFailed = new Containers (containers.list.stream ()
+                                                                             .filter (container -> container.containerType.name ()
+                                                                                                                          .equals (ContainerType.MatrixTube.name ()) || container.containerType.equals (ContainerType.ConicalBox6x6))
+                                                                             .collect (Collectors.toList ()));
+        containersList.bulkMoveAllToFreezer (invalidFreezer);
+        verifyMoveErrorMessage (expectedContainersFailed, invalidFreezer);
+        for (Container container : containers.list) {
+            verifyStillInCustody (container);
+        }
+        testLog ("SR-3229:R5: Moving to freezer without sufficient space resulted in an error message stating containers could not be moved to freezer. No containers were moved");
+    }
+
     private void verifyMoveSuccessMessage (Containers expectedContainers) {
         assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
         testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
         containersList.clickSuccessMessageLink ();
-        List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
-        getDriver ().switchTo ().window (windows.get (1));
+        containersList.navigateToTab (1);
         containersList.isCorrectPage ();
         Set <String> parsedContainerIDs = new HashSet <> (getContainerIDs (containersList.getContainers ()));
         Set <String> expectedContainerIDs = new HashSet <> (getContainerIDs (expectedContainers));
         assertEquals (parsedContainerIDs, expectedContainerIDs);
         testLog ("SR-3229:R6: Clicking the success message link displayed container list filtered to the containers moved");
-        getDriver ().switchTo ().window (windows.get (0));
+        containersList.navigateToTab (0);
     }
 
     private void verifyMoveToFreezer (Container containerFromList, Container expectedFreezer) {
@@ -196,60 +244,32 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         verifyDetails (containerFromDetails, containerFromList);
     }
 
-    public void moveAllContainerTypes () {
-        Containers containers = setupAllMoveableContainerTypes ();
-        containersToDeactivate.set (containers);
-        List <String> allContainerIDs = getContainerIDs (containers);
-        containersList.searchContainerIdsOrNames (allContainerIDs);
-        Containers parsedContainers = containersList.getContainers ();
-        containersList.bulkMoveAllToFreezer (catchAllFreezer);
-        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
-        for (Container container : containers.list) {
-            Container parsedContainer = parsedContainers.list.stream ()
-                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
-                                                             .findFirst ().get ();
-            verifyMoveToFreezer (parsedContainer, catchAllFreezer);
-        }
-        history.clickContainers ();
-        containersList.searchContainerIdsOrNames (allContainerIDs);
-        parsedContainers = containersList.getContainers ();
-        containersList.bulkMoveAllToCustody ();
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
-        for (Container container : containers.list) {
-            Container parsedContainer = parsedContainers.list.stream ()
-                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
-                                                             .findFirst ().get ();
-            verifyMoveToCustody (parsedContainer);
-        }
-    }
-
-    /**
-     * @sdlc.requirements SR-3229:R5
-     */
-    public void moveAllContainersToInvalidFreezer () {
-        Containers containers = setupAllMoveableContainerTypes ();
-        containersToDeactivate.set (containers);
-        List <String> allContainerIDs = getContainerIDs (containers);
-        containersList.searchContainerIdsOrNames (allContainerIDs);
-        Containers expectedContainersFailed = new Containers (containers.list.stream ()
-                                                                             .filter (container -> container.containerType.name ()
-                                                                                                                          .equals (ContainerType.MatrixTube.name ()) || container.containerType.equals (ContainerType.ConicalBox6x6))
-                                                                             .collect (Collectors.toList ()));
-        containersList.bulkMoveAllToFreezer (invalidFreezer);
-        verifyMoveErrorMessage (expectedContainersFailed);
-        for (Container container : containers.list) {
-            verifyStillInCustody (container);
-        }
-        testLog ("SR-3229:R5: Moving to freezer without sufficient space resulted in an error message containing all failed containers. No containers were moved");
-    }
-
-    private void verifyMoveErrorMessage (Containers expectedContainersFailed) {
+    private void verifyMoveErrorMessage (Containers expectedContainersFailed, Container invalidFreezer) {
         assertTrue (containersList.isBulkMoveErrorMessageDisplayed ());
-        String errorMessage = containersList.getBulkMoveErrorMessage ();
-        assertTrue (errorMessage.contains ("Failed to move containers"));
-        assertTrue (expectedContainersFailed.list.stream ()
-                                                 .allMatch (Container -> errorMessage.contains (Container.containerNumber)));
+        String error = containersList.getBulkMoveErrorMessage ();
+        Logging.info ("bulk move error message: " + error);
+        Pattern pattern = Pattern.compile ("Failed to move containers .* to Freezer " + Pattern.quote (invalidFreezer.name));
+        assertTrue (pattern.matcher (error).find ());
+        Set <String> actualContainerNamesFailed = getSubstringsFromPattern ("CO-[0-9]*", error);
+        Set <String> expectedContainerNamesFailed = getContainerIDs (expectedContainersFailed).stream ()
+                                                                                              .collect (Collectors.toSet ());
+        assertEquals (actualContainerNamesFailed, expectedContainerNamesFailed);
+        Set <String> actualContainerTypeErrors = getSubstringsFromPattern ("(There are 1[^.]*\\. The capacity for [^.]*\\.)",
+                                                                           error);
+        Set <String> expectedContainerTypeErrors = expectedContainersFailed.list.stream ()
+                                                                                .map (container -> format ("There are 1 %1$s selected. The capacity for %1$s is 0.",
+                                                                                                           container.containerType.displayText))
+                                                                                .collect (Collectors.toSet ());
+        assertEquals (actualContainerTypeErrors, expectedContainerTypeErrors);
+    }
+
+    private Set <String> getSubstringsFromPattern (String pattern, String error) {
+        Matcher matcher = Pattern.compile (pattern).matcher (error);
+        Set <String> set = new HashSet <String> ();
+        while (matcher.find ()) {
+            set.add (matcher.group ());
+        }
+        return set;
     }
 
     private void verifyStillInCustody (Container container) {
