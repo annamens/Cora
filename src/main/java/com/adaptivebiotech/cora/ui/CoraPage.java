@@ -45,7 +45,7 @@ public class CoraPage extends BasePage {
 
     @Override
     public String getAttribute (WebElement el, String attribute) {
-        String attr = el.getAttribute (attribute).trim ();
+        String attr = el.getAttribute (attribute);
         return isNullOrEmpty (attr) ? null : isNullOrEmpty (attr.trim ()) ? null : attr.trim ();
     }
 
@@ -357,7 +357,6 @@ public class CoraPage extends BasePage {
     }
 
     public void navigateToTab (int tabIndex) {
-        getDriver ().switchTo ()
-                    .window (new ArrayList <String> (getDriver ().getWindowHandles ()).get (tabIndex));
+        getDriver ().switchTo ().window (new ArrayList <> (getDriver ().getWindowHandles ()).get (tabIndex));
     }
 }

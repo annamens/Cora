@@ -34,6 +34,10 @@ public class Login extends BasePage {
         assertTrue (click ("button[type='submit']"));
     }
 
+    public void clickSignOut () {
+        assertTrue (click ("//*[text()='sign out']"));
+    }
+
     public void doLogin () {
         doLogin (coraTestUser, coraTestPass);
     }

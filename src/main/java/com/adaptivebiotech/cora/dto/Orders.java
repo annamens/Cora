@@ -131,6 +131,16 @@ public final class Orders {
         public String              reportRelativeUrl;
         public String              orderStatusDisplay;
 
+        // for /cora/api/v1/attachments/orders/:orderNumberOrId
+        public String              modifiedBy;
+        public String              attachedToId;
+        public String              attachedToTableName;
+        public boolean             inactive;
+        public String              fileName;
+        public String              attachmentType;
+        public String              url;
+        public boolean             isPdf;
+
         @Override
         public String toString () {
             return toStringOverride (this);

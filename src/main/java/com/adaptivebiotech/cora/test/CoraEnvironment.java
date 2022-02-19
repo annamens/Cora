@@ -10,6 +10,7 @@ public class CoraEnvironment extends BaseEnvironment {
     public static String portalIvdTestUrl;
     public static String pipelinePortalTestUser;
     public static String pipelinePortalTestPass;
+    public static String limsTestUrl;
 
     public static void initialization () {
         try {
@@ -22,6 +23,8 @@ public class CoraEnvironment extends BaseEnvironment {
             portalIvdTestUrl = format (getProperty ("portal.ivd.test.url"), env);
             pipelinePortalTestUser = getProperty ("portal.test.user");
             pipelinePortalTestPass = decrypt (getProperty ("portal.test.pass"));
+            
+            limsTestUrl = format (getProperty ("lims.test.url"), env);
 
             coraDBHost = format (getProperty ("cora.db.host"), env);
             coraDBUser = getProperty ("cora.db.user");

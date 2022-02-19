@@ -1,7 +1,6 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
-import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
@@ -22,7 +21,7 @@ public final class Shipment {
     public String            carrier;
     public String            trackingNumber;
     public String            expectedRecordType;
-    public List <Container>  containers = new ArrayList <> ();
+    public List <Container>  containers;
 
     @Override
     public String toString () {

@@ -19,6 +19,9 @@ public class OrderAlert extends BasePage {
     private final String alertDescription = ".alert-type-description";
     private final String saveBtn          = "//*[text()='Save']";
     private final String cancelBtn        = "//*[text()='Cancel']";
+    private final String panelOpen        = ".panel-open";
+    private final String getAlertNote     = String.join (" ", panelOpen, ".alert-panel-content textarea");
+    private final String addAlertNote     = String.join (" ", panelOpen, ".add-alert-type textarea");
 
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (alertModal));
@@ -85,6 +88,14 @@ public class OrderAlert extends BasePage {
     public boolean isEmailNotificationPresent (String alertName) {
         return isElementPresent (String.format ("//*[@class='alert-type-description' and text()='%s']/ancestor::accordion-group//*[@class='send-notification-label']",
                                                 alertName));
+    }
+
+    public void setAlertNote (String alertNote) {
+        assertTrue (setText (addAlertNote, alertNote));
+    }
+
+    public String getAlertNote () {
+        return readInput (getAlertNote);
     }
 
 }

@@ -61,7 +61,7 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.setContainerName (2, scanTest);
         shipment.clickSave ();
         shipContainers = shipment.getPrimaryContainers (Tube);
-        shipment.closeBrowser ();
+        shipment.clickSignOut ();
     }
 
     @BeforeMethod

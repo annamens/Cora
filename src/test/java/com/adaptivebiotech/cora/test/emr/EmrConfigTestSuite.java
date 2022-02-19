@@ -192,7 +192,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (queryEmrData.get ("version").toString (), "0");
         assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("properties")),
                       mapper.writeValueAsString (jsonObjProperty));
-        assertEquals (toEmrTransforms (coraDBClient.jsonbToString (queryEmrData.get ("transforms"))), transforms);
+        assertEquals (toEmrTransforms (queryEmrData.get ("transforms").toString ()), transforms);
         testLog ("STEP 8 - Result is 1 row that contains the above values");
 
         queryResults = coraDBClient.executeSelectQuery (format (emrAccountsQuery, emrConfigId));
@@ -233,7 +233,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (queryEmrData.get ("version").toString (), "0");
         assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("properties")),
                       mapper.writeValueAsString (jsonObjProperty));
-        assertEquals (toEmrTransforms (coraDBClient.jsonbToString (queryEmrData.get ("transforms"))), transforms);
+        assertEquals (toEmrTransforms (queryEmrData.get ("transforms").toString ()), transforms);
         testLog ("STEP 11 - Result is 1 row that contains the above values");
 
         queryResults = coraDBClient.executeSelectQuery (format (emrAccountsQuery, emrConfigId));

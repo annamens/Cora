@@ -11,6 +11,7 @@ import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
+import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildCovidOrder;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB_v4b;
 import static com.adaptivebiotech.test.utils.Logging.info;
@@ -57,7 +58,8 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.test.order.OrderTestBase;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
@@ -78,7 +80,7 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
  *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "tDetectOrder" })
-public class TDetectReportTestSuite extends OrderTestBase {
+public class TDetectReportTestSuite extends CoraBaseBrowser {
 
     private Login              login               = new Login ();
     private OrdersList         ordersList          = new OrdersList ();
@@ -88,7 +90,7 @@ public class TDetectReportTestSuite extends OrderTestBase {
     private OrcaHistory        history             = new OrcaHistory ();
     private TaskDetail         taskDetail          = new TaskDetail ();
     private OrderStatus        orderStatus         = new OrderStatus ();
-
+    private OrderDetailTDetect orderDetail         = new OrderDetailTDetect ();
     private final String       todaysDate          = getPastFutureDate (0, formatDt1, pstZoneId);
     private final String       todaysDateDash      = convertDateFormat (todaysDate, "MM/dd/yyyy", "yyyy-MM-dd");
     private final String       result              = "RESULT";
@@ -136,6 +138,7 @@ public class TDetectReportTestSuite extends OrderTestBase {
         Order order = orderDetailTDetect.parseOrder ();
         String sample = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sample);
+        history.isCorrectPage ();
         order.orderTestId = history.getOrderTestId ();
 
         Map <WorkflowProperty, String> properties = new HashMap <> ();
@@ -149,15 +152,18 @@ public class TDetectReportTestSuite extends OrderTestBase {
 
         history.setWorkflowProperties (properties);
         history.forceStatusUpdate (DxAnalysis, Ready);
-        history.waitFor (DxAnalysis, Finished);
-        history.waitFor (DxContamination, Finished);
-        history.waitFor (DxReport, Awaiting, CLINICAL_QC);
+        history.clickOrder ();
+        testLog ("set workflow properties and force workflow to move to DxAnalysis/Ready stage");
 
-        history.isCorrectPage ();
-        history.clickOrderTest ();
         orderStatus.isCorrectPage ();
-        orderDetailTDetect.clickReportTab (assayTest);
+        orderStatus.waitFor (sample, DxAnalysis, Finished);
+        orderStatus.waitFor (sample, DxContamination, Finished);
+        orderStatus.waitFor (sample, DxReport, Awaiting, CLINICAL_QC);
+        orderStatus.gotoOrderDetailsPage (order.id);
+        orderDetail.isCorrectPage ();
+        orderDetail.clickReportTab (assayTest);
         reportTDetect.setQCstatus (Pass);
+        testLog ("set QC status to Pass");
 
         String fileContent = getTextFromPDF (reportTDetect.getPreviewReportPdfUrl (), 1);
         validateReportContent (fileContent, order);
@@ -292,11 +298,16 @@ public class TDetectReportTestSuite extends OrderTestBase {
      * NOTE: SR-T3070
      */
     public void validateFailedTDetectReportData () {
+        WorkflowProperties sample_112770_SN_7929 = new WorkflowProperties ();
+        sample_112770_SN_7929.flowcell = "HCYJNBGXJ";
+        sample_112770_SN_7929.workspaceName = "CLINICAL-CLINICAL";
+        sample_112770_SN_7929.sampleName = "112770-SN-7929";
+
         CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
-        test.workflowProperties = sample_112770_SN_7929 ();
+        test.workflowProperties = sample_112770_SN_7929;
 
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildCovidOrder (patient, null, test);
+        Diagnostic diagnostic = buildCovidOrder (coraApi.getPhysician (TDetect_client), patient, null, test);
         diagnostic.dxResults = null;
         assertEquals (coraApi.newCovidOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");

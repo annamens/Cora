@@ -11,6 +11,12 @@ import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestPa
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUser;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
+import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.INDETERMINATE;
+import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.MUTATED;
+import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.NO_CLONES;
+import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.QC_FAILURE;
+import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.UNMUTATED;
+import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
@@ -22,7 +28,12 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FFPEScrolls;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Failed;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
@@ -38,30 +49,21 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import static org.testng.ITestResult.SKIP;
-import static org.testng.Reporter.getCurrentTestResult;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.dto.FeatureFlags;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
@@ -78,69 +80,75 @@ import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
-import com.adaptivebiotech.test.utils.Logging;
+import com.adaptivebiotech.pipeline.dto.shm.SHMheader.EricSampleCall;
+import com.adaptivebiotech.pipeline.dto.shm.ShmResult;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.adaptivebiotech.test.utils.PageHelper.StageName;
-import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.seleniumfy.test.utils.HttpClientHelper;
 
-@Test (groups = { "nutmeg" })
+/**
+ * Note:
+ * - this feature is in Prod, we don't need a test for feature flag off anymore
+ * - we only have 1 pipeline node for secondary analysis, set this for single threaded test run
+ * 
+ * @author Jaydeepkumar Patel
+ *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
+ */
+@Test (groups = { "regression", "nutmeg" }, singleThreaded = true)
 public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
-    private Physician             IgHVPhysician;
-    private Physician             NYPhysician;
-    private NewOrderClonoSeq      diagnostic                       = new NewOrderClonoSeq ();
-    private ReportClonoSeq        reportClonoSeq                   = new ReportClonoSeq ();
-    private OrcaHistory           history                          = new OrcaHistory ();
-    private OrderStatus           orderStatus                      = new OrderStatus ();
+    private Physician            IgHVPhysician;
+    private Physician            NYPhysician;
+    private NewOrderClonoSeq     diagnostic                       = new NewOrderClonoSeq ();
+    private ReportClonoSeq       reportClonoSeq                   = new ReportClonoSeq ();
+    private OrcaHistory          history                          = new OrcaHistory ();
+    private OrderStatus          orderStatus                      = new OrderStatus ();
 
-    private final String          c91_10                           = "C91.10";
-    private final String          c83_00                           = "C83.00";
-    private final String          c90_00                           = "C90.00";
+    private final String         c91_10                           = "C91.10";
+    private final String         c83_00                           = "C83.00";
+    private final String         c90_00                           = "C90.00";
 
-    private final String          tsvOverridePathO1O2              = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
-    private final String          tsvOverridePathO3O4              = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210615_NB551732_0294_AH3G53BGXJ/v3.1/20210617_0828/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/H3G53BGXJ_0_CLINICAL-CLINICAL_96633-08MC-UA001BM.adap.txt.results.tsv.gz";
-    private final String          tsvOverridePathO5O6O7O8          = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
-    private final String          tsvOverridePathOrcaIgHVO1O8      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210605_NB552488_0035_AHFFJ2BGXJ/v3.1/20210607_1834/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/HFFJ2BGXJ_0_CLINICAL-CLINICAL_01159-11MC.adap.txt.results.tsv.gz";
-    private final String          tsvOverridePathOrcaIgHVO2O6O7    = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210603_NB552480_0036_AH2C2LBGXJ/v3.1/20210605_1317/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H2C2LBGXJ_0_CLINICAL-CLINICAL_111034-01LC.adap.txt.results.tsv.gz";
-    private final String          tsvOverridePathOrcaIgHVO3        = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210608_NB500953_0936_AH3G3KBGXJ/v3.1/20210610_0431/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3G3KBGXJ_0_CLINICAL-CLINICAL_111730-01MC-2115301589D.adap.txt.results.tsv.gz";
-    private final String          tsvOverridePathOrcaIgHVO4        = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_2027/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3GK5BGXJ_0_CLINICAL-CLINICAL_102589-01MC-B20-229.adap.txt.results.tsv.gz";
-    private final String          tsvOverridePathOrcaIgHVO5        = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_1958/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3GK5BGXJ_0_CLINICAL-CLINICAL_109306-01MC-jb20-67.adap.txt.results.tsv.gz";
-    private final String          tsvOverridePathOrcaIgHVO9        = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev4/H3KF2BGX5_0_MDAnderson-Thompson_PH-5N.adap.txt.results.tsv.gz";
-    private final String          lastFinishedPipelineJobIdO1O2    = "8a7a94db77a26ee1017a01c874c67394";
-    private final String          lastFinishedPipelineJobIdO3O4    = "8a7a958877a26e74017a176ecd2b1b45";
-    private final String          lastFinishedPipelineOrcaIgHVO1O8 = "8a7a94db77a26ee10179dfbd004f5955";
-    private final String          lastFinishedPipelineOrcaIgHVO6   = "12345678901234567890";
-    private final String          lastFinishedPipelineOrcaIgHVO2O7 = "8a7a958877a26e740179d9e8beaf3b48";
-    private final String          lastFinishedPipelineOrcaIgHVO3   = "8a7a958877a26e740179f2dbc180183a";
-    private final String          lastFinishedPipelineOrcaIgHVO4   = "8a7a94db77a26ee10179d04ea1a739e9";
-    private final String          lastFinishedPipelineOrcaIgHVO5   = "8a7a958877a26e740179d5e2e51821ce";
-    private final String          sampleNameO1O2                   = "96343-05BC";
-    private final String          sampleNameO3O4                   = "96633-08MC-UA001BM";
-    private final String          sampleNameOrcaIgHVO1O8           = "01159-11MC";
-    private final String          sampleNameOrcaIgHVO2O6O7         = "111034-01LC";
-    private final String          sampleNameOrcaIgHVO3             = "111730-01MC-2115301589D";
-    private final String          sampleNameOrcaIgHVO4             = "102589-01MC-B20-229";
-    private final String          sampleNameOrcaIgHVO5             = "109306-01MC-jb20-67";
-    private final String          sampleNameOrcaIgHVO9             = "PH-5N";
-    private final String          shmDataSourcePathOrcaIgHVO9      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229";
-    private final String          workSpaceNameOrcaIgHVO9          = "MDAnderson-Thompson";
+    private final String         tsvOverridePathO1O2              = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathO3O4              = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210615_NB551732_0294_AH3G53BGXJ/v3.1/20210617_0828/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/H3G53BGXJ_0_CLINICAL-CLINICAL_96633-08MC-UA001BM.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathO5O6O7O8          = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathOrcaIgHVO1O8      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210605_NB552488_0035_AHFFJ2BGXJ/v3.1/20210607_1834/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/HFFJ2BGXJ_0_CLINICAL-CLINICAL_01159-11MC.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathOrcaIgHVO2O6O7    = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210603_NB552480_0036_AH2C2LBGXJ/v3.1/20210605_1317/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H2C2LBGXJ_0_CLINICAL-CLINICAL_111034-01LC.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathOrcaIgHVO3        = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210608_NB500953_0936_AH3G3KBGXJ/v3.1/20210610_0431/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3G3KBGXJ_0_CLINICAL-CLINICAL_111730-01MC-2115301589D.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathOrcaIgHVO4        = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_2027/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3GK5BGXJ_0_CLINICAL-CLINICAL_102589-01MC-B20-229.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathOrcaIgHVO5        = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_1958/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3GK5BGXJ_0_CLINICAL-CLINICAL_109306-01MC-jb20-67.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathOrcaIgHVO9        = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev4/H3KF2BGX5_0_MDAnderson-Thompson_PH-5N.adap.txt.results.tsv.gz";
+    private final String         lastFinishedPipelineJobIdO1O2    = "8a7a94db77a26ee1017a01c874c67394";
+    private final String         lastFinishedPipelineJobIdO3O4    = "8a7a958877a26e74017a176ecd2b1b45";
+    private final String         lastFinishedPipelineOrcaIgHVO1O8 = "8a7a94db77a26ee10179dfbd004f5955";
+    private final String         lastFinishedPipelineOrcaIgHVO6   = "12345678901234567890";
+    private final String         lastFinishedPipelineOrcaIgHVO2O7 = "8a7a958877a26e740179d9e8beaf3b48";
+    private final String         lastFinishedPipelineOrcaIgHVO3   = "8a7a958877a26e740179f2dbc180183a";
+    private final String         lastFinishedPipelineOrcaIgHVO4   = "8a7a94db77a26ee10179d04ea1a739e9";
+    private final String         lastFinishedPipelineOrcaIgHVO5   = "8a7a958877a26e740179d5e2e51821ce";
+    private final String         sampleNameO1O2                   = "96343-05BC";
+    private final String         sampleNameO3O4                   = "96633-08MC-UA001BM";
+    private final String         sampleNameOrcaIgHVO1O8           = "01159-11MC";
+    private final String         sampleNameOrcaIgHVO2O6O7         = "111034-01LC";
+    private final String         sampleNameOrcaIgHVO3             = "111730-01MC-2115301589D";
+    private final String         sampleNameOrcaIgHVO4             = "102589-01MC-B20-229";
+    private final String         sampleNameOrcaIgHVO5             = "109306-01MC-jb20-67";
+    private final String         sampleNameOrcaIgHVO9             = "PH-5N";
+    private final String         shmDataSourcePathOrcaIgHVO9      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229";
+    private final String         workSpaceNameOrcaIgHVO9          = "MDAnderson-Thompson";
 
-    private final String          portalTestAuth                   = coraApi.basicAuth (pipelinePortalTestUser,
-                                                                                        pipelinePortalTestPass);
+    private final String         portalTestAuth                   = coraApi.basicAuth (pipelinePortalTestUser,
+                                                                                       pipelinePortalTestPass);
 
-    private final String          orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
-    private final String          shmResultsSchema                 = "SELECT * FROM information_schema.columns WHERE table_name = 'shm_results' ORDER BY ordinal_position ASC";
-    private final String          noResultsAvailable               = "No result available";
-    private final String          beginIghvMutationStatus          = "IGHV MUTATION STATUS";
-    private final String          beginClonalityResult             = "CLONALITY RESULT";
-    private final String          endThisSampleFailed              = "This sample failed the quality control";
-    private ThreadLocal <String>  downloadDir                      = new ThreadLocal <> ();
-    private ThreadLocal <Boolean> isIgHVFlag                       = new ThreadLocal <> ();
+    private final String         orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
+    private final String         shmResultsSchema                 = "select * from information_schema.columns where table_name = 'shm_results' order by ordinal_position asc";
+    private final String         noResultsAvailable               = "No result available";
+    private final String         beginIghvMutationStatus          = "IGHV MUTATION STATUS";
+    private final String         beginClonalityResult             = "CLONALITY RESULT";
+    private final String         endThisSampleFailed              = "This sample failed the quality control";
+    private ThreadLocal <String> downloadDir                      = new ThreadLocal <> ();
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
@@ -159,33 +167,34 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         new Login ().doLogin ();
         new OrdersList ().isCorrectPage ();
-
-        FeatureFlags featureFlags = coraApi.getFeatureFlags ();
-        isIgHVFlag.set (featureFlags.IgHV);
     }
 
+    /**
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: Cell pellet / PBMC
+     * - icd codes: C83.00
+     */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder1CLIAFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 1
+    public void verifyIgHVStageAndReportFeatureOrder1CLIA () {
         Assay assayTest = ID_BCell2_CLIA;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         CellPellet,
-                                                         PBMC,
-                                                         new String[] { c83_00, c91_10 },
-                                                         "Order 1 Flag On");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          CellPellet,
+                                          PBMC,
+                                          new String[] { c83_00, c91_10 },
+                                          "Order 1 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), "true", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        testLog ("step 1 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO1O2,
                            lastFinishedPipelineJobIdO1O2,
                            sampleNameO1O2,
                            null,
                            null);
-        testLog ("step 1 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 2 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
@@ -195,40 +204,39 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         assertTrue (isCLIAIGHVFlagPresent);
         testLog ("step 3 - CLIA-IGHV flag appears just below the Report tab ");
 
-        ReportRender reportData = getReportDataJsonFile ();
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
         assertNotNull (reportData.shmReportResult);
         testLog ("step 4 - SHM analysis results are included in reportData.json within shmReportResult property");
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - CLEP physician
+     * - specimen type / source: Cell pellet / PBMC
+     * - icd codes: C83.00
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder2CLIAFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 2
+    public void verifyIgHVStageAndReportFeatureOrder2CLIA () {
         Assay assayTest = ID_BCell2_CLIA;
-        Map <String, String> orderDetails = createOrder (NYPhysician,
-                                                         assayTest,
-                                                         CellPellet,
-                                                         PBMC,
-                                                         new String[] { c83_00 },
-                                                         "Order 2 Flag On");
+        Order orderDetails = createOrder (NYPhysician,
+                                          assayTest,
+                                          CellPellet,
+                                          PBMC,
+                                          new String[] { c83_00 },
+                                          "Order 2 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), "false", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "false", "true");
+        testLog ("step 5 - ighvAnalysisEnabled is true, ighvReportEnabled is false (or absent)");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO1O2,
                            lastFinishedPipelineJobIdO1O2,
                            sampleNameO1O2,
                            null,
                            null);
-        testLog ("step 5 - ighvAnalysisEnabled is true, ighvReportEnabled is false (or absent)");
         testLog ("step 6 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
@@ -238,40 +246,39 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         assertFalse (isCLIAIGHVFlagPresent);
         testLog ("step 7 - CLIA-IGHV flag does not appear below the Report tab ");
 
-        ReportRender reportData = getReportDataJsonFile ();
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
         assertNotNull (reportData.shmReportResult);
         testLog ("step 8 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: gDNA / Bone Marrow
+     * - icd codes: C91.10
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder3IVDFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 3
+    public void verifyIgHVStageAndReportFeatureOrder3IVD () {
         Assay assayTest = ID_BCell2_IVD;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         gDNA,
-                                                         BoneMarrow,
-                                                         new String[] { c91_10 },
-                                                         "Order 3 Flag On");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          gDNA,
+                                          BoneMarrow,
+                                          new String[] { c91_10 },
+                                          "Order 3 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), "true", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        testLog ("step 9, order3 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO3O4,
                            lastFinishedPipelineJobIdO3O4,
                            sampleNameO3O4,
                            null,
                            null);
-        testLog ("step 9, order3 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 10 - 1 - order3 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
@@ -281,40 +288,39 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         assertTrue (isCLIAIGHVFlagPresent);
         testLog ("step 11, order3 - CLIA-IGHV flag appears below the Report tab ");
 
-        ReportRender reportData = getReportDataJsonFile ();
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
         assertNotNull (reportData.shmReportResult);
         testLog ("step 12, order3 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: Blood
+     * - icd codes: C91.10
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder4IVDFeatureFlagOn () {
-        skipFlagOff ();
-
-        // order 4
+    public void verifyIgHVStageAndReportFeatureOrder4IVD () {
         Assay assayTest = ID_BCell2_IVD;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         Blood,
-                                                         null,
-                                                         new String[] { c91_10 },
-                                                         "Order 4 Flag On");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          Blood,
+                                          null,
+                                          new String[] { c91_10 },
+                                          "Order 4 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), "true", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        testLog ("step 9, order4 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO3O4,
                            lastFinishedPipelineJobIdO3O4,
                            sampleNameO3O4,
                            null,
                            null);
-        testLog ("step 9, order4 - ighvAnalysisEnabled and ighvReportEnabled are true");
         testLog ("step 10 - 1 - order4 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
@@ -324,39 +330,38 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         assertTrue (isCLIAIGHVFlagPresent);
         testLog ("step 11, order3 - CLIA-IGHV flag appears below the Report tab ");
 
-        ReportRender reportData = getReportDataJsonFile ();
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
         assertNotNull (reportData.shmReportResult);
         testLog ("step 12, order3 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: FFPE Scrolls / Lymph Node
+     * - icd codes: C83.00
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder5CLIAFeatureFlagOn () {
-        skipFlagOff ();
+    public void verifyIgHVStageAndReportFeatureOrder5CLIA () {
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          ID_BCell2_CLIA,
+                                          FFPEScrolls,
+                                          LymphNode,
+                                          new String[] { c83_00, c91_10 },
+                                          "Order 6 Flag On");
 
-        // order 5
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         ID_BCell2_CLIA,
-                                                         FFPEScrolls,
-                                                         LymphNode,
-                                                         new String[] { c83_00, c91_10 },
-                                                         "Order 6 Flag On");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, null, null);
+        testLog ("step 13, order5 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), null, null);
-
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO5O6O7O8,
                            null,
                            null,
                            null,
                            null);
-        testLog ("step 13, order5 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order5 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
@@ -364,33 +369,32 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: Cell Suspension / B cells
+     * - icd codes: C91.10
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder6IVDFeatureFlagOn () {
-        skipFlagOff ();
+    public void verifyIgHVStageAndReportFeatureOrder6IVD () {
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          ID_BCell2_CLIA,
+                                          CellSuspension,
+                                          BCells,
+                                          new String[] { c91_10 },
+                                          "Order 6 Flag On");
 
-        // order 6
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         ID_BCell2_CLIA,
-                                                         CellSuspension,
-                                                         BCells,
-                                                         new String[] { c91_10 },
-                                                         "Order 6 Flag On");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, null, null);
+        testLog ("step 13, order6 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), null, null);
-
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO5O6O7O8,
                            null,
                            null,
                            null,
                            null);
-        testLog ("step 13, order6 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order6 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
@@ -398,33 +402,32 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag ON
-     * 
-     * NOTE: SR-T3689
+     * Note:
+     * - SR-T3689
+     * - non-CLEP physician
+     * - specimen type / source: Cell pellet / PBMC
+     * - icd codes: C90.00
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
     @Test (groups = "featureFlagOn")
-    public void verifyIgHVStageAndReportFeatureOrder7IVDFeatureFlagOn () {
-        skipFlagOff ();
+    public void verifyIgHVStageAndReportFeatureOrder7IVD () {
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          ID_BCell2_CLIA,
+                                          CellPellet,
+                                          PBMC,
+                                          new String[] { c90_00 },
+                                          "Order 7 Flag On");
 
-        // order 7
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         ID_BCell2_CLIA,
-                                                         CellPellet,
-                                                         PBMC,
-                                                         new String[] { c90_00 },
-                                                         "Order 7 Flag On");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, null, null);
+        testLog ("step 13, order7 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), null, null);
-
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathO5O6O7O8,
                            null,
                            null,
                            null,
                            null);
-        testLog ("step 13, order7 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
 
         validateShmAnalysisStagesDrillDownUrl (true);
         testLog ("step 14 - 1 - order7 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
@@ -432,63 +435,23 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     }
 
     /**
-     * Ask the Cora dev team to turn the IgHV feature flag OFF
+     * Note:
+     * - SR-T3728
+     * - mutation status: MUTATED
      * 
-     * NOTE: SR-T3689
-     * 
-     * @sdlc.requirements SR-6656:R7
-     */
-    @Test (groups = "featureFlagOff")
-    public void verifyIgHVStageAndReportCLIAFeatureFlagOff () {
-        skipFlagOn ();
-
-        // order 8
-        Assay assayTest = ID_BCell2_CLIA;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         CellPellet,
-                                                         PBMC,
-                                                         new String[] { c83_00, c91_10 },
-                                                         "Order 8 Flag Off");
-
-        validateFlagsOnDebugPage (orderDetails.get ("sampleName"), "false", "false");
-
-        forceStatusUpdate (orderDetails.get ("sampleName"),
-                           tsvOverridePathO5O6O7O8,
-                           null,
-                           null,
-                           null,
-                           null);
-        testLog ("step 15 - ighvAnalysisEnabled and ighvReportEnabled are not displayed");
-
-        validateShmAnalysisStagesDrillDownUrl (true);
-        testLog ("step 16 - 1 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
-        testLog ("step 16 - 2 - SHM Finished stage contains message that SHM Analysis is not enabled for the workflow");
-
-        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
-        assertFalse (isCLIAIGHVFlagPresent);
-        testLog ("step 17 - CLIA-IGHV flag did not appear below the Report tab");
-
-        ReportRender reportData = getReportDataJsonFile ();
-        assertNull (reportData.shmReportResult);
-        testLog ("step 18 - SHM analysis results are not included in reportData.json within shmReportResult property");
-    }
-
-    /**
      * @sdlc.requirements SR-7163:R1, R3, R4, SR-7029:R1
-     *                    NOTE: SR-T3728
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder1 () {
         Assay assayTest = ID_BCell2_CLIA;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         CellPellet,
-                                                         PBMC,
-                                                         new String[] { c83_00 },
-                                                         "Order 1 Orca Work");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          CellPellet,
+                                          PBMC,
+                                          new String[] { c83_00 },
+                                          "Order 1 Orca Work");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathOrcaIgHVO1O8,
                            lastFinishedPipelineOrcaIgHVO1O8,
                            sampleNameOrcaIgHVO1O8,
@@ -497,120 +460,126 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         testLog ("step 1 - order 1 - After SecondaryAnalysis stage, the workflow moved to the ShmAnalysis stage prior to ClonoSEQReport stage");
 
         releaseReport (assayTest, true);
-        ReportRender reportData = getReportDataJsonFile ();
-
-        assertTrue (Arrays.stream (ShmMutationStatus.values ())
-                          .anyMatch ( (t) -> t.equals (reportData.shmReportResult.mutationStatus)));
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
+        assertEquals (reportData.shmReportResult.mutationStatus, MUTATED);
         assertTrue (reportData.shmReportResult.shmSequenceList.size () >= 1);
-        ShmSequence shmSequenceList = reportData.shmReportResult.shmSequenceList.get (0);
-        assertNotNull (shmSequenceList.locus);
-        assertNotNull (shmSequenceList.sequence);
-        assertNotNull (shmSequenceList.percentMutation);
-        assertNotNull (shmSequenceList.productive);
-        assertNotNull (shmSequenceList.vSegment);
+        ShmSequence shmSequence = reportData.shmReportResult.shmSequenceList.get (0);
+        assertEquals (shmSequence.locus, IGH);
+        assertEquals (shmSequence.sequence,
+                      "CAGAGACAACGCCAAGAATTCAGTGTATCTTCAAATGGACAGTTTGAGAGTCGAAGACACGGCTACATATTACTGTGCGAGAGACTTATTAACCTCTAGAGCAGCAGCTGGAACAGTAGCTTTTGACATCTGGGGCCAAGGGACA");
+        assertEquals (shmSequence.percentMutation.doubleValue (), 12.2448980808d);
+        assertTrue (shmSequence.productive);
+        assertEquals (shmSequence.vSegment, "IGHV3-21*01");
         testLog ("step 2 - order 1 - validate mutationStatus, shmSequenceListproperty of shmReportResult");
-        testLog ("step 3 - order 1 - check test method below validateShmResultsTableSchema");
 
-        String mutationStatus = reportData.shmReportResult.mutationStatus.toString ();
-        validateShmResultReportType (orderDetails.get ("orderTestId"), mutationStatus);
+        validateShmResultReportType (orderDetails.orderTestId, reportData.shmReportResult.mutationStatus);
         testLog ("step 4 - order 1 - validate DB report_type matches reportData.json shmReportResult.mutationStatus");
-
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: UNMUTATED
      * 
      * @sdlc.requirements SR-7163:R3, SR-7028:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder2 () {
         Assay assayTest = ID_BCell2_IVD;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         Blood,
-                                                         null,
-                                                         new String[] { c91_10 },
-                                                         "Order 2 Orca Work");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          Blood,
+                                          null,
+                                          new String[] { c91_10 },
+                                          "Order 2 Orca Work");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathOrcaIgHVO2O6O7,
                            lastFinishedPipelineOrcaIgHVO2O7,
                            sampleNameOrcaIgHVO2O6O7,
                            null,
                            null);
 
-        validateShmResultReportType (orderDetails.get ("orderTestId"), ShmMutationStatus.UNMUTATED.toString ());
+        validateShmResultReportType (orderDetails.orderTestId, UNMUTATED);
         testLog ("step 5 - order 2 - Value for orca.shm_results.report_type is UNMUTATED");
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: INDETERMINATE
      * 
      * @sdlc.requirements SR-7163:R3, SR-7028:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder3 () {
         Assay assayTest = ID_BCell2_IVD;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         Blood,
-                                                         null,
-                                                         new String[] { c91_10 },
-                                                         "Order 3 Orca Work");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          Blood,
+                                          null,
+                                          new String[] { c91_10 },
+                                          "Order 3 Orca Work");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathOrcaIgHVO3,
                            lastFinishedPipelineOrcaIgHVO3,
                            sampleNameOrcaIgHVO3,
                            null,
                            null);
 
-        validateShmResultReportType (orderDetails.get ("orderTestId"), ShmMutationStatus.INDETERMINATE.toString ());
+        validateShmResultReportType (orderDetails.orderTestId, INDETERMINATE);
         testLog ("step 6 - order 3 - Value for orca.shm_results.report_type is INDETERMINATE");
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: NO_CLONES
      * 
      * @sdlc.requirements SR-7163:R3, SR-7028:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder4 () {
         Assay assayTest = ID_BCell2_CLIA;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         Blood,
-                                                         null,
-                                                         new String[] { c83_00 },
-                                                         "Order 4 Orca Work");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          Blood,
+                                          null,
+                                          new String[] { c83_00 },
+                                          "Order 4 Orca Work");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathOrcaIgHVO4,
                            lastFinishedPipelineOrcaIgHVO4,
                            sampleNameOrcaIgHVO4,
                            null,
                            null);
 
-        validateShmResultReportType (orderDetails.get ("orderTestId"), ShmMutationStatus.NO_CLONES.toString ());
+        validateShmResultReportType (orderDetails.orderTestId, NO_CLONES);
         testLog ("step 7 - order 4 - Value for orca.shm_results.report_type is NO_CLONES");
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: QC_FAILURE
+     * - Indeterminate SHM analysis result
+     * - primary analysis passed, all clones have qc flags, no results available (QC failure)
      * 
      * @sdlc.requirements SR-7163:R3, SR-7029:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder5 () {
         Assay assayTest = ID_BCell2_IVD;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         Blood,
-                                                         null,
-                                                         new String[] { c91_10 },
-                                                         "Order 5 Orca Work");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          Blood,
+                                          null,
+                                          new String[] { c91_10 },
+                                          "Order 5 Orca Work");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathOrcaIgHVO5,
                            lastFinishedPipelineOrcaIgHVO5,
                            sampleNameOrcaIgHVO5,
@@ -625,46 +594,43 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 8 - order 5 - In SHM report of the pdf report, it is showing No Result Available for the IGHV Mutation Status");
 
-        ReportRender reportData = getReportDataJsonFile ();
-        assertEquals (reportData.shmReportResult.mutationStatus, ShmMutationStatus.QC_FAILURE);
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
+        assertEquals (reportData.shmReportResult.mutationStatus, QC_FAILURE);
         testLog ("step 9 - order 5 - mutationStatus property contains the value QC_FAILURE");
 
-        validateShmResultReportType (orderDetails.get ("orderTestId"),
-                                     ShmMutationStatus.QC_FAILURE.toString (),
-                                     ShmMutationStatus.INDETERMINATE.toString ());
+        validateShmResultReportType (orderDetails.orderTestId, QC_FAILURE, EricSampleCall.INDETERMINATE);
         testLog ("step 10.1 - order 5 - 1 DB record with orca.shm_results.report_type is QC_FAILURE");
         testLog ("step 10.2 - order 5 - 1 DB record with value of 'ericSampleCall' in orca.shm_results.shm_result is INDETERMINATE");
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: QC_FAILURE
+     * - primary analysis failed
      * 
      * @sdlc.requirements SR-7163:R3, SR-7029:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder6 () {
         Assay assayTest = ID_BCell2_IVD;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         Blood,
-                                                         null,
-                                                         new String[] { c91_10 },
-                                                         "Order 6 Orca Work");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          Blood,
+                                          null,
+                                          new String[] { c91_10 },
+                                          "Order 6 Orca Work");
 
         // debug page - get workflow properties
-        history.gotoOrderDebug (orderDetails.get ("sampleName"));
+        history.gotoOrderDebug (orderDetails.specimenDto.sampleName);
 
         // set workflow property and force status update
         history.setWorkflowProperty (lastAcceptedTsvPath, tsvOverridePathOrcaIgHVO2O6O7);
-
         history.setWorkflowProperty (lastFinishedPipelineJobId, lastFinishedPipelineOrcaIgHVO6);
-
         history.setWorkflowProperty (sampleName, sampleNameOrcaIgHVO2O6O7);
-
-        history.forceStatusUpdate (StageName.NorthQC, StageStatus.Failed);
-
-        history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
-        assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
+        history.forceStatusUpdate (NorthQC, Failed);
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
+        assertTrue (history.isStagePresent (ClonoSEQReport, Awaiting, CLINICAL_QC));
 
         releaseReport (assayTest, false);
         String pdfUrl = reportClonoSeq.getPreviewReportPdfUrl ();
@@ -673,31 +639,34 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 11 - order 6 - Clonality Result for workflow with failed Primary Analysis (NorthQC) displays No Result Available");
 
-        ReportRender reportData = getReportDataJsonFile ();
-        assertEquals (reportData.shmReportResult.mutationStatus, ShmMutationStatus.QC_FAILURE);
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
+        assertEquals (reportData.shmReportResult.mutationStatus, QC_FAILURE);
         testLog ("step 12 - order 6 - mutationStatus property contains the value QC_FAILURE");
 
-        validateQueryReturnsZeroRow (orderDetails.get ("orderTestId"));
+        validateQueryReturnsZeroRow (orderDetails.orderTestId);
         testLog ("step 13 - order 6 - Query has no rows returned");
 
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - mutation status: QC_FAILURE
+     * - Clinical QC failed
      * 
      * @sdlc.requirements SR-7163:R3, SR-7029:R1
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder7 () {
         Assay assayTest = ID_BCell2_IVD;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         Blood,
-                                                         null,
-                                                         new String[] { c91_10 },
-                                                         "Order 7 Orca Work");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          Blood,
+                                          null,
+                                          new String[] { c91_10 },
+                                          "Order 7 Orca Work");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathOrcaIgHVO2O6O7,
                            lastFinishedPipelineOrcaIgHVO2O7,
                            sampleNameOrcaIgHVO2O6O7,
@@ -713,10 +682,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         reportClonoSeq.setQCstatus (QC.Fail);
 
-        history.gotoOrderDebug (orderDetails.get ("sampleName"));
-
-        history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
-        assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
+        history.gotoOrderDebug (orderDetails.specimenDto.sampleName);
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
+        assertTrue (history.isStagePresent (ClonoSEQReport, Awaiting, CLINICAL_QC));
 
         releaseReport (assayTest, true);
         String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
@@ -725,31 +693,32 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 14 - order 7 - Clonality Result for workflow with failed Clinical QC displays No Result Available");
 
-        ReportRender reportData = getReportDataJsonFile ();
-        assertEquals (reportData.shmReportResult.mutationStatus, ShmMutationStatus.QC_FAILURE);
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
+        assertEquals (reportData.shmReportResult.mutationStatus, QC_FAILURE);
         testLog ("step 15 - order 7 - mutationStatus property contains the value QC_FAILURE");
 
-        validateShmResultReportType (orderDetails.get ("orderTestId"),
-                                     ShmMutationStatus.UNMUTATED.toString ());
+        validateShmResultReportType (orderDetails.orderTestId, UNMUTATED);
         testLog ("step 16 - order 7 - Value for orca.shm_results.report_type is UNMUTATED");
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - no ShmAnalysis
      * 
      * @sdlc.requirements SR-7163:R1, R3, R4
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder8 () {
         Assay assayTest = ID_BCell2_CLIA;
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         CellPellet,
-                                                         PBMC,
-                                                         new String[] { c90_00 },
-                                                         "Order 8 Orca Work");
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          CellPellet,
+                                          PBMC,
+                                          new String[] { c90_00 },
+                                          "Order 8 Orca Work");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathOrcaIgHVO1O8,
                            lastFinishedPipelineOrcaIgHVO1O8,
                            sampleNameOrcaIgHVO1O8,
@@ -760,32 +729,34 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         testLog ("step 17.2 - order 8 - SHM Finished stage contains a message that SHM Analysis is not enabled for the workflow");
 
         releaseReport (assayTest, true);
-        ReportRender reportData = getReportDataJsonFile ();
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
         assertNull (reportData.shmReportResult);
         testLog ("step 18 - order 8 - There is no shmReportResult, mutationStatus, or shmSequenceList properties in reportData.json");
 
-        validateQueryReturnsZeroRow (orderDetails.get ("orderTestId"));
+        validateQueryReturnsZeroRow (orderDetails.orderTestId);
         testLog ("step 19 - order 8 - Query has no rows returned");
     }
 
     /**
-     * NOTE: SR-T3728
+     * Note:
+     * - SR-T3728
+     * - a sample with 2 SHM analysis results, pass and fail respectively
      * 
      * @sdlc.requirements SR-7163:R1, R3, R4
      */
     @Test (groups = "orcaighv")
     public void verifyOrcaForIgHVOrder9 () {
         Assay assayTest = ID_BCell2_CLIA;
-        String passConsesusSeq = "TTCAGTAGACACGTCCATGAACCGCTTCTCCCTGCACATGACCTCTATGACTGCCGCAGACACGGCCCTGTATTATTGTGTCAGAGATGGACCCCCGGCGTTTTGGGGCCAGGGAACC";
-        String lowBaseConsesusSeq = "CGGCCCAGTTTCATTGTGCGACAGACCCTTAATTTACATTGTGGTGGTGACTCCTATTGCGACTCTTGGGGCCTTGGAACC";
-        Map <String, String> orderDetails = createOrder (IgHVPhysician,
-                                                         assayTest,
-                                                         Blood,
-                                                         null,
-                                                         new String[] { c83_00 },
-                                                         "Order 9 Orca Work");
+        String passConsensusSeq = "TTCAGTAGACACGTCCATGAACCGCTTCTCCCTGCACATGACCTCTATGACTGCCGCAGACACGGCCCTGTATTATTGTGTCAGAGATGGACCCCCGGCGTTTTGGGGCCAGGGAACC";
+        String lowBaseConsensusSeq = "CGGCCCAGTTTCATTGTGCGACAGACCCTTAATTTACATTGTGGTGGTGACTCCTATTGCGACTCTTGGGGCCTTGGAACC";
+        Order orderDetails = createOrder (IgHVPhysician,
+                                          assayTest,
+                                          Blood,
+                                          null,
+                                          new String[] { c83_00 },
+                                          "Order 9 Orca Work");
 
-        forceStatusUpdate (orderDetails.get ("sampleName"),
+        forceStatusUpdate (orderDetails.specimenDto.sampleName,
                            tsvOverridePathOrcaIgHVO9,
                            null,
                            sampleNameOrcaIgHVO9,
@@ -796,63 +767,46 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         testLog ("step 20 - order 9 - ShmAnalysis moved from Ready to Finished status, with SHM Analysis job spawned in portal");
 
         releaseReport (assayTest, true);
-        ReportRender reportData = getReportDataJsonFile ();
-        assertEquals (reportData.shmReportResult.shmSequenceList.get (0).sequence,
-                      passConsesusSeq);
-        assertTrue (reportData.shmReportResult.shmSequenceList.size () == 1);
-        testLog ("step 21.1 - order 9 - There is only one SHM sequence in shmSequenceList for sequence " + passConsesusSeq + " clone in reportData.json");
-        testLog ("step 21.2 - order 9 - There is no SHM sequence in shmSequenceList for sequence " + lowBaseConsesusSeq + " clone in reportData.json");
+        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
+        assertEquals (reportData.shmReportResult.shmSequenceList.get (0).sequence, passConsensusSeq);
+        assertEquals (reportData.shmReportResult.shmSequenceList.size (), 1);
+        testLog ("step 21.1 - order 9 - There is only one SHM sequence in shmSequenceList for sequence " + passConsensusSeq + " clone in reportData.json");
+        testLog ("step 21.2 - order 9 - There is no SHM sequence in shmSequenceList for sequence " + lowBaseConsensusSeq + " clone in reportData.json");
 
-        List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (orderTestQuery.replace ("REPLACEORDERTESTID",
-                                                                                                         orderDetails.get ("orderTestId")));
-        testLog ("Query Data: " + queryData);
-        assertTrue (queryData.size () == 1);
-        Map <String, Object> firstRow = queryData.get (0);
+        String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderDetails.orderTestId);
+        List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (query);
+        assertEquals (queryData.size (), 1);
 
-        try {
-            JSONObject jsonObject = new JSONObject (firstRow.get ("shm_result").toString ());
-            JSONArray jsonArray = jsonObject.getJSONArray ("clones");
-            assertTrue (jsonArray.length () == 2);
+        ShmResult shmResult = mapper.readValue (queryData.get (0).get ("shm_result").toString (), ShmResult.class);
+        assertEquals (shmResult.clones.size (), 2);
+        assertEquals (shmResult.clones.stream ()
+                                      .filter (c -> passConsensusSeq.equals (c.Consensus_Sequence))
+                                      .filter (c -> "PASS".equals (c.Failure_Flag)).count (),
+                      1l);
+        testLog ("step 22.1 - order 9 - The one with consensusSequence: " + passConsensusSeq + " had failureFlag: PASS");
 
-            Map <String, String> expectedMap = Stream.of (new String[][] {
-                    { passConsesusSeq, "PASS" },
-                    { lowBaseConsesusSeq, "LOW_BASE_COVERAGE" },
-            }).collect (Collectors.toMap (data -> data[0], data -> data[1]));
-            Map <String, String> actualMap = new HashMap <String, String> ();
-            for (int i = 0; i < jsonArray.length (); i++) {
-                actualMap.put (jsonArray.getJSONObject (i).getString ("consensusSequence"),
-                               jsonArray.getJSONObject (i).getString ("failureFlag"));
-            }
-            assertEquals (actualMap, expectedMap);
-            testLog ("step 22.1 - order 9 - The one with consensusSequence: " + passConsesusSeq + " had failureFlag: PASS");
-            testLog ("step 22.2 - order 9 - The one with consensusSequence: " + lowBaseConsesusSeq + " had failureFlag: LOW_BASE_COVERAGE");
-        } catch (JSONException e) {
-            throw new RuntimeException (e);
-        }
-
+        assertEquals (shmResult.clones.stream ()
+                                      .filter (c -> lowBaseConsensusSeq.equals (c.Consensus_Sequence))
+                                      .filter (c -> "LOW_BASE_COVERAGE".equals (c.Failure_Flag)).count (),
+                      1l);
+        testLog ("step 22.2 - order 9 - The one with consensusSequence: " + lowBaseConsensusSeq + " had failureFlag: LOW_BASE_COVERAGE");
     }
 
     /**
-     * NOTE: SR-T3728
-     * 
-     * validate shm_results table schema
+     * Note:
+     * - SR-T3728
+     * - validate shm_results table schema
      * 
      * @sdlc.requirements SR-7163:R1, R2, R3, R4, SR-7029:R1
      */
     @Test (groups = "orcaighv")
     public void validateShmResultsTableSchema () {
-        String query = shmResultsSchema;
-        testLog ("Query: " + query);
-
-        List <Map <String, Object>> queryResult = coraDBClient.executeSelectQuery (query);
-        testLog ("Query Data: " + queryResult);
-
-        // table has 9 columns
-        assertTrue (queryResult.size () == 9);
+        List <Map <String, Object>> queryResult = coraDBClient.executeSelectQuery (shmResultsSchema);
+        assertEquals (queryResult.size (), 9);
 
         for (int i = 0; i < queryResult.size (); i++) {
             Map <String, Object> rowMap = queryResult.get (i);
-            testLog ("Column Details: " + rowMap);
+            info ("Column Details: " + rowMap);
 
             switch (Integer.parseInt (rowMap.get ("ordinal_position").toString ())) {
             case 1:
@@ -905,12 +859,12 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      *            order notes
      * @return
      */
-    private Map <String, String> createOrder (Physician physician,
-                                              Assay assayTest,
-                                              SpecimenType specimenType,
-                                              SpecimenSource specimenSource,
-                                              String[] icdCodes,
-                                              String orderNotes) {
+    private Order createOrder (Physician physician,
+                               Assay assayTest,
+                               SpecimenType specimenType,
+                               SpecimenSource specimenSource,
+                               String[] icdCodes,
+                               String orderNotes) {
         // create clonoSEQ diagnostic order
         Specimen specimen = new Specimen ();
         specimen.sampleType = specimenType;
@@ -924,21 +878,19 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                                           specimen,
                                                           Active,
                                                           Tube);
-        Logging.info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
+        info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
 
-        Map <String, String> orderDetails = new HashMap <> ();
-        orderDetails.put ("orderNumber", orderNum);
         String sampleName = diagnostic.getSampleName ();
-        Logging.info (sampleName);
-        orderDetails.put ("sampleName", sampleName);
-
         orderStatus.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
         orderStatus.expandWorkflowHistory ();
-        String orderTestId = orderStatus.getOrderTestIdFromUrl ();
-        orderDetails.put ("orderTestId", orderTestId);
 
-        return orderDetails;
+        Order order = new Order ();
+        order.orderNumber = orderNum;
+        order.specimenDto = new Specimen ();
+        order.specimenDto.sampleName = sampleName;
+        order.orderTestId = orderStatus.getOrderTestIdFromUrl ();
+        return order;
     }
 
     /**
@@ -999,16 +951,11 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         history.setWorkflowProperty (WorkflowProperty.disableHiFreqSave, TRUE.toString ());
         history.setWorkflowProperty (WorkflowProperty.disableHiFreqSharing, TRUE.toString ());
 
-        history.forceStatusUpdate (StageName.SecondaryAnalysis, Ready);
+        history.forceStatusUpdate (SecondaryAnalysis, Ready);
 
-        history.waitFor (StageName.SecondaryAnalysis, Finished);
-        assertTrue (history.isStagePresent (StageName.SecondaryAnalysis, Finished));
-
-        history.waitFor (StageName.ShmAnalysis, Finished);
-        assertTrue (history.isStagePresent (StageName.ShmAnalysis, Finished));
-
-        history.waitFor (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC);
-        assertTrue (history.isStagePresent (StageName.ClonoSEQReport, Awaiting, CLINICAL_QC));
+        history.waitFor (SecondaryAnalysis, Finished);
+        history.waitFor (ShmAnalysis, Finished);
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
     }
 
@@ -1023,7 +970,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         List <Stage> stages = history.parseStatusHistory ();
         List <Stage> shmAnalysisStages = new LinkedList <> ();
         for (Stage stage : stages) {
-            if (stage.stageName.equals (StageName.ShmAnalysis))
+            if (stage.stageName.equals (ShmAnalysis))
                 shmAnalysisStages.add (stage);
         }
 
@@ -1076,25 +1023,17 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * @return ReportRender object for reportData.json file
      */
-    private ReportRender getReportDataJsonFile () {
-        // validate reportData.json file
-        diagnostic.clickOrderDetailsTab ();
-        diagnostic.isCorrectPage ();
-        String sampleName = diagnostic.getSampleName ();
-        info ("Sample Name: " + sampleName);
-        history.gotoOrderDebug (sampleName);
+    private ReportRender getReportDataJsonFile (String sampleName) {
+        String reportData = "reportData.json";
+        File localFile = new File (join ("/", downloadDir.get (), reportData));
 
         // get file using get request
-        ReportRender reportDataJson = null;
-        try {
-            String fileUrl = history.getFileUrl ("reportData.json");
-            info ("File URL: " + fileUrl);
-            String getResponse = get (fileUrl);
-            info ("File URL Response: " + getResponse);
-            reportDataJson = mapper.readValue (getResponse, ReportRender.class);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        history.gotoOrderDebug (sampleName);
+        history.isCorrectPage ();
+        coraApi.login ();
+        get (history.getFileUrl (reportData), localFile);
+
+        ReportRender reportDataJson = mapper.readValue (localFile, ReportRender.class);
         info ("Json File Data " + reportDataJson);
         return reportDataJson;
     }
@@ -1152,7 +1091,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @param orderTestId
      * @param mutationStatus
      */
-    private void validateShmResultReportType (String orderTestId, String mutationStatus) {
+    private void validateShmResultReportType (String orderTestId, ShmMutationStatus mutationStatus) {
         validateShmResultReportType (orderTestId, mutationStatus, null);
     }
 
@@ -1164,30 +1103,18 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @param mutationStatus
      * @param ericSampleCall
      */
-    private void validateShmResultReportType (String orderTestId, String mutationStatus,
-                                              String ericSampleCall) {
+    private void validateShmResultReportType (String orderTestId,
+                                              ShmMutationStatus mutationStatus,
+                                              EricSampleCall ericSampleCall) {
         String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderTestId);
-        testLog ("Query: " + query);
-
         List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (query);
-        testLog ("Query Data: " + queryData);
-
-        assertTrue (queryData.size () == 1);
-        Map <String, Object> firstRow = queryData.get (0);
-        testLog ("Frist Row Data: " + firstRow);
-        assertEquals (mutationStatus, firstRow.get ("report_type"));
+        assertEquals (queryData.size (), 1);
+        assertEquals (ShmMutationStatus.valueOf (queryData.get (0).get ("report_type").toString ()), mutationStatus);
 
         if (ericSampleCall != null) {
-            String actualEricSampleCall = null;
-            try {
-                JSONObject jsonObject = new JSONObject (firstRow.get ("shm_result").toString ());
-                actualEricSampleCall = String.valueOf (jsonObject.get ("ericSampleCall"));
-            } catch (JSONException e) {
-                throw new RuntimeException (e);
-            }
-            assertEquals (actualEricSampleCall, ericSampleCall);
+            ShmResult shmResult = mapper.readValue (queryData.get (0).get ("shm_result").toString (), ShmResult.class);
+            assertEquals (shmResult.ericSampleCall, ericSampleCall);
         }
-
     }
 
     /**
@@ -1197,12 +1124,8 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     private void validateQueryReturnsZeroRow (String orderTestId) {
         String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderTestId);
-        testLog ("Query: " + query);
-
         List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (query);
-        testLog ("Query Result: " + queryData);
-
-        assertTrue (queryData.size () == 0);
+        assertEquals (queryData.size (), 0);
     }
 
     /**
@@ -1239,19 +1162,5 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
             reader.close ();
         }
         return extractedText;
-    }
-
-    private void skipFlagOn () {
-        if (isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is on, this test is for feature IgHV flag off");
-        }
-    }
-
-    private void skipFlagOff () {
-        if (!isIgHVFlag.get ()) {
-            getCurrentTestResult ().setStatus (SKIP);
-            throw new SkipException ("IgHV flag is off, this test is for feature IgHV flag on");
-        }
     }
 }

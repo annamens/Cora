@@ -165,14 +165,18 @@ public class OrderStatus extends OrderHeader {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
         String check = format (xpath, sampleName, stage, status, substatus == null ? "" : substatus, message);
+        boolean found = false;
         Timeout timer = new Timeout (millisRetry, waitRetry);
-        boolean found = isElementPresent (check);
-        while (!timer.Timedout () && !found) {
+        while (!timer.Timedout ()) {
             clickHistory (sampleName);
-            timer.Wait ();
-            nudgeWorkflow ();
-            found = isElementPresent (check);
-            clickHide (sampleName);
+            if (found = isElementPresent (check)) {
+                clickHide (sampleName);
+                break;
+            } else {
+                nudgeWorkflow ();
+                clickHide (sampleName);
+                timer.Wait ();
+            }
         }
         if (!found)
             fail (format (fail, stage, status, substatus, message));
@@ -180,14 +184,18 @@ public class OrderStatus extends OrderHeader {
 
     public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
+        boolean found = false;
         Timeout timer = new Timeout (millisRetry, waitRetry);
-        boolean found = isStagePresent (sampleName, stage, status, substatus);
         while (!timer.Timedout () && !found) {
             clickHistory (sampleName);
-            timer.Wait ();
-            nudgeWorkflow ();
-            found = isStagePresent (sampleName, stage, status, substatus);
-            clickHide (sampleName);
+            if (found = isStagePresent (sampleName, stage, status, substatus)) {
+                clickHide (sampleName);
+                break;
+            } else {
+                nudgeWorkflow ();
+                clickHide (sampleName);
+                timer.Wait ();
+            }
         }
         if (!found)
             fail (format (fail, stage, status, substatus));
@@ -195,14 +203,18 @@ public class OrderStatus extends OrderHeader {
 
     public void waitFor (String sampleName, StageName stage, StageStatus status) {
         String fail = "unable to locate Stage: %s, Status: %s";
+        boolean found = false;
         Timeout timer = new Timeout (millisRetry, waitRetry);
-        boolean found = isStagePresent (sampleName, stage, status);
-        while (!timer.Timedout () && !found) {
+        while (!timer.Timedout ()) {
             clickHistory (sampleName);
-            timer.Wait ();
-            nudgeWorkflow ();
-            found = isStagePresent (sampleName, stage, status);
-            clickHide (sampleName);
+            if (found = isStagePresent (sampleName, stage, status)) {
+                clickHide (sampleName);
+                break;
+            } else {
+                nudgeWorkflow ();
+                clickHide (sampleName);
+                timer.Wait ();
+            }
         }
         if (!found)
             fail (format (fail, stage, status));

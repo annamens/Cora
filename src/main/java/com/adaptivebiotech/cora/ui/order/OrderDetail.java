@@ -202,8 +202,7 @@ public class OrderDetail extends OrderHeader {
         String css = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
         assertTrue (click (css));
         assertTrue (waitForChildWindows (2));
-        List <String> windows = new ArrayList <> (getDriver ().getWindowHandles ());
-        getDriver ().switchTo ().window (windows.get (1));
+        navigateToTab (1);
     }
 
     public String getPatientCode () {

@@ -1,9 +1,11 @@
 package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.dto.Orders.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.cora.dto.Orders.OrderCategory.Diagnostic;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSeq2_WorkflowNanny;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
@@ -18,6 +20,7 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.Diagnostic.Order;
+import com.adaptivebiotech.cora.dto.Diagnostic.Panel;
 import com.adaptivebiotech.cora.dto.Diagnostic.Task;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -40,6 +43,7 @@ public class TestScenarioBuilder {
     public static final LocalDateTime collectionDate     = now ().minusDays (10);
     public static final LocalDateTime reconciliationDate = now ().minusDays (10);
     public static final LocalDateTime arrivalDate        = now ().minusDays (15);
+    public static final String        covidPanel         = "132d9440-8f75-46b8-b084-efe06346dfd4";
 
     public static Order order (OrderProperties properties, CoraTest... tests) {
         Order order = new Order ();
@@ -83,7 +87,7 @@ public class TestScenarioBuilder {
         container.containerType = Tube;
         container.contentsLocked = true;
         container.integrity = "Pass";
-        shipment.containers.add (container);
+        shipment.containers = asList (container);
         return shipment;
     }
 
@@ -133,5 +137,36 @@ public class TestScenarioBuilder {
     public static Integer[] dateToArrInt (LocalDateTime dateTime) {
         DateTimeFormatter fmt = ofPattern ("uuuu-MM-dd-HH-mm-ss-SSS");
         return asList (dateTime.format (fmt).split ("-")).stream ().map (Integer::valueOf).toArray (Integer[]::new);
+    }
+
+    public static Diagnostic buildDiagnosticOrder (Physician physician,
+                                                   Patient patient,
+                                                   Stage stage,
+                                                   CoraTest... tests) {
+        Diagnostic diagnostic = diagnosticOrder (physician, patient, specimen (), shipment ());
+        diagnostic.order = order (new OrderProperties (patient.billingType, CustomerShipment, "C91.00"), tests);
+        diagnostic.order.mrn = patient.mrn;
+        diagnostic.specimen.collectionDate = dateToArrInt (collectionDate);
+        diagnostic.specimen.reconciliationDate = dateToArrInt (reconciliationDate);
+        diagnostic.specimen.properties = new Specimen.SpecimenProperties ("2019-03-20");
+        diagnostic.shipment.arrivalDate = dateToArrInt (arrivalDate);
+        diagnostic.fastForwardStatus = stage;
+        return diagnostic;
+    }
+
+    public static Diagnostic buildCovidOrder (Physician physician, Patient patient, Stage stage, CoraTest test) {
+        Diagnostic diagnostic = diagnosticOrder (physician, patient, null, shipment ());
+        diagnostic.order = order (null, test);
+        diagnostic.order.orderType = TDx;
+        diagnostic.order.mrn = patient.mrn;
+        diagnostic.order.billingType = patient.billingType;
+        diagnostic.order.specimenDeliveryType = CustomerShipment;
+        diagnostic.order.specimenDto = specimen ();
+        diagnostic.order.specimenDto.name = test.workflowProperties.sampleName;
+        diagnostic.order.specimenDto.properties = null;
+        diagnostic.order.panels = asList (new Panel (covidPanel));
+        diagnostic.fastForwardStatus = stage;
+        diagnostic.task = null;
+        return diagnostic;
     }
 }
