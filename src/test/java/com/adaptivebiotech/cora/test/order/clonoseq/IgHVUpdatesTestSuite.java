@@ -678,9 +678,9 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         reportClonoSeq.setQCstatus (Fail);
 
+        // we will jave multiple ClonoSEQReport/Awaiting/CLINICAL_QC stages, look for the last one
         history.gotoOrderDebug (orderDetails.specimenDto.sampleName);
-        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        assertTrue (history.isStagePresent (ClonoSEQReport, Awaiting, CLINICAL_QC));
+        history.waitForTopLevel (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
         releaseReport (assayTest, true);
         String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
