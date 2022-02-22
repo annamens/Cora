@@ -441,7 +441,7 @@ public class ContainersList extends CoraPage {
     }
 
     public boolean isFreezerDropdownEnabled () {
-        String freezerDropdownContainer = "//*[@placeholder='Select Freezer']/parent::div";
+        String freezerDropdownContainer = "//*[@placeholder='Select Freezer']/ancestor::div[1]";
         return !getAttribute (freezerDropdownContainer, "class").contains ("div-disabled");
     }
 

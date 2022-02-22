@@ -148,23 +148,17 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containersList.bulkMoveAllToFreezer (catchAllFreezer);
         assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
         parsedContainers = waitForUpdatedContainers (parsedContainers);
-        for (Container container : containers.list) {
-            Container parsedContainer = parsedContainers.list.stream ()
-                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
-                                                             .findFirst ().get ();
-            verifyMoveToFreezer (parsedContainer, catchAllFreezer);
-        }
+        parsedContainers.list.stream ()
+                             .forEach (container -> assertTrue (container.location.contains (catchAllFreezer.name)));
         history.clickContainers ();
         containersList.searchContainerIdsOrNames (allContainerIDs);
         parsedContainers = containersList.getContainers ();
         containersList.bulkMoveAllToCustody ();
         parsedContainers = waitForUpdatedContainers (parsedContainers);
-        for (Container container : containers.list) {
-            Container parsedContainer = parsedContainers.list.stream ()
-                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
-                                                             .findFirst ().get ();
-            verifyMoveToCustody (parsedContainer);
-        }
+        parsedContainers.list.stream ()
+                             .forEach (container -> assertTrue (container.location.equals (String.join (" : ",
+                                                                                                        coraTestUser,
+                                                                                                        container.containerNumber))));
     }
 
     /**
