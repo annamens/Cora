@@ -11,11 +11,14 @@ import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestPa
 import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUser;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
+import static com.adaptivebiotech.cora.utils.PageHelper.QC.Fail;
+import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.INDETERMINATE;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.MUTATED;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.NO_CLONES;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.QC_FAILURE;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.UNMUTATED;
+import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestUrl;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
 import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -42,8 +45,11 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFin
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.HttpClientHelper.get;
+import static com.seleniumfy.test.utils.HttpClientHelper.headers;
+import static com.seleniumfy.test.utils.HttpClientHelper.resetheaders;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.join;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
@@ -58,7 +64,6 @@ import java.util.Map;
 import java.util.UUID;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
-import org.json.JSONArray;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -75,11 +80,12 @@ import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.utils.DateUtils;
-import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
+import com.adaptivebiotech.pipeline.api.PipelineApi;
+import com.adaptivebiotech.pipeline.dto.Sample;
 import com.adaptivebiotech.pipeline.dto.shm.SHMheader.EricSampleCall;
 import com.adaptivebiotech.pipeline.dto.shm.ShmResult;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
@@ -87,7 +93,6 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 /**
  * Note:
@@ -106,6 +111,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     private ReportClonoSeq       reportClonoSeq                   = new ReportClonoSeq ();
     private OrcaHistory          history                          = new OrcaHistory ();
     private OrderStatus          orderStatus                      = new OrderStatus ();
+    private PipelineApi          pipelineApi                      = new PipelineApi ();
 
     private final String         c91_10                           = "C91.10";
     private final String         c83_00                           = "C83.00";
@@ -138,9 +144,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
     private final String         sampleNameOrcaIgHVO9             = "PH-5N";
     private final String         shmDataSourcePathOrcaIgHVO9      = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229";
     private final String         workSpaceNameOrcaIgHVO9          = "MDAnderson-Thompson";
-
-    private final String         portalTestAuth                   = coraApi.basicAuth (pipelinePortalTestUser,
-                                                                                       pipelinePortalTestPass);
 
     private final String         orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
     private final String         shmResultsSchema                 = "select * from information_schema.columns where table_name = 'shm_results' order by ordinal_position asc";
@@ -176,7 +179,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * - specimen type / source: Cell pellet / PBMC
      * - icd codes: C83.00
      */
-    @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder1CLIA () {
         Assay assayTest = ID_BCell2_CLIA;
         Order orderDetails = createOrder (IgHVPhysician,
@@ -218,7 +220,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
-    @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder2CLIA () {
         Assay assayTest = ID_BCell2_CLIA;
         Order orderDetails = createOrder (NYPhysician,
@@ -247,7 +248,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         testLog ("step 7 - CLIA-IGHV flag does not appear below the Report tab ");
 
         ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
-        assertNotNull (reportData.shmReportResult);
+        assertNull (reportData.shmReportResult);
         testLog ("step 8 - SHM analysis results are not included in reportData.json within shmReportResult property");
     }
 
@@ -260,7 +261,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
-    @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder3IVD () {
         Assay assayTest = ID_BCell2_IVD;
         Order orderDetails = createOrder (IgHVPhysician,
@@ -302,7 +302,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
-    @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder4IVD () {
         Assay assayTest = ID_BCell2_IVD;
         Order orderDetails = createOrder (IgHVPhysician,
@@ -344,7 +343,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
-    @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder5CLIA () {
         Order orderDetails = createOrder (IgHVPhysician,
                                           ID_BCell2_CLIA,
@@ -377,7 +375,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
-    @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder6IVD () {
         Order orderDetails = createOrder (IgHVPhysician,
                                           ID_BCell2_CLIA,
@@ -410,7 +407,6 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * 
      * @sdlc.requirements SR-6656:R1, R3, R4, R5, R6
      */
-    @Test (groups = "featureFlagOn")
     public void verifyIgHVStageAndReportFeatureOrder7IVD () {
         Order orderDetails = createOrder (IgHVPhysician,
                                           ID_BCell2_CLIA,
@@ -589,7 +585,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         releaseReport (assayTest, false);
 
         String pdfUrl = reportClonoSeq.getPreviewReportPdfUrl ();
-        testLog ("PDF File URL: " + pdfUrl);
+        info ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 4, beginIghvMutationStatus, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 8 - order 5 - In SHM report of the pdf report, it is showing No Result Available for the IGHV Mutation Status");
@@ -634,7 +630,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
 
         releaseReport (assayTest, false);
         String pdfUrl = reportClonoSeq.getPreviewReportPdfUrl ();
-        testLog ("PDF File URL: " + pdfUrl);
+        info ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 11 - order 6 - Clonality Result for workflow with failed Primary Analysis (NorthQC) displays No Result Available");
@@ -680,15 +676,15 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         orderStatus.isCorrectPage ();
         diagnostic.clickReportTab (assayTest);
 
-        reportClonoSeq.setQCstatus (QC.Fail);
+        reportClonoSeq.setQCstatus (Fail);
 
+        // we will jave multiple ClonoSEQReport/Awaiting/CLINICAL_QC stages, look for the last one
         history.gotoOrderDebug (orderDetails.specimenDto.sampleName);
-        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        assertTrue (history.isStagePresent (ClonoSEQReport, Awaiting, CLINICAL_QC));
+        history.waitForTopLevel (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
         releaseReport (assayTest, true);
         String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
-        testLog ("PDF File URL: " + pdfUrl);
+        info ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 14 - order 7 - Clonality Result for workflow with failed Clinical QC displays No Result Available");
@@ -1009,12 +1005,12 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         // navigate to order status page
         orderStatus.isCorrectPage ();
         orderStatus.clickReportTab (assayTest);
+        reportClonoSeq.isCorrectPage ();
         boolean isCLIAIGHVFlagPresent = reportClonoSeq.isCLIAIGHVBtnVisible ();
 
-        if (setQCStatus) {
-            reportClonoSeq.setQCstatus (QC.Pass);
-            reportClonoSeq.clickReleaseReport ();
-        }
+        if (setQCStatus)
+            reportClonoSeq.releaseReport (assayTest, Pass);
+
         return isCLIAIGHVFlagPresent;
     }
 
@@ -1045,22 +1041,15 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      * @param assayTest
      */
     private void validatePipelineStatusToComplete (String sampleName, Assay assayTest) {
-        Header portalAuth = new BasicHeader ("Authorization", portalTestAuth);
-        HttpClientHelper.headers.get ().add (portalAuth);
-        // pipeline portal url and end-point
-        String url = assayTest.equals (ID_BCell2_IVD) ? portalIvdTestUrl : portalCliaTestUrl;
-        String endpoint = "/flowcells?page=0&pageSize=1&select=id&samples.reactions.configuration.name=eos.shm&samples.name=" + sampleName + "&job.statuses.status=COMPLETED";
-        info ("URL: " + url + endpoint);
+        Header basicAuth = new BasicHeader (AUTHORIZATION,
+                coraApi.basicAuth (pipelinePortalTestUser, pipelinePortalTestPass));
 
-        JSONArray response;
-        try {
-            response = new JSONArray (get (url + endpoint));
-            info ("Response: " + response);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-        HttpClientHelper.headers.get ().remove (portalAuth);
-        assertEquals (response.length (), 1, "Validate pipeline portal job is completed");
+        resetheaders ();
+        headers.get ().add (basicAuth);
+        portalTestUrl = assayTest.equals (ID_BCell2_IVD) ? portalIvdTestUrl : portalCliaTestUrl;
+        Sample[] samples = pipelineApi.findFlowcellRuns (sampleName);
+        headers.get ().remove (basicAuth);
+        assertEquals (samples.length, 1, "Validate pipeline portal job is completed");
     }
 
     /**

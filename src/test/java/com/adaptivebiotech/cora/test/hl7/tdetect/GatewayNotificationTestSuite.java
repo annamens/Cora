@@ -54,7 +54,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                                  stage (DxReport, Ready),
                                                  test);
         diagnostic.dxResults = negativeDxResult ();
-        assertEquals (coraApi.newCovidOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
 
         OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);

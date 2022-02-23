@@ -309,7 +309,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCovidOrder (coraApi.getPhysician (TDetect_client), patient, null, test);
         diagnostic.dxResults = null;
-        assertEquals (coraApi.newCovidOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
 
         OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
