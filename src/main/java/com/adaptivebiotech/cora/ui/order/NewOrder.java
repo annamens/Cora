@@ -376,10 +376,6 @@ public abstract class NewOrder extends OrderHeader {
         return getText ("//*[text()='Quantity']/..//div");
     }
 
-    protected String getExpectedTest () {
-        return isElementPresent ("[ng-if='ctrl.orderEntry.order.expectedTestType']") ? getText ("[ng-bind*='order.expectedTestType']") : null;
-    }
-
     public List <OrderTest> getSelectedTests () {
         return allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ())
                                   .parallelStream ().filter (t -> t.selected).collect (toList ());

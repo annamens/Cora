@@ -115,7 +115,6 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
-        order.expectedTestType = getExpectedTest ();
         order.tests = getSelectedTests ();
         order.orderAttachments = getCoraAttachments ();
         order.doraAttachments = getDoraAttachments ();
