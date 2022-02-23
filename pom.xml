@@ -169,23 +169,13 @@
         </dependency>
         <dependency>
             <groupId>com.adaptivebiotech.test.functional</groupId>
-            <artifactId>picasso</artifactId>
-            <version>2.7.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>4.1.2</version>
+            <artifactId>pipeline-portal</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.18</version>
-        </dependency>
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itextpdf</artifactId>
-            <version>5.5.13.2</version>
         </dependency>
         <dependency>
             <groupId>com.github.javafaker</groupId>

@@ -34,7 +34,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.Logging;
 import com.seleniumfy.test.utils.Timeout;
 
-@Test (groups = "regression")
+@Test (groups = { "regression", "dingo" })
 public class BulkMoveTestSuite extends ContainerTestBase {
 
     private Login                    login                  = new Login ();
@@ -242,14 +242,14 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         assertTrue (containersList.isBulkMoveErrorMessageDisplayed ());
         String error = containersList.getBulkMoveErrorMessage ();
         Logging.info ("bulk move error message: " + error);
-        Pattern pattern = Pattern.compile ("Failed to move containers .* to Freezer " + Pattern.quote (invalidFreezer.name));
-        assertTrue (pattern.matcher (error).find ());
-        Set <String> actualContainerNamesFailed = getSubstringsFromPattern ("CO-[0-9]*", error);
+        Pattern failedToMovePattern = Pattern.compile ("Failed to move containers .* to Freezer " + Pattern.quote (invalidFreezer.name));
+        assertTrue (failedToMovePattern.matcher (error).find ());
+        Set <String> actualContainerNamesFailed = getSubstringsFromRegex ("CO-[0-9]*", error);
         Set <String> expectedContainerNamesFailed = getContainerIDs (expectedContainersFailed).stream ()
                                                                                               .collect (Collectors.toSet ());
         assertEquals (actualContainerNamesFailed, expectedContainerNamesFailed);
-        Set <String> actualContainerTypeErrors = getSubstringsFromPattern ("(There are 1[^.]*\\. The capacity for [^.]*\\.)",
-                                                                           error);
+        Set <String> actualContainerTypeErrors = getSubstringsFromRegex ("(There are 1[^.]*\\. The capacity for [^.]*\\.)",
+                                                                         error);
         Set <String> expectedContainerTypeErrors = expectedContainersFailed.list.stream ()
                                                                                 .map (container -> format ("There are 1 %1$s selected. The capacity for %1$s is 0.",
                                                                                                            container.containerType.displayText))
@@ -257,7 +257,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         assertEquals (actualContainerTypeErrors, expectedContainerTypeErrors);
     }
 
-    private Set <String> getSubstringsFromPattern (String pattern, String error) {
+    private Set <String> getSubstringsFromRegex (String pattern, String error) {
         Matcher matcher = Pattern.compile (pattern).matcher (error);
         Set <String> set = new HashSet <String> ();
         while (matcher.find ()) {
