@@ -7,7 +7,9 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
 import java.util.List;
+import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -21,6 +23,7 @@ import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
+import com.adaptivebiotech.cora.dto.UploadFile;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
@@ -117,7 +120,11 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         order.expectedTestType = getExpectedTest ();
         order.tests = getSelectedTests ();
+        clickAttachments ();
         order.orderAttachments = getCoraAttachments ();
+        order.shipmentAttachments = getShipmentAttachments ();
+        clickDoraAttachmentsExpand ();
+        order.trf = getDoraTrf ();
         order.doraAttachments = getDoraAttachments ();
 
         switch (chargeType) {
@@ -162,6 +169,18 @@ public class NewOrderTDetect extends NewOrder {
         order.patient.postCode = billing.getPatientZipcode ();
         order.notes = getOrderNotes ();
         return order;
+    }
+
+    private String isTrfAttached () {
+        return getText ("labeled-value[label='Internal TRF Attached'] span");
+    }
+
+    public String getProviderName () {
+        return getText ("//*[@formcontrolname='providerForm']//label[text()='Name']/parent::div//span");
+    }
+
+    private String getProviderAccount () {
+        return getText ("//*[@formcontrolname='providerForm']//label[text()='Account']/parent::div//span");
     }
 
     public void addPatientICDCode (String code) {
@@ -247,6 +266,77 @@ public class NewOrderTDetect extends NewOrder {
         return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
     }
 
+    private void clickAttachments () {
+        assertTrue (click (".order-attachments h2"));
+        pageLoading ();
+    }
+
+    private List <UploadFile> getCoraAttachments () {
+        List <UploadFile> coraAttachments = new ArrayList <> ();
+        String files = "//h3[text()='Orders']/parent::div//div[contains(@class,'attachments-table-row')]";
+        if (isElementPresent (files))
+            for (WebElement element : waitForElements (files)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, "./div[1]//a");
+                attachment.fileUrl = getAttribute (element, "./div[2]//a", "href");
+                attachment.createdDateTime = getText (element, "./div[4]");
+                attachment.createdBy = getText (element, "./div[4]");
+                coraAttachments.add (attachment);
+            }
+        return coraAttachments;
+    }
+
+    private List <UploadFile> getShipmentAttachments () {
+        List <UploadFile> shipmentAttachments = new ArrayList <> ();
+        String files = "//h3[text()='Shipments']/parent::div//div[contains(@class,'attachments-table-row')]";
+        if (isElementPresent (files))
+            for (WebElement element : waitForElements (files)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, "./div[1]//a");
+                attachment.fileUrl = getAttribute (element, "./div[2]//a", "href");
+                attachment.createdDateTime = getText (element, "./div[3]");
+                attachment.createdBy = getText (element, "./div[4]");
+                shipmentAttachments.add (attachment);
+            }
+        return shipmentAttachments;
+    }
+
+    private void clickDoraAttachmentsExpand () {
+        assertTrue (click ("//h3[contains(text(),'Dora')]//a"));
+        pageLoading ();
+    }
+
+    private UploadFile getDoraTrf () {
+        UploadFile doraTrFile = new UploadFile ();
+        String doraTrf = "//h3[contains(text(),'Dora')]/parent::div//a[contains(text(),'Original Dora Trf')]";
+        if (isElementPresent (doraTrf)) {
+            WebElement row = findElement (waitForElement (doraTrf),
+                                          "./ancestor::div[contains(@class,'attachments-table-row')]");
+            doraTrFile.fileName = getText (row, "./div[1]//a");
+            doraTrFile.fileUrl = getAttribute (row, "./div[2]//a", "href");
+        }
+        return doraTrFile;
+    }
+
+    private List <UploadFile> getDoraAttachments () {
+        List <UploadFile> doraAttachments = new ArrayList <> ();
+        String files = "//h3[contains(text(),'Dora')]/parent::div//div[contains(@class,'attachments-table-row')]";
+        if (isElementPresent (files))
+            for (WebElement element : waitForElements (files)) {
+                String fileName = getText (element, "./div[1]//a");
+                if (fileName.contains ("Original Dora Trf")) {
+                    continue;
+                }
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = fileName;
+                attachment.fileUrl = getAttribute (element, "./div[2]//a", "href");
+                attachment.createdDateTime = getText (element, "./div[3]");
+                attachment.createdBy = getText (element, "./div[4]");
+                doraAttachments.add (attachment);
+            }
+        return doraAttachments;
+    }
+
     public String getPatientGender () {
         return getText ("//label[text()='Gender']/../div[1]");
     }
@@ -256,17 +346,14 @@ public class NewOrderTDetect extends NewOrder {
         return getText ("//*[@label='Order #']//span");
     }
 
-    @Override
-    public String getOrderName () {
+    private String getOrderName () {
         return getText ("//labeled-value[@label='Order Name']/div/div[2]/span");
     }
 
-    @Override
     public String getPatientName () {
         return getText ("//label[text()='Patient']/../div[1]");
     }
 
-    @Override
     public String getPatientDOB () {
         return getText ("//label[text()='Birth Date']/../div[1]");
     }
