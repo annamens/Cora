@@ -14,6 +14,8 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class Login extends BasePage {
 
+    private final String loginUrl = coraTestUrl + "/cora/login";
+
     public Login () {
         staticNavBarHeight = 35;
     }
@@ -39,24 +41,26 @@ public class Login extends BasePage {
     }
 
     public void doLogin () {
-        doLogin (coraTestUser, coraTestPass);
+        // sometimes login is stuck, give it a retry
+        Timeout timer = new Timeout (millisRetry * 4, waitRetry * 5);
+        while (!timer.Timedout ()) {
+            doLogin (coraTestUser, coraTestPass);
+            if (getCurrentUrl ().equals (loginUrl)) {
+                timer.Wait ();
+                refresh ();
+            } else
+                break;
+        }
     }
 
     public void doLogin (String user, String pass) {
-        String url = coraTestUrl + "/cora/login";
         info ("logging-in to Cora");
-        openBrowser (url);
+        openBrowser (loginUrl);
         isCorrectPage ();
         enterUsername (user);
         enterPassword (pass);
-
-        // sometimes login is stuck, give it a retry
-        Timeout timer = new Timeout (millisRetry * 4, waitRetry * 5);
-        while (!timer.Timedout () && getCurrentUrl ().equals (url)) {
-            clickSignIn ();
-            assertTrue (hasPageLoaded ());
-            timer.Wait ();
-        }
+        clickSignIn ();
+        assertTrue (hasPageLoaded ());
     }
 
     public String getLoginError () {
