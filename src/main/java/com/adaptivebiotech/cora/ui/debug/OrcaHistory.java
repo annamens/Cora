@@ -154,6 +154,25 @@ public class OrcaHistory extends CoraPage {
 
     }
 
+    public void waitForTopLevel (StageName stage, StageStatus status, StageSubstatus substatus) {
+        String fail = "unable to locate top level Stage: %s, Status: %s, Substatus: %s";
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        boolean found = false;
+        String orcaHistoryUrl = getCurrentUrl ();
+        while (!timer.Timedout () && ! (found = isTopLevelStagePresent (stage, status, substatus))) {
+            doForceClaim (orcaHistoryUrl);
+            timer.Wait ();
+            refresh ();
+        }
+        if (!found)
+            fail (format (fail, stage, status, substatus));
+    }
+
+    public boolean isTopLevelStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
+        String xpath = "//table[@class='genoTable']//tr[td[text()='%s']][1]/td[text()='%s']/../td[contains (text(),'%s')]";
+        return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
+    }
+
     public String getOrderTestId () {
         String url = getAttribute ("a[href*='/cora/order/status']", "href");
         return substringAfterLast (url, "ordertestid=");

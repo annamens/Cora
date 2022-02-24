@@ -82,7 +82,6 @@ public final class Orders {
         public List <String>       icdcodes;
         public Specimen            specimenDto;
         public String              reportDate;
-        public String              expectedTestType;
         public List <OrderTest>    tests = new ArrayList <> ();
         public UploadFile          trf;
         public List <UploadFile>   doraAttachments;

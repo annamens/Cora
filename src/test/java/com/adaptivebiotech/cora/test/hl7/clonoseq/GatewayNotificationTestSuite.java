@@ -86,7 +86,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                                       patient,
                                                       stage (SecondaryAnalysis, Ready),
                                                       genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
-        assertEquals (coraApi.newDiagnosticOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new BCell ID order");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
@@ -135,7 +135,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                            patient,
                                            stage (SecondaryAnalysis, Ready),
                                            genCDxTest (MRD_BCell2_CLIA, bcellMrdTsv));
-        assertEquals (coraApi.newDiagnosticOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new BCell MRD order");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
@@ -187,7 +187,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                                       stage (NorthQC, Ready),
                                                       genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
-        assertEquals (coraApi.createPortalJob (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newTcellOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell ID order");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_TCRB);
@@ -235,7 +235,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                            stage (NorthQC, Ready),
                                            genTcrTest (MRD_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
-        assertEquals (coraApi.createPortalJob (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newTcellOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell MRD order");
 
         orderTest = diagnostic.findOrderTest (MRD_TCRB);

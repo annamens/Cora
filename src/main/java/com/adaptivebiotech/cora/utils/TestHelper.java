@@ -88,6 +88,22 @@ public class TestHelper {
         return container;
     }
 
+    public static Container freezerAB018018 () {
+        Container container = new Container ();
+        container.id = testdata ().get ("AB018018_id");
+        container.containerNumber = testdata ().get ("AB018018_num");
+        container.name = "AB018018 (-20C)";
+        return container;
+    }
+
+    public static Container freezerAB018056 () {
+        Container container = new Container ();
+        container.id = testdata ().get ("AB018056_id");
+        container.containerNumber = testdata ().get ("AB018056_num");
+        container.name = "AB018056 : Validation (-20C)";
+        return container;
+    }
+
     // clean: no insurance, medicare, address, etc.
     public static Patient newPatient () {
         Patient patient = new Patient ();
@@ -245,6 +261,10 @@ public class TestHelper {
         data.put ("AB039003_num", "CO-166946");
         data.put ("dumbwaiter_id", "eec8c896-0cbe-4531-83a6-da958c79c368");
         data.put ("dumbwaiter_num", "CO-724045");
+        data.put ("AB018018_id", "2c37b67f-45c0-427d-8fa6-9d469d673fff");
+        data.put ("AB018018_num", "CO-522480");
+        data.put ("AB018056_id", "8e2805d5-805b-403b-937b-561837d34ea6");
+        data.put ("AB018056_num", "CO-206634");
         return data;
     };
 

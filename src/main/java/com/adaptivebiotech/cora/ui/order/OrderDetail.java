@@ -108,7 +108,6 @@ public class OrderDetail extends OrderHeader {
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
-        order.expectedTestType = getExpectedTest ();
         order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ()).parallelStream ()
                                          .filter (t -> t.selected).collect (toList ());
         order.orderAttachments = getCoraAttachments ();
@@ -290,10 +289,6 @@ public class OrderDetail extends OrderHeader {
 
     public ContainerType getSpecimenContainerType () {
         return ContainerType.getContainerType (getText ("[ng-bind='ctrl.orderEntry.specimenDisplayContainerType']"));
-    }
-
-    private String getExpectedTest () {
-        return isElementPresent ("[ng-if='ctrl.orderEntry.order.expectedTestType']") ? getText ("[ng-bind*='order.expectedTestType']") : null;
     }
 
     private OrderTest getTestState (Assay assay) {
