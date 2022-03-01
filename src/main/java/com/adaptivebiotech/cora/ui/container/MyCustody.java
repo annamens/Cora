@@ -2,6 +2,7 @@ package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Freezer;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
@@ -26,14 +27,14 @@ public class MyCustody extends ContainersList {
         return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
             List <WebElement> columns = findElements (el, "td");
             Container c = new Container ();
-            c.id = getConId (getAttribute (columns.get (1), "a", "href"));
-            c.containerNumber = getText (columns.get (1));
-            String containerType = getText (columns.get (2));
+            c.id = getConId (getAttribute (columns.get (2), "a", "href"));
+            c.containerNumber = getText (columns.get (2));
+            String containerType = getText (columns.get (3));
             c.containerType = containerType != null && !containerType.equals ("Unsupported") ? getContainerType (containerType) : null;
-            c.specimenId = getText (columns.get (3));
-            c.name = getText (columns.get (4));
-            c.location = getText (columns.get (5));
-            String capacity = getText (columns.get (6));
+            c.specimenId = getText (columns.get (4));
+            c.name = getText (columns.get (5));
+            c.location = getText (columns.get (6));
+            String capacity = getText (columns.get (7));
             c.capacity = Strings.isNullOrEmpty (capacity) ? 0 : Integer.parseInt (capacity);
             return c;
         }).collect (toList ()));
@@ -52,4 +53,23 @@ public class MyCustody extends ContainersList {
                        .forEach (container -> moveToFreezer (container, freezer));
 
     }
+
+    public void bulkMoveToFreezer (List <String> containers, Container freezer, String comment) {
+        clickBulkMoveContainers ();
+        assertTrue (click (freezerDropdownInput));
+        assertTrue (clear (freezerDropdownInput));
+        assertTrue (setText (freezerDropdownInput, freezer.name));
+        assertTrue (click (format (freezerDropdownSelection,
+                                   freezer.name)));
+        if (comment != null) {
+            assertTrue (clear (bulkComment));
+            assertTrue (setText (bulkComment, comment));
+        }
+        for (String container : containers) {
+            selectContainerToBulkMove (container);
+        }
+        assertTrue (click (bulkMoveBtn));
+        transactionInProgress ();
+    }
+
 }
