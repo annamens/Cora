@@ -3,11 +3,13 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.Logging.info;
+import static com.adaptivebiotech.test.utils.TestHelper.formatDt7;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
@@ -203,7 +205,8 @@ public class NewOrderClonoSeq extends NewOrder {
                 UploadFile attachment = new UploadFile ();
                 attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
                 attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                attachment.createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
                 attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
                 coraAttachments.add (attachment);
             }
@@ -218,7 +221,8 @@ public class NewOrderClonoSeq extends NewOrder {
                 UploadFile attachment = new UploadFile ();
                 attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
                 attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                attachment.createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
                 attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
                 shipmentAttachments.add (attachment);
             }
@@ -243,7 +247,8 @@ public class NewOrderClonoSeq extends NewOrder {
                 UploadFile attachment = new UploadFile ();
                 attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
                 attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                attachment.createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
                 attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
                 doraAttachments.add (attachment);
             }
