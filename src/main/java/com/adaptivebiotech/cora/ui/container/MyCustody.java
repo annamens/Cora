@@ -2,7 +2,6 @@ package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Freezer;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
@@ -56,19 +55,12 @@ public class MyCustody extends ContainersList {
 
     public void bulkMoveToFreezer (List <String> containers, Container freezer, String comment) {
         clickBulkMoveContainers ();
-        assertTrue (click (freezerDropdownInput));
-        assertTrue (clear (freezerDropdownInput));
-        assertTrue (setText (freezerDropdownInput, freezer.name));
-        assertTrue (click (format (freezerDropdownSelection,
-                                   freezer.name)));
-        if (comment != null) {
-            assertTrue (clear (bulkComment));
-            assertTrue (setText (bulkComment, comment));
-        }
+        selectBulkMoveFreezer (freezer);
+        setBulkMoveComment (comment);
         for (String container : containers) {
             selectContainerToBulkMove (container);
         }
-        assertTrue (click (bulkMoveBtn));
+        clickBulkMoveBtn ();
         transactionInProgress ();
     }
 
