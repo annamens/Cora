@@ -459,7 +459,7 @@ public class ContainersList extends CoraPage {
     }
 
     public List <String> getBulkMoveActions () {
-        return getTextList (bulkMoveActionDropdown);
+        return getTextList (bulkMoveActionDropdown + " option");
     }
 
     public String getCurrentBulkMoveAction () {
