@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author jpatel
@@ -8,20 +9,8 @@ import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
  */
 public final class FeatureFlags {
 
-    public boolean newShipmentsListPage;
-    public boolean diagPortalReminders;
-    public boolean newOrderTestsListPage;
-    public boolean AutoQC;
-    public boolean newOrdersListPage;
-    public boolean diagPortalExpeditedOrder;
-    public boolean newTasksListPage;
-    public boolean diagPortalDetailedOrderStatus;
-    public boolean clonalityOrderAlertForMrd;
-    public boolean diagPortalDynamicBilling;
-    public boolean locks;
-    public boolean newClonalityOrderAlert;
-    public boolean IgHV;
-    public boolean pathologyUpload;
+    @JsonProperty ("Dingo-diagUploadPathologyOrder")
+    public boolean dingoDiagUploadPathologyOrder;
 
     @Override
     public String toString () {

@@ -51,8 +51,8 @@ public class OrderHeader extends CoraPage {
         return getText ("//*[label[@id='order-number-text']]//span");
     }
 
-    public OrderStatus getheaderOrderStatus () {
-        return getEnum (OrderStatus.class, getText ("[ng-bind='ctrl.orderEntry.order.status']"));
+    public OrderStatus getOrderStatus () {
+        return getEnum (OrderStatus.class, getText ("//*[text()='Status']/..//span"));
     }
 
     public String getPatientId () {
@@ -91,11 +91,6 @@ public class OrderHeader extends CoraPage {
     public String getOrderId () {
         String[] splitUrl = getCurrentUrl ().split ("/");
         return splitUrl[splitUrl.length - 1];
-    }
-
-    public String getStatusText () {
-        String xpath = "//*[text()='Status']/..//span";
-        return getText (xpath);
     }
 
     public String getHeaderDueDate () {

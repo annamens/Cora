@@ -195,7 +195,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (orderStatus.getSpecimenNumber (), specimenId);
         assertEquals (orderStatus.getHeaderDueDate (), expectedDueDate);
         assertEquals (orderStatus.getTestName (), orderTest.test);
-        assertEquals (orderStatus.getheaderOrderStatus (), Active);
+        assertEquals (orderStatus.getOrderStatus (), Active);
         assertTrue (orderStatus.getLastActivity ().contains (getPastFutureDate (0)));
         testLog ("STEP 9 - Order status table displays above information");
 

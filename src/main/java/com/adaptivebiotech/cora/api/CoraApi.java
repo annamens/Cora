@@ -88,8 +88,10 @@ public class CoraApi {
 
     public String auth () {
         resetheaders ();
-        headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
+        Header coraBasicAuth = new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass));
+        headers.get ().add (coraBasicAuth);
         String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
+        headers.get ().remove (coraBasicAuth);
         apiToken = new BasicHeader ("X-Api-Token", token);
         return token;
     }
@@ -344,7 +346,7 @@ public class CoraApi {
         return tests;
     }
 
-    public HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
+    public HttpResponse newBcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
         HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                                   HttpResponse.class);
@@ -352,7 +354,7 @@ public class CoraApi {
         return response;
     }
 
-    public HttpResponse createPortalJob (Diagnostic diagnostic) {
+    public HttpResponse newTcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/createPortalJob";
         HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                                   HttpResponse.class);
@@ -360,7 +362,7 @@ public class CoraApi {
         return response;
     }
 
-    public HttpResponse newCovidOrder (Diagnostic diagnostic) {
+    public HttpResponse newTdetectOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
         HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                                   HttpResponse.class);

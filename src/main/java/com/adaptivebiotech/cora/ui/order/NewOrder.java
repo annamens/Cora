@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.StaleElementReferenceException;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
-import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
@@ -95,11 +95,11 @@ public abstract class NewOrder extends OrderHeader {
 
     public void waitUntilActivated () {
         Timeout timer = new Timeout (millisRetry * 10, waitRetry * 2);
-        while (!timer.Timedout () && ! (getStatusText ().equals ("Active"))) {
+        while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
             refresh ();
             timer.Wait ();
         }
-        assertEquals (getStatusText (), "Active", "Order did not activated successfully");
+        assertEquals (getOrderStatus (), Active, "Order did not activated successfully");
     }
 
     public void clickSaveAndActivate () {
@@ -125,10 +125,6 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
     }
 
-    public OrderStatus getOrderStatus () {
-        return OrderStatus.valueOf (getText ("[ng-bind='ctrl.orderEntry.order.status']"));
-    }
-
     public void clickSeeOriginal () {
         assertTrue (click ("[ng-if='ctrl.orderEntry.order.parentReference.sourceOrderId'] .data-value-link"));
         pageLoading ();
@@ -139,23 +135,9 @@ public abstract class NewOrder extends OrderHeader {
         return isElementPresent (css) ? getText (css) : null;
     }
 
-    public String getOrderName () {
-        // sometimes it's taking a while for the order detail page to load
-        String css = oEntry + " [ng-bind='ctrl.orderEntry.order.name']";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout () && ! (isTextInElement (css, "Clinical")))
-            timer.Wait ();
-        pageLoading ();
-        return getText (css);
-    }
-
     public String getOrderNumber () {
         String css = oEntry + " .ab-panel-first [ng-bind='ctrl.orderEntry.order.orderNumber']";
         return getText (css);
-    }
-
-    protected String isTrfAttached () {
-        return getText ("[ng-bind^='ctrl.orderEntry.order.documentedByType']");
     }
 
     public void enterDateSigned (String date) {
@@ -229,14 +211,6 @@ public abstract class NewOrder extends OrderHeader {
         clickSelectPhysician ();
     }
 
-    public String getProviderName () {
-        return getText ("[ng-bind$='providerFullName']");
-    }
-
-    protected String getProviderAccount () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.authorizingProvider.account.name']");
-    }
-
     public boolean searchOrCreatePatient (Patient patient) {
         clickPickPatient ();
         searchPatient (patient);
@@ -283,14 +257,6 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickRemovePatient () {
         assertTrue (click ("[ng-click='ctrl.removePatient()']"));
-    }
-
-    public String getPatientName () {
-        return getText ("[ng-bind$='patientFullName']");
-    }
-
-    public String getPatientDOB () {
-        return getText ("[ng-bind^='ctrl.orderEntry.order.patient.dateOfBirth']");
     }
 
     public void clickPatientCode () {
@@ -376,10 +342,6 @@ public abstract class NewOrder extends OrderHeader {
         return getText ("//*[text()='Quantity']/..//div");
     }
 
-    protected String getExpectedTest () {
-        return isElementPresent ("[ng-if='ctrl.orderEntry.order.expectedTestType']") ? getText ("[ng-bind*='order.expectedTestType']") : null;
-    }
-
     public List <OrderTest> getSelectedTests () {
         return allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ())
                                   .parallelStream ().filter (t -> t.selected).collect (toList ());
@@ -397,23 +359,6 @@ public abstract class NewOrder extends OrderHeader {
 
     public String getSampleName () {
         return getText ("[ng-bind='orderTest.sampleName']");
-    }
-
-    public List <String> getCoraAttachments () {
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isOrderAttachment']";
-        return isElementPresent (files + " .attachments-table-row") ? getTextList (files + " a [ng-bind='attachment.name']") : null;
-    }
-
-    protected List <String> getDoraAttachments () {
-        List <String> result = new ArrayList <> ();
-        String doraTrf = "[ng-if='ctrl.orderEntry.hasDoraTrf']";
-        if (isElementPresent (doraTrf))
-            result.add (getText (doraTrf));
-
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isDoraAttachment']";
-        if (isElementPresent (files + " .attachments-table-row"))
-            result.addAll (getTextList (files + " a [ng-bind='attachment.name']"));
-        return result;
     }
 
     public void enterCollectionDate (String date) {
