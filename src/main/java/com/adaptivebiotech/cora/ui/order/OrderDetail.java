@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.test.utils.TestHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -9,6 +10,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
@@ -25,6 +27,7 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
+import com.adaptivebiotech.cora.dto.UploadFile;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.seleniumfy.test.utils.Timeout;
@@ -110,6 +113,8 @@ public class OrderDetail extends OrderHeader {
         order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ()).parallelStream ()
                                          .filter (t -> t.selected).collect (toList ());
         order.orderAttachments = getCoraAttachments ();
+        order.shipmentAttachments = getShipmentAttachments ();
+        order.trf = getDoraTrf ();
         order.doraAttachments = getDoraAttachments ();
         order.patient.insurance1 = new Insurance ();
         order.patient.insurance1.provider = billing.getInsurance1Provider ();
@@ -246,7 +251,7 @@ public class OrderDetail extends OrderHeader {
 
     public SpecimenSource getSpecimenSource () {
         String css = "[ng-bind^='ctrl.orderEntry.specimen.sourceType']";
-        return isElementVisible (css) ? SpecimenSource.valueOf (getText (css)) : null;
+        return isElementVisible (css) ? SpecimenSource.getSpecimenSource (getText (css)) : null;
     }
 
     public Anticoagulant getAnticoagulant () {
@@ -301,21 +306,62 @@ public class OrderDetail extends OrderHeader {
         return getText ("[ng-bind='orderTest.sampleName']");
     }
 
-    public List <String> getCoraAttachments () {
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isOrderAttachment']";
-        return isElementPresent (files + " .attachments-table-row") ? getTextList (files + " a [ng-bind='attachment.name']") : null;
+    private List <UploadFile> getCoraAttachments () {
+        List <UploadFile> coraAttachments = new ArrayList <> ();
+        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isOrderAttachment'] .attachments-table-row";
+        if (isElementPresent (files))
+            for (WebElement element : waitForElements (files)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
+                attachment.fileUrl = getAttribute (element, "a[href]", "href");
+                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
+                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
+                coraAttachments.add (attachment);
+            }
+        return coraAttachments;
     }
 
-    private List <String> getDoraAttachments () {
-        List <String> result = new ArrayList <> ();
-        String doraTrf = "[ng-if='ctrl.orderEntry.hasDoraTrf']";
-        if (isElementPresent (doraTrf))
-            result.add (getText (doraTrf));
+    private List <UploadFile> getShipmentAttachments () {
+        List <UploadFile> shipmentAttachments = new ArrayList <> ();
+        String files = "[attachments='ctrl.orderEntry.attachments'][filter-by='CORA.SHIPMENTS'] .attachments-table-row";
+        if (isElementPresent (files))
+            for (WebElement element : waitForElements (files)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
+                attachment.fileUrl = getAttribute (element, "a[href]", "href");
+                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
+                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
+                shipmentAttachments.add (attachment);
+            }
+        return shipmentAttachments;
+    }
 
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isDoraAttachment']";
-        if (isElementPresent (files + " .attachments-table-row"))
-            result.addAll (getTextList (files + " a [ng-bind='attachment.name']"));
-        return result;
+    private UploadFile getDoraTrf () {
+        UploadFile doraTrFile = new UploadFile ();
+        String doraTrf = "[ng-if='ctrl.orderEntry.hasDoraTrf']";
+        if (isElementPresent (doraTrf)) {
+            doraTrFile.fileName = getText (String.join (" ", doraTrf, ".btn-link"));
+            doraTrFile.fileUrl = getAttribute (String.join (" ", doraTrf, "a[href]"), "href");
+        }
+        return doraTrFile;
+    }
+
+    private List <UploadFile> getDoraAttachments () {
+        List <UploadFile> doraAttachments = new ArrayList <> ();
+        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isDoraAttachment'] .attachments-table-row";
+        if (isElementPresent (files))
+            for (WebElement element : waitForElements (files)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
+                attachment.fileUrl = getAttribute (element, "a[href]", "href");
+                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
+                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
+                doraAttachments.add (attachment);
+            }
+        return doraAttachments;
     }
 
     public String getOrderNotes () {

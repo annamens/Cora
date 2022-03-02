@@ -83,11 +83,12 @@ public final class Orders {
         public Specimen            specimenDto;
         public String              reportDate;
         public List <OrderTest>    tests = new ArrayList <> ();
-        public List <String>       doraAttachments;
-        public List <String>       orderAttachments;
-        public List <String>       shipmentAttachments;
+        public UploadFile          trf;
+        public List <UploadFile>   doraAttachments;
+        public List <UploadFile>   orderAttachments;
+        public List <UploadFile>   shipmentAttachments;
         public String              notes;
-        public Alert               alert;
+        public List <Alert>        alerts;
         public Workflow            workflow;
         public OrderType           orderType;
         public Boolean             postToImmunoSEQ;
@@ -353,7 +354,7 @@ public final class Orders {
     }
 
     public enum OrderStatus {
-        All, Pending, Active, Completed, Cancelled, Failed
+        All, Pending, Active, Completed, Cancelled, FailedActivation, PendingActivation
     }
 
     public enum Assay {
