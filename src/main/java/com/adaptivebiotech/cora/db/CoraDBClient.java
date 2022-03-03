@@ -1,14 +1,16 @@
 package com.adaptivebiotech.cora.db;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraDBHost;
+import static com.adaptivebiotech.test.BaseEnvironment.coraDBPass;
+import static com.adaptivebiotech.test.BaseEnvironment.coraDBUser;
 import static com.adaptivebiotech.test.BaseEnvironment.useDbTunnel;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.Logging.info;
+import static org.testng.Assert.assertFalse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,46 +18,48 @@ import java.util.List;
 import java.util.Map;
 import org.json.JSONObject;
 import org.postgresql.util.PGobject;
+import com.adaptivebiotech.cora.utils.Tunnel;
 
 public class CoraDBClient {
 
-    private final String sshUrl     = "jdbc:postgresql://localhost:6000/coradb";
-    private final String dbUrl      = "jdbc:postgresql://" + coraDBHost + ":5432/coradb";
-    protected String     username;
-    protected String     password;
+    private final String sshUrl = "jdbc:postgresql://localhost:6000/coradb";
+    private final String dbUrl  = "jdbc:postgresql://" + coraDBHost + ":5432/coradb";
+    private Connection   connection;
+    private Tunnel       tunnel;
 
-    private Connection   connection = null;
-
-    public CoraDBClient (String username, String pw) {
-        this.username = username;
-        this.password = pw;
-    }
-
-    public boolean openConnection () {
-        closeConnection ();
+    public CoraDBClient () {
         try {
+            if (useDbTunnel) {
+                info ("Creating a DB connection using tunnel");
+                tunnel = Tunnel.getTunnel ();
+                Thread t = new Thread (tunnel);
+                t.start ();
+                tunnel.waitForConnection ();
+            }
+
             String url = useDbTunnel ? sshUrl : dbUrl;
-            connection = DriverManager.getConnection (url, username, password);
-            return true;
-        } catch (SQLException e) {
-            error ("Failed to open database connection: ", e);
+            connection = DriverManager.getConnection (url, coraDBUser, coraDBPass);
+        } catch (Exception e) {
+            error ("Failed to open database connection", e);
             throw new RuntimeException (e);
         }
     }
 
     public void closeConnection () {
-        if (connection != null) {
-            try {
-                connection.close ();
-                connection = null;
-            } catch (SQLException e) {
-                error ("Failed to close Database connection: ", e);
-                throw new RuntimeException (e);
-            }
+        try {
+            connection.close ();
+            connection = null;
+
+            if (useDbTunnel)
+                tunnel.close ();
+            info ("DB connection closed");
+        } catch (Exception e) {
+            error ("Failed to close Database connection", e);
+            throw new RuntimeException (e);
         }
     }
 
-    public List <Map <String, Object>> executeSelectQuery (String query) {
+    public List <Map <String, Object>> executeSelect (String query) {
         info ("query is: " + query);
         List <Map <String, Object>> tableData = new LinkedList <> ();
 
@@ -73,12 +77,24 @@ public class CoraDBClient {
                     tableData.add (row);
                 }
             }
-        } catch (SQLException e) {
-            error ("Failed to access Database: " + e);
+        } catch (Exception e) {
+            error ("Failed to run SQL query", e);
             throw new RuntimeException (e);
         }
-        info ("Query Results: " + tableData);
+        info ("query results: " + tableData);
         return tableData;
+    }
+
+    public int executeUpdate (String query) {
+        info ("query is: " + query);
+
+        try (Statement statement = connection.createStatement ()) {
+            assertFalse (statement.execute (query)); // returns false on update
+            return statement.getUpdateCount ();
+        } catch (Exception e) {
+            error ("Failed to run SQL query", e);
+            throw new RuntimeException (e);
+        }
     }
 
     public String jsonbToString (Object data) {
