@@ -20,14 +20,14 @@ import org.json.JSONObject;
 import org.postgresql.util.PGobject;
 import com.adaptivebiotech.cora.utils.Tunnel;
 
-public class CoraDBClient {
+public class CoraDb {
 
     private final String sshUrl = "jdbc:postgresql://localhost:6000/coradb";
     private final String dbUrl  = "jdbc:postgresql://" + coraDBHost + ":5432/coradb";
     private Connection   connection;
     private Tunnel       tunnel;
 
-    public CoraDBClient () {
+    public CoraDb () {
         try {
             if (useDbTunnel) {
                 info ("Creating a DB connection using tunnel");

@@ -14,13 +14,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import com.adaptivebiotech.cora.api.CoraApi;
-import com.adaptivebiotech.cora.db.CoraDBClient;
+import com.adaptivebiotech.cora.db.CoraDb;
 import com.adaptivebiotech.test.TestBase;
 
 public class CoraBaseBrowser extends TestBase {
 
-    protected static CoraApi      coraApi;
-    protected static CoraDBClient coraDb;
+    protected static CoraApi coraApi;
+    protected static CoraDb  coraDb;
 
     static {
         initialization ();
@@ -28,7 +28,7 @@ public class CoraBaseBrowser extends TestBase {
 
         coraApi = new CoraApi ();
         coraApi.auth ();
-        coraDb = new CoraDBClient ();
+        coraDb = new CoraDb ();
     }
 
     @BeforeSuite (alwaysRun = true)
