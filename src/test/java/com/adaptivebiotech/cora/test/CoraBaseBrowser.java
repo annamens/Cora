@@ -29,6 +29,7 @@ public class CoraBaseBrowser extends TestBase {
         coraApi = new CoraApi ();
         coraApi.auth ();
         coraDb = new CoraDb ();
+        coraDb.openConnection ();
     }
 
     @BeforeSuite (alwaysRun = true)

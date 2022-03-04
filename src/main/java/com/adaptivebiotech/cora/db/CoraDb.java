@@ -6,9 +6,9 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraDBUser;
 import static com.adaptivebiotech.test.BaseEnvironment.useDbTunnel;
 import static com.adaptivebiotech.test.utils.Logging.error;
 import static com.adaptivebiotech.test.utils.Logging.info;
+import static java.sql.DriverManager.getConnection;
 import static org.testng.Assert.assertFalse;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
@@ -27,7 +27,7 @@ public class CoraDb {
     private Connection   connection;
     private Tunnel       tunnel;
 
-    public CoraDb () {
+    public void openConnection () {
         try {
             if (useDbTunnel) {
                 info ("Creating a DB connection using tunnel");
@@ -37,8 +37,7 @@ public class CoraDb {
                 tunnel.waitForConnection ();
             }
 
-            String url = useDbTunnel ? sshUrl : dbUrl;
-            connection = DriverManager.getConnection (url, coraDBUser, coraDBPass);
+            connection = getConnection (useDbTunnel ? sshUrl : dbUrl, coraDBUser, coraDBPass);
         } catch (Exception e) {
             error ("Failed to open database connection", e);
             throw new RuntimeException (e);
