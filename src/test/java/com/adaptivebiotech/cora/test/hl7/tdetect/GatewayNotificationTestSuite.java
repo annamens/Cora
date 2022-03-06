@@ -3,7 +3,6 @@ package com.adaptivebiotech.cora.test.hl7.tdetect;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
-import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildCovidOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -48,7 +47,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         test.tsvPath = covidTsv;
         test.workflowProperties = sample_95268_SN_2205 ();
 
-        Patient patient = scenarioBuilderPatient ();
+        Patient patient = patientWithAddress ();
         Diagnostic diagnostic = buildCovidOrder (coraApi.getPhysician (TDetect_client),
                                                  patient,
                                                  stage (DxReport, Ready),

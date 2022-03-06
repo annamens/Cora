@@ -2,13 +2,12 @@ package com.adaptivebiotech.cora.ui;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.String.format;
+import static java.time.Duration.ofSeconds;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import static org.testng.util.Strings.isNullOrEmpty;
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import org.openqa.selenium.By;
@@ -16,8 +15,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.seleniumfy.test.utils.BasePage;
@@ -312,10 +309,9 @@ public class CoraPage extends BasePage {
 
     protected Boolean waitForBooleanCondition (int secondsDuration, int pollSeconds,
                                                Function <WebDriver, Boolean> func) {
-        Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
-                                                                     .withTimeout (Duration.ofSeconds (secondsDuration))
-                                                                     .pollingEvery (Duration.ofSeconds (pollSeconds));
-        return wait.until (func);
+        return new FluentWait <> (this.getDriver ()).withTimeout (ofSeconds (secondsDuration))
+                                                    .pollingEvery (ofSeconds (pollSeconds))
+                                                    .until (func);
     }
 
     public void gotoTaskById (String id) {
@@ -333,27 +329,6 @@ public class CoraPage extends BasePage {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    /**
-     * Wrapper for {@link Select}.getOptions()
-     * 
-     * @param select
-     *            &lt;select&gt; element (css or xpath)
-     * @return drop down option values
-     */
-    public List <String> getDropdownOptions (String select) {
-        List <String> dropDownOptions = new LinkedList <String> ();
-        try {
-            Select dropdown = new Select (scrollTo (waitForElementClickable (locateBy (select))));
-
-            for (WebElement element : dropdown.getOptions ()) {
-                dropDownOptions.add (element.getText ());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
-        return dropDownOptions;
     }
 
     public void navigateToTab (int tabIndex) {

@@ -1,9 +1,13 @@
 package com.adaptivebiotech.cora.test.hl7;
 
+import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
+import static com.adaptivebiotech.cora.utils.TestHelper.getRandomAddress;
+import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import java.util.ArrayList;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Workflow;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -53,5 +57,13 @@ public class HL7TestBase extends CoraBaseBrowser {
         dxResult.uniqueProductiveTemplates = 251880;
         dxResult.qcFlags = new ArrayList <> ();
         return dxResult;
+    }
+
+    protected Patient patientWithAddress () {
+        Patient patient = getRandomAddress (scenarioBuilderPatient ());
+        patient.billingType = PatientSelfPay;
+        patient.address2 = "Ste 200";
+        patient.postCode = "98138"; // has to be a valid zipcode
+        return patient;
     }
 }
