@@ -24,7 +24,7 @@ public class OrderStatus extends OrderHeader {
     private final String actionConfirm        = ".action-confirm";
     private final String confirmYes           = "//button[text()='Yes']";
     private final String hideShow             = "//tr[td[text()='%s']]//*[contains (@class, 'history-link') and text()='%s']";
-    private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]//table";
+    private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]//tbody/tr[1]";
 
     public OrderStatus () {
         staticNavBarHeight = 200;
