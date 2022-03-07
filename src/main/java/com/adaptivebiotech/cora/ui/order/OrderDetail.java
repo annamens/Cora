@@ -13,6 +13,8 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Insurance;
@@ -30,7 +32,6 @@ import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.dto.UploadFile;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author jpatel
@@ -148,10 +149,11 @@ public class OrderDetail extends OrderHeader {
     public String getOrderName () {
         // sometimes it's taking a while for the order detail page to load
         String css = oDetail + " [ng-bind='ctrl.orderEntry.order.name']";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout () && ! (isTextInElement (css, "Clinical")))
-            timer.Wait ();
-        pageLoading ();
+        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return isTextInElement (css, "Clinical");
+            }
+        }));
         return getText (css);
     }
 

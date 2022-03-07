@@ -195,7 +195,7 @@ public class MiraDetail extends Mira {
                 return false;
             }
         };
-        return waitForBooleanCondition (durationSeconds, pollingSeconds, func);
+        return waitUntil (durationSeconds * 1000, pollingSeconds * 1000, func);
     }
 
     public Boolean waitForStatus (MiraStatus status, int durationSeconds, int pollingSeconds) {
@@ -221,7 +221,7 @@ public class MiraDetail extends Mira {
                 return false;
             }
         };
-        return waitForBooleanCondition (durationSeconds, pollingSeconds, func);
+        return waitUntil (durationSeconds * 1000, pollingSeconds * 1000, func);
     }
 
     public void setQCStatus (MiraQCStatus status) {
@@ -301,7 +301,7 @@ public class MiraDetail extends Mira {
                 return false;
             }
         };
-        waitForBooleanCondition (300, 30, func);
+        waitUntil (300000, 30000, func);
     }
 
     public void clickSave (boolean expectPopup) {
@@ -476,7 +476,7 @@ public class MiraDetail extends Mira {
         wait.until (func);
     }
 
-    protected MiraStage waitForStatusTable (int durationSeconds, int pollingSeconds) {
+    private MiraStage waitForStatusTable (int durationSeconds, int pollingSeconds) {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {
                 MiraStage currentStage = getCurrentStage ();
@@ -486,7 +486,7 @@ public class MiraDetail extends Mira {
                 return false;
             }
         };
-        assertTrue (waitForBooleanCondition (durationSeconds, pollingSeconds, func));
+        assertTrue (waitUntil (durationSeconds * 1000, pollingSeconds * 1000, func));
         return getCurrentStage ();
     }
 

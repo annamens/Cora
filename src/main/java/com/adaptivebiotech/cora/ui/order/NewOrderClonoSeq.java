@@ -12,6 +12,8 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -33,7 +35,6 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author jpatel
@@ -41,7 +42,7 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class NewOrderClonoSeq extends NewOrder {
 
-    public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq ();
+    public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq (staticNavBarHeight);
     private Accession              accession        = new Accession ();
     private final String           orderNotes       = "[ng-model='ctrl.orderEntry.order.notes']";
     private final String           specimenDelivery = "[ng-model='ctrl.orderEntry.order.specimenDeliveryType']";
@@ -165,10 +166,11 @@ public class NewOrderClonoSeq extends NewOrder {
     private String getOrderName () {
         // sometimes it's taking a while for the order detail page to load
         String css = oEntry + " [ng-bind='ctrl.orderEntry.order.name']";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout () && ! (isTextInElement (css, "Clinical")))
-            timer.Wait ();
-        pageLoading ();
+        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return isTextInElement (css, "Clinical");
+            }
+        }));
         return getText (css);
     }
 
@@ -333,7 +335,11 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void waitForSpecimenDelivery () {
-        assertTrue (waitUntilVisible (specimenDelivery));
+        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return getDropdownOptions (specimenDelivery).size () > 0;
+            }
+        }));
     }
 
     public void enterSpecimenDelivery (DeliveryType type) {

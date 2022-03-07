@@ -45,6 +45,10 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
     private final String patientState                 = "[name='guarantorRegion']";
     private final String patientZipcode               = "[name='guarantorPostCode']";
 
+    public BillingNewOrderClonoSeq (int staticNavBarHeight) {
+        super.staticNavBarHeight = staticNavBarHeight;
+    }
+
     public void enterABNstatus (AbnStatus status) {
         assertTrue (clickAndSelectValue (abnStatus, "string:" + status));
     }
@@ -240,7 +244,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
         assertTrue (setText (patientPhone, phone));
     }
 
-    protected String getPatientPhone () {
+    public String getPatientPhone () {
         return readInput (patientPhone);
     }
 
@@ -250,7 +254,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
             assertTrue (setText (patientEmail, email));
     }
 
-    protected String getPatientEmail () {
+    public String getPatientEmail () {
         return readInput (patientEmail);
     }
 
@@ -258,7 +262,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
         assertTrue (setText (patientCity, city));
     }
 
-    protected String getPatientCity () {
+    public String getPatientCity () {
         return readInput (patientCity);
     }
 
@@ -266,7 +270,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
         assertTrue (clickAndSelectText (patientState, state));
     }
 
-    protected String getPatientState () {
+    public String getPatientState () {
         return getFirstSelectedText (patientState);
     }
 
@@ -274,7 +278,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
         assertTrue (setText (patientZipcode, zipcode));
     }
 
-    protected String getPatientZipcode () {
+    public String getPatientZipcode () {
         return readInput (patientZipcode);
     }
 }

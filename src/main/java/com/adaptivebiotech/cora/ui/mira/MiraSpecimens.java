@@ -43,7 +43,7 @@ public class MiraSpecimens extends MirasListBase {
             }
         };
 
-        waitForBooleanCondition (600, 60, func);
+        waitUntil (600000, 60000, func);
         assertTrue (specimenIdIsPresent (specimenId));
     }
 
@@ -59,7 +59,7 @@ public class MiraSpecimens extends MirasListBase {
             }
         };
 
-        waitForBooleanCondition (600, 60, func);
+        waitUntil (600000, 60000, func);
         assertFalse (specimenIdIsPresent (specimenId));
     }
 

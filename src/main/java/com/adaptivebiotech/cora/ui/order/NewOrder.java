@@ -54,8 +54,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public List <String> getPatientICDCodes () {
         String xpath = "//label[text()='ICD Codes']/../div";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout ()) {
             List <String> rv = null;
             try {
@@ -94,7 +93,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void waitUntilActivated () {
-        Timeout timer = new Timeout (millisRetry * 10, waitRetry * 2);
+        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
         while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
             refresh ();
             timer.Wait ();

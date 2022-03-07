@@ -335,7 +335,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
 
     private Containers waitForUpdatedContainers (Containers previousContainers) {
         Containers parsedContainers = null;
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout ()) {
             parsedContainers = containersList.getContainers ();
             String parsedLocation = parsedContainers.list.get (0).location;
