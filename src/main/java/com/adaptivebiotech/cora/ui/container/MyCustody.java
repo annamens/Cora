@@ -61,7 +61,7 @@ public class MyCustody extends ContainersList {
             selectContainerToBulkMove (container);
         }
         clickBulkMoveBtn ();
-        transactionInProgress ();
+        waitForBulkMoveComplete ();
     }
 
 }

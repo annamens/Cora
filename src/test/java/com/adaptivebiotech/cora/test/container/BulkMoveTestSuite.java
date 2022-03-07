@@ -10,7 +10,6 @@ import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +32,6 @@ import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.Logging;
-import com.seleniumfy.test.utils.Timeout;
 
 @Test (groups = { "regression", "dingo" })
 public class BulkMoveTestSuite extends ContainerTestBase {
@@ -113,16 +111,15 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
         containersList.searchContainerIdsOrNames (allContainerIDs);
-        Containers parsedContainers = containersList.getContainers ();
         String moveToFreezerComment = randomWords (10);
         containersList.bulkMoveAllToFreezer (catchAllFreezer, moveToFreezerComment);
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        Containers parsedContainers = containersList.getContainers ();
         verifyMoveToFreezerHappyPath (containers, parsedContainers, moveToFreezerComment);
         history.clickContainers ();
         containersList.searchContainerIdsOrNames (allContainerIDs);
         String moveToCustodyComment = randomWords (10);
         containersList.bulkMoveAllToCustody (moveToCustodyComment);
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        parsedContainers = containersList.getContainers ();
         assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
         testLog ("SR-3229:R2: User was able to add custom comment to Bulk Move to My Custody action");
         for (Container container : containers.list) {
@@ -161,17 +158,15 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
         containersList.searchContainerIdsOrNames (allContainerIDs);
-        Containers parsedContainers = containersList.getContainers ();
         containersList.bulkMoveAllToFreezer (catchAllFreezer);
         assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        Containers parsedContainers = containersList.getContainers ();
         parsedContainers.list.stream ()
                              .forEach (container -> assertTrue (container.location.contains (catchAllFreezer.name)));
         history.clickContainers ();
         containersList.searchContainerIdsOrNames (allContainerIDs);
-        parsedContainers = containersList.getContainers ();
         containersList.bulkMoveAllToCustody ();
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        parsedContainers = containersList.getContainers ();
         parsedContainers.list.stream ()
                              .forEach (container -> assertTrue (container.location.equals (String.join (" : ",
                                                                                                         coraTestUser,
@@ -331,22 +326,6 @@ public class BulkMoveTestSuite extends ContainerTestBase {
                                                 .collect (toList ())));
         Logging.info ("created containers: " + Arrays.toString (getContainerIDs (containers).toArray ()));
         return containers;
-    }
-
-    private Containers waitForUpdatedContainers (Containers previousContainers) {
-        Containers parsedContainers = null;
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout ()) {
-            parsedContainers = containersList.getContainers ();
-            String parsedLocation = parsedContainers.list.get (0).location;
-            String previousLocation = previousContainers.list.get (0).location;
-            if (!parsedLocation.equals (previousLocation)) {
-                return parsedContainers;
-            }
-            timer.Wait ();
-        }
-        fail ("No container update detected");
-        return null;
     }
 
     private List <String> getContainerIDs (Containers containers) {
