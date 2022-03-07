@@ -22,7 +22,7 @@ import com.adaptivebiotech.cora.dto.emr.EmrTransforms.EmrMapping;
 import com.adaptivebiotech.cora.dto.emr.EmrTransforms.EmrPatient;
 import com.adaptivebiotech.cora.dto.emr.EmrTransforms.IcdCode;
 import com.adaptivebiotech.cora.dto.emr.EmrTransforms.IcdCodes;
-import com.adaptivebiotech.cora.test.CoraDbTestBase;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.CreateEmrConfig;
 import com.adaptivebiotech.cora.ui.debug.EmrConfigDetails;
@@ -35,7 +35,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
  *
  */
 @Test (groups = "regression")
-public class EmrConfigTestSuite extends CoraDbTestBase {
+public class EmrConfigTestSuite extends CoraBaseBrowser {
 
     private Login            login             = new Login ();
     private OrdersList       ordersList        = new OrdersList ();
@@ -136,7 +136,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertTrue (emrConfigDetails.isCloneVisible ());
         testLog ("STEP 5.2 - Clone button displays");
 
-        List <Map <String, Object>> queryResults = coraDBClient.executeSelectQuery (createEmrQuery);
+        List <Map <String, Object>> queryResults = coraDb.executeSelect (createEmrQuery);
         assertEquals (queryResults.size (), 1);
         Map <String, Object> queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("emr_type").toString (), emrType);
@@ -178,7 +178,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         jsonObjProperty.put (propKey1, propValue1);
         jsonObjProperty.put (propKey2, propValue2);
 
-        queryResults = coraDBClient.executeSelectQuery (createEmrQuery);
+        queryResults = coraDb.executeSelect (createEmrQuery);
         assertEquals (queryResults.size (), 1);
         queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("emr_type").toString (), emrType);
@@ -187,15 +187,14 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (queryEmrData.get ("client_id").toString (), clientId);
         assertEquals (queryEmrData.get ("client_secret").toString (), clientSecret);
         assertTrue (Boolean.valueOf (queryEmrData.get ("trust_email").toString ()));
-        assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("users")),
-                      mapper.writeValueAsString (jsonObjUserEmail));
+        assertEquals (coraDb.jsonbToString (queryEmrData.get ("users")), mapper.writeValueAsString (jsonObjUserEmail));
         assertEquals (queryEmrData.get ("version").toString (), "0");
-        assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("properties")),
+        assertEquals (coraDb.jsonbToString (queryEmrData.get ("properties")),
                       mapper.writeValueAsString (jsonObjProperty));
         assertEquals (toEmrTransforms (queryEmrData.get ("transforms").toString ()), transforms);
         testLog ("STEP 8 - Result is 1 row that contains the above values");
 
-        queryResults = coraDBClient.executeSelectQuery (format (emrAccountsQuery, emrConfigId));
+        queryResults = coraDb.executeSelect (format (emrAccountsQuery, emrConfigId));
         assertEquals (queryResults.size (), 2);
         testLog ("STEP 9.1 - Two rows are returned");
         assertEquals (queryResults.get (0).get ("name").toString (), accounts[0]);
@@ -219,7 +218,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         jsonObjUserEmail.remove (user2);
         jsonObjProperty.remove (propKey2);
 
-        queryResults = coraDBClient.executeSelectQuery (createEmrQuery);
+        queryResults = coraDb.executeSelect (createEmrQuery);
         assertEquals (queryResults.size (), 1);
         queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("emr_type").toString (), emrType);
@@ -228,15 +227,14 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (queryEmrData.get ("client_id").toString (), clientId);
         assertEquals (queryEmrData.get ("client_secret").toString (), clientSecret);
         assertTrue (Boolean.valueOf (queryEmrData.get ("trust_email").toString ()));
-        assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("users")),
-                      mapper.writeValueAsString (jsonObjUserEmail));
+        assertEquals (coraDb.jsonbToString (queryEmrData.get ("users")), mapper.writeValueAsString (jsonObjUserEmail));
         assertEquals (queryEmrData.get ("version").toString (), "0");
-        assertEquals (coraDBClient.jsonbToString (queryEmrData.get ("properties")),
+        assertEquals (coraDb.jsonbToString (queryEmrData.get ("properties")),
                       mapper.writeValueAsString (jsonObjProperty));
         assertEquals (toEmrTransforms (queryEmrData.get ("transforms").toString ()), transforms);
         testLog ("STEP 11 - Result is 1 row that contains the above values");
 
-        queryResults = coraDBClient.executeSelectQuery (format (emrAccountsQuery, emrConfigId));
+        queryResults = coraDb.executeSelect (format (emrAccountsQuery, emrConfigId));
         assertEquals (queryResults.size (), 1);
         testLog ("STEP 12.1 - One row is returned");
         assertEquals (queryResults.get (0).get ("name").toString (), accounts[1]);
@@ -296,7 +294,7 @@ public class EmrConfigTestSuite extends CoraDbTestBase {
         assertEquals (emrConfigs.getEmrConfig (clonedEmrConfigId).displayName, "Cloned Config");
         testLog ("STEP 18 - EMR configs 'Edited Test Site' and 'Cloned Config' display in the table.");
 
-        queryResults = coraDBClient.executeSelectQuery (format (emrAuditQuery, coraTestUser));
+        queryResults = coraDb.executeSelect (format (emrAuditQuery, coraTestUser));
         Set <String> auditTables = new HashSet <> ();
         for (Map <String, Object> map : queryResults) {
             auditTables.add (map.get ("table_name").toString ());

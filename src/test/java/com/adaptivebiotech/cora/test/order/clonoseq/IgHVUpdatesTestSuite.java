@@ -72,7 +72,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
-import com.adaptivebiotech.cora.test.CoraDbTestBase;
+import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -103,7 +103,7 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
  *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "nutmeg" }, singleThreaded = true)
-public class IgHVUpdatesTestSuite extends CoraDbTestBase {
+public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     private Physician            IgHVPhysician;
     private Physician            NYPhysician;
@@ -770,7 +770,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
         testLog ("step 21.2 - order 9 - There is no SHM sequence in shmSequenceList for sequence " + lowBaseConsensusSeq + " clone in reportData.json");
 
         String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderDetails.orderTestId);
-        List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (query);
+        List <Map <String, Object>> queryData = coraDb.executeSelect (query);
         assertEquals (queryData.size (), 1);
 
         ShmResult shmResult = mapper.readValue (queryData.get (0).get ("shm_result").toString (), ShmResult.class);
@@ -797,7 +797,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     @Test (groups = "orcaighv")
     public void validateShmResultsTableSchema () {
-        List <Map <String, Object>> queryResult = coraDBClient.executeSelectQuery (shmResultsSchema);
+        List <Map <String, Object>> queryResult = coraDb.executeSelect (shmResultsSchema);
         assertEquals (queryResult.size (), 9);
 
         for (int i = 0; i < queryResult.size (); i++) {
@@ -1096,7 +1096,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
                                               ShmMutationStatus mutationStatus,
                                               EricSampleCall ericSampleCall) {
         String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderTestId);
-        List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (query);
+        List <Map <String, Object>> queryData = coraDb.executeSelect (query);
         assertEquals (queryData.size (), 1);
         assertEquals (ShmMutationStatus.valueOf (queryData.get (0).get ("report_type").toString ()), mutationStatus);
 
@@ -1113,7 +1113,7 @@ public class IgHVUpdatesTestSuite extends CoraDbTestBase {
      */
     private void validateQueryReturnsZeroRow (String orderTestId) {
         String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderTestId);
-        List <Map <String, Object>> queryData = coraDBClient.executeSelectQuery (query);
+        List <Map <String, Object>> queryData = coraDb.executeSelect (query);
         assertEquals (queryData.size (), 0);
     }
 
