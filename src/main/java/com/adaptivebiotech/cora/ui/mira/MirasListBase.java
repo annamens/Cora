@@ -83,11 +83,11 @@ public class MirasListBase extends CoraPage {
     }
 
     protected void waitForTableToRefresh (String firstResult) {
-        int durationSeconds = 10;
-        int pollingSeconds = 1;
+        int durationSeconds = 10000;
+        int pollingSeconds = 1000;
         HasTableRefreshedFunction func = new HasTableRefreshedFunction (firstResult);
         try {
-            waitForBooleanCondition (durationSeconds, pollingSeconds, func);
+            waitUntil (durationSeconds, pollingSeconds, func);
         } catch (TimeoutException te) {
             info ("caught timeout exception");
         }

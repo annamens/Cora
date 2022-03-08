@@ -95,7 +95,7 @@ public class OrdersList extends CoraPage {
     }
 
     public Orders getOrderTests () {
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         Orders orders = tryGettingOrderTests ();
         do {
             assertTrue (refresh ());

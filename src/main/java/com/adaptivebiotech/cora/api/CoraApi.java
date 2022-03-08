@@ -64,9 +64,9 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class CoraApi {
 
-    private final long  millisRetry = 3000000l;                                        // 50mins
-    private final long  waitRetry   = 5000l;                                           // 5sec
-    public final Header username    = new BasicHeader ("X-Api-UserName", coraTestUser);
+    private final long  millisDuration = 3000000l;                                        // 50mins
+    private final long  millisPoll     = 5000l;                                           // 5sec
+    public final Header username       = new BasicHeader ("X-Api-UserName", coraTestUser);
     public Header       apiToken;
 
     public void login () {
@@ -305,7 +305,7 @@ public class CoraApi {
 
     public OrderTest[] waitForOrderReady (String orderId) {
         OrderTest[] tests = getOrderTest (orderId);
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.sampleName == null))) {
             timer.Wait ();
             tests = getOrderTest (orderId);
@@ -325,7 +325,7 @@ public class CoraApi {
 
     public OrderTest[] waitForResearchOrderReady (String sampleName) {
         OrderTest[] tests = searchOrderTests (sampleName);
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.workflowName == null))) {
             timer.Wait ();
             tests = searchOrderTests (sampleName);

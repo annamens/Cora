@@ -42,7 +42,7 @@ public class Login extends BasePage {
 
     public void doLogin () {
         // sometimes login is stuck, give it a retry
-        Timeout timer = new Timeout (millisRetry * 4, waitRetry * 5);
+        Timeout timer = new Timeout (millisDuration * 4, millisPoll * 5);
         while (!timer.Timedout ()) {
             doLogin (coraTestUser, coraTestPass);
             if (getCurrentUrl ().equals (loginUrl)) {

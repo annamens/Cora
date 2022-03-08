@@ -28,9 +28,9 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class OrcaHistory extends CoraPage {
 
-    private final long   millisRetry = 3000000l;                                                    // 50mins
-    private final long   waitRetry   = 60000l;                                                      // 60sec
-    private final String fileLocator = "//h3[text()='Files']/following-sibling::ul//a[text()='%s']";
+    private final long   millisDuration = 3000000l;                                                    // 50mins
+    private final long   millisPoll     = 60000l;                                                      // 60sec
+    private final String fileLocator    = "//h3[text()='Files']/following-sibling::ul//a[text()='%s']";
 
     public OrcaHistory () {
         staticNavBarHeight = 200;
@@ -67,7 +67,7 @@ public class OrcaHistory extends CoraPage {
         assertTrue (click (format ("//a[text()='%s']", filename)));
 
         String report = getDownloadsDir () + filename;
-        Timeout timer = new Timeout (300000l, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && !navigateTo (format ("file://%s", report)))
             timer.Wait ();
         getDriver ().navigate ().back ();
@@ -83,7 +83,7 @@ public class OrcaHistory extends CoraPage {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//table[@class='genoTable']//td[text()='%s']/../td[text()='%s']/../td[contains (text(),'%s')]/..//span[text()='%s']";
         String check = format (xpath, stage, status, substatus == null ? "" : substatus, message);
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isElementPresent (check))) {
@@ -97,7 +97,7 @@ public class OrcaHistory extends CoraPage {
 
     public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status, substatus))) {
@@ -111,7 +111,7 @@ public class OrcaHistory extends CoraPage {
 
     public void waitFor (StageName stage, StageStatus status) {
         String fail = "unable to locate Stage: %s, Status: %s";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status))) {
@@ -156,7 +156,7 @@ public class OrcaHistory extends CoraPage {
 
     public void waitForTopLevel (StageName stage, StageStatus status, StageSubstatus substatus) {
         String fail = "unable to locate top level Stage: %s, Status: %s, Substatus: %s";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isTopLevelStagePresent (stage, status, substatus))) {
@@ -300,6 +300,6 @@ public class OrcaHistory extends CoraPage {
                 }
             }
         };
-        return waitForBooleanCondition (300, 30, func);
+        return waitUntil (millisDuration, millisPoll / 6, func);
     }
 }

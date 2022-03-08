@@ -11,6 +11,8 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -35,7 +37,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  */
 public class NewOrderTDetect extends NewOrder {
 
-    public BillingNewOrderTDetect billing          = new BillingNewOrderTDetect ();
+    public BillingNewOrderTDetect billing          = new BillingNewOrderTDetect (staticNavBarHeight);
     private Accession             accession        = new Accession ();
     private final String          dateSigned       = "[formcontrolname='dateSigned']";
     private final String          orderNotes       = "#order-notes";
@@ -236,7 +238,11 @@ public class NewOrderTDetect extends NewOrder {
     }
 
     public void waitForSpecimenDelivery () {
-        assertTrue (waitUntilVisible (specimenDelivery));
+        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return getDropdownOptions (specimenDelivery).size () > 1;
+            }
+        }));
     }
 
     public DeliveryType getSpecimenDelivery () {
@@ -377,10 +383,6 @@ public class NewOrderTDetect extends NewOrder {
         return getText ("//label[text()='Birth Date']/../div[1]");
     }
 
-    public void waitForHistory () {
-        assertTrue (waitUntilVisible ("order-history"));
-    }
-
     /**
      * Create TDetect Pending Order by filling out all the required fields and passed arguments on
      * New Order TDetect page, and returns order no.
@@ -470,7 +472,6 @@ public class NewOrderTDetect extends NewOrder {
             // activate order
             isCorrectPage ();
             waitForSpecimenDelivery ();
-            waitForHistory ();
             activateOrder ();
 
             // for T-Detect, refreshing the page doesn't automatically take you to order detail

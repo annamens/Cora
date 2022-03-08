@@ -14,8 +14,8 @@ import com.seleniumfy.test.utils.Timeout;
 
 public class OrderStatus extends OrderHeader {
 
-    private final long   millisRetry          = 3000000l;                                                                     // 50mins
-    private final long   waitRetry            = 30000l;                                                                       // 30sec
+    private final long   millisDuration       = 3000000l;                                                                     // 50mins
+    private final long   millisPoll           = 30000l;                                                                       // 30sec
     private final String stageActionDots      = "#stageActionsDropdown";
     private final String stageActionsDropdown = "[aria-labelledby='stageActionsDropdown']";
     private final String dropdownItem         = "//*[@aria-labelledby='stageActionsDropdown']//a[text()='%s']";
@@ -162,7 +162,7 @@ public class OrderStatus extends OrderHeader {
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
         String check = format (xpath, sampleName, stage, status, substatus == null ? "" : substatus, message);
         boolean found = false;
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout ()) {
             clickHistory (sampleName);
             if (found = isElementPresent (check)) {
@@ -181,7 +181,7 @@ public class OrderStatus extends OrderHeader {
     public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
         boolean found = false;
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && !found) {
             clickHistory (sampleName);
             if (found = isStagePresent (sampleName, stage, status, substatus)) {
@@ -200,7 +200,7 @@ public class OrderStatus extends OrderHeader {
     public void waitFor (String sampleName, StageName stage, StageStatus status) {
         String fail = "unable to locate Stage: %s, Status: %s";
         boolean found = false;
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout ()) {
             clickHistory (sampleName);
             if (found = isStagePresent (sampleName, stage, status)) {

@@ -178,7 +178,7 @@ public class ContainersList extends CoraPage {
         transactionInProgress ();
 
         // SR-8459: sometimes we're getting a container locked error msg
-        Timeout timer = new Timeout (millisRetry * 10, waitRetry);
+        Timeout timer = new Timeout (millisDuration * 10, millisPoll);
         boolean isLocked = false;
         while (!timer.Timedout () && (isLocked = isElementPresent (locked))) {
             clickMove ();
@@ -227,7 +227,7 @@ public class ContainersList extends CoraPage {
         scanAndClickHoldingContainer (child);
 
         // SR-8459: sometimes we're getting a container locked error msg
-        Timeout timer = new Timeout (millisRetry * 20, waitRetry);
+        Timeout timer = new Timeout (millisDuration * 20, millisPoll);
         boolean isSuccessful = true;
         while (!timer.Timedout () && ! (isSuccessful = finalizeHoldingContainer (child, holding))) {
             scanAndClickHoldingContainer (child);
