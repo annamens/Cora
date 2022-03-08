@@ -209,12 +209,17 @@ public class OrcaHistory extends CoraPage {
     }
 
     public void forceStatusUpdate (StageName stageName, StageStatus stageStatus) {
+        String orcaHistoryUrl = getCurrentUrl ();
         String stageNameSelect = "select[name='stageName']";
         String stageStatusSelect = "select[name='stageStatus']";
         assertTrue (clickAndSelectValue (stageNameSelect, stageName.name ()));
         assertTrue (clickAndSelectValue (stageStatusSelect, stageStatus.name ()));
         assertTrue (click ("form[action*='forceWorkflowStatus'] input[type='submit']"));
         assertTrue (hasPageLoaded ());
+        if (orcaHistoryUrl.endsWith ("forceWorkflowStatus")) {
+            navigateTo (orcaHistoryUrl);
+            isCorrectPage ();
+        }
         waitFor (stageName, stageStatus);
     }
 
