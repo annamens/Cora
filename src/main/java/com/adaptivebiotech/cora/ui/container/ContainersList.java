@@ -478,14 +478,18 @@ public class ContainersList extends CoraPage {
         assertTrue (click (bulkMoveBtn));
     }
 
+    protected void waitForBulkMoveComplete () {
+        waitForElementVisible (".toast-success, .toast-error");
+        if (isBulkMoveSuccessMessageDisplayed ()) {
+            waitForRowsDeselected ();
+        }
+    }
+
     private void clickSelectAllCheckbox () {
         assertTrue (click (selectAllCheckbox));
     }
 
-    protected void waitForBulkMoveComplete () {
-        waitForElementVisible (".toast-success, .toast-error");
-        if (isBulkMoveSuccessMessageDisplayed ()) {
-            waitForElementInvisible (".highlighted-blue");
-        }
+    private void waitForRowsDeselected () {
+        waitForElementInvisible (".highlighted-blue");
     }
 }
