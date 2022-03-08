@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.test.hl7.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
@@ -32,6 +33,7 @@ import com.adaptivebiotech.cora.ui.order.ReportTDetect;
 public class GatewayNotificationTestSuite extends HL7TestBase {
 
     private final String       covidTsv    = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results/210209_NB551550_0241_AHTT33BGXG/v3.1/20210211_0758/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev3/HTT33BGXG_0_CLINICAL-CLINICAL_95268-SN-2205.adap.txt.results.tsv.gz";
+    private final String lymeTsv = "";
     private final String       gatewayJson = "gatewayMessage.json";
     private Login              login       = new Login ();
     private OrdersList         ordersList  = new OrdersList ();
@@ -76,5 +78,10 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         history.gotoOrderDebug (orderTest.sampleName);
         assertTrue (history.isFilePresent (gatewayJson));
         testLog ("gateway message sent");
+    }
+
+    public void verifyLymeGatewayMessage(){
+        CoraTest test = coraApi.getTDxTest (LYME_DX_IVD);
+        test.tsvPath = lymeTsv;
     }
 }
