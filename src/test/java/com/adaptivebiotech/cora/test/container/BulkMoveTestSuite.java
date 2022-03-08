@@ -10,7 +10,6 @@ import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -30,9 +29,9 @@ import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.ContainersList.BulkMoveAction;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
+import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.test.utils.Logging;
-import com.seleniumfy.test.utils.Timeout;
 
 @Test (groups = { "regression", "dingo" })
 public class BulkMoveTestSuite extends ContainerTestBase {
@@ -40,6 +39,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     private Login                    login                  = new Login ();
     private OrdersList               ordersList             = new OrdersList ();
     private ContainersList           containersList         = new ContainersList ();
+    private MyCustody                myCustody              = new MyCustody ();
     private Detail                   detail                 = new Detail ();
     private History                  history                = new History ();
     private final Container          invalidFreezer         = freezerAB018056;
@@ -61,20 +61,14 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     /**
      * @sdlc.requirements SR-3229:R1, SR-3229:R2, SR-3229:R4
      */
-    public void bulkMoveUI () {
+    public void containersListBulkMoveUI () {
         Containers containers = setupTwoPlates ();
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
         containersList.searchContainerIdsOrNames (allContainerIDs);
         containersList.clickBulkMoveContainers ();
         assertFalse (containersList.scanFieldDisplayed ());
-        containersList.selectContainerToBulkMove (allContainerIDs.get (0));
-        assertTrue (containersList.rowIsSelected (allContainerIDs.get (0)));
-        assertFalse (containersList.rowIsSelected (allContainerIDs.get (1)));
-        containersList.selectContainerToBulkMove (allContainerIDs.get (1));
-        assertTrue (containersList.rowIsSelected (allContainerIDs.get (0)));
-        assertTrue (containersList.rowIsSelected (allContainerIDs.get (1)));
-        testLog ("SR-3229:R1: Clicking bulk move button enabled container selection");
+        verifyContainerSelection (allContainerIDs);
         List <String> expectedActions = asList (BulkMoveAction.BulkMoveToMyCustody.text,
                                                 BulkMoveAction.BulkMoveToFreezer.text);
         assertEquals (containersList.getBulkMoveActions (), expectedActions);
@@ -90,38 +84,42 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     }
 
     /**
+     * @sdlc.requirements SR-3229:R1, SR-3229:R2, SR-3229:R4
+     */
+    public void myCustodyBulkMoveUI () {
+        Containers containers = setupTwoPlates ();
+        containersToDeactivate.set (containers);
+        List <String> allContainerIDs = getContainerIDs (containers);
+        containersList.gotoMyCustody ();
+        myCustody.clickBulkMoveContainers ();
+        assertFalse (myCustody.scanFieldDisplayed ());
+        verifyContainerSelection (allContainerIDs);
+        assertTrue (myCustody.bulkMoveActionDropdownDisabled ());
+        String expectedAction = BulkMoveAction.BulkMoveToFreezer.text;
+        assertEquals (myCustody.getCurrentBulkMoveAction (), expectedAction);
+        testLog (format ("SR-3229:R2: My Custody page contained action: %s",
+                         expectedAction));
+        assertTrue (myCustody.isFreezerDropdownEnabled ());
+        testLog ("SR-3229:R4: Bulk Move to Freezer option allowed user to select freezer");
+    }
+
+    /**
      * @sdlc.requirements SR-3229:R2, SR-3229:R3, SR-3229:R4, SR-3229:R6, SR-3229:R7, SR-3229:R11
      */
-    public void happyPath () {
+    public void containersListHappyPath () {
         Containers containers = setupTwoPlates ();
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
         containersList.searchContainerIdsOrNames (allContainerIDs);
-        Containers parsedContainers = containersList.getContainers ();
         String moveToFreezerComment = randomWords (10);
         containersList.bulkMoveAllToFreezer (catchAllFreezer, moveToFreezerComment);
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
-        verifyMoveSuccessMessage (parsedContainers);
-        testLog ("SR-3229:R2: User was able to add custom comment to the Bulk Move to Freezer action");
-        testLog ("SR-3229:R4: User was able to add a destination freezer to the Bulk Move to Freezer action");
-        for (Container container : containers.list) {
-            Container parsedContainer = parsedContainers.list.stream ()
-                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
-                                                             .findFirst ().get ();
-            verifyMoveToFreezer (parsedContainer, catchAllFreezer, moveToFreezerComment);
-            testLog (format ("SR-3229:R11: Bulk Move to Freezer action moved selected item, %s, to destination freezer",
-                             container.containerNumber));
-            testLog (format ("SR-3229:R2: Comment for %1$s matched expected: %2$s",
-                             container.containerNumber,
-                             moveToFreezerComment));
-            testLog (format ("SR-3229:R7: Containers list location matched location in container details for %s",
-                             container.containerNumber));
-        }
+        Containers parsedContainers = containersList.getContainers ();
+        verifyMoveToFreezerHappyPath (containers, parsedContainers, moveToFreezerComment);
         history.clickContainers ();
         containersList.searchContainerIdsOrNames (allContainerIDs);
         String moveToCustodyComment = randomWords (10);
         containersList.bulkMoveAllToCustody (moveToCustodyComment);
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        parsedContainers = containersList.getContainers ();
         assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
         testLog ("SR-3229:R2: User was able to add custom comment to Bulk Move to My Custody action");
         for (Container container : containers.list) {
@@ -139,22 +137,36 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         }
     }
 
+    /**
+     * @sdlc.requirements SR-3229:R2, SR-3229:R3, SR-3229:R4, SR-3229:R6, SR-3229:R7, SR-3229:R11
+     */
+    public void myCustodyHappyPath () {
+        Containers containers = setupTwoPlates ();
+        containersToDeactivate.set (containers);
+        List <String> allContainerIDs = getContainerIDs (containers);
+        containersList.gotoMyCustody ();
+        String moveToFreezerComment = randomWords (10);
+        myCustody.bulkMoveToFreezer (allContainerIDs, catchAllFreezer, moveToFreezerComment);
+        myCustody.clickContainers ();
+        containersList.searchContainerIdsOrNames (allContainerIDs);
+        Containers parsedContainers = containersList.getContainers ();
+        verifyMoveToFreezerHappyPath (containers, parsedContainers, moveToFreezerComment);
+    }
+
     public void moveAllContainerTypes () {
         Containers containers = setupAllMoveableContainerTypes ();
         containersToDeactivate.set (containers);
         List <String> allContainerIDs = getContainerIDs (containers);
         containersList.searchContainerIdsOrNames (allContainerIDs);
-        Containers parsedContainers = containersList.getContainers ();
         containersList.bulkMoveAllToFreezer (catchAllFreezer);
         assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        Containers parsedContainers = containersList.getContainers ();
         parsedContainers.list.stream ()
                              .forEach (container -> assertTrue (container.location.contains (catchAllFreezer.name)));
         history.clickContainers ();
         containersList.searchContainerIdsOrNames (allContainerIDs);
-        parsedContainers = containersList.getContainers ();
         containersList.bulkMoveAllToCustody ();
-        parsedContainers = waitForUpdatedContainers (parsedContainers);
+        parsedContainers = containersList.getContainers ();
         parsedContainers.list.stream ()
                              .forEach (container -> assertTrue (container.location.equals (String.join (" : ",
                                                                                                         coraTestUser,
@@ -181,6 +193,36 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         testLog ("SR-3229:R5: Moving to freezer without sufficient space resulted in an error message stating containers could not be moved to freezer. No containers were moved");
     }
 
+    private void verifyContainerSelection (List <String> containers) {
+        containersList.selectContainerToBulkMove (containers.get (0));
+        assertTrue (containersList.rowIsSelected (containers.get (0)));
+        assertFalse (containersList.rowIsSelected (containers.get (1)));
+        containersList.selectContainerToBulkMove (containers.get (1));
+        assertTrue (containersList.rowIsSelected (containers.get (0)));
+        assertTrue (containersList.rowIsSelected (containers.get (1)));
+        testLog ("SR-3229:R1: Clicking bulk move button enabled container selection");
+    }
+
+    private void verifyMoveToFreezerHappyPath (Containers containers, Containers parsedContainers,
+                                               String moveToFreezerComment) {
+        verifyMoveSuccessMessage (parsedContainers);
+        testLog ("SR-3229:R2: User was able to add custom comment to the Bulk Move to Freezer action");
+        testLog ("SR-3229:R4: User was able to add a destination freezer to the Bulk Move to Freezer action");
+        for (Container container : containers.list) {
+            Container parsedContainer = parsedContainers.list.stream ()
+                                                             .filter (c -> container.containerNumber.equals (c.containerNumber))
+                                                             .findFirst ().get ();
+            verifyMoveToFreezer (parsedContainer, catchAllFreezer, moveToFreezerComment);
+            testLog (format ("SR-3229:R11: Bulk Move to Freezer action moved selected item, %s, to destination freezer",
+                             container.containerNumber));
+            testLog (format ("SR-3229:R2: Comment for %1$s matched expected: %2$s",
+                             container.containerNumber,
+                             moveToFreezerComment));
+            testLog (format ("SR-3229:R7: Containers list location matched location in container details for %s",
+                             container.containerNumber));
+        }
+    }
+
     private void verifyMoveSuccessMessage (Containers expectedContainers) {
         assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
         testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
@@ -192,10 +234,6 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         assertEquals (parsedContainerIDs, expectedContainerIDs);
         testLog ("SR-3229:R6: Clicking the success message link displayed container list filtered to the containers moved");
         containersList.navigateToTab (0);
-    }
-
-    private void verifyMoveToFreezer (Container containerFromList, Container expectedFreezer) {
-        verifyMoveToFreezer (containerFromList, expectedFreezer, null);
     }
 
     private void verifyMoveToFreezer (Container containerFromList,
@@ -213,10 +251,6 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containerFromList.depleted = containerFromList.depleted == null ? false : containerFromList.depleted;
         verifyMovedToContainer (histories.get (0), containerFromList);
         verifyDetails (containerFromDetails, containerFromList);
-    }
-
-    private void verifyMoveToCustody (Container containerFromList) {
-        verifyMoveToCustody (containerFromList, null);
     }
 
     private void verifyMoveToCustody (Container containerFromList,
@@ -244,7 +278,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         Logging.info ("bulk move error message: " + error);
         Pattern failedToMovePattern = Pattern.compile ("Failed to move containers .* to Freezer " + Pattern.quote (invalidFreezer.name));
         assertTrue (failedToMovePattern.matcher (error).find ());
-        Set <String> actualContainerNamesFailed = getSubstringsFromRegex ("CO-[0-9]*", error);
+        Set <String> actualContainerNamesFailed = getSubstringsFromRegex ("CO-\\d{7}", error);
         Set <String> expectedContainerNamesFailed = getContainerIDs (expectedContainersFailed).stream ()
                                                                                               .collect (Collectors.toSet ());
         assertEquals (actualContainerNamesFailed, expectedContainerNamesFailed);
@@ -292,22 +326,6 @@ public class BulkMoveTestSuite extends ContainerTestBase {
                                                 .collect (toList ())));
         Logging.info ("created containers: " + Arrays.toString (getContainerIDs (containers).toArray ()));
         return containers;
-    }
-
-    private Containers waitForUpdatedContainers (Containers previousContainers) {
-        Containers parsedContainers = null;
-        Timeout timer = new Timeout (millisRetry, waitRetry);
-        while (!timer.Timedout ()) {
-            parsedContainers = containersList.getContainers ();
-            String parsedLocation = parsedContainers.list.get (0).location;
-            String previousLocation = previousContainers.list.get (0).location;
-            if (!parsedLocation.equals (previousLocation)) {
-                return parsedContainers;
-            }
-            timer.Wait ();
-        }
-        fail ("No container update detected");
-        return null;
     }
 
     private List <String> getContainerIDs (Containers containers) {

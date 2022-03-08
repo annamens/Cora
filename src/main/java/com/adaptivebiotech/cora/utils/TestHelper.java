@@ -295,7 +295,7 @@ public class TestHelper {
         return specimen;
     }
 
-    public static BillingSurvey defaultSurvey () {
+    public static BillingSurvey covidSurvey () {
         BillingSurvey survey = new BillingSurvey ();
         survey.status = "Eligible for Insurance";
         survey.questionnaires = new ArrayList <> ();
@@ -305,6 +305,7 @@ public class TestHelper {
         survey.questionnaires.add (new Questionnaire ("justificationV1", asList ("selenium test")));
         survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Unknown")));
+        survey.questionnaires.add (new Questionnaire ("result", asList ("Yes")));
         return survey;
     }
 }

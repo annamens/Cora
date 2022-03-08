@@ -289,7 +289,7 @@ public abstract class Mira extends CoraPage {
         };
 
         try {
-            waitForBooleanCondition (10, 2, func);
+            waitUntil (10000, 2000, func);
         } catch (Throwable t) {
             // field is not set
         }
@@ -331,7 +331,7 @@ public abstract class Mira extends CoraPage {
                 return false;
             }
         };
-        assertTrue (waitForBooleanCondition (120, 10, func));
+        assertTrue (waitUntil (120000, 10000, func));
     }
 
     private List <String> getPanelNamesText () {

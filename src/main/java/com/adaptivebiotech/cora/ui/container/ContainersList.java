@@ -178,7 +178,7 @@ public class ContainersList extends CoraPage {
         transactionInProgress ();
 
         // SR-8459: sometimes we're getting a container locked error msg
-        Timeout timer = new Timeout (millisRetry * 10, waitRetry);
+        Timeout timer = new Timeout (millisDuration * 10, millisPoll);
         boolean isLocked = false;
         while (!timer.Timedout () && (isLocked = isElementPresent (locked))) {
             clickMove ();
@@ -227,7 +227,7 @@ public class ContainersList extends CoraPage {
         scanAndClickHoldingContainer (child);
 
         // SR-8459: sometimes we're getting a container locked error msg
-        Timeout timer = new Timeout (millisRetry * 20, waitRetry);
+        Timeout timer = new Timeout (millisDuration * 20, millisPoll);
         boolean isSuccessful = true;
         while (!timer.Timedout () && ! (isSuccessful = finalizeHoldingContainer (child, holding))) {
             scanAndClickHoldingContainer (child);
@@ -377,22 +377,13 @@ public class ContainersList extends CoraPage {
     }
 
     public void bulkMoveAllToFreezer (Container freezer, String comment) {
-        String freezerDropdownInput = "[placeholder = 'Select Freezer'] input";
-        String freezerDropdownSelection = "//*[@placeholder='Select Freezer']/descendant::div[@role='option']/span[text()='%s']";
         clickBulkMoveContainers ();
         selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
-        assertTrue (click (freezerDropdownInput));
-        assertTrue (clear (freezerDropdownInput));
-        assertTrue (setText (freezerDropdownInput, freezer.name));
-        assertTrue (click (format (freezerDropdownSelection,
-                                   freezer.name)));
-        if (comment != null) {
-            assertTrue (clear (bulkComment));
-            assertTrue (setText (bulkComment, comment));
-        }
-        assertTrue (click (selectAllCheckbox));
-        assertTrue (click (bulkMoveBtn));
-        transactionInProgress ();
+        selectBulkMoveFreezer (freezer);
+        setBulkMoveComment (comment);
+        clickSelectAllCheckbox ();
+        clickBulkMoveBtn ();
+        waitForBulkMoveComplete ();
     }
 
     public void bulkMoveAllToCustody () {
@@ -402,13 +393,10 @@ public class ContainersList extends CoraPage {
     public void bulkMoveAllToCustody (String comment) {
         clickBulkMoveContainers ();
         selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
-        if (comment != null) {
-            assertTrue (clear (bulkComment));
-            assertTrue (setText (bulkComment, comment));
-        }
-        assertTrue (click (selectAllCheckbox));
-        assertTrue (click (bulkMoveBtn));
-        transactionInProgress ();
+        setBulkMoveComment (comment);
+        clickSelectAllCheckbox ();
+        clickBulkMoveBtn ();
+        waitForBulkMoveComplete ();
     }
 
     public void clickBulkMoveContainers () {
@@ -425,11 +413,11 @@ public class ContainersList extends CoraPage {
     }
 
     public boolean isBulkMoveSuccessMessageDisplayed () {
-        return waitUntilVisible (bulkMoveSuccess);
+        return isElementVisible (bulkMoveSuccess);
     }
 
     public boolean isBulkMoveErrorMessageDisplayed () {
-        return waitUntilVisible (bulkMoveError);
+        return isElementVisible (bulkMoveError);
     }
 
     public String getBulkMoveErrorMessage () {
@@ -458,5 +446,50 @@ public class ContainersList extends CoraPage {
 
     public List <String> getBulkMoveActions () {
         return getTextList (bulkMoveActionDropdown + " option");
+    }
+
+    public String getCurrentBulkMoveAction () {
+        return getFirstSelectedText (bulkMoveActionDropdown);
+    }
+
+    public boolean bulkMoveActionDropdownDisabled () {
+        String actionDropdownContainer = "//option[text()='Bulk Move to My Custody']/ancestor::div[1]";
+        return getAttribute (actionDropdownContainer, "class").contains ("div-disabled");
+    }
+
+    protected void selectBulkMoveFreezer (Container freezer) {
+        String freezerDropdownInput = "[placeholder = 'Select Freezer'] input";
+        String freezerDropdownSelection = "//*[@placeholder='Select Freezer']/descendant::div[@role='option']/span[text()='%s']";
+        assertTrue (click (freezerDropdownInput));
+        assertTrue (clear (freezerDropdownInput));
+        assertTrue (setText (freezerDropdownInput, freezer.name));
+        assertTrue (click (format (freezerDropdownSelection,
+                                   freezer.name)));
+    }
+
+    protected void setBulkMoveComment (String comment) {
+        if (comment != null) {
+            assertTrue (clear (bulkComment));
+            assertTrue (setText (bulkComment, comment));
+        }
+    }
+
+    protected void clickBulkMoveBtn () {
+        assertTrue (click (bulkMoveBtn));
+    }
+
+    protected void waitForBulkMoveComplete () {
+        waitForElementVisible (".toast-success, .toast-error");
+        if (isBulkMoveSuccessMessageDisplayed ()) {
+            waitForRowsDeselected ();
+        }
+    }
+
+    private void clickSelectAllCheckbox () {
+        assertTrue (click (selectAllCheckbox));
+    }
+
+    private void waitForRowsDeselected () {
+        waitForElementInvisible (".highlighted-blue");
     }
 }

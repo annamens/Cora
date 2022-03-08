@@ -4,7 +4,6 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
-import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildCovidOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -43,14 +42,14 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
     private OrcaHistory        history     = new OrcaHistory ();
 
     /**
-     * @sdlc.requirements SR-7370
+     * @sdlc.requirements SR-5243, SR-7370
      */
     public void verifyCovidGatewayMessageUpdate () {
         CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
         test.tsvPath = covidTsv;
         test.workflowProperties = sample_95268_SN_2205 ();
 
-        Patient patient = scenarioBuilderPatient ();
+        Patient patient = patientWithAddress ();
         Diagnostic diagnostic = buildCovidOrder (coraApi.getPhysician (TDetect_client),
                                                  patient,
                                                  stage (DxReport, Ready),

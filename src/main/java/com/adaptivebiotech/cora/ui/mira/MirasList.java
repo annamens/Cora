@@ -349,7 +349,7 @@ public class MirasList extends MirasListBase {
                 return waitAndGetText (firstResult).equals (miraId);
             }
         };
-        assertTrue (waitForBooleanCondition (240, 10, func));
+        assertTrue (waitUntil (240000, 10000, func));
     }
 
     private String getMiraGuid (String href) {

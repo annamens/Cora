@@ -18,8 +18,8 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class TaskStatus extends Task {
 
-    private final long millisRetry = 9000000l; // 2.5hrs
-    private final long waitRetry   = 10000l;   // 10sec
+    private final long millisDuration = 9000000l; // 2.5hrs
+    private final long millisPoll     = 10000l;   // 10sec
 
     public TaskStatus () {
         staticNavBarHeight = 195;
@@ -33,7 +33,7 @@ public class TaskStatus extends Task {
     public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//td[text()='%s']/../td[text()='%s']/../td[text()[contains (.,'%s')]]/span[text()='%s']";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         boolean found = false;
         while (!timer.Timedout () && ! (found = isElementPresent (format (xpath, stage, status, substatus, message)))) {
             nudge ();
@@ -47,7 +47,7 @@ public class TaskStatus extends Task {
     public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
         String xpath = "//td[text()='%s']/../td[text()='%s']/../td[text()[contains (.,'%s')]]";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         boolean found = false;
         while (!timer.Timedout () && ! (found = isElementPresent (format (xpath, stage, status, substatus)))) {
             nudge ();
@@ -61,7 +61,7 @@ public class TaskStatus extends Task {
     public void waitFor (StageName stage, StageStatus status) {
         String fail = "unable to locate Stage: %s, Status: %s";
         String xpath = "//td[text()='%s']/../td[text()='%s']";
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         boolean found = false;
         while (!timer.Timedout () && ! (found = isElementPresent (format (xpath, stage, status)))) {
             nudge ();
