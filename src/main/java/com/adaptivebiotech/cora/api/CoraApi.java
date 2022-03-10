@@ -48,6 +48,7 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.dto.ProvidersResponse;
+import com.adaptivebiotech.cora.dto.Reminders;
 import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
@@ -450,5 +451,29 @@ public class CoraApi {
     public Order[] getOrderAttachments (String orderIdOrNo) {
         String url = coraTestUrl + "/cora/api/v1/attachments/orders/" + orderIdOrNo;
         return mapper.readValue (get (url), Order[].class);
+    }
+
+    public Reminders getActiveRemindersSummary (String userName) {
+        String url = coraTestUrl + "/cora/api/v1/external/reminders/active";
+        Map <String, String> params = new HashMap <> ();
+        params.put ("username", userName);
+        return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Reminders.class);
+    }
+
+    public void deleteReminder (String reminderId, String userName) {
+        String url = coraTestUrl + "/cora/api/v1/external/reminders/" + reminderId + "/dismiss";
+        Map <String, String> params = new HashMap <> ();
+        params.put ("username", userName);
+        post (url, body (mapper.writeValueAsString (params)));
+    }
+
+    public void deleteRemindersForUserName (String userName) {
+        Reminders activeReminders = getActiveRemindersSummary (userName);
+
+        if (activeReminders != null && activeReminders.reminders.size () > 0) {
+            for (Reminders.Reminder rem : activeReminders.reminders) {
+                deleteReminder (rem.id, userName);
+            }
+        }
     }
 }

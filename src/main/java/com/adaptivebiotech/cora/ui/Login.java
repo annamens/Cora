@@ -38,6 +38,7 @@ public class Login extends BasePage {
 
     public void clickSignOut () {
         assertTrue (click ("//*[text()='sign out']"));
+        assertTrue (waitUntilVisible (".cora-mascot"));
     }
 
     public void doLogin () {
