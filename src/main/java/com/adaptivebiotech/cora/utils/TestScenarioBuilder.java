@@ -44,6 +44,7 @@ public class TestScenarioBuilder {
     public static final LocalDateTime reconciliationDate = now ().minusDays (10);
     public static final LocalDateTime arrivalDate        = now ().minusDays (15);
     public static final String        covidPanel         = "132d9440-8f75-46b8-b084-efe06346dfd4";
+    public static final String        lymePanel          = "21c3d625-4c5a-4e0b-896b-0d4f3e817d23";
 
     public static Order order (OrderProperties properties, CoraTest... tests) {
         Order order = new Order ();
@@ -154,7 +155,8 @@ public class TestScenarioBuilder {
         return diagnostic;
     }
 
-    public static Diagnostic buildCovidOrder (Physician physician, Patient patient, Stage stage, CoraTest test) {
+    public static Diagnostic buildTdetectOrder (Physician physician, Patient patient, Stage stage, CoraTest test,
+                                                String testType) {
         Diagnostic diagnostic = diagnosticOrder (physician, patient, null, shipment ());
         diagnostic.order = order (null, test);
         diagnostic.order.orderType = TDx;
@@ -164,7 +166,11 @@ public class TestScenarioBuilder {
         diagnostic.order.specimenDto = specimen ();
         diagnostic.order.specimenDto.name = test.workflowProperties.sampleName;
         diagnostic.order.specimenDto.properties = null;
-        diagnostic.order.panels = asList (new Panel (covidPanel));
+        if (testType.equals ("lyme")) {
+            diagnostic.order.panels = asList (new Panel (lymePanel));
+        } else if (testType.equals ("covid")) {
+            diagnostic.order.panels = asList (new Panel (covidPanel));
+        }
         diagnostic.fastForwardStatus = stage;
         diagnostic.task = null;
         return diagnostic;
