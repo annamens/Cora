@@ -43,7 +43,6 @@ import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.Orders.Alert;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
-import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
@@ -286,11 +285,7 @@ public class CoraApi {
             args.addAll (terms);
 
         String url = encodeUrl (coraTestUrl + "/cora/api/v1/orders/search?", args.toArray (new String[] {}));
-        Order[] orders = mapper.readValue (get (url), Order[].class);
-        for (Order order : orders) {
-            order.category = order.category == null ? null : OrderCategory.valueOf (order.category.toString ());
-        }
-        return orders;
+        return mapper.readValue (get (url), Order[].class);
     }
 
     public OrderTest[] searchOrderTests (String term) {

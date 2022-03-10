@@ -98,7 +98,7 @@ public final class Orders {
         public DeliveryType        specimenDeliveryType;
 
         // for /cora/api/v1/orders/search
-        public Object              category;
+        public String              category;
         public String              customerName;
         public String              displayOrderNumber;
         public String              orderNumber;
