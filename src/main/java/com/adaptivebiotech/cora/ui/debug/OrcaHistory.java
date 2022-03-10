@@ -1,6 +1,7 @@
 package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
@@ -87,6 +88,7 @@ public class OrcaHistory extends CoraPage {
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isElementPresent (check))) {
+            checkForStuck (status);
             doForceClaim (orcaHistoryUrl);
             timer.Wait ();
             refresh ();
@@ -101,6 +103,7 @@ public class OrcaHistory extends CoraPage {
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status, substatus))) {
+            checkForStuck (status);
             doForceClaim (orcaHistoryUrl);
             timer.Wait ();
             refresh ();
@@ -115,6 +118,7 @@ public class OrcaHistory extends CoraPage {
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isStagePresent (stage, status))) {
+            checkForStuck (status);
             doForceClaim (orcaHistoryUrl);
             timer.Wait ();
             refresh ();
@@ -131,6 +135,13 @@ public class OrcaHistory extends CoraPage {
     public boolean isStagePresent (StageName stage, StageStatus status) {
         String xpath = "//table[@class='genoTable']//td[text()='%s']/../td[text()='%s']";
         return isElementPresent (format (xpath, stage.name (), status.name ()));
+    }
+
+    public void checkForStuck (StageStatus status) {
+        if (!Stuck.equals (status)) {
+            if (isElementPresent (format ("//table[@class='genoTable']//td[text()='%s']", Stuck)))
+                fail (format ("the workflow is '%s'", Stuck));
+        }
     }
 
     public void doForceClaim (String orcaHistoryUrl) {
@@ -160,6 +171,7 @@ public class OrcaHistory extends CoraPage {
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
         while (!timer.Timedout () && ! (found = isTopLevelStagePresent (stage, status, substatus))) {
+            checkForStuck (status);
             doForceClaim (orcaHistoryUrl);
             timer.Wait ();
             refresh ();

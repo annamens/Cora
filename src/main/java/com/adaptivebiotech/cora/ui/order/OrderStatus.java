@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
@@ -156,6 +157,14 @@ public class OrderStatus extends OrderHeader {
         assertTrue (click (confirmYes));
     }
 
+    public void checkForStuck (String sampleName, StageStatus status) {
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']";
+        if (!Stuck.equals (status)) {
+            if (isElementPresent (format (xpath, sampleName, Stuck)))
+                fail (format ("the workflow is '%s'", Stuck));
+        }
+    }
+
     public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus,
                          String message) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
@@ -169,6 +178,7 @@ public class OrderStatus extends OrderHeader {
                 clickHide (sampleName);
                 break;
             } else {
+                checkForStuck (sampleName, status);
                 nudgeWorkflow ();
                 clickHide (sampleName);
                 timer.Wait ();
@@ -188,6 +198,7 @@ public class OrderStatus extends OrderHeader {
                 clickHide (sampleName);
                 break;
             } else {
+                checkForStuck (sampleName, status);
                 nudgeWorkflow ();
                 clickHide (sampleName);
                 timer.Wait ();
@@ -207,6 +218,7 @@ public class OrderStatus extends OrderHeader {
                 clickHide (sampleName);
                 break;
             } else {
+                checkForStuck (sampleName, status);
                 nudgeWorkflow ();
                 clickHide (sampleName);
                 timer.Wait ();
@@ -218,12 +230,12 @@ public class OrderStatus extends OrderHeader {
 
     public boolean isStagePresent (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]";
-        return isElementPresent (format (xpath, sampleName, stage.name (), status.name (), substatus.name ()));
+        return isElementPresent (format (xpath, sampleName, stage, status, substatus));
     }
 
     public boolean isStagePresent (String sampleName, StageName stage, StageStatus status) {
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']";
-        return isElementPresent (format (xpath, sampleName, stage.name (), status.name ()));
+        return isElementPresent (format (xpath, sampleName, stage, status));
     }
 
     public void clickHistory (String sampleName) {
