@@ -17,16 +17,21 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import com.adaptivebiotech.cora.dto.*;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.Diagnostic.Order;
 import com.adaptivebiotech.cora.dto.Diagnostic.Panel;
 import com.adaptivebiotech.cora.dto.Diagnostic.Task;
+import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
+import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Physician;
+import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.dto.Research.TechTransfer;
+import com.adaptivebiotech.cora.dto.Shipment;
+import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.SpecimenProperties;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -164,9 +169,9 @@ public class TestScenarioBuilder {
         diagnostic.order.specimenDto = specimen ();
         diagnostic.order.specimenDto.name = test.workflowProperties.sampleName;
         diagnostic.order.specimenDto.properties = null;
-        if (assay.equals(LYME_DX_IVD)) {
+        if (assay.equals (LYME_DX_IVD)) {
             diagnostic.order.panels = asList (new Panel (lymePanel));
-        } else if (assay.equals(COVID19_DX_IVD)) {
+        } else if (assay.equals (COVID19_DX_IVD)) {
             diagnostic.order.panels = asList (new Panel (covidPanel));
         }
         diagnostic.fastForwardStatus = stage;
