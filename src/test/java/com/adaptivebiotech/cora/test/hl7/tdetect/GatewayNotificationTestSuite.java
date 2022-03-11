@@ -57,7 +57,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                                    patient,
                                                    stage (DxReport, Ready),
                                                    test,
-                                                   "covid");
+                                                   COVID19_DX_IVD);
         diagnostic.dxResults = negativeDxResult ();
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
@@ -83,6 +83,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         testLog ("gateway message sent");
     }
 
+    @Test (groups = { "regression", "dingo" })
     public void verifyLymeGatewayMessage () {
         CoraTest test = coraApi.getTDxTest (LYME_DX_IVD);
         test.tsvPath = lymeTsv;
@@ -93,7 +94,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                                    patient,
                                                    stage (DxReport, Ready),
                                                    test,
-                                                   "lyme");
+                                                   LYME_DX_IVD);
         diagnostic.dxResults = negativeDxResult ();
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Lyme order in Cora");

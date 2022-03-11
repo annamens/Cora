@@ -307,7 +307,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         test.workflowProperties = sample_112770_SN_7929;
 
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildTdetectOrder(coraApi.getPhysician (TDetect_client), patient, null, test, "covid");
+        Diagnostic diagnostic = buildTdetectOrder(coraApi.getPhysician (TDetect_client), patient, null, test, COVID19_DX_IVD);
         diagnostic.dxResults = null;
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
