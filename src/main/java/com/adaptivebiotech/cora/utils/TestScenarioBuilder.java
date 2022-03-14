@@ -46,8 +46,6 @@ public class TestScenarioBuilder {
     public static final LocalDateTime collectionDate     = now ().minusDays (10);
     public static final LocalDateTime reconciliationDate = now ().minusDays (10);
     public static final LocalDateTime arrivalDate        = now ().minusDays (15);
-    public static final String        covidPanel         = "132d9440-8f75-46b8-b084-efe06346dfd4";
-    public static final String        lymePanel          = "21c3d625-4c5a-4e0b-896b-0d4f3e817d23";
 
     public static Order order (OrderProperties properties, CoraTest... tests) {
         Order order = new Order ();
@@ -160,6 +158,8 @@ public class TestScenarioBuilder {
 
     public static Diagnostic buildTdetectOrder (Physician physician, Patient patient, Stage stage, CoraTest test,
                                                 Orders.Assay assay) {
+        String covidPanel = "132d9440-8f75-46b8-b084-efe06346dfd4";
+        String lymePanel = "21c3d625-4c5a-4e0b-896b-0d4f3e817d23";
         Diagnostic diagnostic = diagnosticOrder (physician, patient, null, shipment ());
         diagnostic.order = order (null, test);
         diagnostic.order.orderType = TDx;
