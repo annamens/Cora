@@ -7,7 +7,6 @@ import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -46,7 +45,6 @@ public final class Reminders {
         public Order         order;
         public String        placeOrderUrl;
         public String        remindersListUrl;
-        public WebElement    removeSign;
 
         public Reminder () {}
 
