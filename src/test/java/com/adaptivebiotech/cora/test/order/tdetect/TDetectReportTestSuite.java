@@ -11,7 +11,7 @@ import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildCovidOrder;
+import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB_v4b;
 import static com.adaptivebiotech.test.utils.Logging.info;
@@ -307,7 +307,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         test.workflowProperties = sample_112770_SN_7929;
 
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildCovidOrder (coraApi.getPhysician (TDetect_client), patient, null, test);
+        Diagnostic diagnostic = buildTdetectOrder(coraApi.getPhysician (TDetect_client), patient, null, test, COVID19_DX_IVD);
         diagnostic.dxResults = null;
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
