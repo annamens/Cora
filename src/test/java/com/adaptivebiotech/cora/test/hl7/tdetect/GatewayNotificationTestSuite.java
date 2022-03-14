@@ -116,7 +116,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
-        assertFalse (history.isFilePresent (gatewayJson));
+        assertFalse (history.isElementPresent(gatewayJson));
         testLog ("gateway message wasn't sent");
     }
 }
