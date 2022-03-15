@@ -96,7 +96,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     private final String       result              = "RESULT";
     private final String       expTestResult       = "NEGATIVE";
     private final String       reviewedReleasedBy  = "svc_cora_test_phi_preprod, NBCDCH-PS";
-    private final String       approvedBy          = "Stephanie Hallam, Ph.D., D(ABMGG)";
+    private final String       approvedBy          = "John Alsobrook, II, PhD, DABCC";
 
     private final String       tsvPath             = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e/HCYJNBGXJ_0_CLINICAL-CLINICAL_112770-SN-7929.adap.txt.results.tsv.gz";
     private final String       reviewText          = "REVIEWED AND RELEASED BY DATE & TIME";
