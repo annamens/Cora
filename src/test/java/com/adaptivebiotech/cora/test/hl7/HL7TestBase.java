@@ -4,6 +4,7 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
 import static com.adaptivebiotech.cora.utils.TestHelper.getRandomAddress;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
+import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.POSITIVE;
 import java.util.ArrayList;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -43,7 +44,7 @@ public class HL7TestBase extends CoraBaseBrowser {
         return workflowProperties;
     }
 
-    protected ClassifierOutput negativeDxResult () {
+    protected ClassifierOutput negativeCovidResult () {
         ClassifierOutput dxResult = new ClassifierOutput ();
         dxResult.disease = "COVID19";
         dxResult.classifierVersion = "v1.0";
@@ -55,6 +56,21 @@ public class HL7TestBase extends CoraBaseBrowser {
         dxResult.dxStatus = NEGATIVE;
         dxResult.configVersion = "dx.covid19.rev1";
         dxResult.uniqueProductiveTemplates = 251880;
+        dxResult.qcFlags = new ArrayList <> ();
+        return dxResult;
+    }
+    
+    protected ClassifierOutput positiveLymeResult () {
+        ClassifierOutput dxResult = new ClassifierOutput ();
+        dxResult.disease = "LYME";
+        dxResult.classifierVersion = "v2.0";
+        dxResult.dxScore = 105.83867731819977d;
+        dxResult.countEnhancedSeq = 71;
+        dxResult.containerVersion = "dx-classifiers/lyme:8532b3f";
+        dxResult.pipelineVersion = "v3.1-613-g1b391bc";
+        dxResult.dxStatus = POSITIVE;
+        dxResult.configVersion = "dx.lyme.rev2";
+        dxResult.uniqueProductiveTemplates = 72905;
         dxResult.qcFlags = new ArrayList <> ();
         return dxResult;
     }
