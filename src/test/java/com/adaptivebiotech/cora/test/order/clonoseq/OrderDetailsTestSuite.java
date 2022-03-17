@@ -187,7 +187,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (editOrder.properties.BillingType, editChargeType);
         testLog ("STEP 7 - Billing section displays Billing2");
 
-        assertEquals (editOrder.orderAttachments.get (0), coraAttachment);
+        assertEquals (editOrder.orderAttachments.get (0).fileName, coraAttachment);
         testLog ("STEP 8 - The file is attached to the order");
 
         clonoSeqOrderDetail.clickOrderStatusTab ();

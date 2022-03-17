@@ -6,6 +6,11 @@ import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import static org.testng.util.Strings.isNotNullAndNotEmpty;
+import java.util.ArrayList;
+import java.util.List;
+import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.BillingSurvey;
+import com.adaptivebiotech.cora.dto.BillingSurvey.Questionnaire;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
@@ -16,6 +21,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
  */
 public class BillingNewOrderClonoSeq extends BillingNewOrder {
 
+    private final String billingQuestionnaire         = "[ng-click='ctrl.toggleShowInsuranceQuestionnaires()']";
     private final String abnStatus                    = "[name='abnStatusType']";
     private final String insuranceProvider            = "[name='insuranceProvider']";
     private final String groupNumber                  = "[name='groupNumber']";
@@ -47,6 +53,42 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
 
     public BillingNewOrderClonoSeq (int staticNavBarHeight) {
         super.staticNavBarHeight = staticNavBarHeight;
+    }
+
+    public boolean isBillingQuestionsVisible () {
+        return isElementPresent (billingQuestionnaire);
+    }
+
+    public BillingSurvey parseBillingQuestions () {
+        assertTrue (waitUntilVisible (billingQuestionnaire));
+        if (!isElementPresent (billingQuestionnaire + " .glyphicon-triangle-right"))
+            assertTrue (click (billingQuestionnaire));
+
+        List <Questionnaire> questionnaires = new ArrayList <> ();
+        for (WebElement li : waitForElements (".billing-questionnaire li")) {
+            Questionnaire q = new Questionnaire ();
+            q.answers = new ArrayList <> ();
+            if (isElementPresent (li, ".billing-survey-subquestion")) {
+                q.answers.add (getAttribute (li, ".billing-survey-subquestion", "textContent"));
+
+                // work around until SR-9458
+                String transplantDate = getAttribute (li, ".insurance-questionnaire-answer", "textContent");
+                q.answers.add (formatDt1.format (formatDt2.parse (transplantDate)));
+            } else
+                q.answers.add (getAttribute (li, ".insurance-questionnaire-answer", "textContent"));
+            questionnaires.add (q);
+        }
+
+        // work around until SR-9458
+        questionnaires.get (0).name = "hadTransplant1V1";
+        questionnaires.get (1).name = "transplant1DateV1";
+        questionnaires.get (2).name = "hadTransplant3V1";
+        questionnaires.get (3).name = "courseOfTherapyV1";
+        questionnaires.get (4).name = "testOrderLocationV1";
+        questionnaires.get (5).name = "inNetworkV1";
+
+        BillingSurvey survey = new BillingSurvey (questionnaires);
+        return survey;
     }
 
     public void enterABNstatus (AbnStatus status) {

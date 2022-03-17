@@ -4,13 +4,13 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
-import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ReportDelivery;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_REPORT_NOTIFICATION;
@@ -44,21 +44,20 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
     private OrcaHistory        history     = new OrcaHistory ();
 
     /**
-     * @sdlc.requirements SR-7370
+     * @sdlc.requirements SR-5243, SR-7370
      */
-    @Test
     public void verifyCovidGatewayMessageUpdate () {
         CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
         test.tsvPath = covidTsv;
         test.workflowProperties = sample_95268_SN_2205 ();
 
-        Patient patient = scenarioBuilderPatient ();
+        Patient patient = patientWithAddress ();
         Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),
                                                    patient,
                                                    stage (DxReport, Ready),
                                                    test,
                                                    COVID19_DX_IVD);
-        diagnostic.dxResults = negativeDxResult ();
+        diagnostic.dxResults = negativeCovidResult ();
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
 
@@ -83,19 +82,19 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         testLog ("gateway message sent");
     }
 
-    @Test (groups = { "regression", "dingo" })
+    @Test (groups = "dingo")
     public void verifyLymeGatewayMessage () {
         CoraTest test = coraApi.getTDxTest (LYME_DX_IVD);
         test.tsvPath = lymeTsv;
         test.workflowProperties = sample_95268_SN_2205 ();
 
-        Patient patient = scenarioBuilderPatient ();
+        Patient patient = patientWithAddress ();
         Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),
                                                    patient,
                                                    stage (DxReport, Ready),
                                                    test,
                                                    LYME_DX_IVD);
-        diagnostic.dxResults = negativeDxResult ();
+        diagnostic.dxResults = positiveLymeResult ();
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Lyme order in Cora");
 
@@ -114,7 +113,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
         report.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
-        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
+        orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         history.gotoOrderDebug (orderTest.sampleName);
         assertFalse (history.isElementPresent (gatewayJson));
         testLog ("gateway message wasn't sent");
