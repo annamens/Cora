@@ -113,14 +113,17 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containersList.searchContainerIdsOrNames (allContainerIDs);
         String moveToFreezerComment = randomWords (10);
         containersList.bulkMoveAllToFreezer (catchAllFreezer, moveToFreezerComment);
+        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
+        testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
+        containersList.clickSuccessMessageLink ();
         Containers parsedContainers = containersList.getContainers ();
         verifyMoveToFreezerHappyPath (containers, parsedContainers, moveToFreezerComment);
         history.clickContainers ();
         containersList.searchContainerIdsOrNames (allContainerIDs);
         String moveToCustodyComment = randomWords (10);
         containersList.bulkMoveAllToCustody (moveToCustodyComment);
-        parsedContainers = containersList.getContainers ();
         assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
+        parsedContainers = containersList.getContainers ();
         testLog ("SR-3229:R2: User was able to add custom comment to Bulk Move to My Custody action");
         for (Container container : containers.list) {
             Container parsedContainer = parsedContainers.list.stream ()
@@ -147,6 +150,9 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containersList.gotoMyCustody ();
         String moveToFreezerComment = randomWords (10);
         myCustody.bulkMoveToFreezer (allContainerIDs, catchAllFreezer, moveToFreezerComment);
+        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
+        testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
+        containersList.clickSuccessMessageLink ();
         myCustody.clickContainers ();
         containersList.searchContainerIdsOrNames (allContainerIDs);
         Containers parsedContainers = containersList.getContainers ();
@@ -205,7 +211,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
 
     private void verifyMoveToFreezerHappyPath (Containers containers, Containers parsedContainers,
                                                String moveToFreezerComment) {
-        verifyMoveSuccessMessage (parsedContainers);
+        verifySuccessMessageLink (parsedContainers);
         testLog ("SR-3229:R2: User was able to add custom comment to the Bulk Move to Freezer action");
         testLog ("SR-3229:R4: User was able to add a destination freezer to the Bulk Move to Freezer action");
         for (Container container : containers.list) {
@@ -223,10 +229,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         }
     }
 
-    private void verifyMoveSuccessMessage (Containers expectedContainers) {
-        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
-        testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
-        containersList.clickSuccessMessageLink ();
+    private void verifySuccessMessageLink (Containers expectedContainers) {
         containersList.navigateToTab (1);
         containersList.isCorrectPage ();
         Set <String> parsedContainerIDs = new HashSet <> (getContainerIDs (containersList.getContainers ()));
