@@ -113,9 +113,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containersList.searchContainerIdsOrNames (allContainerIDs);
         String moveToFreezerComment = randomWords (10);
         containersList.bulkMoveAllToFreezer (catchAllFreezer, moveToFreezerComment);
-        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
-        testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
-        containersList.clickSuccessMessageLink ();
+        verifyAndClickSuccessMessage ();
         Containers parsedContainers = containersList.getContainers ();
         verifyMoveToFreezerHappyPath (containers, parsedContainers, moveToFreezerComment);
         history.clickContainers ();
@@ -150,9 +148,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         containersList.gotoMyCustody ();
         String moveToFreezerComment = randomWords (10);
         myCustody.bulkMoveToFreezer (allContainerIDs, catchAllFreezer, moveToFreezerComment);
-        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
-        testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
-        containersList.clickSuccessMessageLink ();
+        verifyAndClickSuccessMessage ();
         myCustody.clickContainers ();
         containersList.searchContainerIdsOrNames (allContainerIDs);
         Containers parsedContainers = containersList.getContainers ();
@@ -227,6 +223,12 @@ public class BulkMoveTestSuite extends ContainerTestBase {
             testLog (format ("SR-3229:R7: Containers list location matched location in container details for %s",
                              container.containerNumber));
         }
+    }
+
+    private void verifyAndClickSuccessMessage () {
+        assertTrue (containersList.isBulkMoveSuccessMessageDisplayed ());
+        testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
+        containersList.clickSuccessMessageLink ();
     }
 
     private void verifySuccessMessageLink (Containers expectedContainers) {
