@@ -302,7 +302,8 @@ public class TestHelper {
         survey.questionnaires.add (new Questionnaire ("symptomsV1", asList ("Yes")));
         survey.questionnaires.add (new Questionnaire ("covidTestV1", asList ("Yes")));
         survey.questionnaires.add (new Questionnaire ("antibodyTestV1", asList ("No")));
-        survey.questionnaires.add (new Questionnaire ("justificationV1", asList ("selenium test")));
+        survey.questionnaires.add (new Questionnaire ("justificationV1",
+                new ArrayList <> (asList ("Other (describe)", "selenium test"))));
         survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Unknown")));
         return survey;
@@ -312,7 +313,8 @@ public class TestHelper {
         BillingSurvey survey = new BillingSurvey ();
         survey.questionnaires = new ArrayList <> ();
         survey.questionnaires.add (new Questionnaire ("hadTransplant1V1", asList ("Yes, a bone marrow transplant")));
-        survey.questionnaires.add (new Questionnaire ("transplant1DateV1", asList ("Transplant date", getPastFutureDate (-3))));
+        survey.questionnaires.add (new Questionnaire ("transplant1DateV1",
+                asList ("Transplant date", getPastFutureDate (-3))));
         survey.questionnaires.add (new Questionnaire ("hadTransplant3V1", asList ("Yes")));
         survey.questionnaires.add (new Questionnaire ("courseOfTherapyV1", asList ("No")));
         survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
