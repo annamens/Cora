@@ -302,8 +302,7 @@ public class TestHelper {
         survey.questionnaires.add (new Questionnaire ("symptomsV1", asList ("Yes")));
         survey.questionnaires.add (new Questionnaire ("covidTestV1", asList ("Yes")));
         survey.questionnaires.add (new Questionnaire ("antibodyTestV1", asList ("No")));
-        survey.questionnaires.add (new Questionnaire ("justificationV1",
-                new ArrayList <> (asList ("Other (describe)", "selenium test"))));
+        survey.questionnaires.add (new Questionnaire ("justificationV1", asList ("selenium test")));
         survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Unknown")));
         return survey;
