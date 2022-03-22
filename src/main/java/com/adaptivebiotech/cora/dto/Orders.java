@@ -7,6 +7,7 @@ import static java.util.stream.Collectors.toList;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.adaptivebiotech.cora.dto.Alerts.Alert;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Reminders.Reminder;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
@@ -271,33 +272,6 @@ public final class Orders {
         public OrderProperties (ChargeType BillingType, DeliveryType SpecimenDeliveryType, String Icd10Codes) {
             this (BillingType, SpecimenDeliveryType);
             this.Icd10Codes = Icd10Codes;
-        }
-
-        @Override
-        public String toString () {
-            return toStringOverride (this);
-        }
-    }
-
-    public static final class Alert {
-
-        public String           href;
-        public String           linkText;
-        public String           color;
-        public Order            order;
-        public Physician        physician;
-        public Patient          patient;
-        public Specimen         specimen;
-        public List <OrderTest> tests = new ArrayList <> ();
-        public String           alertTypeId;
-        public String           alertTypeName;
-        public String           referencedEntityId;
-        public List <String>    recipients;
-
-        public Alert () {}
-
-        public Alert (String href) {
-            this.href = href;
         }
 
         @Override

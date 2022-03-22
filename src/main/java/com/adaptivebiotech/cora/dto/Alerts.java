@@ -3,6 +3,9 @@ package com.adaptivebiotech.cora.dto;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.ArrayList;
 import java.util.List;
+import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Orders.OrderTest;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 /**
  * @author jpatel
@@ -26,8 +29,23 @@ public final class Alerts {
 
     public static final class Alert {
 
-        public String    id;
-        public AlertType alertType;
+        public String           id;
+        public AlertType        alertType;
+
+        // used by OrdersList and AlertsList Dora UI pages
+        public String           href;
+        public String           linkText;
+        public String           color;
+        @JsonAlias ("orderSummary")
+        public Order            order;
+        public Physician        physician;
+        public Patient          patient;
+        public Specimen         specimen;
+        public List <OrderTest> tests = new ArrayList <> ();
+        public String           alertTypeId;
+        public String           alertTypeName;
+        public String           referencedEntityId;
+        public List <String>    recipients;
 
         @Override
         public String toString () {

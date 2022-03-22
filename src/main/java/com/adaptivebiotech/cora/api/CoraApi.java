@@ -40,7 +40,6 @@ import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.FeatureFlags;
 import com.adaptivebiotech.cora.dto.HttpResponse;
-import com.adaptivebiotech.cora.dto.Orders.Alert;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -396,7 +395,7 @@ public class CoraApi {
         return mapper.readValue (get (url), Order[].class);
     }
 
-    public void setAlerts (Alert alert) {
+    public void setAlerts (Alerts.Alert alert) {
         post (coraTestUrl + "/cora/api/v2/alerts/create", body (mapper.writeValueAsString (alert)));
     }
 
@@ -429,10 +428,10 @@ public class CoraApi {
         return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Alerts.class);
     }
 
-    public void deleteAlerts (List <String> alertIds) {
-        String url = coraTestUrl + "/cora/api/v2/alerts/delete";
+    public void deleteAlert (String userName, String alertId) {
+        String url = coraTestUrl + "/cora/api/v1/external/alerts/" + alertId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
-        params.put ("ids", mapper.writeValueAsString (alertIds));
+        params.put ("username", userName);
         post (url, body (mapper.writeValueAsString (params)));
     }
 
@@ -440,11 +439,10 @@ public class CoraApi {
         Alerts userAlerts = getAlertsSummary (userName);
 
         if (userAlerts != null && userAlerts.orderAlerts.size () > 0) {
-            List <String> alertIds = new ArrayList <> ();
             for (Alerts.Alert alert : userAlerts.orderAlerts) {
-                alertIds.add (alert.id);
+                deleteAlert (userName, alert.id);
             }
-            deleteAlerts (alertIds);
+
         }
     }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite thread-count="1" data-provider-thread-count="1"
+	name="DemoSuite">
+	<test name="Test Mobile and Desktop WebSite" parallel="methods">
+		<classes>
+			<class
+				name="com.adaptivebiotech.cora.test.container.DepletionTestSuite" />
+			<class
+				name="com.adaptivebiotech.cora.test.container.HoldingContainerTestSuite" />
+			<class
+				name="com.adaptivebiotech.cora.test.container.MoveToFreezerTestSuite" />
+		</classes>
+	</test> <!-- Test -->
+</suite> <!-- Suite -->
