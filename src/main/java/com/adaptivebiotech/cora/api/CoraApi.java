@@ -428,21 +428,33 @@ public class CoraApi {
         return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Alerts.class);
     }
 
-    public void deleteAlert (String userName, String alertId) {
+    public void dismissAlert (String userName, String alertId) {
         String url = coraTestUrl + "/cora/api/v1/external/alerts/" + alertId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
         post (url, body (mapper.writeValueAsString (params)));
     }
 
-    public void deleteAlertsForUserName (String userName) {
+    public void dismissAlertsForUserName (String userName) {
         Alerts userAlerts = getAlertsSummary (userName);
 
         if (userAlerts != null && userAlerts.orderAlerts.size () > 0) {
             for (Alerts.Alert alert : userAlerts.orderAlerts) {
-                deleteAlert (userName, alert.id);
+                dismissAlert (userName, alert.id);
             }
 
+        }
+    }
+
+    public void dismissAlertsForOrder (String userName, String orderNo) {
+        Alerts userAlerts = getAlertsSummary (userName);
+
+        if (userAlerts != null && userAlerts.orderAlerts.size () > 0) {
+            for (Alerts.Alert alert : userAlerts.orderAlerts) {
+                if (alert.order.orderNumber.equals (orderNo)) {
+                    dismissAlert (userName, alert.id);
+                }
+            }
         }
     }
 
