@@ -5,6 +5,8 @@ import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.NonHospital;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
+import java.util.function.Function;
+import org.openqa.selenium.WebDriver;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
@@ -33,12 +35,24 @@ public abstract class BillingNewOrder extends CoraPage {
         assertTrue (clickAndSelectText (billing, type.label));
     }
 
+    public void waitForBilling () {
+        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return getDropdownOptions (billing).size () > 1;
+            }
+        }));
+    }
+
     public ChargeType getBilling () {
         return getEnum (ChargeType.class, getFirstSelectedValue (billing).replace ("string:", ""));
     }
 
     public List <String> getBillingDropDownOptions () {
         return getDropdownOptions (billing);
+    }
+
+    public boolean isBillingAddressVisible () {
+        return isElementPresent ("//*[contains (text(),'Patient Billing Address')]");
     }
 
     public abstract void enterABNstatus (AbnStatus status);
@@ -85,17 +99,31 @@ public abstract class BillingNewOrder extends CoraPage {
 
     public abstract void enterPatientAddress1 (String address1);
 
+    public abstract String getPatientAddress1 ();
+
     public abstract void enterPatientAddress2 (String address2);
+
+    public abstract String getPatientAddress2 ();
 
     public abstract void enterPatientPhone (String phone);
 
+    public abstract String getPatientPhone ();
+
     public abstract void enterPatientEmail (String email);
+
+    public abstract String getPatientEmail ();
 
     public abstract void enterPatientCity (String city);
 
+    public abstract String getPatientCity ();
+
     public abstract void enterPatientState (String state);
 
+    public abstract String getPatientState ();
+
     public abstract void enterPatientZipcode (String zipcode);
+
+    public abstract String getPatientZipcode ();
 
     public void enterPatientAddress (Patient patient) {
         enterPatientAddress1 (patient.address);
@@ -186,5 +214,17 @@ public abstract class BillingNewOrder extends CoraPage {
     public void clickCompareAndSelectBilling () {
         String css = "[ng-click=\"ctrl.showCompareBillingModal()\"";
         assertTrue (click (css));
+    }
+
+    public Patient getPatientBillingAddress () {
+        Patient patient = new Patient ();
+        patient.address = getPatientAddress1 ();
+        patient.address2 = getPatientAddress2 ();
+        patient.locality = getPatientCity ();
+        patient.region = getPatientState ();
+        patient.postCode = getPatientZipcode ();
+        patient.phone = getPatientPhone ();
+        patient.email = getPatientEmail ();
+        return patient;
     }
 }

@@ -13,7 +13,6 @@ import com.adaptivebiotech.cora.dto.BillingSurvey;
 import com.adaptivebiotech.cora.dto.BillingSurvey.Questionnaire;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
-import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 
 /**
@@ -22,7 +21,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
  */
 public class BillingNewOrderTDetect extends BillingNewOrder {
 
-    private final String billingQuestionnaire         = "//div[*[@class='billing-sub-header' and text()='Insurance Billing Questions']]";
+    private final String billingQuestionnaire         = "//a[*[@class='billing-sub-header' and text()='Insurance Billing Questions']]";
     private final String abnStatus                    = "#abn-status-type";
     private final String insuranceProvider            = "[formcontrolname='insuranceProvider']";
     private final String groupNumber                  = "[formcontrolname='groupNumber']";
@@ -52,11 +51,20 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     private final String patientState                 = "[formcontrolname='region']";
     private final String patientZipcode               = "[formcontrolname='postCode']";
 
+    public BillingNewOrderTDetect (int staticNavBarHeight) {
+        super.staticNavBarHeight = staticNavBarHeight;
+    }
+
     public boolean isBillingQuestionsVisible () {
         return isElementPresent (billingQuestionnaire);
     }
 
     public BillingSurvey parseBillingQuestions () {
+        String container = "[ng-show*='showInsuranceQuestionnaires']";
+        assertTrue (waitUntilVisible (billingQuestionnaire));
+        if (!isElementPresent (container))
+            assertTrue (click (billingQuestionnaire));
+
         List <Questionnaire> questionnaires = new ArrayList <> ();
         for (WebElement li : waitForElements (".billing-questionnaire li")) {
             Questionnaire q = new Questionnaire ();
@@ -66,7 +74,7 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
             questionnaires.add (q);
         }
         BillingSurvey survey = new BillingSurvey (questionnaires);
-        survey.status = getText (billingQuestionnaire + "/*[contains (@class,'insurance-alert')]");
+        survey.status = getText (container + " .insurance-alert");
         return survey;
     }
 
@@ -298,17 +306,4 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     public String getPatientZipcode () {
         return readInput (patientZipcode);
     }
-
-    public Patient getPatientBillingAddress () {
-        Patient patient = new Patient ();
-        patient.address = getPatientAddress1 ();
-        patient.address2 = getPatientAddress2 ();
-        patient.locality = getPatientCity ();
-        patient.region = getPatientState ();
-        patient.postCode = getPatientZipcode ();
-        patient.phone = getPatientPhone ();
-        patient.email = getPatientEmail ();
-        return patient;
-    }
-
 }

@@ -25,6 +25,7 @@ public class MiraDetail extends Mira {
 
     private final int      durationSeconds         = 120;
     private final int      pollingSeconds          = 10;
+    private final int      pollingMillis           = 25;
     protected final String SFDCOrderLabelParent    = "//label[text()='immunoSEQ SFDC Order']/..";
     protected final String PairSEQOrderLabelParent = "//label[text()='pairSEQ SFDC Order']/..";
 
@@ -117,7 +118,11 @@ public class MiraDetail extends Mira {
         waitForNotification ();
         waitUntilVisible (popupTitle);
         clickPopupOK ();
-        waitForNotification ();
+        try {
+            waitForNotification ();
+        } catch (Throwable t) { // sometimes miss this b/c it disappears before the popup
+            info ("did not see notification after MiraPrepComplete, continuing...");
+        }
     }
 
     public void clickStatusTab () {
@@ -190,7 +195,7 @@ public class MiraDetail extends Mira {
                 return false;
             }
         };
-        return waitForBooleanCondition (durationSeconds, pollingSeconds, func);
+        return waitUntil (durationSeconds * 1000, pollingSeconds * 1000, func);
     }
 
     public Boolean waitForStatus (MiraStatus status, int durationSeconds, int pollingSeconds) {
@@ -216,7 +221,7 @@ public class MiraDetail extends Mira {
                 return false;
             }
         };
-        return waitForBooleanCondition (durationSeconds, pollingSeconds, func);
+        return waitUntil (durationSeconds * 1000, pollingSeconds * 1000, func);
     }
 
     public void setQCStatus (MiraQCStatus status) {
@@ -296,7 +301,7 @@ public class MiraDetail extends Mira {
                 return false;
             }
         };
-        waitForBooleanCondition (300, 30, func);
+        waitUntil (300000, 30000, func);
     }
 
     public void clickSave (boolean expectPopup) {
@@ -456,8 +461,8 @@ public class MiraDetail extends Mira {
         String popup = "//div[contains(@class, 'alert-danger')]";
         WaitForPopupFunction func = new WaitForPopupFunction (popup);
         Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
-                                                                     .withTimeout (Duration.ofSeconds (120))
-                                                                     .pollingEvery (Duration.ofMillis (25));
+                                                                     .withTimeout (Duration.ofSeconds (durationSeconds))
+                                                                     .pollingEvery (Duration.ofMillis (pollingMillis));
         wait.until (func);
     }
 
@@ -466,12 +471,12 @@ public class MiraDetail extends Mira {
         WaitForPopupFunction func = new WaitForPopupFunction (popup);
 
         Wait <WebDriver> wait = new FluentWait <> (this.getDriver ())
-                                                                     .withTimeout (Duration.ofSeconds (120))
-                                                                     .pollingEvery (Duration.ofMillis (25));
+                                                                     .withTimeout (Duration.ofSeconds (durationSeconds))
+                                                                     .pollingEvery (Duration.ofMillis (pollingMillis));
         wait.until (func);
     }
 
-    protected MiraStage waitForStatusTable (int durationSeconds, int pollingSeconds) {
+    private MiraStage waitForStatusTable (int durationSeconds, int pollingSeconds) {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {
                 MiraStage currentStage = getCurrentStage ();
@@ -481,7 +486,7 @@ public class MiraDetail extends Mira {
                 return false;
             }
         };
-        assertTrue (waitForBooleanCondition (durationSeconds, pollingSeconds, func));
+        assertTrue (waitUntil (durationSeconds * 1000, pollingSeconds * 1000, func));
         return getCurrentStage ();
     }
 

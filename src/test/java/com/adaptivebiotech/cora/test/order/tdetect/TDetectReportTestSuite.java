@@ -11,7 +11,7 @@ import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildCovidOrder;
+import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB_v4b;
 import static com.adaptivebiotech.test.utils.Logging.info;
@@ -96,7 +96,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     private final String       result              = "RESULT";
     private final String       expTestResult       = "NEGATIVE";
     private final String       reviewedReleasedBy  = "svc_cora_test_phi_preprod, NBCDCH-PS";
-    private final String       approvedBy          = "Stephanie Hallam, Ph.D., D(ABMGG)";
+    private final String       approvedBy          = "John Alsobrook, II, PhD, DABCC";
 
     private final String       tsvPath             = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e/HCYJNBGXJ_0_CLINICAL-CLINICAL_112770-SN-7929.adap.txt.results.tsv.gz";
     private final String       reviewText          = "REVIEWED AND RELEASED BY DATE & TIME";
@@ -307,9 +307,9 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         test.workflowProperties = sample_112770_SN_7929;
 
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildCovidOrder (coraApi.getPhysician (TDetect_client), patient, null, test);
+        Diagnostic diagnostic = buildTdetectOrder(coraApi.getPhysician (TDetect_client), patient, null, test, COVID19_DX_IVD);
         diagnostic.dxResults = null;
-        assertEquals (coraApi.newCovidOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
 
         OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);

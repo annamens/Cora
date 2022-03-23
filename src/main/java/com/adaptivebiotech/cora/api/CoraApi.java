@@ -48,6 +48,7 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.dto.ProvidersResponse;
+import com.adaptivebiotech.cora.dto.Reminders;
 import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
@@ -64,9 +65,9 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class CoraApi {
 
-    private final long  millisRetry = 3000000l;                                        // 50mins
-    private final long  waitRetry   = 5000l;                                           // 5sec
-    public final Header username    = new BasicHeader ("X-Api-UserName", coraTestUser);
+    private final long  millisDuration = 3000000l;                                        // 50mins
+    private final long  millisPoll     = 5000l;                                           // 5sec
+    public final Header username       = new BasicHeader ("X-Api-UserName", coraTestUser);
     public Header       apiToken;
 
     public void login () {
@@ -88,8 +89,10 @@ public class CoraApi {
 
     public String auth () {
         resetheaders ();
-        headers.get ().add (new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass)));
+        Header coraBasicAuth = new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass));
+        headers.get ().add (coraBasicAuth);
         String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
+        headers.get ().remove (coraBasicAuth);
         apiToken = new BasicHeader ("X-Api-Token", token);
         return token;
     }
@@ -303,7 +306,7 @@ public class CoraApi {
 
     public OrderTest[] waitForOrderReady (String orderId) {
         OrderTest[] tests = getOrderTest (orderId);
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.sampleName == null))) {
             timer.Wait ();
             tests = getOrderTest (orderId);
@@ -323,7 +326,7 @@ public class CoraApi {
 
     public OrderTest[] waitForResearchOrderReady (String sampleName) {
         OrderTest[] tests = searchOrderTests (sampleName);
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.workflowName == null))) {
             timer.Wait ();
             tests = searchOrderTests (sampleName);
@@ -344,7 +347,7 @@ public class CoraApi {
         return tests;
     }
 
-    public HttpResponse newDiagnosticOrder (Diagnostic diagnostic) {
+    public HttpResponse newBcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
         HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                                   HttpResponse.class);
@@ -352,7 +355,7 @@ public class CoraApi {
         return response;
     }
 
-    public HttpResponse createPortalJob (Diagnostic diagnostic) {
+    public HttpResponse newTcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/createPortalJob";
         HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                                   HttpResponse.class);
@@ -360,7 +363,7 @@ public class CoraApi {
         return response;
     }
 
-    public HttpResponse newCovidOrder (Diagnostic diagnostic) {
+    public HttpResponse newTdetectOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
         HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
                                                   HttpResponse.class);
@@ -448,5 +451,29 @@ public class CoraApi {
     public Order[] getOrderAttachments (String orderIdOrNo) {
         String url = coraTestUrl + "/cora/api/v1/attachments/orders/" + orderIdOrNo;
         return mapper.readValue (get (url), Order[].class);
+    }
+
+    public Reminders getActiveRemindersSummary (String userName) {
+        String url = coraTestUrl + "/cora/api/v1/external/reminders/active";
+        Map <String, String> params = new HashMap <> ();
+        params.put ("username", userName);
+        return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Reminders.class);
+    }
+
+    public void deleteReminder (String reminderId, String userName) {
+        String url = coraTestUrl + "/cora/api/v1/external/reminders/" + reminderId + "/dismiss";
+        Map <String, String> params = new HashMap <> ();
+        params.put ("username", userName);
+        post (url, body (mapper.writeValueAsString (params)));
+    }
+
+    public void deleteRemindersForUserName (String userName) {
+        Reminders activeReminders = getActiveRemindersSummary (userName);
+
+        if (activeReminders != null && activeReminders.reminders.size () > 0) {
+            for (Reminders.Reminder rem : activeReminders.reminders) {
+                deleteReminder (rem.id, userName);
+            }
+        }
     }
 }

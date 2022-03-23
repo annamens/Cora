@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
@@ -14,8 +15,8 @@ import com.seleniumfy.test.utils.Timeout;
 
 public class OrderStatus extends OrderHeader {
 
-    private final long   millisRetry          = 3000000l;                                                                     // 50mins
-    private final long   waitRetry            = 30000l;                                                                       // 30sec
+    private final long   millisDuration       = 3000000l;                                                                     // 50mins
+    private final long   millisPoll           = 30000l;                                                                       // 30sec
     private final String stageActionDots      = "#stageActionsDropdown";
     private final String stageActionsDropdown = "[aria-labelledby='stageActionsDropdown']";
     private final String dropdownItem         = "//*[@aria-labelledby='stageActionsDropdown']//a[text()='%s']";
@@ -24,7 +25,7 @@ public class OrderStatus extends OrderHeader {
     private final String actionConfirm        = ".action-confirm";
     private final String confirmYes           = "//button[text()='Yes']";
     private final String hideShow             = "//tr[td[text()='%s']]//*[contains (@class, 'history-link') and text()='%s']";
-    private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]//table";
+    private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]//tbody/tr[1]";
 
     public OrderStatus () {
         staticNavBarHeight = 200;
@@ -44,10 +45,6 @@ public class OrderStatus extends OrderHeader {
             cancellationMsgs.add (getText (css + " p"));
         }
         return cancellationMsgs;
-    }
-
-    public String getOrderName () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.name']");
     }
 
     public String getSpecimenNumber () {
@@ -160,19 +157,28 @@ public class OrderStatus extends OrderHeader {
         assertTrue (click (confirmYes));
     }
 
+    public void checkForStuck (String sampleName, StageStatus status) {
+        String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']";
+        if (!Stuck.equals (status)) {
+            if (isElementPresent (format (xpath, sampleName, Stuck)))
+                fail (format ("the workflow is '%s'", Stuck));
+        }
+    }
+
     public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus,
                          String message) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
         String check = format (xpath, sampleName, stage, status, substatus == null ? "" : substatus, message);
         boolean found = false;
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout ()) {
             clickHistory (sampleName);
             if (found = isElementPresent (check)) {
                 clickHide (sampleName);
                 break;
             } else {
+                checkForStuck (sampleName, status);
                 nudgeWorkflow ();
                 clickHide (sampleName);
                 timer.Wait ();
@@ -185,13 +191,14 @@ public class OrderStatus extends OrderHeader {
     public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s";
         boolean found = false;
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && !found) {
             clickHistory (sampleName);
             if (found = isStagePresent (sampleName, stage, status, substatus)) {
                 clickHide (sampleName);
                 break;
             } else {
+                checkForStuck (sampleName, status);
                 nudgeWorkflow ();
                 clickHide (sampleName);
                 timer.Wait ();
@@ -204,13 +211,14 @@ public class OrderStatus extends OrderHeader {
     public void waitFor (String sampleName, StageName stage, StageStatus status) {
         String fail = "unable to locate Stage: %s, Status: %s";
         boolean found = false;
-        Timeout timer = new Timeout (millisRetry, waitRetry);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout ()) {
             clickHistory (sampleName);
             if (found = isStagePresent (sampleName, stage, status)) {
                 clickHide (sampleName);
                 break;
             } else {
+                checkForStuck (sampleName, status);
                 nudgeWorkflow ();
                 clickHide (sampleName);
                 timer.Wait ();
@@ -222,12 +230,12 @@ public class OrderStatus extends OrderHeader {
 
     public boolean isStagePresent (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus) {
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]";
-        return isElementPresent (format (xpath, sampleName, stage.name (), status.name (), substatus.name ()));
+        return isElementPresent (format (xpath, sampleName, stage, status, substatus));
     }
 
     public boolean isStagePresent (String sampleName, StageName stage, StageStatus status) {
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']";
-        return isElementPresent (format (xpath, sampleName, stage.name (), status.name ()));
+        return isElementPresent (format (xpath, sampleName, stage, status));
     }
 
     public void clickHistory (String sampleName) {

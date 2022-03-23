@@ -3,12 +3,18 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.Logging.info;
+import static com.adaptivebiotech.test.utils.TestHelper.formatDt7;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -23,6 +29,7 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
+import com.adaptivebiotech.cora.dto.UploadFile;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
@@ -35,7 +42,7 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
  */
 public class NewOrderClonoSeq extends NewOrder {
 
-    public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq ();
+    public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq (staticNavBarHeight);
     private Accession              accession        = new Accession ();
     private final String           orderNotes       = "[ng-model='ctrl.orderEntry.order.notes']";
     private final String           specimenDelivery = "[ng-model='ctrl.orderEntry.order.specimenDeliveryType']";
@@ -106,9 +113,10 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
-        order.expectedTestType = getExpectedTest ();
         order.tests = getSelectedTests ();
         order.orderAttachments = getCoraAttachments ();
+        order.shipmentAttachments = getShipmentAttachments ();
+        order.trf = getDoraTrf ();
         order.doraAttachments = getDoraAttachments ();
 
         switch (chargeType) {
@@ -155,9 +163,98 @@ public class NewOrderClonoSeq extends NewOrder {
         return order;
     }
 
+    private String getOrderName () {
+        // sometimes it's taking a while for the order detail page to load
+        String css = oEntry + " [ng-bind='ctrl.orderEntry.order.name']";
+        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return isTextInElement (css, "Clinical");
+            }
+        }));
+        return getText (css);
+    }
+
+    private String isTrfAttached () {
+        return getText ("[ng-bind*='ExternalTrf']");
+    }
+
+    public String getProviderName () {
+        return getText ("[ng-bind$='providerFullName']");
+    }
+
+    protected String getProviderAccount () {
+        return getText ("[ng-bind='ctrl.orderEntry.order.authorizingProvider.account.name']");
+    }
+
+    public String getPatientName () {
+        return getText ("[ng-bind$='patientFullName']");
+    }
+
+    public String getPatientDOB () {
+        return getText ("[ng-bind^='ctrl.orderEntry.order.patient.dateOfBirth']");
+    }
+
     public String getCollectionDate () {
         String css = "[ng-model^='ctrl.orderEntry.specimen.collectionDate']";
         return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
+    }
+
+    public List <UploadFile> getCoraAttachments () {
+        List <UploadFile> coraAttachments = new ArrayList <> ();
+        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isOrderAttachment'] .attachments-table-row";
+        if (isElementPresent (files))
+            for (WebElement element : waitForElements (files)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
+                attachment.fileUrl = getAttribute (element, "a[href]", "href");
+                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
+                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
+                coraAttachments.add (attachment);
+            }
+        return coraAttachments;
+    }
+
+    private List <UploadFile> getShipmentAttachments () {
+        List <UploadFile> shipmentAttachments = new ArrayList <> ();
+        String files = "[attachments='ctrl.orderEntry.attachments'][filter-by='CORA.SHIPMENTS'] .attachments-table-row";
+        if (isElementPresent (files))
+            for (WebElement element : waitForElements (files)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
+                attachment.fileUrl = getAttribute (element, "a[href]", "href");
+                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
+                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
+                shipmentAttachments.add (attachment);
+            }
+        return shipmentAttachments;
+    }
+
+    private UploadFile getDoraTrf () {
+        UploadFile doraTrFile = new UploadFile ();
+        String doraTrf = "[ng-if='ctrl.orderEntry.hasDoraTrf']";
+        if (isElementPresent (doraTrf)) {
+            doraTrFile.fileName = getText (String.join (" ", doraTrf, ".btn-link"));
+            doraTrFile.fileUrl = getAttribute (String.join (" ", doraTrf, "a[href]"), "href");
+        }
+        return doraTrFile;
+    }
+
+    private List <UploadFile> getDoraAttachments () {
+        List <UploadFile> doraAttachments = new ArrayList <> ();
+        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isDoraAttachment'] .attachments-table-row";
+        if (isElementPresent (files))
+            for (WebElement element : waitForElements (files)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
+                attachment.fileUrl = getAttribute (element, "a[href]", "href");
+                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
+                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
+                doraAttachments.add (attachment);
+            }
+        return doraAttachments;
     }
 
     public String getPatientGender () {
@@ -238,7 +335,11 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void waitForSpecimenDelivery () {
-        assertTrue (waitUntilVisible (specimenDelivery));
+        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return getDropdownOptions (specimenDelivery).size () > 0;
+            }
+        }));
     }
 
     public void enterSpecimenDelivery (DeliveryType type) {

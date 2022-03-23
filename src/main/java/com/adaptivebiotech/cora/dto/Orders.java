@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
+import com.adaptivebiotech.cora.dto.Reminders.Reminder;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.utils.PageHelper.FriendlyOrderStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
@@ -82,13 +83,14 @@ public final class Orders {
         public List <String>       icdcodes;
         public Specimen            specimenDto;
         public String              reportDate;
-        public String              expectedTestType;
         public List <OrderTest>    tests = new ArrayList <> ();
-        public List <String>       doraAttachments;
-        public List <String>       orderAttachments;
-        public List <String>       shipmentAttachments;
+        public UploadFile          trf;
+        public List <UploadFile>   doraAttachments;
+        public List <UploadFile>   orderAttachments;
+        public List <UploadFile>   shipmentAttachments;
         public String              notes;
-        public Alert               alert;
+        public List <Alert>        alerts;
+        public Reminder            reminder;
         public Workflow            workflow;
         public OrderType           orderType;
         public Boolean             postToImmunoSEQ;
@@ -96,7 +98,7 @@ public final class Orders {
         public DeliveryType        specimenDeliveryType;
 
         // for /cora/api/v1/orders/search
-        public OrderCategory       category;
+        public String              category;
         public String              customerName;
         public String              displayOrderNumber;
         public String              orderNumber;
@@ -354,7 +356,7 @@ public final class Orders {
     }
 
     public enum OrderStatus {
-        All, Pending, Active, Completed, Cancelled, Failed
+        All, Pending, Active, Completed, Cancelled, FailedActivation, PendingActivation
     }
 
     public enum Assay {

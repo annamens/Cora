@@ -8,14 +8,16 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_clie
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Amended;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
-import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildDiagnosticOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.Analyzer;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.CalculateSampleSummary;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ReportDelivery;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
@@ -81,17 +83,19 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
      * @sdlc.requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqBcellGatewayMessageUpdate () {
-        Patient patient = scenarioBuilderPatient ();
+        Patient patient = patientWithAddress ();
         Diagnostic diagnostic = buildDiagnosticOrder (physician,
                                                       patient,
                                                       stage (SecondaryAnalysis, Ready),
                                                       genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
-        assertEquals (coraApi.newDiagnosticOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new BCell ID order");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, SecondaryAnalysis, Finished);
+        orderStatus.waitFor (orderTest.sampleName, ShmAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
@@ -135,12 +139,14 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                            patient,
                                            stage (SecondaryAnalysis, Ready),
                                            genCDxTest (MRD_BCell2_CLIA, bcellMrdTsv));
-        assertEquals (coraApi.newDiagnosticOrder (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new BCell MRD order");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, SecondaryAnalysis, Finished);
+        orderStatus.waitFor (orderTest.sampleName, ShmAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
@@ -181,18 +187,22 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
      * @sdlc.requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqTcellGatewayMessageUpdate () {
-        Patient patient = scenarioBuilderPatient ();
+        Patient patient = patientWithAddress ();
         Diagnostic diagnostic = buildDiagnosticOrder (physician,
                                                       patient,
                                                       stage (NorthQC, Ready),
                                                       genTcrTest (ID_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
-        assertEquals (coraApi.createPortalJob (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newTcellOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell ID order");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_TCRB);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, NorthQC, Finished);
+        orderStatus.waitFor (orderTest.sampleName, CalculateSampleSummary, Finished);
+        orderStatus.waitFor (orderTest.sampleName, Analyzer, Finished);
+        orderStatus.waitFor (orderTest.sampleName, SecondaryAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
@@ -235,12 +245,16 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                            stage (NorthQC, Ready),
                                            genTcrTest (MRD_TCRB, lastFlowcellId, tcellTsv));
         diagnostic.order.postToImmunoSEQ = true;
-        assertEquals (coraApi.createPortalJob (diagnostic).patientId, patient.id);
+        assertEquals (coraApi.newTcellOrder (diagnostic).patientId, patient.id);
         testLog ("submitted new TCell MRD order");
 
         orderTest = diagnostic.findOrderTest (MRD_TCRB);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
+        orderStatus.waitFor (orderTest.sampleName, NorthQC, Finished);
+        orderStatus.waitFor (orderTest.sampleName, CalculateSampleSummary, Finished);
+        orderStatus.waitFor (orderTest.sampleName, Analyzer, Finished);
+        orderStatus.waitFor (orderTest.sampleName, SecondaryAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
