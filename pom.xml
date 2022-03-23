@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adaptivebiotech.test.functional</groupId>
     <artifactId>cora</artifactId>
-    <version>2.0.2-SNAPSHOT</version>
+    <version>2.0.2</version>
     <name>Adaptive Biotechnologies Functional Tests for Cora</name>
     <repositories>
         <repository>
