@@ -438,22 +438,17 @@ public class CoraApi {
     public void dismissAlertsForUserName (String userName) {
         Alerts userAlerts = getAlertsSummary (userName);
 
-        if (userAlerts != null && userAlerts.orderAlerts.size () > 0) {
-            for (Alerts.Alert alert : userAlerts.orderAlerts) {
-                dismissAlert (userName, alert.id);
-            }
-
+        for (Alerts.Alert alert : userAlerts.orderAlerts) {
+            dismissAlert (userName, alert.id);
         }
     }
 
     public void dismissAlertsForOrder (String userName, String orderNo) {
         Alerts userAlerts = getAlertsSummary (userName);
 
-        if (userAlerts != null && userAlerts.orderAlerts.size () > 0) {
-            for (Alerts.Alert alert : userAlerts.orderAlerts) {
-                if (alert.order.orderNumber.equals (orderNo)) {
-                    dismissAlert (userName, alert.id);
-                }
+        for (Alerts.Alert alert : userAlerts.orderAlerts) {
+            if (alert.order.orderNumber.equals (orderNo)) {
+                dismissAlert (userName, alert.id);
             }
         }
     }
@@ -480,10 +475,8 @@ public class CoraApi {
     public void deleteRemindersForUserName (String userName) {
         Reminders activeReminders = getActiveRemindersSummary (userName);
 
-        if (activeReminders != null && activeReminders.reminders.size () > 0) {
-            for (Reminders.Reminder rem : activeReminders.reminders) {
-                deleteReminder (rem.id, userName);
-            }
+        for (Reminders.Reminder rem : activeReminders.reminders) {
+            deleteReminder (rem.id, userName);
         }
     }
 }
