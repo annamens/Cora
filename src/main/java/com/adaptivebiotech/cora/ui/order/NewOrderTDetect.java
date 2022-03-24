@@ -38,6 +38,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 public class NewOrderTDetect extends NewOrder {
 
     public BillingNewOrderTDetect billing          = new BillingNewOrderTDetect (staticNavBarHeight);
+    public PatientNewOrder patientNewOrder = new PatientNewOrderTDetect();
     private Accession             accession        = new Accession ();
     private final String          dateSigned       = "[formcontrolname='dateSigned']";
     private final String          orderNotes       = "#order-notes";
@@ -58,21 +59,9 @@ public class NewOrderTDetect extends NewOrder {
 
     @Override
     public void createNewPatient (Patient patient) {
-        assertTrue (click ("#new-patient"));
-        assertTrue (waitForElementInvisible (".ab-panel.matches"));
-        assertTrue (isTextInElement (popupTitle, "Create New Patient"));
-        assertTrue (setText ("#firstName", patient.firstName));
-        assertTrue (setText ("#middleName", patient.middleName));
-        assertTrue (setText ("#lastName", patient.lastName));
-        assertTrue (setText ("#dateOfBirth", patient.dateOfBirth));
-        assertTrue (clickAndSelectText ("#gender", patient.gender));
-        if (patient.race != null) {
-            assertTrue (clickAndSelectText ("#race", patient.race.text));
-        }
-        if (patient.ethnicity != null) {
-            assertTrue (clickAndSelectText ("#ethnicity", patient.ethnicity.text));
-        }
-        assertTrue (click ("//button[text()='Save']"));
+        patientNewOrder.clickCreateNewPatient();
+        patientNewOrder.fillPatientInfo(patient);
+        patientNewOrder.clickSave();
         assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
     }
 

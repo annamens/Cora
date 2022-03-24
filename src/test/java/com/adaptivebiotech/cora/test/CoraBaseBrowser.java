@@ -28,8 +28,8 @@ public class CoraBaseBrowser extends TestBase {
 
         coraApi = new CoraApi ();
         coraApi.auth ();
-        coraDb = new CoraDb ();
-        coraDb.openConnection ();
+//        coraDb = new CoraDb ();
+//        coraDb.openConnection ();
     }
 
     @BeforeSuite (alwaysRun = true)
@@ -39,7 +39,7 @@ public class CoraBaseBrowser extends TestBase {
 
     @AfterSuite (alwaysRun = true)
     public final void baseAfterSuite () {
-        coraDb.closeConnection ();
+//        coraDb.closeConnection ();
     }
 
     @BeforeClass (alwaysRun = true)

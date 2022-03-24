@@ -4,12 +4,14 @@ import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
+
+import com.adaptivebiotech.cora.ui.order.PatientNewOrder;
+import com.adaptivebiotech.cora.ui.order.PatientNewOrderTDetect;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.CreateNewPatient;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 
@@ -20,7 +22,8 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     private OrdersList       ordersList       = new OrdersList ();
     private NewOrderTDetect  newOrderTDetect  = new NewOrderTDetect ();
     private Patient          patient          = newPatient ();
-    private CreateNewPatient createNewPatient = new CreateNewPatient ();
+    private PatientNewOrderTDetect createNewPatient = new PatientNewOrderTDetect ();
+
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -31,7 +34,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-9302
      */
-    public void VerifyPatientBirthdateValidation () {
+    public void verifyPatientBirthdateValidation () {
         newOrderTDetect.selectNewTDetectDiagnosticOrder ();
         newOrderTDetect.isCorrectPage ();
         newOrderTDetect.clickPickPatient ();
@@ -44,7 +47,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         // check birthdate can't be earlier than 01/01/1900
         patient.dateOfBirth = "12/31/1899";
         createNewPatient.fillPatientInfo (patient);
-        assertEquals(createNewPatient.getErrorMessage(), "Invalid date! Out of range");
+        assertEquals(createNewPatient.getErrorMessage(), "Invalid date! Out of range!");
         testLog ("Patient with dob earlier then 01/01/1900 can't be created");
         // check no error message for birthdate 01/01/1900
         patient.dateOfBirth = "01/01/1900";
