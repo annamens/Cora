@@ -40,9 +40,11 @@ public final class Alerts {
         public Patient          patient;
         public Specimen         specimen;
         public List <OrderTest> tests = new ArrayList <> ();
-        public String           alertTypeName;
         public String           referencedEntityId;
         public List <String>    recipients;
+
+        // end-point /cora/api/v2/alerts/create
+        public String           alertTypeName;
 
         @Override
         public String toString () {
