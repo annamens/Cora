@@ -29,6 +29,7 @@ public final class Alerts {
 
     public static final class Alert {
 
+        // end-point /cora/api/v1/external/alerts/summary
         public String           id;
         public AlertType        alertType;
 
@@ -36,8 +37,6 @@ public final class Alerts {
         public String           color;
         @JsonAlias ("orderSummary")
         public Order            order;
-        public Physician        physician;
-        public Patient          patient;
         public Specimen         specimen;
         public List <OrderTest> tests = new ArrayList <> ();
         public String           referencedEntityId;
