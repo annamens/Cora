@@ -33,8 +33,6 @@ public final class Alerts {
         public AlertType        alertType;
 
         // used by OrdersList and AlertsList Dora UI pages
-        public String           href;
-        public String           linkText;
         public String           color;
         @JsonAlias ("orderSummary")
         public Order            order;
@@ -42,7 +40,6 @@ public final class Alerts {
         public Patient          patient;
         public Specimen         specimen;
         public List <OrderTest> tests = new ArrayList <> ();
-        public String           alertTypeId;
         public String           alertTypeName;
         public String           referencedEntityId;
         public List <String>    recipients;
