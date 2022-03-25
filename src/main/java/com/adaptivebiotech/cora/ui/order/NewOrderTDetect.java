@@ -38,7 +38,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 public class NewOrderTDetect extends NewOrder {
 
     public BillingNewOrderTDetect billing          = new BillingNewOrderTDetect (staticNavBarHeight);
-    public PatientNewOrder patientNewOrder = new PatientNewOrderTDetect();
+    public PatientNewOrder        patientNewOrder  = new PatientNewOrder ();
     private Accession             accession        = new Accession ();
     private final String          dateSigned       = "[formcontrolname='dateSigned']";
     private final String          orderNotes       = "#order-notes";
@@ -55,14 +55,6 @@ public class NewOrderTDetect extends NewOrder {
         hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();
-    }
-
-    @Override
-    public void createNewPatient (Patient patient) {
-        patientNewOrder.clickCreateNewPatient();
-        patientNewOrder.fillPatientInfo(patient);
-        patientNewOrder.clickSave();
-        assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
     }
 
     public void setPatientMRN (String mrn) {
@@ -394,7 +386,8 @@ public class NewOrderTDetect extends NewOrder {
         isCorrectPage ();
 
         selectPhysician (physician);
-        boolean matchFound = searchOrCreatePatient (patient);
+        clickPickPatient ();
+        boolean matchFound = patientNewOrder.searchOrCreatePatient (patient);
         if (icdCodes != null)
             enterPatientICD_Codes (icdCodes);
         enterCollectionDate (collectionDate);

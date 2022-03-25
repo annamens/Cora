@@ -4,9 +4,6 @@ import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
-
-import com.adaptivebiotech.cora.ui.order.PatientNewOrder;
-import com.adaptivebiotech.cora.ui.order.PatientNewOrderTDetect;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -14,16 +11,16 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.order.PatientNewOrder;
 
 @Test (groups = { "regression", "entlebucher" })
 public class CreateNewPatientTestSuite extends CoraBaseBrowser {
 
-    private Login            login            = new Login ();
-    private OrdersList       ordersList       = new OrdersList ();
-    private NewOrderTDetect  newOrderTDetect  = new NewOrderTDetect ();
-    private Patient          patient          = newPatient ();
-    private PatientNewOrderTDetect createNewPatient = new PatientNewOrderTDetect ();
-
+    private Login           login            = new Login ();
+    private OrdersList      ordersList       = new OrdersList ();
+    private NewOrderTDetect newOrderTDetect  = new NewOrderTDetect ();
+    private Patient         patient          = newPatient ();
+    private PatientNewOrder createNewPatient = new PatientNewOrder ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -40,24 +37,24 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         newOrderTDetect.clickPickPatient ();
         // check birthdate can't be in future
         patient.dateOfBirth = getPastFutureDate (2);
-        createNewPatient.clickCreateNewPatient();
+        createNewPatient.clickCreateNewPatient ();
         createNewPatient.fillPatientInfo (patient);
-        assertEquals(createNewPatient.getErrorMessage(), "Invalid date! Cannot be in future!");
+        assertEquals (createNewPatient.getErrorMessage (), "Invalid date! Cannot be in future!");
         testLog ("Patient with dob in future can't be created");
         // check birthdate can't be earlier than 01/01/1900
         patient.dateOfBirth = "12/31/1899";
         createNewPatient.fillPatientInfo (patient);
-        assertEquals(createNewPatient.getErrorMessage(), "Invalid date! Out of range!");
+        assertEquals (createNewPatient.getErrorMessage (), "Invalid date! Out of range!");
         testLog ("Patient with dob earlier then 01/01/1900 can't be created");
         // check no error message for birthdate 01/01/1900
         patient.dateOfBirth = "01/01/1900";
         createNewPatient.fillPatientInfo (patient);
-        assertEquals(createNewPatient.getErrorMessage(), "");
+        assertEquals (createNewPatient.getErrorMessage (), "");
         testLog ("Patient with dob starting from 01/01/1900 can be created");
         // check birthdate today's date
         patient.dateOfBirth = getPastFutureDate (0);
         createNewPatient.fillPatientInfo (patient);
-        assertEquals(createNewPatient.getErrorMessage(), "");
+        assertEquals (createNewPatient.getErrorMessage (), "");
         testLog ("Patient with dob today can be created");
         createNewPatient.clickSave ();
         newOrderTDetect.isCorrectPage ();
