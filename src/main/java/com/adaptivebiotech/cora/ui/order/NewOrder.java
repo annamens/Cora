@@ -15,7 +15,6 @@ import java.util.List;
 import org.openqa.selenium.StaleElementReferenceException;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
-import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.test.utils.Logging;
@@ -45,8 +44,6 @@ public abstract class NewOrder extends OrderHeader {
     public List <String> getSectionHeaders () {
         return getTextList (".order-entry h2");
     }
-
-    public abstract void createNewPatient (Patient patient);
 
     public String getPatientMRDStatus () {
         return getText (patientMrdStatus);
@@ -210,37 +207,9 @@ public abstract class NewOrder extends OrderHeader {
         clickSelectPhysician ();
     }
 
-    public boolean searchOrCreatePatient (Patient patient) {
-        clickPickPatient ();
-        searchPatient (patient);
-
-        boolean matchFound = false;
-        String firstrow = ".ab-panel.matches .row:nth-child(1)";
-        if (getText (firstrow).matches ("No patient(s)? found\\."))
-            createNewPatient (patient);
-        else {
-            assertTrue (click (firstrow));
-            assertTrue (click ("#select-patient"));
-            moduleLoading ();
-            setPatientMRN (patient.mrn);
-            matchFound = true;
-        }
-        return matchFound;
-
-    }
-
     public void clickPickPatient () {
         assertTrue (click ("//button[text()='Pick Patient...']"));
         assertTrue (isTextInElement (popupTitle, "Pick Patient"));
-    }
-
-    public void searchPatient (Patient patient) {
-        assertTrue (setText ("#patient-firstname", patient.firstName));
-        assertTrue (setText ("#patient-lastname", patient.lastName));
-        assertTrue (setText ("#patient-dateofbirth", patient.dateOfBirth));
-        assertTrue (setText ("#patient-mrn", patient.mrn));
-        assertTrue (click ("#patient-search"));
-        pageLoading ();
     }
 
     public void removePatient () {
