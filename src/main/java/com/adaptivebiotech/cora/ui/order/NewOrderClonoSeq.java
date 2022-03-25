@@ -285,14 +285,6 @@ public class NewOrderClonoSeq extends NewOrder {
         waitUntilActivated ();
     }
 
-    // @Override
-    // public void createNewPatient (Patient patient) {
-    // patientNewOrder.clickCreateNewPatient();
-    // patientNewOrder.fillPatientInfo(patient);
-    // patientNewOrder.clickSave();
-    // assertTrue (setText ("[name='mrn']", patient.mrn));
-    // }
-
     public void setPatientMRN (String mrn) {
         assertTrue (setText ("#mrn-input", mrn));
     }

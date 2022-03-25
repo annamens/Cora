@@ -45,8 +45,6 @@ public abstract class NewOrder extends OrderHeader {
         return getTextList (".order-entry h2");
     }
 
-    // public abstract void createNewPatient (Patient patient);
-
     public String getPatientMRDStatus () {
         return getText (patientMrdStatus);
     }

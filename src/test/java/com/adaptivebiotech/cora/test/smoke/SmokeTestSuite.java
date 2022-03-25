@@ -20,8 +20,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
-
-import com.adaptivebiotech.cora.ui.order.*;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -33,6 +31,11 @@ import com.adaptivebiotech.cora.ui.container.AddContainer;
 import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.mira.MirasList;
 import com.adaptivebiotech.cora.ui.mira.NewMira;
+import com.adaptivebiotech.cora.ui.order.Batch;
+import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
+import com.adaptivebiotech.cora.ui.order.OrderTestsList;
+import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.order.PatientNewOrder;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.patient.PatientsList;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
@@ -48,18 +51,18 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
 @Test (groups = "smoke")
 public class SmokeTestSuite extends CoraBaseBrowser {
 
-    private Login            login        = new Login ();
-    private NewOrderClonoSeq diagnostic   = new NewOrderClonoSeq ();
-    private PatientNewOrder patientNewOrder = new PatientNewOrder();
-    private Task             task         = new Task ();
-    private NewShipment      shipment     = new NewShipment ();
-    private Batch            batch        = new Batch ();
-    private NewMira          mira         = new NewMira ();
-    private AddContainer     addContainer = new AddContainer ();
-    private OrdersList       oList        = new OrdersList ();
-    private PatientsList     pList        = new PatientsList ();
-    private MirasList        mList        = new MirasList ();
-    private ContainersList   cList        = new ContainersList ();
+    private Login            login           = new Login ();
+    private NewOrderClonoSeq diagnostic      = new NewOrderClonoSeq ();
+    private PatientNewOrder  patientNewOrder = new PatientNewOrder ();
+    private Task             task            = new Task ();
+    private NewShipment      shipment        = new NewShipment ();
+    private Batch            batch           = new Batch ();
+    private NewMira          mira            = new NewMira ();
+    private AddContainer     addContainer    = new AddContainer ();
+    private OrdersList       oList           = new OrdersList ();
+    private PatientsList     pList           = new PatientsList ();
+    private MirasList        mList           = new MirasList ();
+    private ContainersList   cList           = new ContainersList ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
