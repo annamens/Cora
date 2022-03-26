@@ -178,7 +178,6 @@ public class TestHelper {
         return patient;
     }
 
-    // scenario builder takes only client billingType
     public static Patient scenarioBuilderPatient () {
         Patient patient = new Patient ();
         patient.id = randomUUID ().toString ();
@@ -191,11 +190,11 @@ public class TestHelper {
         patient.dateOfBirth = "1999-01-01";
         patient.race = AMERICAN_INDIAN;
         patient.ethnicity = ASKED;
-        patient.billingType = Client;
-        patient.insurance1 = null;
-        patient.insurance2 = null;
-        patient.insurance3 = null;
-        patient.address = null;
+
+        getRandomAddress (patient);
+        patient.billingType = PatientSelfPay;
+        patient.address2 = "Ste 200";
+        patient.postCode = "98138"; // has to be a valid zipcode
         return patient;
     }
 
