@@ -67,9 +67,6 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
     }
 
-    /**
-     * @sdlc.requirements
-     */
     public void verify_tracking_report () {
         OrderTest orderTest = diagnostic.findOrderTest (assayMRD);
         String saResultJson = join ("/", downloadDir, orderTest.sampleName, saResult);

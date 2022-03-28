@@ -72,9 +72,6 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         assertEquals (coraApi.newTcellOrder (diagnostic).patientId, patient.id);
     }
 
-    /**
-     * @sdlc.requirements
-     */
     public void verify_tcrb_tracking_report () {
         OrderTest orderTest = diagnostic.findOrderTest (MRD_TCRB);
         String reportJson = join ("/", downloadDir, orderTest.sampleName, report);
@@ -116,9 +113,6 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         testLog ("found a record of the sample where the lifted ID clone was found in the secondary anaylysis report");
     }
 
-    /**
-     * @sdlc.requirements
-     */
     public void verify_tcrg_tracking_report () {
         OrderTest orderTest = diagnostic.findOrderTest (MRD_TCRG);
         String reportJson = join ("/", downloadDir, orderTest.sampleName, report);

@@ -56,9 +56,6 @@ public class AboveLoQTestSuite extends ReportTestBase {
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
     }
 
-    /**
-     * @sdlc.requirements
-     */
     public void verify_clonality_report () {
         OrderTest orderTest = diagnostic.findOrderTest (assayID);
         login.doLogin ();
@@ -77,9 +74,6 @@ public class AboveLoQTestSuite extends ReportTestBase {
         report.releaseReport (assayID, Pass);
     }
 
-    /**
-     * @sdlc.requirements
-     */
     public void verify_tracking_report () {
         OrderTest orderTest = diagnostic.findOrderTest (assayMRD);
         login.doLogin ();
