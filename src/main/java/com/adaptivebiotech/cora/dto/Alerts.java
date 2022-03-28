@@ -4,7 +4,6 @@ import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Orders.Order;
-import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 /**
@@ -30,20 +29,18 @@ public final class Alerts {
     public static final class Alert {
 
         // end-point /cora/api/v1/external/alerts/summary
-        public String           id;
-        public AlertType        alertType;
+        public String        id;
+        public AlertType     alertType;
 
         // used by OrdersList and AlertsList Dora UI pages
-        public String           color;
+        public String        color;
         @JsonAlias ("orderSummary")
-        public Order            order;
-        public Specimen         specimen;
-        public List <OrderTest> tests = new ArrayList <> ();
-        public String           referencedEntityId;
-        public List <String>    recipients;
+        public Order         order;
+        public String        referencedEntityId;
 
         // end-point /cora/api/v2/alerts/create
-        public String           alertTypeName;
+        public String        alertTypeName;
+        public List <String> recipients;
 
         @Override
         public String toString () {
