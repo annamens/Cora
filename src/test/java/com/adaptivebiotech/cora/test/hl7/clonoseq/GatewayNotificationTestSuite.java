@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_clie
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Amended;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildDiagnosticOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -83,7 +84,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
      * @sdlc.requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqBcellGatewayMessageUpdate () {
-        Patient patient = patientWithAddress ();
+        Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildDiagnosticOrder (physician,
                                                       patient,
                                                       stage (SecondaryAnalysis, Ready),
@@ -187,7 +188,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
      * @sdlc.requirements SR-7287, SR-7369
      */
     public void verifyClonoSeqTcellGatewayMessageUpdate () {
-        Patient patient = patientWithAddress ();
+        Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildDiagnosticOrder (physician,
                                                       patient,
                                                       stage (NorthQC, Ready),

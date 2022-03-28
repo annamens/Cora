@@ -15,6 +15,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.db.CoraDb;
+import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.test.TestBase;
 
 public class CoraBaseBrowser extends TestBase {
@@ -57,5 +60,28 @@ public class CoraBaseBrowser extends TestBase {
 
     protected String artifacts (String... paths) {
         return join ("/", "target/logs", join ("/", paths));
+    }
+
+    protected CoraTest genCDxTest (Assay assay, String tsvPath) {
+        CoraTest test = coraApi.getCDxTest (assay);
+        test.workflowProperties = new WorkflowProperties ();
+        test.workflowProperties.disableHiFreqSave = true;
+        test.workflowProperties.disableHiFreqSharing = true;
+        test.workflowProperties.notifyGateway = true;
+        test.workflowProperties.tsvOverridePath = tsvPath;
+        return test;
+    }
+
+    // don't set workflowProperties.tsvOverridePath, otherwise it will skip IMPORTING substatus
+    protected CoraTest genTcrTest (Assay assay, String flowcell, String tsvPath) {
+        CoraTest test = coraApi.getCDxTest (assay);
+        test.workflowProperties = new WorkflowProperties ();
+        test.workflowProperties.disableHiFreqSave = true;
+        test.workflowProperties.disableHiFreqSharing = true;
+        test.workflowProperties.notifyGateway = true;
+        test.flowcell = flowcell;
+        test.pipelineConfigOverride = "classic.calib";
+        test.tsvPath = tsvPath;
+        return test;
     }
 }
