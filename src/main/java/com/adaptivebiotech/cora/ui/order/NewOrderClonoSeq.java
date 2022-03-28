@@ -43,6 +43,7 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 public class NewOrderClonoSeq extends NewOrder {
 
     public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq (staticNavBarHeight);
+    public PatientNewOrder         patientNewOrder  = new PatientNewOrder ();
     private Accession              accession        = new Accession ();
     private final String           orderNotes       = "[ng-model='ctrl.orderEntry.order.notes']";
     private final String           specimenDelivery = "[ng-model='ctrl.orderEntry.order.specimenDeliveryType']";
@@ -284,20 +285,6 @@ public class NewOrderClonoSeq extends NewOrder {
         waitUntilActivated ();
     }
 
-    @Override
-    public void createNewPatient (Patient patient) {
-        assertTrue (click ("#new-patient"));
-        assertTrue (waitForElementInvisible (".ab-panel.matches"));
-        assertTrue (isTextInElement (popupTitle, "Create New Patient"));
-        assertTrue (setText ("[name='firstName']", patient.firstName));
-        assertTrue (setText ("[name='middleName']", patient.middleName));
-        assertTrue (setText ("[name='lastName']", patient.lastName));
-        assertTrue (setText ("[name='dateOfBirth']", patient.dateOfBirth));
-        assertTrue (clickAndSelectValue ("[name='gender']", "string:" + patient.gender));
-        assertTrue (click ("//button[text()='Save']"));
-        assertTrue (setText ("[name='mrn']", patient.mrn));
-    }
-
     public void setPatientMRN (String mrn) {
         assertTrue (setText ("#mrn-input", mrn));
     }
@@ -436,7 +423,9 @@ public class NewOrderClonoSeq extends NewOrder {
         isCorrectPage ();
 
         selectPhysician (physician);
-        boolean matchFound = searchOrCreatePatient (patient);
+        clickPickPatient ();
+        boolean matchFound = patientNewOrder.searchOrCreatePatient (patient);
+        setPatientMRN (patient.mrn);
         enterPatientICD_Codes (icdCodes);
 
         switch (patient.billingType) {
