@@ -79,7 +79,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
         test.workflowProperties.lastAcceptedTsvPath = azPipelineNorth + "/210603_NB552480_0036_AH2C2LBGXJ/v3.1/20210605_1334/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H2C2LBGXJ_0_CLINICAL-CLINICAL_105508-01MC-3902649.adap.txt.results.tsv.gz";
         test.workflowProperties.sampleName = "105508-01MC-3902649";
 
-        diagnostic = buildDiagnosticOrder (patient, stage (SecondaryAnalysis, Ready), test);
+        diagnostic = buildCdxOrder (patient, stage (SecondaryAnalysis, Ready), test);
         diagnostic.specimen.sampleType = FreshBoneMarrow;
         diagnostic.specimen.properties.SourceType = BoneMarrow;
         diagnostic.specimen.properties.Anticoagulant = EDTA;

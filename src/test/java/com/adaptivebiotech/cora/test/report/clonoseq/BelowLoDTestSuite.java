@@ -23,7 +23,6 @@ import static java.lang.String.join;
 import static java.time.LocalDateTime.parse;
 import static org.testng.Assert.assertEquals;
 import java.time.LocalDateTime;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -43,8 +42,6 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 public class BelowLoDTestSuite extends ReportTestBase {
 
     private final String   downloadDir  = artifacts (this.getClass ().getName ());
-    private final Patient  patientClia  = scenarioBuilderPatient ();
-    private final Patient  patientIvd   = scenarioBuilderPatient ();
     private final Assay    assayCliaID  = ID_BCell2_CLIA;
     private final Assay    assayCliaMRD = MRD_BCell2_CLIA;
     private final Assay    assayIvdID   = ID_BCell2_IVD;
@@ -52,30 +49,20 @@ public class BelowLoDTestSuite extends ReportTestBase {
     private Login          login        = new Login ();
     private OrcaHistory    history      = new OrcaHistory ();
     private ReportClonoSeq report       = new ReportClonoSeq ();
-    private Diagnostic     diagnosticClia, diagnosticIvd;
-
-    @BeforeClass (alwaysRun = true)
-    public void beforeClass () {
-        coraApi.addTokenAndUsername ();
-        diagnosticClia = buildDiagnosticOrder (patientClia,
-                                               stage (SecondaryAnalysis, Ready),
-                                               genCDxTest (assayCliaID, azTsvPath + "/below-lod.id.tsv.gz"),
-                                               genCDxTest (assayCliaMRD, azTsvPath + "/below-lod.mrd.tsv.gz"));
-        assertEquals (coraApi.newBcellOrder (diagnosticClia).patientId, patientClia.id);
-
-        diagnosticIvd = buildDiagnosticOrder (patientIvd,
-                                              stage (SecondaryAnalysis, Ready),
-                                              genCDxTest (assayIvdID, azTsvPath + "/below-lod.id.tsv.gz"),
-                                              genCDxTest (assayIvdMRD, azTsvPath + "/below-lod.mrd.tsv.gz"));
-        assertEquals (coraApi.newBcellOrder (diagnosticIvd).patientId, patientIvd.id);
-    }
 
     /**
      * @sdlc.requirements SR-5046
      */
     @Test (groups = "sinnoh")
-    public void verify_clia_clonality_report () {
-        OrderTest orderTest = diagnosticClia.findOrderTest (assayCliaID);
+    public void verify_clia_report () {
+        Patient patient = scenarioBuilderPatient ();
+        Diagnostic diagnostic = buildCdxOrder (patient,
+                                               stage (SecondaryAnalysis, Ready),
+                                               genCDxTest (assayCliaID, azTsvPath + "/below-lod.id.tsv.gz"),
+                                               genCDxTest (assayCliaMRD, azTsvPath + "/below-lod.mrd.tsv.gz"));
+        assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
+
+        OrderTest orderTest = diagnostic.findOrderTest (assayCliaID);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
@@ -93,7 +80,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         report.clickReportTab (assayCliaID);
         report.releaseReport (assayCliaID, Pass);
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
-        ClonoSeq clonoseq = basicClonoSeq (patientClia, diagnosticClia, orderTest, BCell);
+        ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isCLIA = true;
         clonoseq.isClonality = true;
         clonoseq.pageSize = 3;
@@ -103,23 +90,16 @@ public class BelowLoDTestSuite extends ReportTestBase {
         String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
-    }
 
-    /**
-     * @sdlc.requirements SR-5046
-     */
-    @Test (groups = "sinnoh")
-    public void verify_clia_tracking_report () {
-        OrderTest orderTest = diagnosticClia.findOrderTest (assayCliaMRD);
+        orderTest = diagnostic.findOrderTest (assayCliaMRD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String expected = getSystemResource ("SecondaryAnalysis/below-lod.mrd.json").getPath ();
-        String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
-        coraDebugApi.login ();
+        expected = getSystemResource ("SecondaryAnalysis/below-lod.mrd.json").getPath ();
+        actual = join ("/", downloadDir, orderTest.sampleName, saResult);
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, expected);
         testLog ("the secondaryAnalysisResult.json for below LOD for tracking matched with the baseline");
@@ -127,15 +107,15 @@ public class BelowLoDTestSuite extends ReportTestBase {
         history.clickOrderTest ();
         report.clickReportTab (assayCliaMRD);
         report.releaseReport (assayCliaMRD, Pass);
-        LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
-        ClonoSeq clonoseq = basicClonoSeq (patientClia, diagnosticClia, orderTest, BCell);
+        releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
+        clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isCLIA = true;
         clonoseq.pageSize = 5;
         clonoseq.header.reportDt = formatDt1.format (releaseDt);
         clonoseq.appendix.sampleTable = "0.04 322,875 IGH ≥7,550 7,550 IGK 8,328 5,829 IGL 1,968 1,503";
         clonoseq.appendix.sequenceTable = "IGH - Sequence A 6 7 IGK - Sequence B 589 740 IGK - Sequence C 589 740";
         clonoseq.approval.dateTime = formatDt1.format (releaseDt);
-        String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }
@@ -144,8 +124,15 @@ public class BelowLoDTestSuite extends ReportTestBase {
      * @sdlc.requirements SR-5046
      */
     @Test (groups = "sinnoh")
-    public void verify_ivd_clonality_report () {
-        OrderTest orderTest = diagnosticIvd.findOrderTest (assayIvdID);
+    public void verify_ivd_report () {
+        Patient patient = scenarioBuilderPatient ();
+        Diagnostic diagnostic = buildCdxOrder (patient,
+                                               stage (SecondaryAnalysis, Ready),
+                                               genCDxTest (assayIvdID, azTsvPath + "/below-lod.id.tsv.gz"),
+                                               genCDxTest (assayIvdMRD, azTsvPath + "/below-lod.mrd.tsv.gz"));
+        assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
+
+        OrderTest orderTest = diagnostic.findOrderTest (assayIvdID);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
@@ -163,7 +150,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         report.clickReportTab (assayIvdID);
         report.releaseReport (assayIvdID, Pass);
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
-        ClonoSeq clonoseq = basicClonoSeq (patientIvd, diagnosticIvd, orderTest, BCell);
+        ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isIVD = true;
         clonoseq.isClonality = true;
         clonoseq.pageSize = 3;
@@ -173,23 +160,16 @@ public class BelowLoDTestSuite extends ReportTestBase {
         String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
-    }
 
-    /**
-     * @sdlc.requirements SR-5046
-     */
-    @Test (groups = "sinnoh")
-    public void verify_ivd_tracking_report () {
-        OrderTest orderTest = diagnosticIvd.findOrderTest (assayIvdMRD);
+        orderTest = diagnostic.findOrderTest (assayIvdMRD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String expected = getSystemResource ("SecondaryAnalysis/below-lod.mrd.json").getPath ();
-        String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
-        coraDebugApi.login ();
+        expected = getSystemResource ("SecondaryAnalysis/below-lod.mrd.json").getPath ();
+        actual = join ("/", downloadDir, orderTest.sampleName, saResult);
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, expected);
         testLog ("the secondaryAnalysisResult.json for below LOD for tracking matched with the baseline");
@@ -197,15 +177,15 @@ public class BelowLoDTestSuite extends ReportTestBase {
         history.clickOrderTest ();
         report.clickReportTab (assayIvdMRD);
         report.releaseReport (assayIvdMRD, Pass);
-        LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
-        ClonoSeq clonoseq = basicClonoSeq (patientIvd, diagnosticIvd, orderTest, BCell);
+        releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
+        clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isIVD = true;
         clonoseq.pageSize = 5;
         clonoseq.header.reportDt = formatDt1.format (releaseDt);
         clonoseq.appendix.sampleTable = "0.04 322,875 IGH ≥7,550 7,550 IGK 8,328 5,829 IGL 1,968 1,503";
         clonoseq.appendix.sequenceTable = "IGH - Sequence A 6 7 IGK - Sequence B 589 740 IGK - Sequence C 589 740";
         clonoseq.approval.dateTime = formatDt1.format (releaseDt);
-        String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }

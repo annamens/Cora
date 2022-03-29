@@ -65,7 +65,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         patient.mrn = "1111111111";
         patient.insurance1 = null;
         patient.insurance2 = null;
-        diagnostic = buildDiagnosticOrder (patient,
+        diagnostic = buildCdxOrder (patient,
                                            stage (NorthQC, Ready),
                                            genTcrTest (MRD_TCRG, lastFlowcellIdTCRG, tsvPathTCRG),
                                            genTcrTest (MRD_TCRB, lastFlowcellIdTCRB, tsvPathTCRB));

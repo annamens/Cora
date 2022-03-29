@@ -65,7 +65,7 @@ public class ReportTestBase extends CoraBaseBrowser {
     protected final String azPipelineFda   = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
     protected final String saResult        = "secondaryAnalysisResult.json";
 
-    protected Diagnostic buildDiagnosticOrder (Patient patient, Stage stage, CoraTest... tests) {
+    protected Diagnostic buildCdxOrder (Patient patient, Stage stage, CoraTest... tests) {
         Physician physician = coraApi.getPhysician (clonoSEQ_selfpay);
         Diagnostic diagnostic = diagnosticOrder (physician, patient, specimen (), shipment ());
         diagnostic.order = order (new OrderProperties (patient.billingType, CustomerShipment, "C91.00"), tests);
@@ -78,7 +78,7 @@ public class ReportTestBase extends CoraBaseBrowser {
         return diagnostic;
     }
 
-    protected Diagnostic buildTDetectOrder (Patient patient, Stage stage, CoraTest test) {
+    protected Diagnostic buildTdxOrder (Patient patient, Stage stage, CoraTest test) {
         Physician physician = coraApi.getPhysician (TDetect_selfpay);
         Diagnostic diagnostic = diagnosticOrder (physician, patient, null, shipment ());
         diagnostic.order = order (null, test);

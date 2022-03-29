@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -49,22 +48,18 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
     private Login          login       = new Login ();
     private OrcaHistory    history     = new OrcaHistory ();
     private ReportClonoSeq report      = new ReportClonoSeq ();
-    private Diagnostic     diagnostic;
-    private Patient        patient;
 
-    @BeforeClass
-    public void beforeClass () {
-        coraApi.addTokenAndUsername ();
-        patient = new Patient ();
+    public void verify_tracking_report () {
+        Patient patient = new Patient ();
         patient.id = "dc8a6bd2-0e68-41c2-aece-7e9d0e43f58c";
         patient.mrn = "1111111111";
         patient.insurance1 = null;
         patient.insurance2 = null;
-        diagnostic = buildDiagnosticOrder (patient, stage (SecondaryAnalysis, Ready), genCDxTest (assayMRD, tsvPath));
+        Diagnostic diagnostic = buildCdxOrder (patient,
+                                               stage (SecondaryAnalysis, Ready),
+                                               genCDxTest (assayMRD, tsvPath));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
-    }
 
-    public void verify_tracking_report () {
         OrderTest orderTest = diagnostic.findOrderTest (assayMRD);
         String saResultJson = join ("/", downloadDir, orderTest.sampleName, saResult);
         String saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
