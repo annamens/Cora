@@ -14,7 +14,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB_v4b;
-import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxContamination;
@@ -35,7 +34,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
-import static com.seleniumfy.test.utils.HttpClientHelper.get;
+import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.join;
 import static java.util.Locale.US;
@@ -307,7 +306,11 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         test.workflowProperties = sample_112770_SN_7929;
 
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildTdetectOrder(coraApi.getPhysician (TDetect_client), patient, null, test, COVID19_DX_IVD);
+        Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),
+                                                   patient,
+                                                   null,
+                                                   test,
+                                                   COVID19_DX_IVD);
         diagnostic.dxResults = null;
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
@@ -435,7 +438,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         info ("PDF File Location: " + pdfFileLocation);
 
         // get file from URL and save it
-        get (url, new File (pdfFileLocation));
+        coraApi.get (url, pdfFileLocation);
 
         // read PDF and extract text
         PdfReader reader = null;
@@ -458,8 +461,8 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
      */
     private ReportRender parseReportDataJson (String fileUrl) {
         String reportDataJson = join ("/", downloadDir, "reportData.json");
-        coraApi.login ();
-        get (fileUrl, new File (reportDataJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (fileUrl, reportDataJson);
         return mapper.readValue (new File (reportDataJson), ReportRender.class);
     }
 

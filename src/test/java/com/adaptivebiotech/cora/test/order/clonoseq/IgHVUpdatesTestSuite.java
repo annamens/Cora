@@ -7,8 +7,6 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
-import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestPass;
-import static com.adaptivebiotech.cora.test.CoraEnvironment.pipelinePortalTestUser;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Fail;
@@ -20,7 +18,6 @@ import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.QC_
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.UNMUTATED;
 import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestUrl;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
-import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
@@ -44,26 +41,20 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcc
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFinishedPipelineJobId;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static com.seleniumfy.test.utils.HttpClientHelper.get;
-import static com.seleniumfy.test.utils.HttpClientHelper.headers;
-import static com.seleniumfy.test.utils.HttpClientHelper.resetheaders;
+import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.join;
-import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -155,7 +146,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
 
         // IgHVPhysician Physician
         IgHVPhysician = coraApi.getPhysician (non_CLEP_clonoseq);
@@ -997,8 +988,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      * @param setQCStatus
      * @return
      */
-    private boolean releaseReport (Assay assayTest,
-                                   boolean setQCStatus) {
+    private boolean releaseReport (Assay assayTest, boolean setQCStatus) {
         history.isCorrectPage ();
         history.clickOrderTest ();
 
@@ -1021,15 +1011,15 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     private ReportRender getReportDataJsonFile (String sampleName) {
         String reportData = "reportData.json";
-        File localFile = new File (join ("/", downloadDir.get (), reportData));
+        String localFile = join ("/", downloadDir.get (), reportData);
 
         // get file using get request
         history.gotoOrderDebug (sampleName);
         history.isCorrectPage ();
-        coraApi.login ();
-        get (history.getFileUrl (reportData), localFile);
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileUrl (reportData), localFile);
 
-        ReportRender reportDataJson = mapper.readValue (localFile, ReportRender.class);
+        ReportRender reportDataJson = mapper.readValue (new File (localFile), ReportRender.class);
         info ("Json File Data " + reportDataJson);
         return reportDataJson;
     }
@@ -1041,14 +1031,9 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      * @param assayTest
      */
     private void validatePipelineStatusToComplete (String sampleName, Assay assayTest) {
-        Header basicAuth = new BasicHeader (AUTHORIZATION,
-                coraApi.basicAuth (pipelinePortalTestUser, pipelinePortalTestPass));
-
-        resetheaders ();
-        headers.get ().add (basicAuth);
+        pipelineApi.addBasicAuth ();
         portalTestUrl = assayTest.equals (ID_BCell2_IVD) ? portalIvdTestUrl : portalCliaTestUrl;
         Sample[] samples = pipelineApi.findFlowcellRuns (sampleName);
-        headers.get ().remove (basicAuth);
         assertEquals (samples.length, 1, "Validate pipeline portal job is completed");
     }
 
@@ -1131,7 +1116,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         info ("PDF File Location: " + pdfFileLocation);
 
         // get file from URL and save it
-        get (url, new File (pdfFileLocation));
+        coraApi.get (url, pdfFileLocation);
 
         // read PDF and extract text
         PdfReader reader = null;
@@ -1145,7 +1130,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
             int endIndex = fileContent.indexOf (endText);
             extractedText = fileContent.substring (beginIndex, endIndex);
             info ("Extracted Text: " + extractedText);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException (e);
         } finally {
             reader.close ();

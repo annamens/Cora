@@ -20,7 +20,6 @@ import static java.time.LocalDate.of;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import java.io.File;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
@@ -32,7 +31,6 @@ import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.SampleInfo;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 /**
  * Note: since we rolled back Rindja release, this test is nolonger valid
@@ -58,7 +56,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
     @BeforeClass
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
         patient = new Patient ();
         patient.id = "6170cc74-6c83-4c22-929c-b08a6514617d";
         patient.mrn = "1111111111";
@@ -85,7 +83,8 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         testLog ("released the report");
 
         history.gotoOrderDebug (orderTest.sampleName);
-        HttpClientHelper.get (history.getFileLocation (report), new File (reportJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (report), reportJson);
         testLog ("downloaded reportData.json file");
 
         ReportRender report = parseReportData (reportJson);
@@ -126,7 +125,8 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         testLog ("released the report");
 
         history.gotoOrderDebug (orderTest.sampleName);
-        HttpClientHelper.get (history.getFileLocation (report), new File (reportJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (report), reportJson);
         testLog ("downloaded reportData.json file");
 
         ReportRender report = parseReportData (reportJson);

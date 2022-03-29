@@ -17,7 +17,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
-import java.io.File;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
@@ -28,7 +27,6 @@ import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 /**
  * @author Harry Soehalim
@@ -48,7 +46,7 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
 
     @BeforeClass
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (SecondaryAnalysis, Ready),
                                            genCDxTest (assayID, azTsvPath + "/scenarios/between-lod-loq.id.tsv.gz"),
@@ -64,8 +62,8 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
 
         String expected = getSystemResource ("SecondaryAnalysis/between-lod-loq.id.json").getPath ();
         String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
-        coraApi.login ();
-        HttpClientHelper.get (history.getFileLocation (saResult), new File (actual));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, expected);
         testLog ("the secondaryAnalysisResult.json for above LOD / below LOQ for clonality matched with the baseline");
 
@@ -82,8 +80,8 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
 
         String expected = getSystemResource ("SecondaryAnalysis/between-lod-loq.mrd.json").getPath ();
         String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
-        coraApi.login ();
-        HttpClientHelper.get (history.getFileLocation (saResult), new File (actual));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, expected);
         testLog ("the secondaryAnalysisResult.json for above LOD / below LOQ for tracking matched with the baseline");
 

@@ -45,7 +45,7 @@ public class ScanTestSuite extends ContainerTestBase {
 
     @BeforeClass
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
         mytestContainers = coraApi.addContainers (new Containers (asList (container (Slide), container (SlideBox5))));
 
         // setup for shipment is in arrived state

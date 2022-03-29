@@ -1,7 +1,8 @@
 package com.adaptivebiotech.cora.test;
 
-import static com.adaptivebiotech.test.utils.Logging.error;
+import static com.seleniumfy.test.utils.Logging.error;
 import static java.lang.String.format;
+import com.adaptivebiotech.common.dto.Server;
 import com.adaptivebiotech.test.BaseEnvironment;
 
 public class CoraEnvironment extends BaseEnvironment {
@@ -11,6 +12,8 @@ public class CoraEnvironment extends BaseEnvironment {
     public static String pipelinePortalTestUser;
     public static String pipelinePortalTestPass;
     public static String limsTestUrl;
+    public static Server jumpbox;
+    public static Server coraDbInfo;
 
     public static void initialization () {
         try {
@@ -23,19 +26,28 @@ public class CoraEnvironment extends BaseEnvironment {
             portalIvdTestUrl = format (getProperty ("portal.ivd.test.url"), env);
             pipelinePortalTestUser = getProperty ("portal.test.user");
             pipelinePortalTestPass = decrypt (getProperty ("portal.test.pass"));
-            
+
             limsTestUrl = format (getProperty ("lims.test.url"), env);
 
-            coraDBHost = format (getProperty ("cora.db.host"), env);
-            coraDBUser = getProperty ("cora.db.user");
-            coraDBPass = decrypt (getProperty ("cora.db.pass"));
-            coraJumpBox = getProperty ("cora.db.jumpbox");
+            jumpboxServer = format (getProperty ("jumpbox.server"), env);
+            jumpboxUser = getProperty ("jumpbox.user");
+            jumpboxPass = getProperty ("jumpbox.pass");
+            jumpbox = new Server (jumpboxServer, jumpboxUser, jumpboxPass);
+            jumpbox.localHost = "localhost";
+            jumpbox.localPort = 6000;
+            jumpbox.remoteHost = format (getProperty ("cora.db.host"), env);
+            jumpbox.remotePort = 5432;
 
-            jumpboxUser = getProperty ("ssh.user");
-            jumpboxPass = getProperty ("ssh.pass");
+            coraDbInfo = new Server ();
+            coraDbInfo.databaseUrl = format ("jdbc:postgresql://%s:5432/coradb", jumpbox.remoteHost);
+            coraDbInfo.user = getProperty ("cora.db.user");
+            coraDbInfo.pass = decrypt (getProperty ("cora.db.pass"));
 
             useDbTunnel = Boolean.parseBoolean (getProperty ("db.tunnel"));
-
+            if (useDbTunnel)
+                coraDbInfo.databaseUrl = format ("jdbc:postgresql://%s:%s/coradb",
+                                                 jumpbox.localHost,
+                                                 jumpbox.localPort);
         } catch (Exception e) {
             error ("failed to parse the config file", e);
             throw new RuntimeException (e);

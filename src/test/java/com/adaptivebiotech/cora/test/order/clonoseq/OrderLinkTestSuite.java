@@ -50,7 +50,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
 
     @BeforeClass
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
         physician = coraApi.getPhysician (non_CLEP_clonoseq);
     }
 

@@ -23,7 +23,6 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.time.LocalDateTime.parse;
 import static org.testng.Assert.assertEquals;
-import java.io.File;
 import java.time.LocalDateTime;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -38,7 +37,6 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.pipeline.dto.diagnostic.AnalysisConfig;
 import com.adaptivebiotech.pipeline.dto.diagnostic.ClonoSeq;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 /**
  * @author Harry Soehalim
@@ -59,7 +57,7 @@ public class ReportEosTestSuite extends ReportTestBase {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (SecondaryAnalysis, Ready),
                                            genCDxTest (assayID, azTsvPath + "/scenarios/above-loq.id.tsv.gz"),
@@ -83,15 +81,15 @@ public class ReportEosTestSuite extends ReportTestBase {
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        coraApi.login ();
-        HttpClientHelper.get (history.getFileLocation (saInput), new File (saInputJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (saInput), saInputJson);
         testLog ("downloaded Analysis Config json file");
 
         history.clickOrderTest ();
         report.clickReportTab (assayID);
         report.releaseReport (assayID, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
-        HttpClientHelper.get (history.getFileLocation (reportData), new File (reportDataJson));
+        coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         history.clickOrderTest ();
@@ -138,15 +136,15 @@ public class ReportEosTestSuite extends ReportTestBase {
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        coraApi.login ();
-        HttpClientHelper.get (history.getFileLocation (saInput), new File (saInputJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (saInput), saInputJson);
         testLog ("downloaded Analysis Config json file");
 
         history.clickOrderTest ();
         report.clickReportTab (assayMRD);
         report.releaseReport (assayMRD, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
-        HttpClientHelper.get (history.getFileLocation (reportData), new File (reportDataJson));
+        coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         history.clickOrderTest ();

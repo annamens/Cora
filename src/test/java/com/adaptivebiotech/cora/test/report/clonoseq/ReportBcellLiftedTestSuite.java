@@ -22,7 +22,6 @@ import static java.lang.String.join;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.io.File;
 import java.util.List;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -37,7 +36,6 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ClinicalReport;
 import com.adaptivebiotech.picasso.dto.ReportRender.SampleInfo;
 import com.adaptivebiotech.pipeline.dto.diagnostic.AnalysisConfig;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 /**
  * @author Harry Soehalim
@@ -57,7 +55,7 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
 
     @BeforeClass
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
         patient = new Patient ();
         patient.id = isIVD ? "7648a779-465e-411e-b3a6-7935aeb27628" : "dc8a6bd2-0e68-41c2-aece-7e9d0e43f58c";
         patient.mrn = "1111111111";
@@ -76,10 +74,10 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        coraApi.login ();
-        HttpClientHelper.get (history.getFileLocation (saResult), new File (saResultJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (saResult), saResultJson);
         testLog ("downloaded secondaryAnalysisResult.json file");
-        HttpClientHelper.get (history.getFileLocation (saInput), new File (saInputJson));
+        coraDebugApi.get (history.getFileLocation (saInput), saInputJson);
         testLog ("downloaded Analysis Config json file");
 
         history.clickOrderTest ();

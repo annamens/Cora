@@ -53,7 +53,6 @@ import com.adaptivebiotech.pipeline.dto.diagnostic.ClonoSeq;
 import com.adaptivebiotech.pipeline.dto.diagnostic.SecondaryAnalysisResult;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 import com.adaptivebiotech.pipeline.utils.TestHelper.Locus;
-import com.seleniumfy.test.utils.HttpClientHelper;
 import com.testautomationguru.utility.PDFUtil;
 
 /**
@@ -129,7 +128,7 @@ public class ReportTestBase extends CoraBaseBrowser {
 
     protected String getReport (String url, String resultFile) {
         try {
-            HttpClientHelper.get (url, new File (resultFile));
+            coraApi.get (url, resultFile);
             PDFUtil pdfUtil = new PDFUtil () {
                 {
                     setCompareMode (VISUAL_MODE);

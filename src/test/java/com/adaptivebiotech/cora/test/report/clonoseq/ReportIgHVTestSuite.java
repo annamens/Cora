@@ -24,13 +24,11 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.FINISHED;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt6;
-import static com.seleniumfy.test.utils.HttpClientHelper.headers;
 import static java.lang.String.join;
 import static java.time.LocalDateTime.parse;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-import java.io.File;
 import java.time.LocalDateTime;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -48,7 +46,6 @@ import com.adaptivebiotech.picasso.dto.ReportRender.ShmReportResult;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
 import com.adaptivebiotech.pipeline.api.PipelineApi;
 import com.adaptivebiotech.pipeline.dto.diagnostic.ClonoSeq;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 /**
  * Note:
@@ -75,7 +72,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
 
         CoraTest test = genCDxTest (assayID, azTsvPath + "/scenarios/above-loq.id.tsv.gz");
         test.workflowProperties.tsvOverridePath = null;
@@ -118,8 +115,8 @@ public class ReportIgHVTestSuite extends ReportTestBase {
 
         orderReport.releaseReport (assayID, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
-        coraApi.login ();
-        HttpClientHelper.get (history.getFileLocation (reportData), new File (reportDataJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         history.clickOrderTest ();
@@ -185,7 +182,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
         verifyReport (clonoseq, getReport (orderReport.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
-        headers.get ().add (pipelineApi.portalAuth);
+        pipelineApi.addBasicAuth ();
         assertEquals (pipelineApi.findFlowcellRuns (diagnostic.order.tests.get (0).workflowProperties.sampleName).length,
                       1);
         testLog ("found 1 eos.shm analysis job spawned and completed in portal");

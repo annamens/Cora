@@ -47,7 +47,7 @@ public class ReportTcrbTestSuite extends ReportTestBase {
 
     @BeforeClass
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
         diagnostic = buildDiagnosticOrder (patient,
                                            stage (NorthQC, Ready),
                                            genTcrTest (ID_TCRB, lastFlowcellId, tsvPath),
