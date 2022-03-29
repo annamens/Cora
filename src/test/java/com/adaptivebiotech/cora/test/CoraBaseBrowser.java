@@ -34,13 +34,6 @@ public class CoraBaseBrowser extends TestBase {
         coraApi = new CoraApi ();
         coraApi.getAuthToken ();
         coraDebugApi = new CoraApi ();
-        
-        System.out.println (coraDbInfo);
-        System.out.println (coraDbInfo.databaseUrl);
-        
-        System.out.println (jumpbox);
-        System.out.println (jumpbox.getTunnelParams ());
-        
         coraDb = new DbClientHelper (coraDbInfo, jumpbox);
         coraDb.openConnection ();
     }
