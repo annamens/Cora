@@ -61,7 +61,6 @@ public class DxContaminationTestSuite extends ReportTestBase {
     private OrcaHistory        history           = new OrcaHistory ();
     private OrderDetailTDetect order             = new OrderDetailTDetect ();
     private ReportTDetect      report            = new ReportTDetect ();
-    private OrderTest          orderTest;
     private Diagnostic         diagnostic;
     private String             downloadDir;
 
@@ -81,7 +80,7 @@ public class DxContaminationTestSuite extends ReportTestBase {
 
         diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                         patient,
-                                        stage (DxReport, Ready),
+                                        stage (DxAnalysis, Ready),
                                         test,
                                         COVID19_DX_IVD);
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
@@ -100,7 +99,7 @@ public class DxContaminationTestSuite extends ReportTestBase {
      * @sdlc.requirements SR-5363, SR-6982:R4
      */
     public void xcContaminated_true () {
-        orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
+        OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (DxAnalysis, Finished);

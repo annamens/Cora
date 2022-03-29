@@ -10,9 +10,13 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.Cellular;
 import static com.adaptivebiotech.test.utils.PageHelper.ReportType.tracking;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.Analyzer;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.CalculateSampleSummary;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static java.lang.String.join;
@@ -75,6 +79,10 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (NorthQC, Finished);
+        history.waitFor (CalculateSampleSummary, Finished);
+        history.waitFor (Analyzer, Finished);
+        history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         orderReport.clickReportTab (MRD_TCRB);
@@ -90,7 +98,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         assertEquals (report.patientInfo.reportType, tracking);
         assertEquals (report.patientInfo.reportSpecimenCompartment, Cellular.label);
         assertEquals (report.patientInfo.reportLocus, TCRB);
-        assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimenNumber);
+        assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimen.specimenNumber);
         report.data.resultClones.forEach (c -> assertEquals (c.locus, TCRB));
 
         // looking for the lifted ID clones
@@ -117,6 +125,10 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (NorthQC, Finished);
+        history.waitFor (CalculateSampleSummary, Finished);
+        history.waitFor (Analyzer, Finished);
+        history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         orderReport.clickReportTab (MRD_TCRG);
@@ -132,7 +144,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         assertEquals (report.patientInfo.reportType, tracking);
         assertEquals (report.patientInfo.reportSpecimenCompartment, Cellular.label);
         assertEquals (report.patientInfo.reportLocus, TCRG);
-        assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimenNumber);
+        assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimen.specimenNumber);
         report.data.resultClones.forEach (c -> assertEquals (c.locus, TCRG));
 
         // looking for the lifted ID clones

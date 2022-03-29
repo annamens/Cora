@@ -10,7 +10,9 @@ import static com.adaptivebiotech.test.utils.PageHelper.ReportType.tracking;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
@@ -70,6 +72,8 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (SecondaryAnalysis, Finished);
+        history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), saResultJson);
