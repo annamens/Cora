@@ -59,6 +59,7 @@ public class CoraApi extends HttpClientHelper {
     private final long  millisDuration = 3000000l;                                      // 50mins
     private final long  millisPoll     = 5000l;                                         // 5sec
     public final Header username       = new BasicHeader (X_API_USERNAME, coraTestUser);
+    public final Header coraBasicAuth  = basicAuth (coraTestUser, coraTestPass);
     public Header       apiToken;
 
     public void login () {
@@ -80,7 +81,6 @@ public class CoraApi extends HttpClientHelper {
 
     public String getAuthToken () {
         resetheaders ();
-        Header coraBasicAuth = basicAuth (coraTestUser, coraTestPass);
         headers.get ().add (coraBasicAuth);
         String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
         headers.get ().remove (coraBasicAuth);
