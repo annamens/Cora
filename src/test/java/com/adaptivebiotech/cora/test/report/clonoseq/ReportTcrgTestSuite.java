@@ -23,11 +23,11 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.report.ClonoSeq;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
-import com.adaptivebiotech.pipeline.dto.diagnostic.ClonoSeq;
 
 /**
  * @author Harry Soehalim
@@ -36,7 +36,7 @@ import com.adaptivebiotech.pipeline.dto.diagnostic.ClonoSeq;
 @Test (groups = "regression")
 public class ReportTcrgTestSuite extends ReportTestBase {
 
-    private final String   tsvPath        = azTsvPath + "/scenarios/H7NK7BGXC_0_CLINICAL-CLINICAL_66935-01MG-C19-929_P141-19.adap.txt.results.tsv.gz";
+    private final String   tsvPath        = azTsvPath + "/H7NK7BGXC_0_CLINICAL-CLINICAL_66935-01MG-C19-929_P141-19.adap.txt.results.tsv.gz";
     private final String   lastFlowcellId = "H7NK7BGXC";
     private final String   downloadDir    = artifacts (this.getClass ().getName ());
     private final Patient  patient        = scenarioBuilderPatient ();
@@ -70,6 +70,7 @@ public class ReportTcrgTestSuite extends ReportTestBase {
 
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, TCRG);
+        clonoseq.isCLIA = true;
         clonoseq.isClonality = true;
         clonoseq.pageSize = 3;
         clonoseq.header.reportDt = formatDt1.format (releaseDt);
@@ -94,6 +95,7 @@ public class ReportTcrgTestSuite extends ReportTestBase {
 
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, TCRG);
+        clonoseq.isCLIA = true;
         clonoseq.pageSize = 3;
         clonoseq.header.reportDt = formatDt1.format (releaseDt);
         clonoseq.appendix.sampleTable = "0.95 61,795 TCRG 59,450 3,019";

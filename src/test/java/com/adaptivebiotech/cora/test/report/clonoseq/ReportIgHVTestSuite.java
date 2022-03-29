@@ -1,14 +1,11 @@
 package com.adaptivebiotech.cora.test.report.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
-import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.MUTATED;
-import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.UNMUTATED;
-import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.isIVD;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.BCell;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -37,6 +34,7 @@ import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.report.ClonoSeq;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -45,7 +43,6 @@ import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmReportResult;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
 import com.adaptivebiotech.pipeline.api.PipelineApi;
-import com.adaptivebiotech.pipeline.dto.diagnostic.ClonoSeq;
 
 /**
  * Note:
@@ -63,7 +60,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
     private final String   downloadDir = artifacts (this.getClass ().getName ());
     private final String   reportData  = "reportData.json";
     private final Patient  patient     = scenarioBuilderPatient ();
-    private final Assay    assayID     = isIVD ? ID_BCell2_IVD : ID_BCell2_CLIA;
+    private final Assay    assayID     = ID_BCell2_CLIA;
     private Login          login       = new Login ();
     private OrcaHistory    history     = new OrcaHistory ();
     private ReportClonoSeq orderReport = new ReportClonoSeq ();
@@ -74,18 +71,13 @@ public class ReportIgHVTestSuite extends ReportTestBase {
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
 
-        CoraTest test = genCDxTest (assayID, azTsvPath + "/scenarios/above-loq.id.tsv.gz");
+        CoraTest test = genCDxTest (assayID, azTsvPath + "/above-loq.id.tsv.gz");
         test.workflowProperties.tsvOverridePath = null;
         test.workflowProperties.ighvAnalysisEnabled = true;
         test.workflowProperties.ighvReportEnabled = true;
         test.workflowProperties.lastFinishedPipelineJobId = "8a7a94db77a26ee10179d44fe3f0410c";
         test.workflowProperties.lastAcceptedTsvPath = azPipelineNorth + "/210603_NB552480_0036_AH2C2LBGXJ/v3.1/20210605_1334/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H2C2LBGXJ_0_CLINICAL-CLINICAL_105508-01MC-3902649.adap.txt.results.tsv.gz";
         test.workflowProperties.sampleName = "105508-01MC-3902649";
-        if (isIVD) {
-            test.workflowProperties.lastFinishedPipelineJobId = "8a7a958877a26e74017a83c4a2dd5602";
-            test.workflowProperties.lastAcceptedTsvPath = azPipelineFda + "/210706_NB552544_0032_AHL2TTBGXJ/v3.1/20210708_1229/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/HL2TTBGXJ_0_CLINICAL-CLINICAL_88026-01MC-HP20-01326.adap.txt.results.tsv.gz";
-            test.workflowProperties.sampleName = "88026-01MC-HP20-01326";
-        }
 
         diagnostic = buildDiagnosticOrder (patient, stage (SecondaryAnalysis, Ready), test);
         diagnostic.specimen.sampleType = FreshBoneMarrow;
@@ -136,28 +128,15 @@ public class ReportIgHVTestSuite extends ReportTestBase {
         assertNotNull (result);
         testLog ("found a ReportRenderDto object with a new field called shmReportResult containing an ShmReportResult Object");
 
-        if (isIVD) {
-            assertEquals (result.mutationStatus, UNMUTATED);
-            assertEquals (result.shmSequenceList.size (), 1);
-            for (ShmSequence s : result.shmSequenceList) {
-                assertEquals (s.locus, IGH);
-                assertEquals (s.sequence,
-                              "CAGGGACAACGCCAAGAACTCACTGTATCTGCAAATGAACAGCCTGAGAGCCGAGGACACGGCCGTGTATTACTGTGCGAGAGCGACCCGCCGCGGGGTCTGTAGTAGTACCAGCTGCTATACTCACTACTACTACGGTATGGACGTCTGGGGCCAAGGGACC");
-                assertEquals (s.percentMutation, 0.0d, 0);
-                assertTrue (s.productive);
-                assertEquals (s.vSegment, "IGHV3-11*01");
-            }
-        } else {
-            assertEquals (result.mutationStatus, MUTATED);
-            assertEquals (result.shmSequenceList.size (), 1);
-            for (ShmSequence s : result.shmSequenceList) {
-                assertEquals (s.locus, IGH);
-                assertEquals (s.sequence,
-                              "CAGAGACAATTCCAAGAACACTCTGTATTTGCAAATGAACAACCTGCGAACTGAGGACACGGCTATGTACTACTGTGCGAAAACGAATCGATTACTTTGGTTCGGGGAACCATCCCCCTGGGGCCAGGGAACC");
-                assertEquals (s.percentMutation, 9.9415205419d, 0);
-                assertTrue (s.productive);
-                assertEquals (s.vSegment, "IGHV3-30*18");
-            }
+        assertEquals (result.mutationStatus, MUTATED);
+        assertEquals (result.shmSequenceList.size (), 1);
+        for (ShmSequence s : result.shmSequenceList) {
+            assertEquals (s.locus, IGH);
+            assertEquals (s.sequence,
+                          "CAGAGACAATTCCAAGAACACTCTGTATTTGCAAATGAACAACCTGCGAACTGAGGACACGGCTATGTACTACTGTGCGAAAACGAATCGATTACTTTGGTTCGGGGAACCATCCCCCTGGGGCCAGGGAACC");
+            assertEquals (s.percentMutation, 9.9415205419d, 0);
+            assertTrue (s.productive);
+            assertEquals (s.vSegment, "IGHV3-30*18");
         }
         testLog (join ("\n\t",
                        "found shmReportResult object with following fields:",
@@ -165,15 +144,12 @@ public class ReportIgHVTestSuite extends ReportTestBase {
                        "shmSequenceList (List<ShmSequence>)"));
 
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
+        clonoseq.isCLIA = true;
         clonoseq.isClonality = true;
         clonoseq.header.reportDt = formatDt1.format (releaseDt);
         clonoseq.pageSize = 5;
         clonoseq.pageSizeSHM = 2;
         clonoseq.appendix.sampleTable = "0.41 122,367 IGH 9,963 5,290 IGK 7,978 5,463 IGL ≥1,661 1,661";
-        if (isIVD) {
-            clonoseq.pageSize = 6;
-            clonoseq.appendix.sampleTable = "0.77 74,489 IGH 138,312 345 IGK 80,675 135 IGL 128,682 177";
-        }
         clonoseq.approval.dateTime = formatDt1.format (releaseDt);
         clonoseq.isSHM = true;
         clonoseq.report = report;

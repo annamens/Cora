@@ -1,0 +1,74 @@
+{
+    "class": "com.adaptive.analysis.AnalysisResultDto",
+    "version": 1,
+    "analysisResult": "eyJjbGFzcyI6ImNvbS5hZGFwdGl2ZS5jbG9ub3NlcXJlcG9ydC5kdG9zLkNsaW5pY2FsUmVwb3J0RHRvIiwidmVyc2lvbiI6MSwicmVwb3J0SWQiOiI1OTExYjEzMS0xNjRlLTQ3NTItOTEzZi01NDk1OWQ2YmIyYTciLCJyZXBvcnRTYW1wbGVPcmRlclRlc3RJZCI6IjY5OWNkYzhkLTY0MDYtNGUwZS1iOGJjLTExMDg3ZWU1ZTJhYyIsInJlcG9ydFR5cGUiOiJ0cmFja2luZyIsInJlcG9ydFNhbXBsZVRvdGFsU2VxdWVuY2VzIjo2Mzg2Ny45MjI3OTk5OTk1OCwicmVwb3J0U2FtcGxlVW5pcXVlU2VxdWVuY2VzIjo1MjMyMSwicmVwb3J0U2FtcGxlQ2xvbmFsaXR5IjowLjA1Njc1MjYyMzc3NDc2MjY0NSwicmVwb3J0U2FtcGxlVG90YWxOdWNsZWF0ZWRDZWxscyI6OTUxMjkzLjI4LCJwaXBlbGluZVZlcnNpb24iOiJ2My4wLTg4MC1nMWMxODUyYSIsImFzc2F5VmVyc2lvbiI6InJkLkh1bWFuLkJDZWxsLm5leHRzZXEuMTQ2eDEzeDExNi50aHJlZVJlYWQudWx0cmFsaWdodC5yZXY0IiwiY29uZmlnVmVyc2lvbiI6IjAuNSIsImNsb25hbGl0eVJlc3VsdCI6MSwidHJhY2tpbmdSZXN1bHQiOjIsImxvY2lTdW1tYXJ5SW5mbyI6W3sibG9jdXMiOiJJR0siLCJ0b3RhbFNlcXVlbmNlcyI6MzI2NjEuNjQ5MjAwMDAwMTY0LCJ0b3RhbFVuaXF1ZVNlcXVlbmNlcyI6MjAyNTl9LHsibG9jdXMiOiJJR0giLCJ0b3RhbFNlcXVlbmNlcyI6MjI5MzAuNjM1NTk5OTk5ODUsInRvdGFsVW5pcXVlU2VxdWVuY2VzIjoyNjA3Mn0seyJsb2N1cyI6IklHTCIsInRvdGFsU2VxdWVuY2VzIjo4Mjc1LjYzODAwMDAwMDAxOSwidG90YWxVbmlxdWVTZXF1ZW5jZXMiOjU5OTB9XSwicmVzdWx0Q2xvbmVzIjpbeyJjbGFzcyI6ImNvbS5hZGFwdGl2ZS5jbG9ub3NlcXJlcG9ydC5kdG9zLlJlc3VsdENsb25lRHRvIiwidmVyc2lvbiI6MSwibnVjbGVvdGlkZSI6IkdBVEdUVEdHR0dUVFRBVFRBQ1RHQ0FUR0NBQUdHVEFDQUNBQ1RHR0NDVENDR0FBR1RHR0NBR0NDQ0FHR0ciLCJpc0xpZnRlZElkQ2xvbmUiOmZhbHNlLCJsb2N1cyI6IklHSyIsImlzRW1lcmdlbnQiOmZhbHNlLCJpc0R4VGFnZ2VkSW5SZXBvcnRTYW1wbGUiOmZhbHNlLCJkZXNpZ25hdGlvbiI6IkEiLCJjb2xvciI6MSwic3ltYm9sIjoxLCJsaW5lVHlwZSI6MSwiZGlzZWFzZUxvYWRNdWx0aXBsaWVyIjoxLjAsImhpc3RvcnkiOlt7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuSGlzdG9yaWNhbENsb25lRHRvIiwidmVyc2lvbiI6MSwiY29sbGVjdGlvbkRhdGUiOiIwNC8wMS8yMDE5IiwiaXNGcm9tQ2xvbmFsaXR5VGVzdCI6dHJ1ZSwiY291bnQiOjU1NzIwLjAsIm5vcm1hbGl6ZWRDb3VudCI6MTA1NzU0NS41MDc0ODEzOTQsIm5vcm1hbGl6ZWRDb3VudENvbmZNaW4iOm51bGwsIm5vcm1hbGl6ZWRDb3VudENvbmZNYXgiOm51bGwsImZyYWN0aW9uT2ZOdWNsZWF0ZWRDZWxscyI6MS4wNTc1NDU1MDc0ODEzOTQyLCJjb3VudE1lYXN1cmUiOiJjZWxscyIsImFzc2F5VmVyc2lvbiI6InJkLkh1bWFuLkJDZWxsLm5leHRzZXEuMTQ2eDEzeDExNi50aHJlZVJlYWQudWx0cmFsaWdodC5yZXY0Iiwib3JkZXJUZXN0SWQiOiI1ODhmMWRjYS04OGFjLTQwMWItODA1MC0zMzY2ZWVhNTBhY2QiLCJzYW1wbGVOdWNsZWF0ZWRDZWxscyI6NTI2ODguMDQsImxpbWl0T2ZEZXRlY3Rpb24iOjAuMCwibGltaXRPZlF1YW50aXRhdGlvbiI6MC4wfSx7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuSGlzdG9yaWNhbENsb25lRHRvIiwidmVyc2lvbiI6MSwiY29sbGVjdGlvbkRhdGUiOiIwNC8wMS8yMDE5IiwiaXNGcm9tQ2xvbmFsaXR5VGVzdCI6ZmFsc2UsImNvdW50IjoyMzQuNywibm9ybWFsaXplZENvdW50IjoyNDYuNzE2NzY0MzYxMDM5MSwibm9ybWFsaXplZENvdW50Q29uZk1pbiI6MTYxLjkwMTE2MzQ1MjIxNDgsIm5vcm1hbGl6ZWRDb3VudENvbmZNYXgiOjM2NC45MjA4MzU2NjgxMzIxNiwiZnJhY3Rpb25PZk51Y2xlYXRlZENlbGxzIjoyLjQ2NzE2NzY0MzYxMDM5MUUtNCwiY291bnRNZWFzdXJlIjoiY2VsbHMiLCJhc3NheVZlcnNpb24iOiJyZC5IdW1hbi5CQ2VsbC5uZXh0c2VxLjE0NngxM3gxMTYudGhyZWVSZWFkLnVsdHJhbGlnaHQucmV2NCIsIm9yZGVyVGVzdElkIjoiNjk5Y2RjOGQtNjQwNi00ZTBlLWI4YmMtMTEwODdlZTVlMmFjIiwic2FtcGxlTnVjbGVhdGVkQ2VsbHMiOjk1MTI5My4yOCwibGltaXRPZkRldGVjdGlvbiI6MjAwLjA0MzQ2MDgzNDcwNzA1LCJsaW1pdE9mUXVhbnRpdGF0aW9uIjoyNTEuMjM2OTgyOTgzODM4NTd9XX1dLCJhbmFseXRpY2FsTGltaXQiOjE5MC4zfQ==",
+    "mrdEngineVersion": "646.Rindja.LDT/0.5",
+    "idClones": [],
+    "mrdClones": [
+        {
+            "class": "com.adaptive.mrdengine.MrdResultCloneDto",
+            "version": 1,
+            "id": "750a28d7-849b-412d-ae8b-39c317e0711d",
+            "orderTestId": null,
+            "subLocus": "IGK",
+            "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGCCTCCGAAGTGGCAGCCCAGGG",
+            "count": 234.7,
+            "normalizedCount": 246.7167643610391,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 40937.287200000006,
+            "sampleAmount": 951293.28,
+            "cdr3Index": 52,
+            "idCloneId": "ba521640-6286-4ef8-8b4c-33721d7be06f",
+            "rank": 1,
+            "constituentClones": 1,
+            "limitOfDetection": 200.04346083470705,
+            "limitOfQuantitation": 251.23698298383857,
+            "adjustedMutations": 0.0,
+            "matchLength": 57,
+            "overlapCount": 0,
+            "passedContamination": true,
+            "normalizedCountConfMin": 161.9011634522148,
+            "normalizedCountConfMax": 364.92083566813216
+        }
+    ],
+    "sequenceLiteDtos": [
+        {
+            "class": "com.adaptive.clonoseqreport.dtos.MrdSequenceDetailsDto",
+            "version": 1,
+            "sampleOrderTestId": "588f1dca-88ac-401b-8050-3366eea50acd",
+            "sampleFileS3Path": "https://adaptivecoratest.blob.core.windows.net/cora-data/orca/e4bf8f4e-36c8-4748-8577-b0d89747a86d/between-lod-loq.id.tsv.gz",
+            "idCloneSequences": [
+                {
+                    "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGCCTCCGAAGTGGCAGCCCAGGG",
+                    "scaledCount": 55720.0
+                }
+            ],
+            "sequences": [
+                {
+                    "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGCCTCCGAAGTGGCAGCCCAGGG",
+                    "idCloneSequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGCCTCCGAAGTGGCAGCCCAGGG"
+                }
+            ]
+        },
+        {
+            "class": "com.adaptive.clonoseqreport.dtos.MrdSequenceDetailsDto",
+            "version": 1,
+            "sampleOrderTestId": "699cdc8d-6406-4e0e-b8bc-11087ee5e2ac",
+            "sampleFileS3Path": "https://adaptivecoratest.blob.core.windows.net/cora-data/orca/d2b42119-10f2-49fb-9c68-b91a0e192bc9/between-lod-loq.mrd.tsv.gz",
+            "idCloneSequences": [
+                {
+                    "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGCCTCCGAAGTGGCAGCCCAGGG",
+                    "scaledCount": 234.7
+                }
+            ],
+            "sequences": [
+                {
+                    "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGCCTCCGAAGTGGCAGCCCAGGG",
+                    "idCloneSequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGCCTCCGAAGTGGCAGCCCAGGG"
+                }
+            ]
+        }
+    ],
+    "newPatientCloneTracks": [],
+    "failLowTotalCells": false
+}

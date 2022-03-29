@@ -46,8 +46,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
     private final String   lastFlowcellIdTCRB = "H5CJ7BGXY";
     private final String   lastFlowcellIdTCRG = "HJTK5BCXX";
     private final String   report             = "reportData.json";
-    private final String   downloadDir        = artifacts (this.getClass ()
-                                                               .getName ());
+    private final String   downloadDir        = artifacts (this.getClass ().getName ());
     private Login          login              = new Login ();
     private OrcaHistory    history            = new OrcaHistory ();
     private ReportClonoSeq orderReport        = new ReportClonoSeq ();

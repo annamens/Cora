@@ -8,7 +8,6 @@ import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.diagnosticOrder
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.order;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.shipment;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.specimen;
-import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.isIVD;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.POSITIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.BCell;
@@ -45,11 +44,11 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.SpecimenProperties;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.report.AnalysisConfig;
+import com.adaptivebiotech.cora.dto.report.ClonoSeq;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.picasso.dto.ClinicalReport;
 import com.adaptivebiotech.picasso.dto.ReportRender;
-import com.adaptivebiotech.pipeline.dto.diagnostic.AnalysisConfig;
-import com.adaptivebiotech.pipeline.dto.diagnostic.ClonoSeq;
 import com.adaptivebiotech.pipeline.dto.diagnostic.SecondaryAnalysisResult;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 import com.adaptivebiotech.pipeline.utils.TestHelper.Locus;
@@ -61,7 +60,7 @@ import com.testautomationguru.utility.PDFUtil;
  */
 public class ReportTestBase extends CoraBaseBrowser {
 
-    protected final String azTsvPath       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv";
+    protected final String azTsvPath       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
     protected final String azPipelineNorth = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
     protected final String azPipelineFda   = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
     protected final String saResult        = "secondaryAnalysisResult.json";
@@ -183,7 +182,9 @@ public class ReportTestBase extends CoraBaseBrowser {
 
         // Patient
         String permHeader = clonoseq.allpagesHeader ();
-        doCountMatches (texts, permHeader, clonoseq.pageSize - (isIVD && clonoseq.isSHM ? clonoseq.pageSizeSHM : 0));
+        doCountMatches (texts,
+                        permHeader,
+                        clonoseq.pageSize - (clonoseq.isIVD && clonoseq.isSHM ? clonoseq.pageSizeSHM : 0));
         testLog ("found the complete Patient/Order Information Header");
         doCountMatches (texts, clonoseq.header.frontpageHeader (), clonoseq.isSHM ? 2 : 1);
         testLog ("found the summary Patient/Order Information Header");

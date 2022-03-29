@@ -109,7 +109,7 @@ public class CoraApi extends HttpClientHelper {
 
     public Containers addContainers (Containers containers) {
         String url = coraTestUrl + "/cora/api/v1/containers/addEntries";
-        String result = post (url, body (mapper.writeValueAsString (containers.list)));
+        String result = post (url, body (containers.list));
         return new Containers (
                 mapper.readValue (result, HttpResponse.class).containers.parallelStream ().map (c -> {
                     c.location = coraTestUser;
@@ -120,7 +120,7 @@ public class CoraApi extends HttpClientHelper {
     public Containers deactivateContainers (Containers containers) {
         containers.list.parallelStream ().forEach (c -> c.isActive = false);
         String url = coraTestUrl + "/cora/api/v1/containers/updateEntries";
-        String result = put (url, body (mapper.writeValueAsString (containers.list)));
+        String result = put (url, body (containers.list));
         return new Containers (mapper.readValue (result, HttpResponse.class).containers);
     }
 
@@ -130,7 +130,7 @@ public class CoraApi extends HttpClientHelper {
             Map <String, String> props = new HashMap <> ();
             props.put ("containerId", c.id);
             props.put ("rootContainerId", freezer.id);
-            post (url, body (mapper.writeValueAsString (props)));
+            post (url, body (props));
         });
     }
 
@@ -141,14 +141,14 @@ public class CoraApi extends HttpClientHelper {
             props.put ("propertyName", wp.getKey ().name ());
             props.put ("propertyValue", wp.getValue ());
             props.put ("workflowId", orderTest.workflowId);
-            post (url, body (mapper.writeValueAsString (props)));
+            post (url, body (props));
         });
     }
 
     public void resetAccountLogin (String email) {
         Map <String, String> params = new HashMap <> ();
         params.put ("emails", email);
-        post (coraTestUrl + "/cora/debug/resetAccountLoginSubmit", body (mapper.writeValueAsString (params)));
+        post (coraTestUrl + "/cora/debug/resetAccountLoginSubmit", body (params));
     }
 
     public void removeWorkflowHold (OrderTest orderTest, WorkflowProperty property, String message) {
@@ -156,7 +156,7 @@ public class CoraApi extends HttpClientHelper {
         Map <String, String> payload = new HashMap <> ();
         payload.put ("holdAtStageName", property.name ());
         payload.put ("subStatusMessage", message);
-        post (url, body (mapper.writeValueAsString (payload)));
+        post (url, body (payload));
     }
 
     public Stage[] getWorkflowStages (OrderTest orderTest) {
@@ -228,7 +228,7 @@ public class CoraApi extends HttpClientHelper {
     }
 
     public String updateProvider (Physician physician) {
-        return put (coraTestUrl + "/cora/api/v1/providers", body (mapper.writeValueAsString (physician)));
+        return put (coraTestUrl + "/cora/api/v1/providers", body (physician));
     }
 
     public Physician getPhysician (PhysicianType type) {
@@ -336,31 +336,28 @@ public class CoraApi extends HttpClientHelper {
 
     public HttpResponse newBcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
-        HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
-                                                  HttpResponse.class);
+        HttpResponse response = mapper.readValue (post (url, body (diagnostic)), HttpResponse.class);
         diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
         return response;
     }
 
     public HttpResponse newTcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/createPortalJob";
-        HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
-                                                  HttpResponse.class);
+        HttpResponse response = mapper.readValue (post (url, body (diagnostic)), HttpResponse.class);
         diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
         return response;
     }
 
     public HttpResponse newTdetectOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
-        HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
-                                                  HttpResponse.class);
+        HttpResponse response = mapper.readValue (post (url, body (diagnostic)), HttpResponse.class);
         diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
         return response;
     }
 
     public HttpResponse newResearchOrder (Research research) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
-        return mapper.readValue (post (url, body (mapper.writeValueAsString (research))), HttpResponse.class);
+        return mapper.readValue (post (url, body (research)), HttpResponse.class);
     }
 
     public Patient[] getPatients (String searchKeyword) {
@@ -375,7 +372,7 @@ public class CoraApi extends HttpClientHelper {
 
     public Patient updatePatient (Patient patient) {
         String url = coraTestUrl + "/cora/api/v2/patients/" + patient.id;
-        return mapper.readValue (put (url, body (mapper.writeValueAsString (patient))), Patient.class);
+        return mapper.readValue (put (url, body (patient)), Patient.class);
     }
 
     public Order[] getOrdersForPatient (String patientId) {
@@ -384,7 +381,7 @@ public class CoraApi extends HttpClientHelper {
     }
 
     public void setAlerts (Alert alert) {
-        post (coraTestUrl + "/cora/api/v2/alerts/create", body (mapper.writeValueAsString (alert)));
+        post (coraTestUrl + "/cora/api/v2/alerts/create", body (alert));
     }
 
     public FeatureFlags getFeatureFlags () {
@@ -400,7 +397,7 @@ public class CoraApi extends HttpClientHelper {
         Map <String, String> params = new HashMap <> ();
         params.put ("tokenData", mapper.writeValueAsString (tokenData));
         String url = coraTestUrl + "/cora/debug/emrTokenSubmit";
-        post (url, body (mapper.writeValueAsString (params)));
+        post (url, body (params));
         return tokenData.id;
     }
 
@@ -413,14 +410,14 @@ public class CoraApi extends HttpClientHelper {
         String url = coraTestUrl + "/cora/api/v1/external/alerts/summary";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
-        return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Alerts.class);
+        return mapper.readValue (post (url, body (params)), Alerts.class);
     }
 
     public void dismissAlert (String userName, String alertId) {
         String url = coraTestUrl + "/cora/api/v1/external/alerts/" + alertId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
-        post (url, body (mapper.writeValueAsString (params)));
+        post (url, body (params));
     }
 
     public void dismissAlertsForUserName (String userName) {
@@ -450,14 +447,14 @@ public class CoraApi extends HttpClientHelper {
         String url = coraTestUrl + "/cora/api/v1/external/reminders/active";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
-        return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Reminders.class);
+        return mapper.readValue (post (url, body (params)), Reminders.class);
     }
 
     public void deleteReminder (String reminderId, String userName) {
         String url = coraTestUrl + "/cora/api/v1/external/reminders/" + reminderId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
-        post (url, body (mapper.writeValueAsString (params)));
+        post (url, body (params));
     }
 
     public void deleteRemindersForUserName (String userName) {

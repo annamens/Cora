@@ -1,0 +1,347 @@
+{
+    "class": "com.adaptive.analysis.AnalysisResultDto",
+    "version": 1,
+    "analysisResult": "eyJjbGFzcyI6ImNvbS5hZGFwdGl2ZS5jbG9ub3NlcXJlcG9ydC5kdG9zLkNsaW5pY2FsUmVwb3J0RHRvIiwidmVyc2lvbiI6MSwicmVwb3J0SWQiOiI2YTlmNzc2Yy1mODhkLTRiOGEtOTc0YS1hNzM5M2YyMTkxZTUiLCJyZXBvcnRTYW1wbGVPcmRlclRlc3RJZCI6Ijc5MjU1MmVmLWExMzItNDdlZS1iMTYwLWI3MTgzM2M0YjZlNCIsInJlcG9ydFR5cGUiOiJjbG9uYWxpdHkiLCJyZXBvcnRTYW1wbGVUb3RhbFNlcXVlbmNlcyI6MjE1MjI5LjM0MjIwMzE5NDMzLCJyZXBvcnRTYW1wbGVVbmlxdWVTZXF1ZW5jZXMiOjU3MjgsInJlcG9ydFNhbXBsZUNsb25hbGl0eSI6MC44NzAyMTMwNzUzOTU0NzU1LCJyZXBvcnRTYW1wbGVUb3RhbE51Y2xlYXRlZENlbGxzIjo2NTYwMy4yMiwicGlwZWxpbmVWZXJzaW9uIjoidjMuMC04ODAtZzFjMTg1MmEiLCJhc3NheVZlcnNpb24iOiJyZC5IdW1hbi5CQ2VsbC5uZXh0c2VxLjE0NngxM3gxMTYudGhyZWVSZWFkLnVsdHJhbGlnaHQucmV2NCIsImNvbmZpZ1ZlcnNpb24iOiIwLjUiLCJjbG9uYWxpdHlSZXN1bHQiOjAsInRyYWNraW5nUmVzdWx0IjoxLCJsb2NpU3VtbWFyeUluZm8iOlt7ImxvY3VzIjoiSUdLIiwidG90YWxTZXF1ZW5jZXMiOjEzMjgxNC4zMDgyMDMxOTQyLCJ0b3RhbFVuaXF1ZVNlcXVlbmNlcyI6MzE4N30seyJsb2N1cyI6IklHSCIsInRvdGFsU2VxdWVuY2VzIjo4MTYwMi43MDc0OTk5OTk5OSwidG90YWxVbmlxdWVTZXF1ZW5jZXMiOjE5NzZ9LHsibG9jdXMiOiJJR0wiLCJ0b3RhbFNlcXVlbmNlcyI6ODEyLjMyNjQ5OTk5OTk5OTgsInRvdGFsVW5pcXVlU2VxdWVuY2VzIjo1NjV9XSwicmVzdWx0Q2xvbmVzIjpbeyJjbGFzcyI6ImNvbS5hZGFwdGl2ZS5jbG9ub3NlcXJlcG9ydC5kdG9zLlJlc3VsdENsb25lRHRvIiwidmVyc2lvbiI6MSwibnVjbGVvdGlkZSI6IkNBR0dHQUNBQ0dUQ0NBVENBR0NBQ0FHQ0NUQUNBVEdHQUdDVEdBR0NBR0dDVEdBR0FUQ1RHQUNHQUNBQ0dHQ0NHVEdUQUNUQ1RDR0dUR1RHR1RUQVRDQ0NDQUdHR0FHVEFDQVRHR0FDR1RDVEdHR0dDQUFBR0dHQUNDIiwiaXNMaWZ0ZWRJZENsb25lIjpmYWxzZSwibG9jdXMiOiJJR0giLCJpc0VtZXJnZW50IjpmYWxzZSwiaXNEeFRhZ2dlZEluUmVwb3J0U2FtcGxlIjp0cnVlLCJkZXNpZ25hdGlvbiI6IkEiLCJjb2xvciI6MSwic3ltYm9sIjoxLCJsaW5lVHlwZSI6MSwiZGlzZWFzZUxvYWRNdWx0aXBsaWVyIjoxLjAsImhpc3RvcnkiOlt7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuSGlzdG9yaWNhbENsb25lRHRvIiwidmVyc2lvbiI6MSwiY29sbGVjdGlvbkRhdGUiOiIwNC8wMS8yMDE5IiwiaXNGcm9tQ2xvbmFsaXR5VGVzdCI6dHJ1ZSwiY291bnQiOjc0NjQwLjAsIm5vcm1hbGl6ZWRDb3VudCI6MTEzNzc0OS4wMzEyMjEzMzM0LCJub3JtYWxpemVkQ291bnRDb25mTWluIjpudWxsLCJub3JtYWxpemVkQ291bnRDb25mTWF4IjpudWxsLCJmcmFjdGlvbk9mTnVjbGVhdGVkQ2VsbHMiOjEuMTM3NzQ5MDMxMjIxMzMzNCwiY291bnRNZWFzdXJlIjoiY2VsbHMiLCJhc3NheVZlcnNpb24iOiJyZC5IdW1hbi5CQ2VsbC5uZXh0c2VxLjE0NngxM3gxMTYudGhyZWVSZWFkLnVsdHJhbGlnaHQucmV2NCIsIm9yZGVyVGVzdElkIjoiNzkyNTUyZWYtYTEzMi00N2VlLWIxNjAtYjcxODMzYzRiNmU0Iiwic2FtcGxlTnVjbGVhdGVkQ2VsbHMiOjY1NjAzLjIyLCJsaW1pdE9mRGV0ZWN0aW9uIjowLjAsImxpbWl0T2ZRdWFudGl0YXRpb24iOjAuMH1dfSx7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuUmVzdWx0Q2xvbmVEdG8iLCJ2ZXJzaW9uIjoxLCJudWNsZW90aWRlIjoiQ0NUR0NBR0NDVEdBQUdBVEdUVEdDQUFDVFRBVFRBQ0dHVENBQUNHR0FDVFRBQ0FBVEdDQ0dDQ0dHQ0FDVFRUVEdHQ0NBR0dHRyIsImlzTGlmdGVkSWRDbG9uZSI6ZmFsc2UsImxvY3VzIjoiSUdLIiwiaXNFbWVyZ2VudCI6ZmFsc2UsImlzRHhUYWdnZWRJblJlcG9ydFNhbXBsZSI6dHJ1ZSwiZGVzaWduYXRpb24iOiJDIiwiY29sb3IiOjMsInN5bWJvbCI6MywibGluZVR5cGUiOjMsImRpc2Vhc2VMb2FkTXVsdGlwbGllciI6NjMuMjMzNDg5MTExMTExMTEsImhpc3RvcnkiOlt7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuSGlzdG9yaWNhbENsb25lRHRvIiwidmVyc2lvbiI6MSwiY29sbGVjdGlvbkRhdGUiOiIwNC8wMS8yMDE5IiwiaXNGcm9tQ2xvbmFsaXR5VGVzdCI6dHJ1ZSwiY291bnQiOjU5NzE3LjcwNzExNjUzMzMzLCJub3JtYWxpemVkQ291bnQiOjkxMDI4Ni4yMTk0MzQ1NTQxLCJub3JtYWxpemVkQ291bnRDb25mTWluIjpudWxsLCJub3JtYWxpemVkQ291bnRDb25mTWF4IjpudWxsLCJmcmFjdGlvbk9mTnVjbGVhdGVkQ2VsbHMiOjAuOTEwMjg2MjE5NDM0NTU0MSwiY291bnRNZWFzdXJlIjoiY2VsbHMiLCJhc3NheVZlcnNpb24iOiJyZC5IdW1hbi5CQ2VsbC5uZXh0c2VxLjE0NngxM3gxMTYudGhyZWVSZWFkLnVsdHJhbGlnaHQucmV2NCIsIm9yZGVyVGVzdElkIjoiNzkyNTUyZWYtYTEzMi00N2VlLWIxNjAtYjcxODMzYzRiNmU0Iiwic2FtcGxlTnVjbGVhdGVkQ2VsbHMiOjY1NjAzLjIyLCJsaW1pdE9mRGV0ZWN0aW9uIjowLjAsImxpbWl0T2ZRdWFudGl0YXRpb24iOjAuMH1dfSx7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuUmVzdWx0Q2xvbmVEdG8iLCJ2ZXJzaW9uIjoxLCJudWNsZW90aWRlIjoiR0FUR1RUR0dHR1RUVEFUVEFDVEdDQVRHQ0FBR0dUQUNBQ0FDVEdHVENDR0dHR0FDVFRUQ0dHQ0NDVEdHRyIsImlzTGlmdGVkSWRDbG9uZSI6ZmFsc2UsImxvY3VzIjoiSUdLIiwiaXNFbWVyZ2VudCI6ZmFsc2UsImlzRHhUYWdnZWRJblJlcG9ydFNhbXBsZSI6dHJ1ZSwiZGVzaWduYXRpb24iOiJCIiwiY29sb3IiOjIsInN5bWJvbCI6MiwibGluZVR5cGUiOjIsImRpc2Vhc2VMb2FkTXVsdGlwbGllciI6NjUuNjk3MTMxNTQ0MDExNTQsImhpc3RvcnkiOlt7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuSGlzdG9yaWNhbENsb25lRHRvIiwidmVyc2lvbiI6MSwiY29sbGVjdGlvbkRhdGUiOiIwNC8wMS8yMDE5IiwiaXNGcm9tQ2xvbmFsaXR5VGVzdCI6dHJ1ZSwiY291bnQiOjU5NzI1LjI2MjI4NjY2MDg5NCwibm9ybWFsaXplZENvdW50Ijo5MTA0MDEuMzg0MDU3OTkxMiwibm9ybWFsaXplZENvdW50Q29uZk1pbiI6bnVsbCwibm9ybWFsaXplZENvdW50Q29uZk1heCI6bnVsbCwiZnJhY3Rpb25PZk51Y2xlYXRlZENlbGxzIjowLjkxMDQwMTM4NDA1Nzk5MTIsImNvdW50TWVhc3VyZSI6ImNlbGxzIiwiYXNzYXlWZXJzaW9uIjoicmQuSHVtYW4uQkNlbGwubmV4dHNlcS4xNDZ4MTN4MTE2LnRocmVlUmVhZC51bHRyYWxpZ2h0LnJldjQiLCJvcmRlclRlc3RJZCI6Ijc5MjU1MmVmLWExMzItNDdlZS1iMTYwLWI3MTgzM2M0YjZlNCIsInNhbXBsZU51Y2xlYXRlZENlbGxzIjo2NTYwMy4yMiwibGltaXRPZkRldGVjdGlvbiI6MC4wLCJsaW1pdE9mUXVhbnRpdGF0aW9uIjowLjB9XX1dLCJhbmFseXRpY2FsTGltaXQiOjEuOTAzfQ==",
+    "mrdEngineVersion": "646.Rindja.LDT/0.5",
+    "idClones": [
+        {
+            "class": "com.adaptive.mrdengine.IdCloneDto",
+            "version": 1,
+            "id": "f1d7a958-3e54-4f60-8454-dde6373f9195",
+            "orderTestId": "792552ef-a132-47ee-b160-b71833c4b6e4",
+            "subLocus": "IGH",
+            "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+            "count": 74640.0,
+            "normalizedCount": 1137749.0312213334,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 81602.70749999976,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 110,
+            "uniquenessProbability": 2.0914022761134327E-33,
+            "ndnMutationWeight": 1.05,
+            "maxAdjustedMutations": 4.570000000111759,
+            "diseaseLoadMultiplier": 1.0,
+            "cellularSensitivityBin": "1.0E-06",
+            "cellfreeSensitivityBin": "1.0E-06",
+            "trackingOnly": false,
+            "highSharingSample": false
+        },
+        {
+            "class": "com.adaptive.mrdengine.IdCloneDto",
+            "version": 1,
+            "id": "31fef2e3-1bdf-47ef-9d43-d3e0edc5d067",
+            "orderTestId": "792552ef-a132-47ee-b160-b71833c4b6e4",
+            "subLocus": "IGK",
+            "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG",
+            "count": 59725.262286660894,
+            "normalizedCount": 910401.3840579912,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 261796.23470319418,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 52,
+            "uniquenessProbability": 1.0012043967566521E-40,
+            "ndnMutationWeight": 1.05,
+            "maxAdjustedMutations": 0.5200000001117587,
+            "diseaseLoadMultiplier": 65.69713154401154,
+            "cellularSensitivityBin": "1.0E-04",
+            "cellfreeSensitivityBin": "1.0E-04",
+            "trackingOnly": false,
+            "highSharingSample": false
+        },
+        {
+            "class": "com.adaptive.mrdengine.IdCloneDto",
+            "version": 1,
+            "id": "97a729f9-32c8-49f5-add4-6e2be69f6613",
+            "orderTestId": "792552ef-a132-47ee-b160-b71833c4b6e4",
+            "subLocus": "IGK",
+            "sequence": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG",
+            "count": 59717.70711653333,
+            "normalizedCount": 910286.2194345541,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 261796.23470319418,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 64,
+            "uniquenessProbability": 1.019100597488783E-34,
+            "ndnMutationWeight": 1.05,
+            "maxAdjustedMutations": 0.5200000001117587,
+            "diseaseLoadMultiplier": 63.23348911111111,
+            "cellularSensitivityBin": "1.0E-04",
+            "cellfreeSensitivityBin": "1.0E-04",
+            "trackingOnly": false,
+            "highSharingSample": false
+        },
+        {
+            "class": "com.adaptive.mrdengine.IdCloneDto",
+            "version": 1,
+            "id": "0b631116-3c65-4bad-8228-2a3805e8a107",
+            "orderTestId": "792552ef-a132-47ee-b160-b71833c4b6e4",
+            "subLocus": "IGK",
+            "sequence": "GTGGCCGTGGCCACCCTGTGTCTGCCCGATTAATGCTGCCGTAGCCAGCTTTCCCCACCTAGTGGCAGCCCAGGG",
+            "count": 39168.0,
+            "normalizedCount": 597043.864615182,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 261796.23470319418,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 66,
+            "uniquenessProbability": 2.2649E-6,
+            "ndnMutationWeight": 1.05,
+            "maxAdjustedMutations": 0.0,
+            "diseaseLoadMultiplier": 80.0,
+            "cellularSensitivityBin": "-1.0",
+            "cellfreeSensitivityBin": "-1.0",
+            "trackingOnly": true,
+            "highSharingSample": false
+        },
+        {
+            "class": "com.adaptive.mrdengine.IdCloneDto",
+            "version": 1,
+            "id": "43c9a03f-166d-4016-8199-1c3af1cb24df",
+            "orderTestId": "792552ef-a132-47ee-b160-b71833c4b6e4",
+            "subLocus": "IGK",
+            "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGCCTCCCTCCGAAGGCCTAGTGGCAGCCCAGGG",
+            "count": 40464.0,
+            "normalizedCount": 616798.9924884784,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 261796.23470319418,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 62,
+            "uniquenessProbability": 6.593065611196718E-34,
+            "ndnMutationWeight": 1.05,
+            "maxAdjustedMutations": 1.0450000001117588,
+            "diseaseLoadMultiplier": 80.0,
+            "cellularSensitivityBin": "-1.0",
+            "cellfreeSensitivityBin": "-1.0",
+            "trackingOnly": true,
+            "highSharingSample": false
+        },
+        {
+            "class": "com.adaptive.mrdengine.IdCloneDto",
+            "version": 1,
+            "id": "18941b4b-ce32-4c1d-b4d2-dd608c6f6451",
+            "orderTestId": "792552ef-a132-47ee-b160-b71833c4b6e4",
+            "subLocus": "IGK",
+            "sequence": "CCTGAAGATATTGCAACATATTACTGTCAACAGCATGATAATCTCCCTCAAGATTCACTTTCGGCCCTGGG",
+            "count": 38584.0,
+            "normalizedCount": 588141.86254882,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 261796.23470319418,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 62,
+            "uniquenessProbability": 2.3065214819296806E-29,
+            "ndnMutationWeight": 1.05,
+            "maxAdjustedMutations": 0.5200000001117587,
+            "diseaseLoadMultiplier": 80.0,
+            "cellularSensitivityBin": "-1.0",
+            "cellfreeSensitivityBin": "-1.0",
+            "trackingOnly": true,
+            "highSharingSample": false
+        },
+        {
+            "class": "com.adaptive.mrdengine.IdCloneDto",
+            "version": 1,
+            "id": "c75e1c9a-abf1-487a-9461-736cc13f41bc",
+            "orderTestId": "792552ef-a132-47ee-b160-b71833c4b6e4",
+            "subLocus": "IGL",
+            "sequence": "CTGATTATTACTGCTGCTCATATGCAGGTAGTAAGGTGGTATTCGGCGGAGGGACCAAGC",
+            "count": 11576.0,
+            "normalizedCount": 176454.75328802454,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 261796.23470319418,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 44,
+            "uniquenessProbability": 8.8548E-7,
+            "ndnMutationWeight": 1.05,
+            "maxAdjustedMutations": 0.0,
+            "diseaseLoadMultiplier": 80.0,
+            "cellularSensitivityBin": "-1.0",
+            "cellfreeSensitivityBin": "-1.0",
+            "trackingOnly": true,
+            "highSharingSample": false
+        }
+    ],
+    "mrdClones": [
+        {
+            "class": "com.adaptive.mrdengine.MrdResultCloneDto",
+            "version": 1,
+            "id": "a3a49e8f-1f77-4134-98ca-5d79a5506051",
+            "orderTestId": null,
+            "subLocus": "IGH",
+            "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+            "count": 74653.30470000001,
+            "normalizedCount": 1137951.836815327,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 81602.70749999976,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 110,
+            "idCloneId": "f1d7a958-3e54-4f60-8454-dde6373f9195",
+            "rank": 1,
+            "constituentClones": 10,
+            "limitOfDetection": 29.00772248679257,
+            "limitOfQuantitation": 36.43114676383263,
+            "adjustedMutations": 0.0,
+            "matchLength": 118,
+            "overlapCount": 0,
+            "passedContamination": true,
+            "normalizedCountConfMin": 751837.3227320953,
+            "normalizedCountConfMax": 1000000.0
+        },
+        {
+            "class": "com.adaptive.mrdengine.MrdResultCloneDto",
+            "version": 1,
+            "id": "fe729be2-d1bb-434f-95a2-e3c7c565bf25",
+            "orderTestId": null,
+            "subLocus": "IGK",
+            "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG",
+            "count": 59725.262286660894,
+            "normalizedCount": 910401.3840579912,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 133626.6347031942,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 52,
+            "idCloneId": "31fef2e3-1bdf-47ef-9d43-d3e0edc5d067",
+            "rank": 6,
+            "constituentClones": 1,
+            "limitOfDetection": 2900.7722486792572,
+            "limitOfQuantitation": 3643.114676383263,
+            "adjustedMutations": 0.0,
+            "matchLength": 57,
+            "overlapCount": 0,
+            "passedContamination": true,
+            "normalizedCountConfMin": 9155.593484339724,
+            "normalizedCountConfMax": 1000000.0
+        },
+        {
+            "class": "com.adaptive.mrdengine.MrdResultCloneDto",
+            "version": 1,
+            "id": "ed13a436-7d62-4403-8565-57b4946305a0",
+            "orderTestId": null,
+            "subLocus": "IGK",
+            "sequence": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG",
+            "count": 59717.70711653333,
+            "normalizedCount": 910286.2194345541,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 133626.6347031942,
+            "sampleAmount": 65603.22,
+            "cdr3Index": 64,
+            "idCloneId": "97a729f9-32c8-49f5-add4-6e2be69f6613",
+            "rank": 5,
+            "constituentClones": 1,
+            "limitOfDetection": 2900.7722486792572,
+            "limitOfQuantitation": 3643.114676383263,
+            "adjustedMutations": 0.0,
+            "matchLength": 69,
+            "overlapCount": 0,
+            "passedContamination": true,
+            "normalizedCountConfMin": 9511.10162425524,
+            "normalizedCountConfMax": 1000000.0
+        }
+    ],
+    "sequenceLiteDtos": [
+        {
+            "class": "com.adaptive.clonoseqreport.dtos.MrdSequenceDetailsDto",
+            "version": 1,
+            "sampleOrderTestId": "792552ef-a132-47ee-b160-b71833c4b6e4",
+            "sampleFileS3Path": "https://adaptivecoratest.blob.core.windows.net/cora-data/orca/a0ec2b82-c3ae-45e4-9c55-10180c66046b/below-lod.id.tsv.gz",
+            "idCloneSequences": [
+                {
+                    "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "scaledCount": 74653.30470000001
+                },
+                {
+                    "sequence": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG",
+                    "scaledCount": 59717.70711653333
+                },
+                {
+                    "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG",
+                    "scaledCount": 59725.262286660894
+                }
+            ],
+            "sequences": [
+                {
+                    "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGCCTGAGAGCTGAGGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGATCATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG",
+                    "idCloneSequence": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG"
+                },
+                {
+                    "sequence": "GACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGAAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTAGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GAGGAGCCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG",
+                    "idCloneSequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG"
+                },
+                {
+                    "sequence": "GCCTACATGCAGCTGAGCAGGCTGAGATCTGAAGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGTGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGGGTGGCTATCCCCAGGGAGTACACGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GCCTACATGGAGCTGAGTAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGAAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "TCCTACATGGAGGTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGGCC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                }
+            ]
+        }
+    ],
+    "newPatientCloneTracks": [
+        {
+            "class": "com.adaptive.clonoseqreport.dtos.PatientCloneTrackDto",
+            "version": 1,
+            "patientId": null,
+            "idCloneId": "f1d7a958-3e54-4f60-8454-dde6373f9195",
+            "nucleotide": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+            "designation": 0,
+            "color": 1,
+            "symbol": 1,
+            "lineType": 1
+        },
+        {
+            "class": "com.adaptive.clonoseqreport.dtos.PatientCloneTrackDto",
+            "version": 1,
+            "patientId": null,
+            "idCloneId": "31fef2e3-1bdf-47ef-9d43-d3e0edc5d067",
+            "nucleotide": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG",
+            "designation": 1,
+            "color": 2,
+            "symbol": 2,
+            "lineType": 2
+        },
+        {
+            "class": "com.adaptive.clonoseqreport.dtos.PatientCloneTrackDto",
+            "version": 1,
+            "patientId": null,
+            "idCloneId": "97a729f9-32c8-49f5-add4-6e2be69f6613",
+            "nucleotide": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG",
+            "designation": 2,
+            "color": 3,
+            "symbol": 3,
+            "lineType": 3
+        }
+    ],
+    "failLowTotalCells": false
+}

@@ -10,7 +10,9 @@ import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static java.lang.ClassLoader.getSystemResource;
@@ -35,32 +37,39 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 public class AboveLoQTestSuite extends ReportTestBase {
 
     private final String   downloadDir  = artifacts (this.getClass ().getName ());
-    private final Patient  patient      = scenarioBuilderPatient ();
+    private final Patient  patientClia  = scenarioBuilderPatient ();
+    private final Patient  patientIvd   = scenarioBuilderPatient ();
     private final Assay    assayCliaID  = ID_BCell2_CLIA;
-    private final Assay    assayIvdID   = ID_BCell2_IVD;
     private final Assay    assayCliaMRD = MRD_BCell2_CLIA;
+    private final Assay    assayIvdID   = ID_BCell2_IVD;
     private final Assay    assayIvdMRD  = MRD_BCell2_IVD;
     private Login          login        = new Login ();
     private OrcaHistory    history      = new OrcaHistory ();
     private ReportClonoSeq report       = new ReportClonoSeq ();
-    private Diagnostic     diagnostic;
+    private Diagnostic     diagnosticClia, diagnosticIvd;
 
     @BeforeClass
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
-        diagnostic = buildDiagnosticOrder (patient,
-                                           stage (SecondaryAnalysis, Ready),
-                                           genCDxTest (assayCliaID, azTsvPath + "/scenarios/above-loq.id.tsv.gz"),
-                                           genCDxTest (assayIvdID, azTsvPath + "/scenarios/above-loq.id.tsv.gz"),
-                                           genCDxTest (assayCliaMRD, azTsvPath + "/scenarios/above-loq.mrd.tsv.gz"),
-                                           genCDxTest (assayIvdMRD, azTsvPath + "/scenarios/above-loq.mrd.tsv.gz"));
-        assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
+        diagnosticClia = buildDiagnosticOrder (patientClia,
+                                               stage (SecondaryAnalysis, Ready),
+                                               genCDxTest (assayCliaID, azTsvPath + "/above-loq.id.tsv.gz"),
+                                               genCDxTest (assayCliaMRD, azTsvPath + "/above-loq.mrd.tsv.gz"));
+        assertEquals (coraApi.newBcellOrder (diagnosticClia).patientId, patientClia.id);
+
+        diagnosticIvd = buildDiagnosticOrder (patientIvd,
+                                              stage (SecondaryAnalysis, Ready),
+                                              genCDxTest (assayIvdID, azTsvPath + "/above-loq.id.tsv.gz"),
+                                              genCDxTest (assayIvdMRD, azTsvPath + "/above-loq.mrd.tsv.gz"));
+        assertEquals (coraApi.newBcellOrder (diagnosticIvd).patientId, patientIvd.id);
     }
 
     public void verify_clia_clonality_report () {
-        OrderTest orderTest = diagnostic.findOrderTest (assayCliaID);
+        OrderTest orderTest = diagnosticClia.findOrderTest (assayCliaID);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (SecondaryAnalysis, Finished);
+        history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
         String expected = getSystemResource ("SecondaryAnalysis/above-loq.id.json").getPath ();
@@ -76,9 +85,11 @@ public class AboveLoQTestSuite extends ReportTestBase {
     }
 
     public void verify_clia_tracking_report () {
-        OrderTest orderTest = diagnostic.findOrderTest (assayCliaMRD);
+        OrderTest orderTest = diagnosticClia.findOrderTest (assayCliaMRD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (SecondaryAnalysis, Finished);
+        history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
         String expected = getSystemResource ("SecondaryAnalysis/above-loq.mrd.json").getPath ();
@@ -93,10 +104,12 @@ public class AboveLoQTestSuite extends ReportTestBase {
         report.releaseReport (assayCliaMRD, Pass);
     }
 
-    public void verify_idv_clonality_report () {
-        OrderTest orderTest = diagnostic.findOrderTest (assayIvdID);
+    public void verify_ivd_clonality_report () {
+        OrderTest orderTest = diagnosticIvd.findOrderTest (assayIvdID);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (SecondaryAnalysis, Finished);
+        history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
         String expected = getSystemResource ("SecondaryAnalysis/above-loq.id.json").getPath ();
@@ -107,14 +120,16 @@ public class AboveLoQTestSuite extends ReportTestBase {
         testLog ("the secondaryAnalysisResult.json for above LOQ for clonality matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaID);
-        report.releaseReport (assayCliaID, Pass);
+        report.clickReportTab (assayIvdID);
+        report.releaseReport (assayIvdID, Pass);
     }
 
     public void verify_ivd_tracking_report () {
-        OrderTest orderTest = diagnostic.findOrderTest (assayIvdMRD);
+        OrderTest orderTest = diagnosticIvd.findOrderTest (assayIvdMRD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (SecondaryAnalysis, Finished);
+        history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
         String expected = getSystemResource ("SecondaryAnalysis/above-loq.mrd.json").getPath ();
@@ -125,7 +140,7 @@ public class AboveLoQTestSuite extends ReportTestBase {
         testLog ("the secondaryAnalysisResult.json for above LOQ for tracking matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaMRD);
-        report.releaseReport (assayCliaMRD, Pass);
+        report.clickReportTab (assayIvdMRD);
+        report.releaseReport (assayIvdMRD, Pass);
     }
 }
