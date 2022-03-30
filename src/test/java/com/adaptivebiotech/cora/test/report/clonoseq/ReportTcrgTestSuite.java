@@ -83,7 +83,6 @@ public class ReportTcrgTestSuite extends ReportTestBase {
         testLog ("the TCRG ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (MRD_TCRG);
-        login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (NorthQC, Finished);
         history.waitFor (CalculateSampleSummary, Finished);

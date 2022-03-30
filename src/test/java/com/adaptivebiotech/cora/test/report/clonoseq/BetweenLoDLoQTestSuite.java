@@ -78,7 +78,6 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
         report.releaseReport (assayCliaID, Pass);
 
         orderTest = diagnostic.findOrderTest (assayCliaMRD);
-        login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
@@ -122,7 +121,6 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
         report.releaseReport (assayIvdID, Pass);
 
         orderTest = diagnostic.findOrderTest (assayIvdMRD);
-        login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);

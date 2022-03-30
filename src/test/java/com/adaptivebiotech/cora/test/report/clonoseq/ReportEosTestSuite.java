@@ -126,7 +126,6 @@ public class ReportEosTestSuite extends ReportTestBase {
         saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
         reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
 
-        login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
@@ -244,7 +243,6 @@ public class ReportEosTestSuite extends ReportTestBase {
         saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
         reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
 
-        login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);

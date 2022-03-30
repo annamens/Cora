@@ -92,7 +92,6 @@ public class BelowLoDTestSuite extends ReportTestBase {
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (assayCliaMRD);
-        login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
@@ -162,7 +161,6 @@ public class BelowLoDTestSuite extends ReportTestBase {
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (assayIvdMRD);
-        login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
