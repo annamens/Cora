@@ -31,7 +31,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
-import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.report.ClonoSeq;
@@ -60,7 +59,6 @@ public class ReportIgHVTestSuite extends ReportTestBase {
     private final String   downloadDir = artifacts (this.getClass ().getName ());
     private final String   reportData  = "reportData.json";
     private final Patient  patient     = scenarioBuilderPatient ();
-    private final Assay    assayID     = ID_BCell2_CLIA;
     private Login          login       = new Login ();
     private OrcaHistory    history     = new OrcaHistory ();
     private ReportClonoSeq orderReport = new ReportClonoSeq ();
@@ -71,7 +69,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
 
-        CoraTest test = genCDxTest (assayID, azTsvPath + "/above-loq.id.tsv.gz");
+        CoraTest test = genCDxTest (ID_BCell2_CLIA, azTsvPath + "/above-loq.id.tsv.gz");
         test.workflowProperties.tsvOverridePath = null;
         test.workflowProperties.ighvAnalysisEnabled = true;
         test.workflowProperties.ighvReportEnabled = true;
@@ -92,7 +90,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
      */
     @Test (groups = "nutmeg")
     public void verify_clonality_report () {
-        OrderTest orderTest = diagnostic.findOrderTest (assayID);
+        OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
 
         login.doLogin ();
@@ -101,18 +99,18 @@ public class ReportIgHVTestSuite extends ReportTestBase {
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        orderReport.clickReportTab (assayID);
+        orderReport.clickReportTab (ID_BCell2_CLIA);
         assertTrue (orderReport.isCLIAIGHVBtnVisible ());
         testLog ("CLIA-IGHV flag appeared just below the Report tab");
 
-        orderReport.releaseReport (assayID, Pass);
+        orderReport.releaseReport (ID_BCell2_CLIA, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         history.clickOrderTest ();
-        orderReport.clickReportTab (assayID);
+        orderReport.clickReportTab (ID_BCell2_CLIA);
         LocalDateTime releaseDt = parse (orderReport.getReportReleaseDate () + ".0000", formatDt6);
 
         ReportRender report = parseReportData (reportDataJson);

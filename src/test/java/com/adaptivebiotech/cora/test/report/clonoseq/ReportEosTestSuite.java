@@ -27,7 +27,6 @@ import static org.testng.Assert.assertEquals;
 import java.time.LocalDateTime;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
-import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.report.AnalysisConfig;
@@ -45,15 +44,11 @@ import com.adaptivebiotech.picasso.dto.ReportRender;
 @Test (groups = "regression")
 public class ReportEosTestSuite extends ReportTestBase {
 
-    private final String   downloadDir  = artifacts (this.getClass ().getName ());
-    private final String   reportData   = "reportData.json";
-    private final Assay    assayCliaID  = ID_BCell2_CLIA;
-    private final Assay    assayCliaMRD = MRD_BCell2_CLIA;
-    private final Assay    assayIvdID   = ID_BCell2_IVD;
-    private final Assay    assayIvdMRD  = MRD_BCell2_IVD;
-    private Login          login        = new Login ();
-    private OrcaHistory    history      = new OrcaHistory ();
-    private ReportClonoSeq report       = new ReportClonoSeq ();
+    private final String   downloadDir = artifacts (this.getClass ().getName ());
+    private final String   reportData  = "reportData.json";
+    private Login          login       = new Login ();
+    private OrcaHistory    history     = new OrcaHistory ();
+    private ReportClonoSeq report      = new ReportClonoSeq ();
 
     /**
      * @sdlc.requirements SR-633, SR-1017, SR-1016, SR-1014, SR-1012, SR-1011, SR-1009, SR-1007,
@@ -64,13 +59,13 @@ public class ReportEosTestSuite extends ReportTestBase {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                stage (SecondaryAnalysis, Ready),
-                                               genCDxTest (assayCliaID, azTsvPath + "/above-loq.id.tsv.gz"),
-                                               genCDxTest (assayCliaMRD, azTsvPath + "/above-loq.mrd.tsv.gz"));
+                                               genCDxTest (ID_BCell2_CLIA, azTsvPath + "/above-loq.id.tsv.gz"),
+                                               genCDxTest (MRD_BCell2_CLIA, azTsvPath + "/above-loq.mrd.tsv.gz"));
         diagnostic.specimen.sampleType = gDNA;
         diagnostic.specimen.properties.SourceType = Skin;
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
 
-        OrderTest orderTest = diagnostic.findOrderTest (assayCliaID);
+        OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         String saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
         String saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
         String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
@@ -85,14 +80,14 @@ public class ReportEosTestSuite extends ReportTestBase {
         testLog ("downloaded Analysis Config json file");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaID);
-        report.releaseReport (assayCliaID, Pass);
+        report.clickReportTab (ID_BCell2_CLIA);
+        report.releaseReport (ID_BCell2_CLIA, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
         coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaID);
+        report.clickReportTab (ID_BCell2_CLIA);
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isCLIA = true;
@@ -121,7 +116,7 @@ public class ReportEosTestSuite extends ReportTestBase {
         });
         testLog ("found specimenSource in specimenInfo objects in " + reportData);
 
-        orderTest = diagnostic.findOrderTest (assayCliaMRD);
+        orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
         saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
         reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
@@ -135,14 +130,14 @@ public class ReportEosTestSuite extends ReportTestBase {
         testLog ("downloaded Analysis Config json file");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaMRD);
-        report.releaseReport (assayCliaMRD, Pass);
+        report.clickReportTab (MRD_BCell2_CLIA);
+        report.releaseReport (MRD_BCell2_CLIA, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
         coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaMRD);
+        report.clickReportTab (MRD_BCell2_CLIA);
         releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isCLIA = true;
@@ -181,13 +176,13 @@ public class ReportEosTestSuite extends ReportTestBase {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                stage (SecondaryAnalysis, Ready),
-                                               genCDxTest (assayIvdID, azTsvPath + "/above-loq.id.tsv.gz"),
-                                               genCDxTest (assayIvdMRD, azTsvPath + "/above-loq.mrd.tsv.gz"));
+                                               genCDxTest (ID_BCell2_IVD, azTsvPath + "/above-loq.id.tsv.gz"),
+                                               genCDxTest (MRD_BCell2_IVD, azTsvPath + "/above-loq.mrd.tsv.gz"));
         diagnostic.specimen.sampleType = gDNA;
         diagnostic.specimen.properties.SourceType = Skin;
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
 
-        OrderTest orderTest = diagnostic.findOrderTest (assayIvdID);
+        OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_IVD);
         String saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
         String saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
         String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
@@ -202,14 +197,14 @@ public class ReportEosTestSuite extends ReportTestBase {
         testLog ("downloaded Analysis Config json file");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayIvdID);
-        report.releaseReport (assayIvdID, Pass);
+        report.clickReportTab (ID_BCell2_IVD);
+        report.releaseReport (ID_BCell2_IVD, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
         coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         history.clickOrderTest ();
-        report.clickReportTab (assayIvdID);
+        report.clickReportTab (ID_BCell2_IVD);
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isIVD = true;
@@ -238,7 +233,7 @@ public class ReportEosTestSuite extends ReportTestBase {
         });
         testLog ("found specimenSource in specimenInfo objects in " + reportData);
 
-        orderTest = diagnostic.findOrderTest (assayIvdMRD);
+        orderTest = diagnostic.findOrderTest (MRD_BCell2_IVD);
         saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
         saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
         reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
@@ -252,14 +247,14 @@ public class ReportEosTestSuite extends ReportTestBase {
         testLog ("downloaded Analysis Config json file");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayIvdMRD);
-        report.releaseReport (assayIvdMRD, Pass);
+        report.clickReportTab (MRD_BCell2_IVD);
+        report.releaseReport (MRD_BCell2_IVD, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
         coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         history.clickOrderTest ();
-        report.clickReportTab (assayIvdMRD);
+        report.clickReportTab (MRD_BCell2_IVD);
         releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isIVD = true;

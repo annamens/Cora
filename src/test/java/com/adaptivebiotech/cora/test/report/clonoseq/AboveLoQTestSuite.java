@@ -20,7 +20,6 @@ import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
-import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
@@ -35,98 +34,94 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 @Test (groups = "regression")
 public class AboveLoQTestSuite extends ReportTestBase {
 
-    private final String   downloadDir  = artifacts (this.getClass ().getName ());
-    private final Assay    assayCliaID  = ID_BCell2_CLIA;
-    private final Assay    assayCliaMRD = MRD_BCell2_CLIA;
-    private final Assay    assayIvdID   = ID_BCell2_IVD;
-    private final Assay    assayIvdMRD  = MRD_BCell2_IVD;
-    private Login          login        = new Login ();
-    private OrcaHistory    history      = new OrcaHistory ();
-    private ReportClonoSeq report       = new ReportClonoSeq ();
+    private final String   downloadDir = artifacts (this.getClass ().getName ());
+    private final String   analysisID  = getSystemResource ("SecondaryAnalysis/above-loq.id.json").getPath ();
+    private final String   analysisMRD = getSystemResource ("SecondaryAnalysis/above-loq.mrd.json").getPath ();
+    private Login          login       = new Login ();
+    private OrcaHistory    history     = new OrcaHistory ();
+    private ReportClonoSeq report      = new ReportClonoSeq ();
 
     public void verify_clia_report () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                stage (SecondaryAnalysis, Ready),
-                                               genCDxTest (assayCliaID, azTsvPath + "/above-loq.id.tsv.gz"),
-                                               genCDxTest (assayCliaMRD, azTsvPath + "/above-loq.mrd.tsv.gz"));
+                                               genCDxTest (ID_BCell2_CLIA, azTsvPath + "/above-loq.id.tsv.gz"),
+                                               genCDxTest (MRD_BCell2_CLIA, azTsvPath + "/above-loq.mrd.tsv.gz"));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
 
-        OrderTest orderTest = diagnostic.findOrderTest (assayCliaID);
+        OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String expected = getSystemResource ("SecondaryAnalysis/above-loq.id.json").getPath ();
         String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, expected);
+        compareSecondaryAnalysisResults (actual, analysisID);
         testLog ("the secondaryAnalysisResult.json for above LOQ for clonality matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaID);
-        report.releaseReport (assayCliaID, Pass);
+        report.clickReportTab (ID_BCell2_CLIA);
+        report.releaseReport (ID_BCell2_CLIA, Pass);
 
-        orderTest = diagnostic.findOrderTest (assayCliaMRD);
+        orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        expected = getSystemResource ("SecondaryAnalysis/above-loq.mrd.json").getPath ();
         actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, expected);
+        compareSecondaryAnalysisResults (actual, analysisMRD);
         testLog ("the secondaryAnalysisResult.json for above LOQ for tracking matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaMRD);
-        report.releaseReport (assayCliaMRD, Pass);
+        report.clickReportTab (MRD_BCell2_CLIA);
+        report.releaseReport (MRD_BCell2_CLIA, Pass);
     }
 
     public void verify_ivd_report () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                stage (SecondaryAnalysis, Ready),
-                                               genCDxTest (assayIvdID, azTsvPath + "/above-loq.id.tsv.gz"),
-                                               genCDxTest (assayIvdMRD, azTsvPath + "/above-loq.mrd.tsv.gz"));
+                                               genCDxTest (ID_BCell2_IVD, azTsvPath + "/above-loq.id.tsv.gz"),
+                                               genCDxTest (MRD_BCell2_IVD, azTsvPath + "/above-loq.mrd.tsv.gz"));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
 
-        OrderTest orderTest = diagnostic.findOrderTest (assayIvdID);
+        OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_IVD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String expected = getSystemResource ("SecondaryAnalysis/above-loq.id.json").getPath ();
         String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, expected);
+        compareSecondaryAnalysisResults (actual, analysisID);
         testLog ("the secondaryAnalysisResult.json for above LOQ for clonality matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayIvdID);
-        report.releaseReport (assayIvdID, Pass);
+        report.clickReportTab (ID_BCell2_IVD);
+        report.releaseReport (ID_BCell2_IVD, Pass);
 
-        orderTest = diagnostic.findOrderTest (assayIvdMRD);
+        orderTest = diagnostic.findOrderTest (MRD_BCell2_IVD);
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        expected = getSystemResource ("SecondaryAnalysis/above-loq.mrd.json").getPath ();
         actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, expected);
+        compareSecondaryAnalysisResults (actual, analysisMRD);
         testLog ("the secondaryAnalysisResult.json for above LOQ for tracking matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayIvdMRD);
-        report.releaseReport (assayIvdMRD, Pass);
+        report.clickReportTab (MRD_BCell2_IVD);
+        report.releaseReport (MRD_BCell2_IVD, Pass);
     }
 }

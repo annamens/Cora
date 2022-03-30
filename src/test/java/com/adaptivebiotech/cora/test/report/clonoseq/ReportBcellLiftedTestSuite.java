@@ -24,7 +24,6 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
-import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.report.AnalysisConfig;
@@ -44,7 +43,6 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
 
     private final String   tsvPath     = azPipelineNorth + "/190608_NB501743_0470_AHTJHJBGX9/v3.0/20190611_0043/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev7/HTJHJBGX9_0_CLINICAL-CLINICAL_02064-08BC.adap.txt.results.tsv.gz";
     private final String   downloadDir = artifacts (this.getClass ().getName ());
-    private final Assay    assayMRD    = MRD_BCell2_CLIA;
     private Login          login       = new Login ();
     private OrcaHistory    history     = new OrcaHistory ();
     private ReportClonoSeq report      = new ReportClonoSeq ();
@@ -57,10 +55,10 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
         patient.insurance2 = null;
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                stage (SecondaryAnalysis, Ready),
-                                               genCDxTest (assayMRD, tsvPath));
+                                               genCDxTest (MRD_BCell2_CLIA, tsvPath));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
 
-        OrderTest orderTest = diagnostic.findOrderTest (assayMRD);
+        OrderTest orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         String saResultJson = join ("/", downloadDir, orderTest.sampleName, saResult);
         String saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
         String saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
@@ -77,8 +75,8 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
         testLog ("downloaded Analysis Config json file");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayMRD);
-        report.releaseReport (assayMRD, Pass);
+        report.clickReportTab (MRD_BCell2_CLIA);
+        report.releaseReport (MRD_BCell2_CLIA, Pass);
 
         AnalysisConfig config = parseAnalysisConfig (saInputJson);
         assertEquals (config.reportType, tracking);

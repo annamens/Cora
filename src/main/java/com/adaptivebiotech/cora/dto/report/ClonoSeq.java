@@ -566,7 +566,7 @@ public final class ClonoSeq {
     private String performanceSHM () {
         return join (" ",
                      asList ("This assay is clinically and analytically validated for qualitative assessment of unmutated, mutated, and indeterminate status.",
-                             "Analytical sensitivity and specificity have been assessed at 88.9% and 97.4%.",
+                             "Analytical sensitivity and specificity have been assessed at 95.3% and 98.3%.",
                              "See the clonoSEQ B-Cell Clonality Report for limit of detection information.",
                              "An indeterminate status indicates that the IGHV mutation assessment cannot be definitively determined based on the available sequencing data."));
     }

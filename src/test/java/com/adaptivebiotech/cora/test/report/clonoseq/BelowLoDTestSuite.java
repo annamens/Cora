@@ -25,7 +25,6 @@ import static org.testng.Assert.assertEquals;
 import java.time.LocalDateTime;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
-import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.report.ClonoSeq;
@@ -41,14 +40,12 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 @Test (groups = "regression")
 public class BelowLoDTestSuite extends ReportTestBase {
 
-    private final String   downloadDir  = artifacts (this.getClass ().getName ());
-    private final Assay    assayCliaID  = ID_BCell2_CLIA;
-    private final Assay    assayCliaMRD = MRD_BCell2_CLIA;
-    private final Assay    assayIvdID   = ID_BCell2_IVD;
-    private final Assay    assayIvdMRD  = MRD_BCell2_IVD;
-    private Login          login        = new Login ();
-    private OrcaHistory    history      = new OrcaHistory ();
-    private ReportClonoSeq report       = new ReportClonoSeq ();
+    private final String   downloadDir = artifacts (this.getClass ().getName ());
+    private final String   analysisID  = getSystemResource ("SecondaryAnalysis/below-lod.id.json").getPath ();
+    private final String   analysisMRD = getSystemResource ("SecondaryAnalysis/below-lod.mrd.json").getPath ();
+    private Login          login       = new Login ();
+    private OrcaHistory    history     = new OrcaHistory ();
+    private ReportClonoSeq report      = new ReportClonoSeq ();
 
     /**
      * @sdlc.requirements SR-5046
@@ -58,27 +55,26 @@ public class BelowLoDTestSuite extends ReportTestBase {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                stage (SecondaryAnalysis, Ready),
-                                               genCDxTest (assayCliaID, azTsvPath + "/below-lod.id.tsv.gz"),
-                                               genCDxTest (assayCliaMRD, azTsvPath + "/below-lod.mrd.tsv.gz"));
+                                               genCDxTest (ID_BCell2_CLIA, azTsvPath + "/below-lod.id.tsv.gz"),
+                                               genCDxTest (MRD_BCell2_CLIA, azTsvPath + "/below-lod.mrd.tsv.gz"));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
 
-        OrderTest orderTest = diagnostic.findOrderTest (assayCliaID);
+        OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String expected = getSystemResource ("SecondaryAnalysis/below-lod.id.json").getPath ();
         String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, expected);
+        compareSecondaryAnalysisResults (actual, analysisID);
         testLog ("the secondaryAnalysisResult.json for below LOD for clonality matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaID);
-        report.releaseReport (assayCliaID, Pass);
+        report.clickReportTab (ID_BCell2_CLIA);
+        report.releaseReport (ID_BCell2_CLIA, Pass);
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isCLIA = true;
@@ -91,21 +87,21 @@ public class BelowLoDTestSuite extends ReportTestBase {
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
-        orderTest = diagnostic.findOrderTest (assayCliaMRD);
+        orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        expected = getSystemResource ("SecondaryAnalysis/below-lod.mrd.json").getPath ();
         actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, expected);
+        compareSecondaryAnalysisResults (actual, analysisMRD);
         testLog ("the secondaryAnalysisResult.json for below LOD for tracking matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayCliaMRD);
-        report.releaseReport (assayCliaMRD, Pass);
+        report.clickReportTab (MRD_BCell2_CLIA);
+        report.releaseReport (MRD_BCell2_CLIA, Pass);
         releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isCLIA = true;
@@ -127,27 +123,26 @@ public class BelowLoDTestSuite extends ReportTestBase {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                stage (SecondaryAnalysis, Ready),
-                                               genCDxTest (assayIvdID, azTsvPath + "/below-lod.id.tsv.gz"),
-                                               genCDxTest (assayIvdMRD, azTsvPath + "/below-lod.mrd.tsv.gz"));
+                                               genCDxTest (ID_BCell2_IVD, azTsvPath + "/below-lod.id.tsv.gz"),
+                                               genCDxTest (MRD_BCell2_IVD, azTsvPath + "/below-lod.mrd.tsv.gz"));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
 
-        OrderTest orderTest = diagnostic.findOrderTest (assayIvdID);
+        OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_IVD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String expected = getSystemResource ("SecondaryAnalysis/below-lod.id.json").getPath ();
         String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, expected);
+        compareSecondaryAnalysisResults (actual, analysisID);
         testLog ("the secondaryAnalysisResult.json for below LOD for clonality matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayIvdID);
-        report.releaseReport (assayIvdID, Pass);
+        report.clickReportTab (ID_BCell2_IVD);
+        report.releaseReport (ID_BCell2_IVD, Pass);
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isIVD = true;
@@ -160,21 +155,21 @@ public class BelowLoDTestSuite extends ReportTestBase {
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
-        orderTest = diagnostic.findOrderTest (assayIvdMRD);
+        orderTest = diagnostic.findOrderTest (MRD_BCell2_IVD);
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        expected = getSystemResource ("SecondaryAnalysis/below-lod.mrd.json").getPath ();
         actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, expected);
+        compareSecondaryAnalysisResults (actual, analysisMRD);
         testLog ("the secondaryAnalysisResult.json for below LOD for tracking matched with the baseline");
 
         history.clickOrderTest ();
-        report.clickReportTab (assayIvdMRD);
-        report.releaseReport (assayIvdMRD, Pass);
+        report.clickReportTab (MRD_BCell2_IVD);
+        report.releaseReport (MRD_BCell2_IVD, Pass);
         releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
         clonoseq.isIVD = true;
