@@ -73,6 +73,7 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
         actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisMRD);
         testLog ("the secondaryAnalysisResult.json for not detected for tracking matched with the baseline");
@@ -114,6 +115,7 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
         actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisMRD);
         testLog ("the secondaryAnalysisResult.json for not detected for tracking matched with the baseline");
