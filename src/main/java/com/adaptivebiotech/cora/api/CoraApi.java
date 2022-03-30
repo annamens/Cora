@@ -80,10 +80,18 @@ public class CoraApi extends HttpClientHelper {
     }
 
     public String getAuthToken () {
+        return getAuthToken (coraBasicAuth);
+    }
+
+    public String getAuthToken (String user, String pass) {
+        return getAuthToken (basicAuth (user, pass));
+    }
+
+    public String getAuthToken (Header basicAuth) {
         resetheaders ();
-        headers.get ().add (coraBasicAuth);
+        headers.get ().add (basicAuth);
         String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
-        headers.get ().remove (coraBasicAuth);
+        headers.get ().remove (basicAuth);
         apiToken = new BasicHeader (X_API_TOKEN, token);
         return token;
     }
