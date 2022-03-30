@@ -7,7 +7,6 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
-import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Fail;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
@@ -1032,7 +1031,8 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
      */
     private void validatePipelineStatusToComplete (String sampleName, Assay assayTest) {
         pipelineApi.addBasicAuth ();
-        portalTestUrl = assayTest.equals (ID_BCell2_IVD) ? portalIvdTestUrl : portalCliaTestUrl;
+        if (assayTest.equals (ID_BCell2_IVD))
+            portalTestUrl = portalIvdTestUrl;
         Sample[] samples = pipelineApi.findFlowcellRuns (sampleName);
         assertEquals (samples.length, 1, "Validate pipeline portal job is completed");
     }

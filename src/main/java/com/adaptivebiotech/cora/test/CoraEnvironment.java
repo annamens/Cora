@@ -1,5 +1,8 @@
 package com.adaptivebiotech.cora.test;
 
+import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestPass;
+import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestUrl;
+import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestUser;
 import static com.seleniumfy.test.utils.Logging.error;
 import static java.lang.String.format;
 import com.adaptivebiotech.common.dto.Server;
@@ -9,8 +12,6 @@ public class CoraEnvironment extends BaseEnvironment {
 
     public static String portalCliaTestUrl;
     public static String portalIvdTestUrl;
-    public static String pipelinePortalTestUser;
-    public static String pipelinePortalTestPass;
     public static String limsTestUrl;
     public static Server jumpbox;
     public static Server coraDbInfo;
@@ -24,8 +25,9 @@ public class CoraEnvironment extends BaseEnvironment {
 
             portalCliaTestUrl = format (getProperty ("portal.clia.test.url"), env);
             portalIvdTestUrl = format (getProperty ("portal.ivd.test.url"), env);
-            pipelinePortalTestUser = getProperty ("portal.test.user");
-            pipelinePortalTestPass = decrypt (getProperty ("portal.test.pass"));
+            portalTestUrl = portalCliaTestUrl;
+            portalTestUser = getProperty ("portal.test.user");
+            portalTestPass = decrypt (getProperty ("portal.test.pass"));
 
             limsTestUrl = format (getProperty ("lims.test.url"), env);
 
