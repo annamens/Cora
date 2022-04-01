@@ -10,9 +10,13 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.Cellular;
 import static com.adaptivebiotech.test.utils.PageHelper.ReportType.tracking;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.Analyzer;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.CalculateSampleSummary;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static java.lang.String.join;
@@ -20,7 +24,6 @@ import static java.time.LocalDate.of;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import java.io.File;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
@@ -32,7 +35,6 @@ import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.SampleInfo;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 /**
  * Note: since we rolled back Rindja release, this test is nolonger valid
@@ -48,8 +50,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
     private final String   lastFlowcellIdTCRB = "H5CJ7BGXY";
     private final String   lastFlowcellIdTCRG = "HJTK5BCXX";
     private final String   report             = "reportData.json";
-    private final String   downloadDir        = artifacts (this.getClass ()
-                                                               .getName ());
+    private final String   downloadDir        = artifacts (this.getClass ().getName ());
     private Login          login              = new Login ();
     private OrcaHistory    history            = new OrcaHistory ();
     private ReportClonoSeq orderReport        = new ReportClonoSeq ();
@@ -58,13 +59,13 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
     @BeforeClass
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
         patient = new Patient ();
         patient.id = "6170cc74-6c83-4c22-929c-b08a6514617d";
         patient.mrn = "1111111111";
         patient.insurance1 = null;
         patient.insurance2 = null;
-        diagnostic = buildDiagnosticOrder (patient,
+        diagnostic = buildCdxOrder (patient,
                                            stage (NorthQC, Ready),
                                            genTcrTest (MRD_TCRG, lastFlowcellIdTCRG, tsvPathTCRG),
                                            genTcrTest (MRD_TCRB, lastFlowcellIdTCRB, tsvPathTCRB));
@@ -78,6 +79,10 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (NorthQC, Finished);
+        history.waitFor (CalculateSampleSummary, Finished);
+        history.waitFor (Analyzer, Finished);
+        history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         orderReport.clickReportTab (MRD_TCRB);
@@ -85,14 +90,15 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         testLog ("released the report");
 
         history.gotoOrderDebug (orderTest.sampleName);
-        HttpClientHelper.get (history.getFileLocation (report), new File (reportJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (report), reportJson);
         testLog ("downloaded reportData.json file");
 
         ReportRender report = parseReportData (reportJson);
         assertEquals (report.patientInfo.reportType, tracking);
         assertEquals (report.patientInfo.reportSpecimenCompartment, Cellular.label);
         assertEquals (report.patientInfo.reportLocus, TCRB);
-        assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimenNumber);
+        assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimen.specimenNumber);
         report.data.resultClones.forEach (c -> assertEquals (c.locus, TCRB));
 
         // looking for the lifted ID clones
@@ -119,6 +125,10 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (NorthQC, Finished);
+        history.waitFor (CalculateSampleSummary, Finished);
+        history.waitFor (Analyzer, Finished);
+        history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         orderReport.clickReportTab (MRD_TCRG);
@@ -126,14 +136,15 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         testLog ("released the report");
 
         history.gotoOrderDebug (orderTest.sampleName);
-        HttpClientHelper.get (history.getFileLocation (report), new File (reportJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (report), reportJson);
         testLog ("downloaded reportData.json file");
 
         ReportRender report = parseReportData (reportJson);
         assertEquals (report.patientInfo.reportType, tracking);
         assertEquals (report.patientInfo.reportSpecimenCompartment, Cellular.label);
         assertEquals (report.patientInfo.reportLocus, TCRG);
-        assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimenNumber);
+        assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimen.specimenNumber);
         report.data.resultClones.forEach (c -> assertEquals (c.locus, TCRG));
 
         // looking for the lifted ID clones

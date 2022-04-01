@@ -17,7 +17,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
-import java.io.File;
 import java.lang.reflect.Method;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -32,7 +31,6 @@ import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportTDetect;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
-import com.seleniumfy.test.utils.HttpClientHelper;
 
 /**
  * @author Harry Soehalim
@@ -85,8 +83,8 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         report.releaseReport (COVID19_DX_IVD, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
 
-        coraApi.login ();
-        HttpClientHelper.get (history.getFileLocation (reportData), new File (reportDataJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         ReportRender report = parseReportData (reportDataJson);
@@ -142,8 +140,8 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         report.releaseReport (LYME_DX_IVD, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
 
-        coraApi.login ();
-        HttpClientHelper.get (history.getFileLocation (reportData), new File (reportDataJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
 
         ReportRender report = parseReportData (reportDataJson);

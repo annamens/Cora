@@ -70,7 +70,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        coraApi.addCoraToken ();
+        coraApi.addTokenAndUsername ();
         physician = coraApi.getPhysician (clonoSEQ_client);
     }
 

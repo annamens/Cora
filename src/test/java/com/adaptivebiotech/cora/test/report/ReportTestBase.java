@@ -8,7 +8,6 @@ import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.diagnosticOrder
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.order;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.shipment;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.specimen;
-import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.isIVD;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.POSITIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.BCell;
@@ -45,15 +44,14 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.SpecimenProperties;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.report.AnalysisConfig;
+import com.adaptivebiotech.cora.dto.report.ClonoSeq;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.picasso.dto.ClinicalReport;
 import com.adaptivebiotech.picasso.dto.ReportRender;
-import com.adaptivebiotech.pipeline.dto.diagnostic.AnalysisConfig;
-import com.adaptivebiotech.pipeline.dto.diagnostic.ClonoSeq;
 import com.adaptivebiotech.pipeline.dto.diagnostic.SecondaryAnalysisResult;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 import com.adaptivebiotech.pipeline.utils.TestHelper.Locus;
-import com.seleniumfy.test.utils.HttpClientHelper;
 import com.testautomationguru.utility.PDFUtil;
 
 /**
@@ -62,12 +60,12 @@ import com.testautomationguru.utility.PDFUtil;
  */
 public class ReportTestBase extends CoraBaseBrowser {
 
-    protected final String azTsvPath       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv";
+    protected final String azTsvPath       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
     protected final String azPipelineNorth = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
     protected final String azPipelineFda   = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
     protected final String saResult        = "secondaryAnalysisResult.json";
 
-    protected Diagnostic buildDiagnosticOrder (Patient patient, Stage stage, CoraTest... tests) {
+    protected Diagnostic buildCdxOrder (Patient patient, Stage stage, CoraTest... tests) {
         Physician physician = coraApi.getPhysician (clonoSEQ_selfpay);
         Diagnostic diagnostic = diagnosticOrder (physician, patient, specimen (), shipment ());
         diagnostic.order = order (new OrderProperties (patient.billingType, CustomerShipment, "C91.00"), tests);
@@ -80,7 +78,7 @@ public class ReportTestBase extends CoraBaseBrowser {
         return diagnostic;
     }
 
-    protected Diagnostic buildTDetectOrder (Patient patient, Stage stage, CoraTest test) {
+    protected Diagnostic buildTdxOrder (Patient patient, Stage stage, CoraTest test) {
         Physician physician = coraApi.getPhysician (TDetect_selfpay);
         Diagnostic diagnostic = diagnosticOrder (physician, patient, null, shipment ());
         diagnostic.order = order (null, test);
@@ -129,7 +127,7 @@ public class ReportTestBase extends CoraBaseBrowser {
 
     protected String getReport (String url, String resultFile) {
         try {
-            HttpClientHelper.get (url, new File (resultFile));
+            coraApi.get (url, resultFile);
             PDFUtil pdfUtil = new PDFUtil () {
                 {
                     setCompareMode (VISUAL_MODE);
@@ -184,7 +182,9 @@ public class ReportTestBase extends CoraBaseBrowser {
 
         // Patient
         String permHeader = clonoseq.allpagesHeader ();
-        doCountMatches (texts, permHeader, clonoseq.pageSize - (isIVD && clonoseq.isSHM ? clonoseq.pageSizeSHM : 0));
+        doCountMatches (texts,
+                        permHeader,
+                        clonoseq.pageSize - (clonoseq.isIVD && clonoseq.isSHM ? clonoseq.pageSizeSHM : 0));
         testLog ("found the complete Patient/Order Information Header");
         doCountMatches (texts, clonoseq.header.frontpageHeader (), clonoseq.isSHM ? 2 : 1);
         testLog ("found the summary Patient/Order Information Header");

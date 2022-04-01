@@ -6,20 +6,10 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
-import static com.seleniumfy.test.utils.HttpClientHelper.body;
-import static com.seleniumfy.test.utils.HttpClientHelper.encodeUrl;
-import static com.seleniumfy.test.utils.HttpClientHelper.formPost;
-import static com.seleniumfy.test.utils.HttpClientHelper.get;
-import static com.seleniumfy.test.utils.HttpClientHelper.headers;
-import static com.seleniumfy.test.utils.HttpClientHelper.post;
-import static com.seleniumfy.test.utils.HttpClientHelper.put;
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
-import static javax.xml.bind.DatatypeConverter.printBase64Binary;
-import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +21,7 @@ import org.apache.http.message.BasicHeader;
 import com.adaptivebiotech.cora.dto.AccountsResponse;
 import com.adaptivebiotech.cora.dto.AlertType;
 import com.adaptivebiotech.cora.dto.Alerts;
+import com.adaptivebiotech.cora.dto.Alerts.Alert;
 import com.adaptivebiotech.cora.dto.AssayResponse;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -48,25 +39,27 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.dto.ProvidersResponse;
 import com.adaptivebiotech.cora.dto.Reminders;
+import com.adaptivebiotech.cora.dto.Reminders.Reminder;
 import com.adaptivebiotech.cora.dto.Research;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.dto.emr.Config;
 import com.adaptivebiotech.cora.dto.emr.TokenData;
 import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
+import com.adaptivebiotech.test.utils.HttpClientHelper;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
-import com.seleniumfy.test.utils.HttpClientHelper;
 import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class CoraApi {
+public class CoraApi extends HttpClientHelper {
 
-    private final long  millisDuration = 3000000l;                                        // 50mins
-    private final long  millisPoll     = 5000l;                                           // 5sec
-    public final Header username       = new BasicHeader ("X-Api-UserName", coraTestUser);
+    private final long  millisDuration = 3000000l;                                      // 50mins
+    private final long  millisPoll     = 5000l;                                         // 5sec
+    public final Header username       = new BasicHeader (X_API_USERNAME, coraTestUser);
+    public final Header coraBasicAuth  = basicAuth (coraTestUser, coraTestPass);
     public Header       apiToken;
 
     public void login () {
@@ -82,25 +75,28 @@ public class CoraApi {
     }
 
     public void resetheaders () {
-        HttpClientHelper.resetheaders ();
+        super.resetheaders ();
         headers.get ().add (username);
     }
 
-    public String auth () {
+    public String getAuthToken () {
+        return getAuthToken (coraBasicAuth);
+    }
+
+    public String getAuthToken (String user, String pass) {
+        return getAuthToken (basicAuth (user, pass));
+    }
+
+    public String getAuthToken (Header basicAuth) {
         resetheaders ();
-        Header coraBasicAuth = new BasicHeader (AUTHORIZATION, basicAuth (coraTestUser, coraTestPass));
-        headers.get ().add (coraBasicAuth);
+        headers.get ().add (basicAuth);
         String token = get (coraTestUrl + "/cora/api/v1/auth/apiToken");
-        headers.get ().remove (coraBasicAuth);
-        apiToken = new BasicHeader ("X-Api-Token", token);
+        headers.get ().remove (basicAuth);
+        apiToken = new BasicHeader (X_API_TOKEN, token);
         return token;
     }
 
-    public String basicAuth (String user, String pass) {
-        return "Basic " + printBase64Binary (join (":", user, pass).getBytes ());
-    }
-
-    public void addCoraToken () {
+    public void addTokenAndUsername () {
         if (!headers.get ().contains (apiToken))
             headers.get ().add (apiToken);
         if (!headers.get ().contains (username))
@@ -121,7 +117,7 @@ public class CoraApi {
 
     public Containers addContainers (Containers containers) {
         String url = coraTestUrl + "/cora/api/v1/containers/addEntries";
-        String result = post (url, body (mapper.writeValueAsString (containers.list)));
+        String result = post (url, body (containers.list));
         return new Containers (
                 mapper.readValue (result, HttpResponse.class).containers.parallelStream ().map (c -> {
                     c.location = coraTestUser;
@@ -132,7 +128,7 @@ public class CoraApi {
     public Containers deactivateContainers (Containers containers) {
         containers.list.parallelStream ().forEach (c -> c.isActive = false);
         String url = coraTestUrl + "/cora/api/v1/containers/updateEntries";
-        String result = put (url, body (mapper.writeValueAsString (containers.list)));
+        String result = put (url, body (containers.list));
         return new Containers (mapper.readValue (result, HttpResponse.class).containers);
     }
 
@@ -142,7 +138,7 @@ public class CoraApi {
             Map <String, String> props = new HashMap <> ();
             props.put ("containerId", c.id);
             props.put ("rootContainerId", freezer.id);
-            post (url, body (mapper.writeValueAsString (props)));
+            post (url, body (props));
         });
     }
 
@@ -153,14 +149,14 @@ public class CoraApi {
             props.put ("propertyName", wp.getKey ().name ());
             props.put ("propertyValue", wp.getValue ());
             props.put ("workflowId", orderTest.workflowId);
-            post (url, body (mapper.writeValueAsString (props)));
+            post (url, body (props));
         });
     }
 
     public void resetAccountLogin (String email) {
         Map <String, String> params = new HashMap <> ();
         params.put ("emails", email);
-        post (coraTestUrl + "/cora/debug/resetAccountLoginSubmit", body (mapper.writeValueAsString (params)));
+        post (coraTestUrl + "/cora/debug/resetAccountLoginSubmit", body (params));
     }
 
     public void removeWorkflowHold (OrderTest orderTest, WorkflowProperty property, String message) {
@@ -168,7 +164,7 @@ public class CoraApi {
         Map <String, String> payload = new HashMap <> ();
         payload.put ("holdAtStageName", property.name ());
         payload.put ("subStatusMessage", message);
-        post (url, body (mapper.writeValueAsString (payload)));
+        post (url, body (payload));
     }
 
     public Stage[] getWorkflowStages (OrderTest orderTest) {
@@ -240,7 +236,7 @@ public class CoraApi {
     }
 
     public String updateProvider (Physician physician) {
-        return put (coraTestUrl + "/cora/api/v1/providers", body (mapper.writeValueAsString (physician)));
+        return put (coraTestUrl + "/cora/api/v1/providers", body (physician));
     }
 
     public Physician getPhysician (PhysicianType type) {
@@ -348,31 +344,28 @@ public class CoraApi {
 
     public HttpResponse newBcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
-        HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
-                                                  HttpResponse.class);
+        HttpResponse response = mapper.readValue (post (url, body (diagnostic)), HttpResponse.class);
         diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
         return response;
     }
 
     public HttpResponse newTcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/createPortalJob";
-        HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
-                                                  HttpResponse.class);
+        HttpResponse response = mapper.readValue (post (url, body (diagnostic)), HttpResponse.class);
         diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
         return response;
     }
 
     public HttpResponse newTdetectOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticDx";
-        HttpResponse response = mapper.readValue (post (url, body (mapper.writeValueAsString (diagnostic))),
-                                                  HttpResponse.class);
+        HttpResponse response = mapper.readValue (post (url, body (diagnostic)), HttpResponse.class);
         diagnostic.orderTests = asList (waitForOrderReady (response.orderId));
         return response;
     }
 
     public HttpResponse newResearchOrder (Research research) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/researchTechTransfer";
-        return mapper.readValue (post (url, body (mapper.writeValueAsString (research))), HttpResponse.class);
+        return mapper.readValue (post (url, body (research)), HttpResponse.class);
     }
 
     public Patient[] getPatients (String searchKeyword) {
@@ -387,7 +380,7 @@ public class CoraApi {
 
     public Patient updatePatient (Patient patient) {
         String url = coraTestUrl + "/cora/api/v2/patients/" + patient.id;
-        return mapper.readValue (put (url, body (mapper.writeValueAsString (patient))), Patient.class);
+        return mapper.readValue (put (url, body (patient)), Patient.class);
     }
 
     public Order[] getOrdersForPatient (String patientId) {
@@ -395,8 +388,8 @@ public class CoraApi {
         return mapper.readValue (get (url), Order[].class);
     }
 
-    public void setAlerts (Alerts.Alert alert) {
-        post (coraTestUrl + "/cora/api/v2/alerts/create", body (mapper.writeValueAsString (alert)));
+    public void setAlerts (Alert alert) {
+        post (coraTestUrl + "/cora/api/v2/alerts/create", body (alert));
     }
 
     public FeatureFlags getFeatureFlags () {
@@ -412,7 +405,7 @@ public class CoraApi {
         Map <String, String> params = new HashMap <> ();
         params.put ("tokenData", mapper.writeValueAsString (tokenData));
         String url = coraTestUrl + "/cora/debug/emrTokenSubmit";
-        post (url, body (mapper.writeValueAsString (params)));
+        post (url, body (params));
         return tokenData.id;
     }
 
@@ -425,20 +418,20 @@ public class CoraApi {
         String url = coraTestUrl + "/cora/api/v1/external/alerts/summary";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
-        return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Alerts.class);
+        return mapper.readValue (post (url, body (params)), Alerts.class);
     }
 
     public void dismissAlert (String userName, String alertId) {
         String url = coraTestUrl + "/cora/api/v1/external/alerts/" + alertId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
-        post (url, body (mapper.writeValueAsString (params)));
+        post (url, body (params));
     }
 
     public void dismissAlertsForUserName (String userName) {
         Alerts userAlerts = getAlertsSummary (userName);
 
-        for (Alerts.Alert alert : userAlerts.orderAlerts) {
+        for (Alert alert : userAlerts.orderAlerts) {
             dismissAlert (userName, alert.id);
         }
     }
@@ -446,7 +439,7 @@ public class CoraApi {
     public void dismissAlertsForOrder (String userName, String orderNo) {
         Alerts userAlerts = getAlertsSummary (userName);
 
-        for (Alerts.Alert alert : userAlerts.orderAlerts) {
+        for (Alert alert : userAlerts.orderAlerts) {
             if (alert.order.orderNumber.equals (orderNo)) {
                 dismissAlert (userName, alert.id);
             }
@@ -462,20 +455,20 @@ public class CoraApi {
         String url = coraTestUrl + "/cora/api/v1/external/reminders/active";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
-        return mapper.readValue (post (url, body (mapper.writeValueAsString (params))), Reminders.class);
+        return mapper.readValue (post (url, body (params)), Reminders.class);
     }
 
     public void deleteReminder (String reminderId, String userName) {
         String url = coraTestUrl + "/cora/api/v1/external/reminders/" + reminderId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
-        post (url, body (mapper.writeValueAsString (params)));
+        post (url, body (params));
     }
 
     public void deleteRemindersForUserName (String userName) {
         Reminders activeReminders = getActiveRemindersSummary (userName);
 
-        for (Reminders.Reminder rem : activeReminders.reminders) {
+        for (Reminder rem : activeReminders.reminders) {
             deleteReminder (rem.id, userName);
         }
     }

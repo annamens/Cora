@@ -25,7 +25,6 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.io.File;
 import java.lang.reflect.Method;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -46,7 +45,6 @@ import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
 import com.adaptivebiotech.cora.ui.order.ReportTDetect;
 import com.adaptivebiotech.pipeline.dto.dx.SharedClones;
 import com.adaptivebiotech.pipeline.dto.dx.Similarity;
-import com.seleniumfy.test.utils.HttpClientHelper;
 import net.lingala.zip4j.ZipFile;
 
 /**
@@ -63,13 +61,12 @@ public class DxContaminationTestSuite extends ReportTestBase {
     private OrcaHistory        history           = new OrcaHistory ();
     private OrderDetailTDetect order             = new OrderDetailTDetect ();
     private ReportTDetect      report            = new ReportTDetect ();
-    private OrderTest          orderTest;
     private Diagnostic         diagnostic;
     private String             downloadDir;
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
-        coraApi.login ();
+        coraApi.addTokenAndUsername ();
 
         WorkflowProperties wProperties = new WorkflowProperties ();
         wProperties.flowcell = "HV5JNBGXG";
@@ -83,7 +80,7 @@ public class DxContaminationTestSuite extends ReportTestBase {
 
         diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                         patient,
-                                        stage (DxReport, Ready),
+                                        stage (DxAnalysis, Ready),
                                         test,
                                         COVID19_DX_IVD);
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
@@ -102,7 +99,7 @@ public class DxContaminationTestSuite extends ReportTestBase {
      * @sdlc.requirements SR-5363, SR-6982:R4
      */
     public void xcContaminated_true () {
-        orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
+        OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (DxAnalysis, Finished);
@@ -130,9 +127,8 @@ public class DxContaminationTestSuite extends ReportTestBase {
         assertEquals (history.getWorkflowProperties ().get (found), "true");
         testLog (format ("workflow property '%s' is set to 'true'", found));
 
-        coraApi.login ();
-        HttpClientHelper.get (history.getFileLocation (contaminationFile),
-                              new File (join ("/", downloadDir, contaminationFile)));
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (contaminationFile), join ("/", downloadDir, contaminationFile));
         testLog ("downloaded " + contaminationFile);
 
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
