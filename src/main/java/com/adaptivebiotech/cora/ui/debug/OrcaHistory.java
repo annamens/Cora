@@ -228,7 +228,7 @@ public class OrcaHistory extends CoraPage {
         assertTrue (clickAndSelectValue (stageStatusSelect, stageStatus.name ()));
         assertTrue (click ("form[action*='forceWorkflowStatus'] input[type='submit']"));
         assertTrue (hasPageLoaded ());
-        if (orcaHistoryUrl.endsWith ("forceWorkflowStatus")) {
+        if (getCurrentUrl ().endsWith ("forceWorkflowStatus")) {
             navigateTo (orcaHistoryUrl);
             isCorrectPage ();
         }

@@ -22,34 +22,34 @@ import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 public class BillingNewOrderClonoSeq extends BillingNewOrder {
 
     private final String billingQuestionnaire         = "[ng-click='ctrl.toggleShowInsuranceQuestionnaires()']";
-    private final String abnStatus                    = "[name='abnStatusType']";
-    private final String insuranceProvider            = "[name='insuranceProvider']";
-    private final String groupNumber                  = "[name='groupNumber']";
-    private final String policyNumber                 = "[name='policyNumber']";
-    private final String insuredRelationship          = "[name='insuredRelationship']";
-    private final String policyholder                 = "[name='policyholder']";
-    private final String hospitalizationStatus        = "[name='hospitalizationStatus']";
-    private final String institution                  = "[name='billingInstitution']";
-    private final String dischargeDate                = "[name='dischargeDate']";
-    private final String hasSecondaryInsurance        = "[name='isSecondaryInsurance'][value='true']";
-    private final String secondaryInsuranceProvider   = "[name='secondaryInsuranceProvider']";
-    private final String secondaryGroupNumber         = "[name='secondaryGroupNumber']";
-    private final String secondaryPolicyNumber        = "[name='secondaryPolicyNumber']";
-    private final String secondaryInsuredRelationship = "[name='secondaryInsuredRelationship']";
-    private final String secondaryPolicyholder        = "[name='secondaryPolicyholder']";
-    private final String hasTertiaryInsurance         = "[name='isTertiaryInsurance'][value='true']";
-    private final String tertiaryInsuranceProvider    = "[name='tertiaryInsuranceProvider']";
-    private final String tertiaryGroupNumber          = "[name='tertiaryGroupNumber']";
-    private final String tertiaryPolicyNumber         = "[name='tertiaryPolicyNumber']";
-    private final String tertiaryInsuredRelationship  = "[name='tertiaryInsuredRelationship']";
-    private final String tertiaryPolicyholder         = "[name='tertiaryPolicyholder']";
-    private final String patientAddress1              = "[name='guarantorAddress']";
-    private final String patientAddress2              = "[name='guarantorAddress2']";
-    private final String patientPhone                 = "[name='guarantorPhone']";
-    private final String patientEmail                 = "[name='guarantorEmail']";
-    private final String patientCity                  = "[name='guarantorLocality']";
-    private final String patientState                 = "[name='guarantorRegion']";
-    private final String patientZipcode               = "[name='guarantorPostCode']";
+    private final String abnStatus                    = "#abn-status-type";
+    private final String insuranceProvider            = "[formcontrolname='insuranceProvider']";
+    private final String groupNumber                  = "[formcontrolname='groupNumber']";
+    private final String policyNumber                 = "[formcontrolname='policyNumber']";
+    private final String insuredRelationship          = "#primary-bill-relation-type";
+    private final String policyholder                 = "[formcontrolname='policyholder']";
+    private final String hospitalizationStatus        = "#hospitalization-status";
+    private final String institution                  = "[formcontrolname='institution']";
+    private final String dischargeDate                = "[formcontrolname='dischargeDate']";
+    private final String hasSecondaryInsurance        = "[formcontrolname='hasSecondaryInsurance'][ng-reflect-value='true']";
+    private final String secondaryInsuranceProvider   = "#secondaryInsuranceProvider";
+    private final String secondaryGroupNumber         = "#secondaryGroupNumber";
+    private final String secondaryPolicyNumber        = "#secondaryPolicyNumber";
+    private final String secondaryInsuredRelationship = "#second-bill-relation-type";
+    private final String secondaryPolicyholder        = "#secondaryPolicyholder";
+    private final String hasTertiaryInsurance         = "[formcontrolname='hasTertiaryInsurance'][ng-reflect-value='true']";
+    private final String tertiaryInsuranceProvider    = "#tertiaryInsuranceProvider";
+    private final String tertiaryGroupNumber          = "#tertiaryGroupNumber";
+    private final String tertiaryPolicyNumber         = "#tertiaryPolicyNumber";
+    private final String tertiaryInsuredRelationship  = "#tertiary-bill-relation-type";
+    private final String tertiaryPolicyholder         = "#tertiaryPolicyholder";
+    private final String patientAddress1              = "[formcontrolname='address1']";
+    private final String patientAddress2              = "[formcontrolname='address2']";
+    private final String patientPhone                 = "[formcontrolname='phone']";
+    private final String patientEmail                 = "[formcontrolname='email']";
+    private final String patientCity                  = "[formcontrolname='locality']";
+    private final String patientState                 = "[formcontrolname='region']";
+    private final String patientZipcode               = "[formcontrolname='postCode']";
 
     public BillingNewOrderClonoSeq (int staticNavBarHeight) {
         super.staticNavBarHeight = staticNavBarHeight;
@@ -92,7 +92,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
     }
 
     public void enterABNstatus (AbnStatus status) {
-        assertTrue (clickAndSelectValue (abnStatus, "string:" + status));
+        assertTrue (clickAndSelectValue (abnStatus, status.name ()));
     }
 
     protected AbnStatus getAbnStatus () {
@@ -128,7 +128,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
     }
 
     public void enterInsurance1Relationship (PatientRelationship relationship) {
-        assertTrue (clickAndSelectValue (insuredRelationship, "string:" + relationship));
+        assertTrue (clickAndSelectValue (insuredRelationship, relationship.name ()));
     }
 
     public PatientRelationship getInsurance1Relationship () {
@@ -144,7 +144,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
     }
 
     public void enterInsurance1PatientStatus (PatientStatus status) {
-        assertTrue (clickAndSelectValue (hospitalizationStatus, "string:" + status));
+        assertTrue (clickAndSelectValue (hospitalizationStatus, status.name ()));
     }
 
     public PatientStatus getInsurance1PatientStatus () {
@@ -201,7 +201,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
     }
 
     public void enterInsurance2Relationship (PatientRelationship relationship) {
-        assertTrue (clickAndSelectValue (secondaryInsuredRelationship, "string:" + relationship));
+        assertTrue (clickAndSelectValue (secondaryInsuredRelationship, relationship.name ()));
     }
 
     public PatientRelationship getInsurance2Relationship () {
@@ -249,7 +249,7 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
     }
 
     public void enterInsurance3Relationship (PatientRelationship relationship) {
-        assertTrue (clickAndSelectValue (tertiaryInsuredRelationship, "string:" + relationship));
+        assertTrue (clickAndSelectValue (tertiaryInsuredRelationship, relationship.name ()));
     }
 
     public PatientRelationship getInsurance3Relationship () {

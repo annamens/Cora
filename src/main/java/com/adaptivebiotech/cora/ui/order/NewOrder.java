@@ -12,8 +12,11 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
@@ -29,6 +32,8 @@ import com.seleniumfy.test.utils.Timeout;
 public abstract class NewOrder extends OrderHeader {
 
     private final String   patientMrdStatus = ".patient-status";
+    private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
+    private final String   orderNotes       = "#order-notes";
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
 
     public NewOrder () {
@@ -43,6 +48,13 @@ public abstract class NewOrder extends OrderHeader {
 
     public List <String> getSectionHeaders () {
         return getTextList (".order-entry h2");
+    }
+
+    public void activateOrder () {
+        clickSaveAndActivate ();
+        hasPageLoaded ();
+        pageLoading ();
+        waitUntilActivated ();
     }
 
     public String getPatientMRDStatus () {
@@ -132,8 +144,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getOrderNumber () {
-        String css = oEntry + " .ab-panel-first [ng-bind='ctrl.orderEntry.order.orderNumber']";
-        return getText (css);
+        return getText ("//*[@label='Order #']//span");
     }
 
     public void enterDateSigned (String date) {
@@ -143,6 +154,14 @@ public abstract class NewOrder extends OrderHeader {
     public String getDateSigned () {
         String css = "[ng-model^='ctrl.orderEntry.order.dateSigned']";
         return isElementVisible (css) ? readInput (css) : null;
+    }
+
+    public void enterOrderNotes (String notes) {
+        assertTrue (setText (orderNotes, notes));
+    }
+
+    public String getOrderNotes () {
+        return readInput (orderNotes);
     }
 
     public void enterInstruction (String instruction) {
@@ -238,8 +257,6 @@ public abstract class NewOrder extends OrderHeader {
         String xpath = "//*[text()='Patient Code']/..//a[1]/span";
         return getText (xpath);
     }
-
-    public abstract void setPatientMRN (String mrn);
 
     public String getPatientMRN () {
         String css = "[ng-model='ctrl.orderEntry.order.mrn']";
@@ -354,5 +371,25 @@ public abstract class NewOrder extends OrderHeader {
 
     public String getSpecimenApprovalStatus () {
         return getText ("//*[text()='Specimen Approval']/..//span[1]");
+    }
+
+    public void waitForSpecimenDelivery () {
+        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return getDropdownOptions (specimenDelivery).size () > 0;
+            }
+        }));
+    }
+
+    public void enterSpecimenDelivery (DeliveryType type) {
+        assertTrue (clickAndSelectValue (specimenDelivery, "string:" + type));
+    }
+
+    public DeliveryType getSpecimenDelivery () {
+        return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
+    }
+
+    public List <String> getSpecimenDeliveryOptions () {
+        return getDropdownOptions (specimenDelivery);
     }
 }

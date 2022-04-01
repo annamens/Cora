@@ -17,6 +17,7 @@ public class OrderAlert extends BasePage {
     private final String resolvedAlerts   = ".panel.resolved-alerts";
     private final String accordionOpen    = "accordion-group[isopen='true']";
     private final String alertDescription = ".alert-type-description";
+    private final String alertDescAdd     = ".alert-type-description-add";
     private final String saveBtn          = "//*[text()='Save']";
     private final String cancelBtn        = "//*[text()='Cancel']";
     private final String panelOpen        = ".panel-open";
@@ -54,7 +55,7 @@ public class OrderAlert extends BasePage {
     }
 
     public void clickSave (String alertName) {
-        assertTrue (isTextInElement (accordionOpen + " " + alertDescription, alertName));
+        assertTrue (isTextInElement (accordionOpen + " " + alertDescAdd, alertName));
         assertTrue (click (saveBtn));
     }
 
