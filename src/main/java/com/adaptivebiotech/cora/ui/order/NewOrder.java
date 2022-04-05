@@ -31,6 +31,7 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public abstract class NewOrder extends OrderHeader {
 
+    private final String   orderNumber      = "//*[@label='Order #']//span";
     private final String   patientMrdStatus = ".patient-status";
     private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
     private final String   orderNotes       = "#order-notes";
@@ -144,7 +145,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getOrderNumber () {
-        return getText ("//*[@label='Order #']//span");
+        return getText (orderNumber);
     }
 
     public void enterDateSigned (String date) {

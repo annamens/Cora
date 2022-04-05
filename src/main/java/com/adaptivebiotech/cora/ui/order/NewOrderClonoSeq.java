@@ -41,10 +41,20 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
  */
 public class NewOrderClonoSeq extends NewOrder {
 
-    public BillingNewOrderClonoSeq billing         = new BillingNewOrderClonoSeq (staticNavBarHeight);
-    public PatientNewOrder         patientNewOrder = new PatientNewOrder ();
-    private Accession              accession       = new Accession ();
-    private final String           orderNotes      = "#order-notes";
+    public BillingNewOrderClonoSeq billing             = new BillingNewOrderClonoSeq (staticNavBarHeight);
+    public PatientNewOrder         patientNewOrder     = new PatientNewOrder ();
+    private Accession              accession           = new Accession ();
+
+    private final String           orderNotes          = "#order-notes";
+    private final String           specimenDetails     = "#specimen-details";
+    private final String           specimenType        = "#specimen-entry-specimen-type";
+    private final String           specimenTypeOther   = "#specimen-entry-other-specimen-type";
+    private final String           compartment         = "#specimen-entry-compartment";
+    private final String           anticoagulant       = "#specimen-entry-anticoagulant-tube";
+    private final String           anticoagulantOther  = "#specimen-entry-anticoagulant-tube-other";
+    private final String           specimenSource      = "[formcontrolname='source']";
+    private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
+    private final String           retrievalDate       = "#specimen-entry-retrieval-date";
 
     public void clickAssayTest (Assay assay) {
         String type = format ("//*[@class='test-type-selection']//*[text()='%s']", assay.type);
@@ -311,48 +321,43 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void clickEnterSpecimenDetails () {
-        assertTrue (click ("#specimen-details"));
+        assertTrue (click (specimenDetails));
     }
 
     public void enterSpecimenType (SpecimenType type) {
-        assertTrue (clickAndSelectValue ("#specimen-entry-specimen-type", type.name ()));
+        assertTrue (clickAndSelectValue (specimenType, type.name ()));
     }
 
     public void enterSpecimenTypeOther (String type) {
-        assertTrue (setText ("#specimen-entry-other-specimen-type", type));
+        assertTrue (setText (specimenTypeOther, type));
     }
 
-    public void enterCompartment (Compartment compartment) {
-        assertTrue (clickAndSelectValue ("#specimen-entry-compartment", compartment.name ()));
+    public void enterCompartment (Compartment compartmentEnum) {
+        assertTrue (clickAndSelectValue (compartment, compartmentEnum.name ()));
     }
 
-    public void enterAntiCoagulant (Anticoagulant anticoagulant) {
-        assertTrue (clickAndSelectValue ("#specimen-entry-anticoagulant-tube", anticoagulant.name ()));
+    public void enterAntiCoagulant (Anticoagulant anticoagulantEnum) {
+        assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
     }
 
     public void enterAntiCoagulantOther (String anticoagulant) {
-        assertTrue (setText ("#specimen-entry-anticoagulant-tube-other", anticoagulant));
+        assertTrue (setText (anticoagulantOther, anticoagulant));
     }
 
     public void enterSpecimenSource (SpecimenSource source) {
-        assertTrue (clickAndSelectValue ("[formcontrolname='source']", source.name ()));
+        assertTrue (clickAndSelectValue (specimenSource, source.name ()));
     }
 
     public void enterSpecimenSourceOther (String source) {
-        assertTrue (setText ("#specimen-entry-specimen-source-other", source));
+        assertTrue (setText (specimenSourceOther, source));
     }
 
     public void enterRetrievalDate (String date) {
-        String cssRetrievalDate = "#specimen-entry-retrieval-date";
-        assertTrue (setText (cssRetrievalDate, date));
+        assertTrue (setText (retrievalDate, date));
     }
 
     public String getRetrievalDate () {
-        String css = "#specimen-entry-retrieval-date";
-        if (isElementVisible (css)) {
-            return readInput (css);
-        }
-        return null;
+        return isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
     }
 
     public void closeTestSelectionWarningModal () {
