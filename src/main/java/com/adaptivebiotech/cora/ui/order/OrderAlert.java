@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static java.lang.String.join;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class OrderAlert extends BasePage {
     }
 
     public void clickSave (String alertName) {
-        assertTrue (isTextInElement (accordionOpen + " " + alertDescription, alertName));
+        assertTrue (isTextInElement (join (" ", accordionOpen, ".alert-type-description-add"), alertName));
         assertTrue (click (saveBtn));
     }
 

@@ -44,7 +44,7 @@ public abstract class BillingNewOrder extends CoraPage {
     }
 
     public ChargeType getBilling () {
-        return getEnum (ChargeType.class, getFirstSelectedValue (billing).replace ("string:", ""));
+        return getEnum (ChargeType.class, getFirstSelectedValue (billing));
     }
 
     public List <String> getBillingDropDownOptions () {
