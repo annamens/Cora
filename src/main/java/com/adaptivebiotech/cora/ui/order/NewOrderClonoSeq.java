@@ -342,11 +342,11 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void clickEnterSpecimenDetails () {
-        assertTrue (click ("[ng-click='ctrl.showSpecimen=!ctrl.showSpecimen']"));
+        assertTrue (click ("#specimen-details"));
     }
 
     public void enterSpecimenType (SpecimenType type) {
-        assertTrue (clickAndSelectValue ("[ng-model='ctrl.orderEntry.specimen.sampleType']", "string:" + type));
+        assertTrue (clickAndSelectValue ("#specimen-entry-specimen-type", type.label));
     }
 
     public void enterSpecimenTypeOther (String type) {
@@ -358,7 +358,7 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void enterAntiCoagulant (Anticoagulant anticoagulant) {
-        assertTrue (clickAndSelectValue ("[name='anticoagulant']", "string:" + anticoagulant));
+        assertTrue (clickAndSelectValue ("[name='anticoagulant']", anticoagulant.toString()));
     }
 
     public void enterAntiCoagulantOther (String anticoagulant) {
@@ -425,7 +425,6 @@ public class NewOrderClonoSeq extends NewOrder {
         selectPhysician (physician);
         clickPickPatient ();
         boolean matchFound = patientNewOrder.searchOrCreatePatient (patient);
-        setPatientMRN (patient.mrn);
         enterPatientICD_Codes (icdCodes);
 
         switch (patient.billingType) {
