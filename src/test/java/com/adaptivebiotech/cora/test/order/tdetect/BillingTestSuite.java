@@ -52,7 +52,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
     private OrdersList      ordersList          = new OrdersList ();
     private NewOrderTDetect diagnostic          = new NewOrderTDetect ();
     private Specimen        specimen            = bloodSpecimen ();
-    private NewOrderTDetect newOrderTDetect     = new NewOrderTDetect ();
     private NewShipment     shipment            = new NewShipment ();
     private Accession       accession           = new Accession ();
 
@@ -79,7 +78,6 @@ public class BillingTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * o
      * Note:
      * - ABN Status is "Not Required" by default
      * 
@@ -152,10 +150,10 @@ public class BillingTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "entlebucher")
     public void verifyNoChargeReasonIsRequired () {
-        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_all_payments),
+        String orderNum = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_all_payments),
                                                               newNoChargePatient (),
                                                               null,
-                                                              bloodSpecimen ().collectionDate.toString (),
+                                                              specimen.collectionDate.toString(),
                                                               COVID19_DX_IVD);
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
@@ -165,21 +163,27 @@ public class BillingTestSuite extends CoraBaseBrowser {
         shipment.clickSave ();
         shipment.clickAccessionTab ();
         accession.completeAccession ();
-        newOrderTDetect.isCorrectPage ();
-        newOrderTDetect.waitForSpecimenDelivery ();
-        newOrderTDetect.billing.selectBilling (Client);
-        assertFalse (newOrderTDetect.billing.isReasonVisible ());
+        diagnostic.isCorrectPage ();
+        diagnostic.waitForSpecimenDelivery ();
+        diagnostic.billing.selectBilling (Client);
+        assertFalse (diagnostic.billing.isReasonVisible ());
         testLog ("Reason drop down is not visible when anything but No Charge is picked as billing option");
-        newOrderTDetect.billing.selectBilling (NoCharge);
+
+        diagnostic.billing.selectBilling (NoCharge);
         testLog ("No Charge is available as billing option for T Detect");
-        assertTrue (newOrderTDetect.billing.isReasonVisible ());
+
+        assertTrue (diagnostic.billing.isReasonVisible ());
         testLog ("Reason drop down is visible when No Charge is picked as billing option");
-        newOrderTDetect.clickSaveAndActivate ();
-        assertTrue (newOrderTDetect.isErrorTextVisible (" Required!"));
-        newOrderTDetect.billing.selectReason (IncompleteDocumentation);
-        newOrderTDetect.clickSaveAndActivate ();
-        newOrderTDetect.waitUntilActivated ();
+
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.isErrorTextVisible ("Required!"));
+        testLog("Reason is required when No Charge is picked as billing option");
+
+        diagnostic.billing.selectReason (IncompleteDocumentation);
+        diagnostic.clickSaveAndActivate ();
+        diagnostic.waitUntilActivated ();
         testLog ("Order activated");
+
         List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + orderNum + "'");
         assertEquals (queryResults.size (), 1);
         Map <String, Object> queryEmrData = queryResults.get (0);
