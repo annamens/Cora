@@ -151,10 +151,10 @@ public class BillingTestSuite extends CoraBaseBrowser {
     @Test (groups = "entlebucher")
     public void verifyNoChargeReasonIsRequired () {
         String orderNum = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_all_payments),
-                                                              newNoChargePatient (),
-                                                              null,
-                                                              specimen.collectionDate.toString(),
-                                                              COVID19_DX_IVD);
+                                                         newNoChargePatient (),
+                                                         null,
+                                                         specimen.collectionDate.toString (),
+                                                         COVID19_DX_IVD);
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
         shipment.enterShippingCondition (Ambient);
@@ -177,7 +177,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
 
         diagnostic.clickSaveAndActivate ();
         assertTrue (diagnostic.isErrorTextVisible ("Required!"));
-        testLog("Reason is required when No Charge is picked as billing option");
+        testLog ("Reason is required when No Charge is picked as billing option");
 
         diagnostic.billing.selectReason (IncompleteDocumentation);
         diagnostic.clickSaveAndActivate ();
