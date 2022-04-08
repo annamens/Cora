@@ -3,6 +3,10 @@ package com.adaptivebiotech.cora.ui.order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
+import java.util.List;
+
+import static org.testng.AssertJUnit.assertTrue;
+
 public class PatientNewOrder extends CoraPage {
 
     public void clickCreateNewPatient () {
@@ -21,7 +25,7 @@ public class PatientNewOrder extends CoraPage {
 
     public String getErrorMessage () {
         try {
-            List <String> error = getTextList ("//span[@class='text-danger']");
+            List<String> error = getTextList ("//span[@class='text-danger']");
             return String.join (" ", error);
         } catch (Exception e) {
             return "";
