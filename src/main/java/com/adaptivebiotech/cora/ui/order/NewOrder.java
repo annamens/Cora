@@ -355,4 +355,8 @@ public abstract class NewOrder extends OrderHeader {
     public String getSpecimenApprovalStatus () {
         return getText ("//*[text()='Specimen Approval']/..//span[1]");
     }
+
+    public boolean isErrorTextVisible (String error) {
+        return isElementVisible ("//*[text()='" + error + "']");
+    }
 }

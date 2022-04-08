@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriver;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
 import com.adaptivebiotech.cora.dto.Insurance.PatientStatus;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
+import com.adaptivebiotech.cora.dto.Orders.NoChargeReason;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
@@ -22,6 +23,7 @@ public abstract class BillingNewOrder extends CoraPage {
 
     private final String billingMismatchWarning = "[ng-if=\"ctrl.showBillingMismatchWarning()\"]";
     private final String billing                = "#billing-type";
+    private final String reason                 = "#no-charge-reason-type";
 
     public void waitForBillingMismatchWarningVisible () {
         assertTrue (waitUntilVisible (billingMismatchWarning));
@@ -33,6 +35,14 @@ public abstract class BillingNewOrder extends CoraPage {
 
     public void selectBilling (ChargeType type) {
         assertTrue (clickAndSelectText (billing, type.label));
+    }
+
+    public boolean isReasonVisible () {
+        return isElementVisible (reason);
+    }
+
+    public void selectReason (NoChargeReason reasonType) {
+        assertTrue (clickAndSelectText (reason, reasonType.label));
     }
 
     public void waitForBilling () {

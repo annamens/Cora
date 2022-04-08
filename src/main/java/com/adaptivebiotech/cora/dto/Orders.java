@@ -306,6 +306,26 @@ public final class Orders {
         }
     }
 
+    public enum NoChargeReason {
+        NoReportIssued("No report issued (i.e -Q/A, QC, validation, proficiency)"),
+        IncompleteDocumentation("Incomplete documentation"),
+        TimelinessOfBilling("Timeliness of billing"),
+        CustomerService("Customer service - management approved (document in notes)"),
+        OperationalIssue("Operational issue (document in notes)"),
+        Other("Other (document in notes)");
+
+        public String label;
+
+        private NoChargeReason(String label){
+            this.label = label;
+        }
+
+        public static NoChargeReason getNoChargeReason (String label) {
+            return allOf (NoChargeReason.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                    .get ();
+        }
+    }
+
     public enum DeliveryType {
         CustomerShipment ("Shipping Specimen to Adaptive"),
         PathRequest ("Adaptive Assists with Specimen Retrieval"),

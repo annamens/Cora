@@ -1,11 +1,9 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static org.testng.Assert.assertTrue;
+import java.util.List;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
-
-import java.util.List;
-
-import static org.testng.Assert.assertTrue;
 
 public class PatientNewOrder extends CoraPage {
 
@@ -25,7 +23,7 @@ public class PatientNewOrder extends CoraPage {
 
     public String getErrorMessage () {
         try {
-            List<String> error = getTextList ("//span[@class='text-danger']");
+            List <String> error = getTextList ("//span[@class='text-danger']");
             return String.join (" ", error);
         } catch (Exception e) {
             return "";
@@ -33,11 +31,11 @@ public class PatientNewOrder extends CoraPage {
     }
 
     public void fillPatientInfo (Patient patient) {
-        clear("#firstName");
+        clear ("#firstName");
         assertTrue (setText ("#firstName", patient.firstName));
-        clear("#middleName");
+        clear ("#middleName");
         assertTrue (setText ("#middleName", patient.middleName));
-        clear("#lastName");
+        clear ("#lastName");
         assertTrue (setText ("#lastName", patient.lastName));
         assertTrue (setText ("#dateOfBirth", patient.dateOfBirth));
         assertTrue (clickAndSelectText ("#gender", patient.gender));
@@ -50,10 +48,10 @@ public class PatientNewOrder extends CoraPage {
     }
 
     public void createNewPatient (Patient patient) {
-        clickCreateNewPatient();
-        fillPatientInfo(patient);
-        clickSave();
-        assertTrue (setText ("[name='mrn']", patient.mrn));
+        clickCreateNewPatient ();
+        fillPatientInfo (patient);
+        clickSave ();
+        assertTrue (setText ("[ng-reflect-name='mrn']", patient.mrn));
     }
 
     public void searchPatient (Patient patient) {
