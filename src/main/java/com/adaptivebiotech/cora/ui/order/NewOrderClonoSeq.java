@@ -2,8 +2,8 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
-import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt7;
+import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -21,7 +21,6 @@ import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
-import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
@@ -42,21 +41,34 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
  */
 public class NewOrderClonoSeq extends NewOrder {
 
-    public BillingNewOrderClonoSeq billing          = new BillingNewOrderClonoSeq (staticNavBarHeight);
-    public PatientNewOrder         patientNewOrder  = new PatientNewOrder ();
-    private Accession              accession        = new Accession ();
-    private final String           orderNotes       = "[ng-model='ctrl.orderEntry.order.notes']";
-    private final String           specimenDelivery = "[ng-model='ctrl.orderEntry.order.specimenDeliveryType']";
+    public BillingNewOrderClonoSeq billing             = new BillingNewOrderClonoSeq (staticNavBarHeight);
+    public PatientNewOrder         patientNewOrder     = new PatientNewOrder ();
+    private Accession              accession           = new Accession ();
+
+    private final String           orderNotes          = "#order-notes";
+    private final String           specimenDetails     = "#specimen-details";
+    private final String           specimenType        = "#specimen-entry-specimen-type";
+    private final String           specimenTypeOther   = "#specimen-entry-other-specimen-type";
+    private final String           compartment         = "#specimen-entry-compartment";
+    private final String           anticoagulant       = "#specimen-entry-anticoagulant-tube";
+    private final String           anticoagulantOther  = "#specimen-entry-anticoagulant-tube-other";
+    private final String           specimenSource      = "[formcontrolname='source']";
+    private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
+    private final String           retrievalDate       = "#specimen-entry-retrieval-date";
 
     public void clickAssayTest (Assay assay) {
-        String type = "[ng-click*='" + assay.type + "']";
+        String type = format ("//*[@class='test-type-selection']//*[text()='%s']", assay.type);
         if (!waitForElement (type).isSelected ())
             assertTrue (click (type));
 
-        if (isElementPresent (".ng-hide[ng-show='ctrl.showTestMenu']"))
-            assertTrue (click (".clickable[ng-bind*='showTestMenu']"));
+        String showTestMenu = "//*[@class='test-selection']//a[text()='Show Test Menu']";
+        if (isElementPresent (showTestMenu))
+            assertTrue (click (showTestMenu));
 
-        assertTrue (click (format ("//*[@ng-bind='test.name' and text()='%s']", assay.test)));
+        clickSave ();
+        String test = format ("//*[text()='%s']/ancestor::li//input", assay.test);
+        if (!waitForElement (test).isSelected ())
+            assertTrue (click (test));
     }
 
     public void findSpecimenId (String id) {
@@ -276,19 +288,6 @@ public class NewOrderClonoSeq extends NewOrder {
         pageLoading ();
     }
 
-    public void activateOrder () {
-        clickSaveAndActivate ();
-        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
-        assertTrue (click ("[ng-click='ctrl.ok()']"));
-        moduleLoading ();
-        pageLoading ();
-        waitUntilActivated ();
-    }
-
-    public void setPatientMRN (String mrn) {
-        assertTrue (setText ("#mrn-input", mrn));
-    }
-
     public void clickShowContainers () {
         assertTrue (click ("[ng-click^='ctrl.showContainers']"));
     }
@@ -321,69 +320,44 @@ public class NewOrderClonoSeq extends NewOrder {
         }).collect (toList ()));
     }
 
-    public void waitForSpecimenDelivery () {
-        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
-            public Boolean apply (WebDriver driver) {
-                return getDropdownOptions (specimenDelivery).size () > 0;
-            }
-        }));
-    }
-
-    public void enterSpecimenDelivery (DeliveryType type) {
-        assertTrue (clickAndSelectValue (specimenDelivery, "string:" + type));
-    }
-
-    public DeliveryType getSpecimenDelivery () {
-        return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
-    }
-
-    public List <String> getSpecimenDeliveryOptions () {
-        return getDropdownOptions (specimenDelivery);
-    }
-
     public void clickEnterSpecimenDetails () {
-        assertTrue (click ("#specimen-details"));
+        assertTrue (click (specimenDetails));
     }
 
     public void enterSpecimenType (SpecimenType type) {
-        assertTrue (clickAndSelectValue ("#specimen-entry-specimen-type", type.label));
+        assertTrue (clickAndSelectValue (specimenType, type.name ()));
     }
 
     public void enterSpecimenTypeOther (String type) {
-        assertTrue (setText ("[name='otherSampleType']", type));
+        assertTrue (setText (specimenTypeOther, type));
     }
 
-    public void enterCompartment (Compartment compartment) {
-        assertTrue (clickAndSelectValue ("[ng-model='ctrl.orderEntry.specimen.compartment']", "string:" + compartment));
+    public void enterCompartment (Compartment compartmentEnum) {
+        assertTrue (clickAndSelectValue (compartment, compartmentEnum.name ()));
     }
 
-    public void enterAntiCoagulant (Anticoagulant anticoagulant) {
-        assertTrue (clickAndSelectValue ("[name='anticoagulant']", anticoagulant.toString()));
+    public void enterAntiCoagulant (Anticoagulant anticoagulantEnum) {
+        assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
     }
 
     public void enterAntiCoagulantOther (String anticoagulant) {
-        assertTrue (setText ("[name='otherAnticoagulant']", anticoagulant));
+        assertTrue (setText (anticoagulantOther, anticoagulant));
     }
 
     public void enterSpecimenSource (SpecimenSource source) {
-        assertTrue (clickAndSelectValue ("[name='specimenSource']", "string:" + source));
+        assertTrue (clickAndSelectValue (specimenSource, source.name ()));
     }
 
     public void enterSpecimenSourceOther (String source) {
-        assertTrue (setText ("[name='otherSpecimenSource']", source));
+        assertTrue (setText (specimenSourceOther, source));
     }
 
     public void enterRetrievalDate (String date) {
-        String cssRetrievalDate = "#specimen-entry-retrieval-date";
-        assertTrue (setText (cssRetrievalDate, date));
+        assertTrue (setText (retrievalDate, date));
     }
 
     public String getRetrievalDate () {
-        String css = "[ng-model^='ctrl.orderEntry.specimen.retrievalDate']";
-        if (isElementVisible (css)) {
-            return readInput (css);
-        }
-        return null;
+        return isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
     }
 
     public void closeTestSelectionWarningModal () {

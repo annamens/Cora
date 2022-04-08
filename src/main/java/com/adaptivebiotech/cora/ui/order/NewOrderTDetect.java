@@ -2,8 +2,8 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
-import static com.adaptivebiotech.test.utils.Logging.info;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt7;
+import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -11,8 +11,6 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -20,7 +18,6 @@ import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
-import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
@@ -37,28 +34,15 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  */
 public class NewOrderTDetect extends NewOrder {
 
-    public BillingNewOrderTDetect billing          = new BillingNewOrderTDetect (staticNavBarHeight);
-    public PatientNewOrder        patientNewOrder  = new PatientNewOrder ();
-    private Accession             accession        = new Accession ();
-    private final String          dateSigned       = "[formcontrolname='dateSigned']";
-    private final String          orderNotes       = "#order-notes";
-    private final String          collectionDate   = "[formcontrolname='collectionDate']";
-    private final String          specimenDelivery = "[formcontrolname='specimenDeliveryType']";
+    public BillingNewOrderTDetect billing         = new BillingNewOrderTDetect (staticNavBarHeight);
+    public PatientNewOrder        patientNewOrder = new PatientNewOrder ();
+    private Accession             accession       = new Accession ();
+    private final String          dateSigned      = "[formcontrolname='dateSigned']";
+    private final String          collectionDate  = "[formcontrolname='collectionDate']";
 
     public String getPhysicianOrderCode () {
         String xpath = "input[formcontrolname='externalOrderCode']";
         return readInput (xpath);
-    }
-
-    public void activateOrder () {
-        clickSaveAndActivate ();
-        hasPageLoaded ();
-        pageLoading ();
-        waitUntilActivated ();
-    }
-
-    public void setPatientMRN (String mrn) {
-        assertTrue (setText ("[formcontrolname='mrn']", mrn));
     }
 
     public void clickAssayTest (Assay assay) {
@@ -218,26 +202,6 @@ public class NewOrderTDetect extends NewOrder {
         }).collect (toList ()));
     }
 
-    public void waitForSpecimenDelivery () {
-        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
-            public Boolean apply (WebDriver driver) {
-                return getDropdownOptions (specimenDelivery).size () > 1;
-            }
-        }));
-    }
-
-    public DeliveryType getSpecimenDelivery () {
-        return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
-    }
-
-    public void enterOrderNotes (String notes) {
-        assertTrue (setText (orderNotes, notes));
-    }
-
-    public String getOrderNotes () {
-        return readInput (orderNotes);
-    }
-
     @Override
     public void enterDateSigned (String date) {
         assertTrue (setText (dateSigned, date));
@@ -345,11 +309,6 @@ public class NewOrderTDetect extends NewOrder {
 
     public String getPatientGender () {
         return getText ("//label[text()='Gender']/../div[1]");
-    }
-
-    @Override
-    public String getOrderNumber () {
-        return getText ("//*[@label='Order #']//span");
     }
 
     private String getOrderName () {

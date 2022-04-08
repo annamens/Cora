@@ -193,7 +193,7 @@ public class CoraPage extends BasePage {
     public void doOrderSearch (String searchTerm) {
         // return setText ("[type='search']", searchTerm) && pressKey (Keys.ENTER);
         // we have an issue with navbar hiding the "Search" field
-        String search = "/cora/orders?creationdate=all&sort=created&ascending=true&search=" + searchTerm;
+        String search = "/cora/orders?creationDate=all&sort=Created&ascending=true&search=" + searchTerm;
         assertTrue (navigateTo (coraTestUrl + search));
         pageLoading ();
     }

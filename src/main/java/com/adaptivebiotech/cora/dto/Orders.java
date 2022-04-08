@@ -354,13 +354,13 @@ public final class Orders {
     }
 
     public enum Assay {
-        ID_BCell2_IVD ("BCellClonality", "B-cell 2.0 Clonality (IVD)"),
-        ID_BCell2_IUO ("BCellClonality", "B-cell 2.0 Clonality (IUO CLIA-extract)"),
-        ID_BCell2_CLIA ("BCellClonality", "B-cell 2.0 Clonality (CLIA)"),
-        ID_TCRB ("TCellClonality", "TCRB Clonality (CLIA)"),
-        ID_TCRB_IUO ("TCellClonality", "TCRB Clonality (IUO CLIA-extract)"),
-        ID_TCRG ("TCellClonality", "TCRG Clonality (CLIA)"),
-        ID_TCRG_IUO ("TCellClonality", "TCRG Clonality (IUO CLIA-extract)"),
+        ID_BCell2_IVD ("B cell Clonality", "B-cell 2.0 Clonality (IVD)"),
+        ID_BCell2_IUO ("B cell Clonality", "B-cell 2.0 Clonality (IUO CLIA-extract)"),
+        ID_BCell2_CLIA ("B cell Clonality", "B-cell 2.0 Clonality (CLIA)"),
+        ID_TCRB ("T cell Clonality", "TCRB Clonality (CLIA)"),
+        ID_TCRB_IUO ("T cell Clonality", "TCRB Clonality (IUO CLIA-extract)"),
+        ID_TCRG ("T cell Clonality", "TCRG Clonality (CLIA)"),
+        ID_TCRG_IUO ("T cell Clonality", "TCRG Clonality (IUO CLIA-extract)"),
         MRD_BCell2_IVD ("Tracking", "B-cell 2.0 Tracking (IVD)"),
         MRD_BCell2_IUO ("Tracking", "B-cell 2.0 Tracking (IUO CLIA-extract)"),
         MRD_BCell2_CLIA ("Tracking", "B-cell 2.0 Tracking (CLIA)"),

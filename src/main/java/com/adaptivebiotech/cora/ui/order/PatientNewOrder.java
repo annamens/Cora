@@ -1,7 +1,5 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import static org.testng.Assert.assertTrue;
-import java.util.List;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
@@ -51,7 +49,7 @@ public class PatientNewOrder extends CoraPage {
         clickCreateNewPatient ();
         fillPatientInfo (patient);
         clickSave ();
-        assertTrue (setText ("[ng-reflect-name='mrn']", patient.mrn));
+        assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
     }
 
     public void searchPatient (Patient patient) {
