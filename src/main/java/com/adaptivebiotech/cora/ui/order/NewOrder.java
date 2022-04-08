@@ -395,6 +395,6 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public boolean isErrorTextVisible (String error) {
-        return isElementVisible ("//*[contains (text(), '" + error + "']");
+        return isElementVisible ("//*[contains (text(), '" + error + "')]");
     }
 }
