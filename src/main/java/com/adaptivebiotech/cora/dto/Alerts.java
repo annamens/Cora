@@ -42,6 +42,10 @@ public final class Alerts {
         public String        alertTypeName;
         public List <String> recipients;
 
+        // end-point /cora/api/v2/alerts/update
+        public String        alertId;
+        public String        statusType;
+
         @Override
         public String toString () {
             return toStringOverride (this);
