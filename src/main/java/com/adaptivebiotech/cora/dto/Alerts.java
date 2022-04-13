@@ -52,4 +52,8 @@ public final class Alerts {
         }
     }
 
+    public enum StatusType {
+        New, Resolved, Unresolved
+    }
+
 }
