@@ -5,7 +5,7 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Client;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.NoCharge;
-import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.IncompleteDocumentation;
+import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.TimelinessOfBilling;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_all_payments;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
@@ -28,10 +28,14 @@ import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.NoChargeReason;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -195,11 +199,18 @@ public class BillingTestSuite extends CoraBaseBrowser {
         assertTrue (diagnostic.billing.isReasonVisible ());
         testLog ("Reason drop down is visible when No Charge is picked as billing option");
 
+        List <String> noChargeReasonList = diagnostic.getTextList ("//*[@id='no-charge-reason-type']/option").stream ()
+                                                     .filter (Objects::nonNull).collect (Collectors.toList ());
+        List <String> noChargeValues = Arrays.stream (NoChargeReason.values ()).map (e -> e.label)
+                                             .collect (Collectors.toList ());
+        assertEquals (noChargeValues, noChargeReasonList);
+        testLog ("No Charge Reason list contains all required values");
+
         diagnostic.clickSaveAndActivate ();
-        assertTrue (diagnostic.isErrorTextVisible ("Required!"));
+        assertTrue (diagnostic.billing.isErrorForNoChargeReasonVisible ());
         testLog ("Reason is required when No Charge is picked as billing option");
 
-        diagnostic.billing.selectReason (IncompleteDocumentation);
+        diagnostic.billing.selectReason (TimelinessOfBilling);
         diagnostic.clickSaveAndActivate ();
         diagnostic.waitUntilActivated ();
         testLog ("Order activated");
@@ -207,7 +218,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + orderNum + "'");
         assertEquals (queryResults.size (), 1);
         Map <String, Object> queryEmrData = queryResults.get (0);
-        assertEquals (queryEmrData.get ("no_charge_reason").toString (), IncompleteDocumentation.label);
+        assertEquals (queryEmrData.get ("no_charge_reason").toString (), TimelinessOfBilling.label);
         testLog ("No charge reason is saved in DB");
     }
 }

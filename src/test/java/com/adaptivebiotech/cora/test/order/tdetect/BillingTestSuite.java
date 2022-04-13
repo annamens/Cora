@@ -26,10 +26,14 @@ import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -175,8 +179,15 @@ public class BillingTestSuite extends CoraBaseBrowser {
         assertTrue (diagnostic.billing.isReasonVisible ());
         testLog ("Reason drop down is visible when No Charge is picked as billing option");
 
+        List <String> noChargeReasonList = diagnostic.getTextList ("//*[@id='no-charge-reason-type']/option").stream ()
+                                                     .filter (Objects::nonNull).collect (Collectors.toList ());
+        List <String> noChargeValues = Arrays.stream (Orders.NoChargeReason.values ()).map (e -> e.label)
+                                             .collect (Collectors.toList ());
+        assertEquals (noChargeValues, noChargeReasonList);
+        testLog ("No Charge Reason list contains all required values");
+
         diagnostic.clickSaveAndActivate ();
-        assertTrue (diagnostic.isErrorTextVisible ("Required!"));
+        assertTrue (diagnostic.billing.isErrorForNoChargeReasonVisible ());
         testLog ("Reason is required when No Charge is picked as billing option");
 
         diagnostic.billing.selectReason (IncompleteDocumentation);

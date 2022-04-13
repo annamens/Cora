@@ -45,6 +45,10 @@ public abstract class BillingNewOrder extends CoraPage {
         assertTrue (clickAndSelectText (reason, reasonType.label));
     }
 
+    public boolean isErrorForNoChargeReasonVisible () {
+        return isElementVisible ("//*[@id='no-charge-reason-type']/ancestor::div[@class = 'row']//*[contains(text(), 'Required!')]");
+    }
+
     public void waitForBilling () {
         assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {

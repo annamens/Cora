@@ -393,8 +393,4 @@ public abstract class NewOrder extends OrderHeader {
     public List <String> getSpecimenDeliveryOptions () {
         return getDropdownOptions (specimenDelivery);
     }
-
-    public boolean isErrorTextVisible (String error) {
-        return isElementVisible ("//*[contains (text(), '" + error + "')]");
-    }
 }
