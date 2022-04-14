@@ -12,6 +12,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -392,6 +393,11 @@ public class CoraApi extends HttpClientHelper {
         post (coraTestUrl + "/cora/api/v2/alerts/create", body (alert));
     }
 
+    public Alert updateAlert (Alert alert) {
+        String url = coraTestUrl + "/cora/api/v2/alerts/update";
+        return mapper.readValue (put (url, body (alert)), Alert.class);
+    }
+
     public FeatureFlags getFeatureFlags () {
         String url = coraTestUrl + "/cora/api/v2/featureFlags/flagsMap";
         return mapper.readValue (get (url), FeatureFlags.class);
@@ -419,6 +425,13 @@ public class CoraApi extends HttpClientHelper {
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
         return mapper.readValue (post (url, body (params)), Alerts.class);
+    }
+
+    public Alert[] getAlertsForOrderId (String orderId) {
+        String url = coraTestUrl + "/cora/api/v2/alerts/searchUnpaged";
+        Map <String, List <String>> params = new HashMap <> ();
+        params.put ("referencedEntityIds", Arrays.asList (orderId));
+        return mapper.readValue (post (url, body (params)), Alert[].class);
     }
 
     public void dismissAlert (String userName, String alertId) {
