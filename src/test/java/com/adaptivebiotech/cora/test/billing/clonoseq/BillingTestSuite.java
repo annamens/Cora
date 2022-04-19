@@ -56,7 +56,7 @@ public class BillingTestSuite extends BillingTestBase {
     private NewShipment         shipment    = new NewShipment ();
     private Accession           accession   = new Accession ();
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
