@@ -173,7 +173,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-7593
      */
     @Test (groups = "entlebucher")
-    public void verifyNoChargeReasonIsRequired () {
+    public void verifyNoChargeReasonIsRequired () throws InterruptedException {
         String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (TDetect_all_payments),
                                                           newNoChargePatient (),
                                                           icdCodes,
@@ -211,8 +211,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
         testLog ("Reason is required when No Charge is picked as billing option");
 
         diagnostic.billing.selectReason (TimelinessOfBilling);
-        diagnostic.clickSaveAndActivate ();
-        diagnostic.waitUntilActivated ();
+        diagnostic.activateOrder();
         testLog ("Order activated");
 
         List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + orderNum + "'");
