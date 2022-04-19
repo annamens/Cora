@@ -1,11 +1,12 @@
-package com.adaptivebiotech.cora.ui.order;
+package com.adaptivebiotech.cora.ui.patient;
 
 import static org.testng.Assert.assertTrue;
-import java.util.List;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
-public class PatientNewOrder extends CoraPage {
+public class PickPatientModule extends CoraPage {
+
+    private final String birthDate = "#dateOfBirth";
 
     public void clickCreateNewPatient () {
         assertTrue (click ("#new-patient"));
@@ -21,23 +22,26 @@ public class PatientNewOrder extends CoraPage {
         assertTrue (click ("//button[text()='Cancel']"));
     }
 
-    public String getErrorMessage () {
-        try {
-            List <String> error = getTextList ("//span[@class='text-danger']");
-            return String.join (" ", error);
-        } catch (Exception e) {
-            return "";
-        }
+    public String getBirthDateErrorMessage () {
+        return getText (birthDate + " + .text-danger");
+    }
+
+    public boolean isBirthDateErrorzVisible () {
+        return isElementVisible (birthDate + " + .text-danger");
     }
 
     public void fillPatientInfo (Patient patient) {
-        clear ("#firstName");
-        assertTrue (setText ("#firstName", patient.firstName));
-        clear ("#middleName");
-        assertTrue (setText ("#middleName", patient.middleName));
-        clear ("#lastName");
-        assertTrue (setText ("#lastName", patient.lastName));
-        assertTrue (setText ("#dateOfBirth", patient.dateOfBirth));
+        String firstName = "#firstName";
+        String middleName = "#middleName";
+        String lastName = "#lastName";
+
+        clear (firstName);
+        assertTrue (setText (firstName, patient.firstName));
+        clear (middleName);
+        assertTrue (setText (middleName, patient.middleName));
+        clear (lastName);
+        assertTrue (setText (lastName, patient.lastName));
+        assertTrue (setText (birthDate, patient.dateOfBirth));
         assertTrue (clickAndSelectText ("#gender", patient.gender));
         if (patient.race != null) {
             assertTrue (clickAndSelectText ("#race", patient.race.text));

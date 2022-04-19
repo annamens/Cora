@@ -1,6 +1,8 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import static java.util.EnumSet.allOf;
+import static java.util.stream.Collectors.toList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
@@ -29,6 +31,16 @@ public final class Shipment {
     }
 
     public enum ShippingCondition {
-        Ambient, WetIce, DryIce
+        Ambient ("Ambient"), WetIce ("Wet ice"), DryIce ("Dry ice"), Refrigerated ("Refrigerated");
+
+        public String label;
+
+        private ShippingCondition (String label) {
+            this.label = label;
+        }
+
+        public static List <String> getAllShippingConditions () {
+            return allOf (ShippingCondition.class).stream ().map (e -> e.label).collect (toList ());
+        }
     }
 }

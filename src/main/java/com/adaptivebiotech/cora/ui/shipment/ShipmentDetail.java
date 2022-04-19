@@ -46,12 +46,16 @@ public class ShipmentDetail extends CoraPage {
         assertTrue (click (orderNumber));
     }
 
+    public ShippingCondition getShippingCondition () {
+        return ShippingCondition.valueOf (getText (shippingCondition));
+    }
+
     public Shipment getShipmentDetails () {
         Shipment shipment = new Shipment ();
         shipment.arrivalDate = getText (arrivalDateTime);
         shipment.category = OrderCategory.valueOf (getText (category).trim ());
         shipment.shipmentNumber = getText (shipmentNo);
-        shipment.condition = ShippingCondition.valueOf (getText (shippingCondition));
+        shipment.condition = getShippingCondition ();
         shipment.carrier = getAttribute (carrier, "value");
         shipment.trackingNumber = getAttribute (trackingNo, "value");
         shipment.status = getText (status);
@@ -62,8 +66,8 @@ public class ShipmentDetail extends CoraPage {
         return getText (specimenId);
     }
 
-    public String getContainerType () {
-        return getText (containerType);
+    public ContainerType getContainerType () {
+        return ContainerType.getContainerType (getText (containerType));
     }
 
     public String getContainerQuantity () {

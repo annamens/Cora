@@ -310,11 +310,10 @@ public class TestHelper {
     public static BillingSurvey cdxSurvey () {
         BillingSurvey survey = new BillingSurvey ();
         survey.questionnaires = new ArrayList <> ();
-        survey.questionnaires.add (new Questionnaire ("hadTransplant1V1", asList ("Yes, a bone marrow transplant")));
-        survey.questionnaires.add (new Questionnaire ("transplant1DateV1",
-                asList ("Transplant date", getPastFutureDate (-3))));
-        survey.questionnaires.add (new Questionnaire ("hadTransplant3V1", asList ("Yes")));
-        survey.questionnaires.add (new Questionnaire ("courseOfTherapyV1", asList ("No")));
+        survey.questionnaires.add (new Questionnaire ("hadTransplantV1", asList ("Yes, a bone marrow transplant")));
+        survey.questionnaires.add (new Questionnaire ("transplantDateV1", asList (getPastFutureDate (-3))));
+        survey.questionnaires.add (new Questionnaire ("haveDiseaseClinicalEvidenceV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("haveCourseOfTherapyV1", asList ("No")));
         survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Yes")));
         return survey;

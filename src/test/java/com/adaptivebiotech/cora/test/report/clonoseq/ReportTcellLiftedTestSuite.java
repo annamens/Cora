@@ -66,9 +66,9 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
         patient.insurance1 = null;
         patient.insurance2 = null;
         diagnostic = buildCdxOrder (patient,
-                                           stage (NorthQC, Ready),
-                                           genTcrTest (MRD_TCRG, lastFlowcellIdTCRG, tsvPathTCRG),
-                                           genTcrTest (MRD_TCRB, lastFlowcellIdTCRB, tsvPathTCRB));
+                                    stage (NorthQC, Ready),
+                                    genTcrTest (MRD_TCRG, lastFlowcellIdTCRG, tsvPathTCRG),
+                                    genTcrTest (MRD_TCRB, lastFlowcellIdTCRB, tsvPathTCRB));
         diagnostic.order.postToImmunoSEQ = true;
         assertEquals (coraApi.newTcellOrder (diagnostic).patientId, patient.id);
     }

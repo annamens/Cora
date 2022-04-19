@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
@@ -15,12 +16,14 @@ import java.util.List;
 import java.util.function.Function;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
-import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.seleniumfy.test.utils.Timeout;
@@ -58,6 +61,18 @@ public abstract class NewOrder extends OrderHeader {
         waitUntilActivated ();
     }
 
+    public String getPatientName () {
+        return getText ("//label[text()='Patient']/../div[1]");
+    }
+
+    public String getPatientDOB () {
+        return getText ("//label[text()='Birth Date']/../div[1]");
+    }
+
+    public String getPatientGender () {
+        return getText ("//label[text()='Gender']/../div[1]");
+    }
+
     public String getPatientMRDStatus () {
         return getText (patientMrdStatus);
     }
@@ -82,7 +97,7 @@ public abstract class NewOrder extends OrderHeader {
     public void clickPatientOrderHistory () {
         assertTrue (click ("//a[text()='Patient Order History']"));
         pageLoading ();
-        assertEquals (waitForElementVisible ("[uisref=\"main.patient.orders\"]").getText (), "PATIENT ORDER HISTORY");
+        assertEquals (waitForElementVisible ("[uisref='main.patient.orders']").getText (), "Patient Order History");
     }
 
     public String getPatientId () {
@@ -93,13 +108,6 @@ public abstract class NewOrder extends OrderHeader {
     public void clickSave () {
         assertTrue (click ("#order-entry-save"));
         pageLoading ();
-        waitForPageLoading ();
-    }
-
-    public void waitForPageLoading () {
-        final String pageLoadingBar = "div.loading";
-        waitUntilVisible (pageLoadingBar, 10, 100);
-        assertTrue (waitForElementInvisible (pageLoadingBar));
     }
 
     public void waitUntilActivated () {
@@ -318,14 +326,15 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getShipmentArrivalDate () {
-        String xpath = "//*[text()='Shipment Arrival']/..//span";
-        String arrivalDate = isElementVisible (xpath) ? getText (xpath) : null;
-        Logging.testLog ("Shipment Arrival Date from UI: " + arrivalDate);
-        return arrivalDate;
+        return getText ("//*[*[text()='Shipment Arrival']]//span");
+    }
+
+    public ContainerType getSpecimenContainerType () {
+        return getContainerType (getText ("//*[*[text()='Specimen Container Type']]/div"));
     }
 
     public String getSpecimenContainerQuantity () {
-        return getText ("//*[text()='Quantity']/..//div");
+        return getText ("//*[*[text()='Quantity']]/div");
     }
 
     public List <OrderTest> getSelectedTests () {
@@ -392,5 +401,41 @@ public abstract class NewOrder extends OrderHeader {
 
     public List <String> getSpecimenDeliveryOptions () {
         return getDropdownOptions (specimenDelivery);
+    }
+
+    public void expandShipment () {
+        assertTrue (click ("//*[text()='Shipment']"));
+    }
+
+    public void expandContainers () {
+        assertTrue (click ("//*[@class='row']//*[contains(text(),'Containers')]"));
+    }
+
+    public Containers getContainers () {
+        String rows = "//specimen-containers//*[@class='row']/..";
+        return new Containers (waitForElements (rows).stream ().map (row -> {
+            Container c = new Container ();
+            c.id = getConId (getAttribute (row, "//*[text()='Adaptive Container ID']/..//a", "href"));
+            c.containerNumber = getText (row, "//*[text()='Adaptive Container ID']/..//a");
+            c.location = getText (row, "//*[text()='Current Storage Location']/..//div");
+
+            if (isElementPresent (row, ".container-table")) {
+                String css = "tbody tr";
+                List <Container> children = findElements (row, css).stream ().map (childRow -> {
+                    Container childContainer = new Container ();
+                    childContainer.id = getConId (getAttribute (childRow,
+                                                                "td:nth-child(1) a",
+                                                                "href"));
+                    childContainer.containerNumber = getText (childRow,
+                                                              "td:nth-child(1) a");
+                    childContainer.name = getText (childRow, "td:nth-child(2)");
+                    childContainer.integrity = getText (childRow, "td:nth-child(3)");
+                    childContainer.root = c;
+                    return childContainer;
+                }).collect (toList ());
+                c.children = children;
+            }
+            return c;
+        }).collect (toList ()));
     }
 }
