@@ -85,6 +85,7 @@ public final class Physician {
         clonoSEQ_selfpay ("ClonoSEQ", "Patient Self-Pay", "SEA_QA ClonoSEQ Patient Self-Pay"),
         clonoSEQ_all_payments ("ClonoSEQ", "All Payments", "SEA_QA ClonoSEQ All Payments"),
         clonoSEQ_int_order_upload ("ClonoSEQ", "Internal Order Upload", "SEA_QA ClonoSEQ All Payments"),
+        clonoSEQ_lomn ("ClonoSEQ", "LOMN", "SEA_QA ClonoSEQ All Payments"),
         TDetect_client ("T-Detect", "Bill My Institution", "SEA_QA T-Detect Bill My Institution"),
         TDetect_trial ("T-Detect", "Bill per Study Protocol", "SEA_QA T-Detect Bill per Study Protocol"),
         TDetect_insurance ("T-Detect", "Insurance", "SEA_QA T-Detect Insurance"),
