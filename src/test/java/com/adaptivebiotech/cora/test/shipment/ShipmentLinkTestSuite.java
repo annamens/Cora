@@ -84,11 +84,8 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         newOrderClonoSeq.expandContainers ();
         assertEquals (newOrderClonoSeq.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (newOrderClonoSeq.getSpecimenId (), expSpecimenId);
-
-        // https://sdlc.dna.corp.adaptivebiotech.com:8443/browse/SR-7887
         assertNotEquals (newOrderClonoSeq.getSpecimenContainerType (), expContainerType);
         assertEquals (newOrderClonoSeq.getSpecimenContainerType (), Slide);
-
         assertEquals (newOrderClonoSeq.getSpecimenContainerQuantity (), expContainerQuantity);
         assertEquals (newOrderClonoSeq.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
         assertEquals (newOrderClonoSeq.getSpecimenApprovalStatus (), expSpecimenApprovalStatus.toUpperCase ());
@@ -137,11 +134,8 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         newOrderTDetect.expandContainers ();
         assertEquals (newOrderTDetect.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (newOrderTDetect.getSpecimenId (), expSpecimenId);
-
-        // https://sdlc.dna.corp.adaptivebiotech.com:8443/browse/SR-7887
         assertNotEquals (newOrderTDetect.getSpecimenContainerType (), expContainerType);
         assertEquals (newOrderTDetect.getSpecimenContainerType (), Slide);
-
         assertEquals (newOrderTDetect.getSpecimenContainerQuantity (), expContainerQuantity);
         assertEquals (newOrderTDetect.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
         assertEquals (newOrderTDetect.getSpecimenApprovalStatus (), expSpecimenApprovalStatus.toUpperCase ());
