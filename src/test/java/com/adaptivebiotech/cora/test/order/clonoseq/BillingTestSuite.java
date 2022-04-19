@@ -173,7 +173,7 @@ public class BillingTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-7593
      */
     @Test (groups = "entlebucher")
-    public void verifyNoChargeReasonIsRequired () throws InterruptedException {
+    public void verifyNoChargeReasonIsRequired () {
         String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (TDetect_all_payments),
                                                           newNoChargePatient (),
                                                           icdCodes,
