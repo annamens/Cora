@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt7;
 import static com.seleniumfy.test.utils.Logging.info;
@@ -314,6 +315,10 @@ public class NewOrderClonoSeq extends NewOrder {
             break;
         case Medicare:
             billing.enterMedicareInfo (patient);
+            break;
+        case NoCharge:
+            billing.selectBilling (patient.billingType);
+            billing.selectReason (NoReportIssued);
             break;
         case Client:
         case PatientSelfPay:
