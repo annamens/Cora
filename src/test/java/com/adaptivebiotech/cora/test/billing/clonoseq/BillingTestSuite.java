@@ -203,7 +203,7 @@ public class BillingTestSuite extends BillingTestBase {
         testLog ("Reason is required when No Charge is picked as billing option");
 
         diagnostic.billing.selectReason (TimelinessOfBilling);
-        diagnostic.activateOrder();
+        diagnostic.activateOrder ();
         testLog ("Order activated");
 
         List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + orderNum + "'");
