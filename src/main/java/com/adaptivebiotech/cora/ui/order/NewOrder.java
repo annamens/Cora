@@ -113,8 +113,8 @@ public abstract class NewOrder extends OrderHeader {
     public void waitUntilActivated () {
         Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
         while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
-            refresh ();
             timer.Wait ();
+            refresh ();
         }
         assertEquals (getOrderStatus (), Active, "Order did not activated successfully");
     }
