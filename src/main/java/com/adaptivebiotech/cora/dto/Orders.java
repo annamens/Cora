@@ -34,13 +34,7 @@ public final class Orders {
     }
 
     public Order findOrderByNumber (String number) {
-        return list.parallelStream ().filter (o -> o.order_number.equals (number)).findAny ().get ();
-    }
-
-    public Orders findOriginals () {
-        return new Orders (
-                list.parallelStream ().filter (o -> !o.order_number.matches (".+-.{1}?$"))
-                    .collect (toList ()));
+        return list.parallelStream ().filter (o -> o.orderNumber.equals (number)).findAny ().get ();
     }
 
     public List <Order> findTestOrders () {
@@ -72,7 +66,6 @@ public final class Orders {
         public String              manifest_file_name;
         public String              data_analysis_group;
         public String              trf_file_name;
-        public String              order_number;
         public String              calibrated_receptors;
         public String              date_signed;
         public String              project_id;
@@ -323,6 +316,10 @@ public final class Orders {
         public static NoChargeReason getNoChargeReason (String label) {
             return allOf (NoChargeReason.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
                                                .get ();
+        }
+
+        public static List <String> getAllReasons () {
+            return allOf (NoChargeReason.class).stream ().map (e -> e.label).collect (toList ());
         }
     }
 

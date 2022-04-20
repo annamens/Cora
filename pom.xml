@@ -113,7 +113,7 @@
                 <executions>
                     <execution>
                         <?m2e execute onConfiguration?>
-                        <phase>compile</phase>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
@@ -122,7 +122,7 @@
                                 <artifactItem>
                                     <groupId>com.adaptivebiotech.test.utils</groupId>
                                     <artifactId>test-commons</artifactId>
-                                    <includes>chromedriver*,geckodriver*</includes>
+                                    <includes>chromedriver*,geckodriver*,eclipse_qa_formatter.xml</includes>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>target/test-classes</outputDirectory>
                                 </artifactItem>
@@ -146,6 +146,21 @@
                         <id>validate-the-git-infos</id>
                         <goals>
                             <goal>validateRevision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>2.16.0</version>
+                <configuration>
+                    <configFile>target/test-classes/eclipse_qa_formatter.xml</configFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>format</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -179,10 +194,10 @@
             <version>${poi.version}</version>
         </dependency>
         <dependency>
-    		<groupId>org.apache.poi</groupId>
-    		<artifactId>poi-ooxml</artifactId>
-    		<version>${poi.version}</version>
-  		</dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>

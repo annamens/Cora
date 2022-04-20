@@ -88,7 +88,7 @@ public class OrdersList extends CoraPage {
     public Orders getOrders () {
         return new Orders (waitForElements ("[ng-repeat-start='order in ctrl.orders']").stream ().map (el -> {
             Order o = new Order ();
-            o.order_number = getText (el, "[ng-bind='::order.displayOrderNumber']");
+            o.orderNumber = getText (el, "[ng-bind='::order.displayOrderNumber']");
             o.name = getText (el, "[ng-bind='::order.name']");
             return o;
         }).filter (o -> o.name.length () > 1).collect (toList ()));
@@ -133,7 +133,7 @@ public class OrdersList extends CoraPage {
             Workflow workflow = new Workflow ();
             workflow.name = getText (el, "[ng-bind='::orderTest.workflowName']");
             o.workflow = workflow;
-            o.order_number = o.name.replaceFirst (".*-D-", "D-");
+            o.orderNumber = o.name.replaceFirst (".*-D-", "D-");
             return o;
         }).filter (o -> o.name.length () > 1).collect (toList ()));
     }

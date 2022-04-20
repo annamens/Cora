@@ -358,7 +358,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                          "MM/dd/yyyy",
                                          "yyyy-MM-dd"));
         assertEquals (order.orderTestId, reportDataJson.patientInfo.reportSampleOrderTestId);
-        assertEquals (reportDataJson.patientInfo.orderNumber, order.order_number);
+        assertEquals (reportDataJson.patientInfo.orderNumber, order.orderNumber);
         assertEquals (reportDataJson.patientInfo.institutionName, order.physician.accountName);
         assertEquals (reportDataJson.patientInfo.orderingPhysician, order.physician.providerFullName);
         assertEquals (order.icdcodes.size (), 2);
@@ -408,7 +408,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         validatePdfContent (fileContent, order.patient.dateOfBirth);
         validatePdfContent (fileContent, order.patient.mrn);
         validatePdfContent (fileContent, order.patient.gender);
-        validatePdfContent (fileContent, todaysDate + " " + order.order_number);
+        validatePdfContent (fileContent, todaysDate + " " + order.orderNumber);
 
         validatePdfContent (fileContent,
                             join (" ",

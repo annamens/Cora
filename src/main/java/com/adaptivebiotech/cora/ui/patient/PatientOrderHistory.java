@@ -27,16 +27,16 @@ public class PatientOrderHistory extends PatientHeader {
     }
 
     public void clickReportPreviewLink (Order order) {
-        assertTrue (click (format (icon, order.order_number, "ReportPDF.png")));
+        assertTrue (click (format (icon, order.orderNumber, "ReportPDF.png")));
         assertTrue (isTextInElement (popupTitle, "Preview"));
     }
 
     public void clickReportNotesIcon (Order order) {
-        assertTrue (click (format (icon, order.order_number, "ReportNotes.png")));
+        assertTrue (click (format (icon, order.orderNumber, "ReportNotes.png")));
     }
 
     public void clickAdditionalCommentsIcon (Order order) {
-        assertTrue (click (format (icon, order.order_number, "ReportPDFAdditionalComments.png")));
+        assertTrue (click (format (icon, order.orderNumber, "ReportPDFAdditionalComments.png")));
     }
 
     public String getTooltipText () {

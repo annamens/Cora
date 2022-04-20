@@ -1,23 +1,18 @@
 package com.adaptivebiotech.cora.ui.order;
 
-import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.CustomerService;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.TestHelper.formatDt7;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.WebElement;
-import com.adaptivebiotech.cora.dto.Containers;
-import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
-import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
-import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
@@ -25,6 +20,7 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.UploadFile;
+import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
@@ -34,11 +30,11 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  */
 public class NewOrderTDetect extends NewOrder {
 
-    public BillingNewOrderTDetect billing         = new BillingNewOrderTDetect (staticNavBarHeight);
-    public PatientNewOrder        patientNewOrder = new PatientNewOrder ();
-    private Accession             accession       = new Accession ();
-    private final String          dateSigned      = "[formcontrolname='dateSigned']";
-    private final String          collectionDate  = "[formcontrolname='collectionDate']";
+    public BillingNewOrderTDetect billing        = new BillingNewOrderTDetect (staticNavBarHeight);
+    public PickPatientModule      pickPatient    = new PickPatientModule ();
+    private Accession             accession      = new Accession ();
+    private final String          dateSigned     = "[formcontrolname='dateSigned']";
+    private final String          collectionDate = "[formcontrolname='collectionDate']";
 
     public String getPhysicianOrderCode () {
         String xpath = "input[formcontrolname='externalOrderCode']";
@@ -49,17 +45,13 @@ public class NewOrderTDetect extends NewOrder {
         assertTrue (click (format ("//*[@class='test-type-selection']//*[text()='%s']", assay.test)));
     }
 
-    public void clickShipment () {
-        assertTrue (click ("//*[text()='Shipment']"));
-    }
-
     public Order parseOrder () {
         Order order = new Order ();
         order.id = getOrderId ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
-        order.order_number = getOrderNumber ();
+        order.orderNumber = getOrderNumber ();
         order.data_analysis_group = null;
         order.isTrfAttached = toBoolean (isTrfAttached ());
         order.date_signed = getDateSigned ();
@@ -74,11 +66,9 @@ public class NewOrderTDetect extends NewOrder {
         order.patient.patientCode = Integer.valueOf (getPatientCode ());
         order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
-        ChargeType chargeType = billing.getBilling ();
-        order.patient.billingType = chargeType;
-        order.patient.abnStatusType = Medicare.equals (chargeType) ? billing.getAbnStatus () : null;
+        order.patient = billing.getPatientBilling (order.patient);
         order.icdcodes = getPatientICD_Codes ();
-        order.properties = new OrderProperties (chargeType, getSpecimenDelivery ());
+        order.properties = new OrderProperties (order.patient.billingType, getSpecimenDelivery ());
         order.specimenDto = new Specimen ();
         order.specimenDto.specimenNumber = getSpecimenId ();
         order.specimenDto.sampleType = getSpecimenType ();
@@ -92,47 +82,6 @@ public class NewOrderTDetect extends NewOrder {
         order.shipmentAttachments = getShipmentAttachments ();
         order.trf = getDoraTrf ();
         order.doraAttachments = getDoraAttachments ();
-
-        switch (chargeType) {
-        case CommercialInsurance:
-        case Medicare:
-            order.patient.insurance1 = new Insurance ();
-            order.patient.insurance1.provider = billing.getInsurance1Provider ();
-            order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
-            order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
-            order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
-            order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
-            order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
-            order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
-            order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
-
-            if (billing.hasSecondaryInsurance ()) {
-                order.patient.insurance2 = new Insurance ();
-                order.patient.insurance2.provider = billing.getInsurance2Provider ();
-                order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
-                order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
-                order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
-                order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
-            }
-
-            if (billing.hasTertiaryInsurance ()) {
-                order.patient.insurance3 = new Insurance ();
-                order.patient.insurance3.provider = billing.getInsurance3Provider ();
-                order.patient.insurance3.groupNumber = billing.getInsurance3GroupNumber ();
-                order.patient.insurance3.policyNumber = billing.getInsurance3Policy ();
-                order.patient.insurance3.insuredRelationship = billing.getInsurance3Relationship ();
-                order.patient.insurance3.policyholder = billing.getInsurance3PolicyHolder ();
-            }
-            break;
-        default:
-            break;
-        }
-
-        order.patient.address = billing.getPatientAddress1 ();
-        order.patient.phone = billing.getPatientPhone ();
-        order.patient.locality = billing.getPatientCity ();
-        order.patient.region = billing.getPatientState ();
-        order.patient.postCode = billing.getPatientZipcode ();
         order.notes = getOrderNotes ();
         return order;
     }
@@ -168,38 +117,6 @@ public class NewOrderTDetect extends NewOrder {
     private void verifyICDCodeAdded (String code) {
         String xpath = "//label[text()='ICD Codes']/..";
         assertTrue (isTextInElement (xpath, code));
-    }
-
-    public void clickShowContainers () {
-        assertTrue (click ("//*[@class='row']//*[contains(text(),'Containers')]"));
-    }
-
-    public Containers getContainers () {
-        String rows = "//specimen-containers//*[@class='row']/..";
-        return new Containers (waitForElements (rows).stream ().map (row -> {
-            Container c = new Container ();
-            c.id = getConId (getAttribute (row, "//*[text()='Adaptive Container ID']/..//a", "href"));
-            c.containerNumber = getText (row, "//*[text()='Adaptive Container ID']/..//a");
-            c.location = getText (row, "//*[text()='Current Storage Location']/..//div");
-
-            if (isElementPresent (row, ".container-table")) {
-                String css = "tbody tr";
-                List <Container> children = findElements (row, css).stream ().map (childRow -> {
-                    Container childContainer = new Container ();
-                    childContainer.id = getConId (getAttribute (childRow,
-                                                                "td:nth-child(1) a",
-                                                                "href"));
-                    childContainer.containerNumber = getText (childRow,
-                                                              "td:nth-child(1) a");
-                    childContainer.name = getText (childRow, "td:nth-child(2)");
-                    childContainer.integrity = getText (childRow, "td:nth-child(3)");
-                    childContainer.root = c;
-                    return childContainer;
-                }).collect (toList ());
-                c.children = children;
-            }
-            return c;
-        }).collect (toList ()));
     }
 
     @Override
@@ -307,20 +224,8 @@ public class NewOrderTDetect extends NewOrder {
         return doraAttachments;
     }
 
-    public String getPatientGender () {
-        return getText ("//label[text()='Gender']/../div[1]");
-    }
-
-    private String getOrderName () {
+    public String getOrderName () {
         return getText ("//labeled-value[@label='Order Name']/div/div[2]/span");
-    }
-
-    public String getPatientName () {
-        return getText ("//label[text()='Patient']/../div[1]");
-    }
-
-    public String getPatientDOB () {
-        return getText ("//label[text()='Birth Date']/../div[1]");
     }
 
     /**
@@ -346,7 +251,7 @@ public class NewOrderTDetect extends NewOrder {
 
         selectPhysician (physician);
         clickPickPatient ();
-        boolean matchFound = patientNewOrder.searchOrCreatePatient (patient);
+        boolean matchFound = pickPatient.searchOrCreatePatient (patient);
         if (icdCodes != null)
             enterPatientICD_Codes (icdCodes);
         enterCollectionDate (collectionDate);
@@ -359,6 +264,9 @@ public class NewOrderTDetect extends NewOrder {
         case Medicare:
             billing.enterMedicareInfo (patient);
             break;
+        case NoCharge:
+            billing.selectBilling (patient.billingType);
+            billing.selectReason (CustomerService);
         case Client:
         case PatientSelfPay:
         default:
@@ -412,7 +320,6 @@ public class NewOrderTDetect extends NewOrder {
 
             // activate order
             isCorrectPage ();
-            waitForSpecimenDelivery ();
             activateOrder ();
 
             // for T-Detect, refreshing the page doesn't automatically take you to order detail

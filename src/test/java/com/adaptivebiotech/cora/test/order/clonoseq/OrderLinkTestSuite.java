@@ -22,6 +22,7 @@ import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.patient.PatientOrderHistory;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
@@ -46,6 +47,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
     private Accession           accession           = new Accession ();
     private OrderTestsList      orderTestsList      = new OrderTestsList ();
     private ShipmentsList       shipmentList        = new ShipmentsList ();
+    private PatientOrderHistory patientOrderHistory = new PatientOrderHistory ();
     private Physician           physician;
 
     @BeforeClass
@@ -86,6 +88,8 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         testLog ("STEP 2 - clonoSEQ Order Form is displayed");
 
         newOrderClonoSeq.clickPatientOrderHistory ();
+        patientOrderHistory.navigateToTab (1);
+        patientOrderHistory.isCorrectPage ();
         newOrderClonoSeq.clickOrder (order);
         newOrderClonoSeq.isCorrectPage ();
         assertEquals (newOrderClonoSeq.getOrderNumber (), order);
@@ -120,7 +124,7 @@ public class OrderLinkTestSuite extends CoraBaseBrowser {
         shipment.clickContainerNo (containers.list.get (0).containerNumber);
         containerDetail.isCorrectPage ();
         containerDetail.clickAccessionedOrderNo (order);
-        newOrderClonoSeq.navigateToTab (1);
+        newOrderClonoSeq.navigateToTab (2);
         newOrderClonoSeq.isCorrectPage ();
         assertEquals (newOrderClonoSeq.getOrderNumber (), order);
         testLog ("STEP 7 - clonoSEQ Order Form is displayed");

@@ -1,4 +1,4 @@
-package com.adaptivebiotech.cora.test.patient.clonoseq;
+package com.adaptivebiotech.cora.test.patient.tdetect;
 
 import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
+import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 
@@ -19,7 +19,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
 
     private Login             login            = new Login ();
     private OrdersList        ordersList       = new OrdersList ();
-    private NewOrderClonoSeq  newOrderClonoSeq = new NewOrderClonoSeq ();
+    private NewOrderTDetect   newOrderTDetect  = new NewOrderTDetect ();
     private Patient           patient          = newPatient ();
     private PickPatientModule createNewPatient = new PickPatientModule ();
 
@@ -34,9 +34,9 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "entlebucher")
     public void verifyPatientBirthdateValidation () {
-        newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
-        newOrderClonoSeq.isCorrectPage ();
-        newOrderClonoSeq.clickPickPatient ();
+        newOrderTDetect.selectNewTDetectDiagnosticOrder ();
+        newOrderTDetect.isCorrectPage ();
+        newOrderTDetect.clickPickPatient ();
 
         // check birthdate can't be in future
         patient.dateOfBirth = getPastFutureDate (2);
@@ -64,9 +64,9 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         testLog ("Patient with dob today can be created");
 
         createNewPatient.clickSave ();
-        newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getPatientName (), patient.fullname);
-        assertEquals (newOrderClonoSeq.getPatientDOB (), patient.dateOfBirth);
+        newOrderTDetect.isCorrectPage ();
+        assertEquals (newOrderTDetect.getPatientName (), patient.fullname);
+        assertEquals (newOrderTDetect.getPatientDOB (), patient.dateOfBirth);
         testLog ("Patient was created");
     }
 }

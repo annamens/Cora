@@ -113,7 +113,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         String activateDateTime = activeHistory.get (2).split ("Activated by")[0].trim ();
         Order activeOrder = clonoSeqOrderDetail.parseOrder ();
         assertEquals (activeOrder.status, Active);
-        assertEquals (activeOrder.order_number, orderNum);
+        assertEquals (activeOrder.orderNumber, orderNum);
         String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + orderNum;
         assertEquals (activeOrder.name, expectedName);
         String expectedDueDate = getPastFutureDate (7, DateTimeFormatter.ofPattern ("M/d/uu"), pstZoneId);

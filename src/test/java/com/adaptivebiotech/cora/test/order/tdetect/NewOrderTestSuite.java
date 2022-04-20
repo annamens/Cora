@@ -134,7 +134,6 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
 
         // activate order
         newOrderTDetect.isCorrectPage ();
-        newOrderTDetect.waitForSpecimenDelivery ();
         newOrderTDetect.activateOrder ();
         testLog ("STEP 2 - Order is Active.");
     }
