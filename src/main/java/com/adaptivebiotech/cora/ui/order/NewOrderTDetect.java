@@ -2,7 +2,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.CustomerService;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt7;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
