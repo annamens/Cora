@@ -28,6 +28,7 @@
         <test.env>test</test.env>
         <testng.verbose>1</testng.verbose>
         <poi.version>4.1.2</poi.version>
+        <code.format.file>eclipse_qa_formatter.xml</code.format.file>
     </properties>
     <build>
         <plugins>
@@ -122,7 +123,7 @@
                                 <artifactItem>
                                     <groupId>com.adaptivebiotech.test.utils</groupId>
                                     <artifactId>test-commons</artifactId>
-                                    <includes>chromedriver*,geckodriver*,eclipse_qa_formatter.xml</includes>
+                                    <includes>chromedriver*,geckodriver*,${code.format.file}</includes>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>target/test-classes</outputDirectory>
                                 </artifactItem>
@@ -155,7 +156,7 @@
                 <artifactId>formatter-maven-plugin</artifactId>
                 <version>2.16.0</version>
                 <configuration>
-                    <configFile>target/test-classes/eclipse_qa_formatter.xml</configFile>
+                    <configFile>target/test-classes/${code.format.file}</configFile>
                 </configuration>
                 <executions>
                     <execution>

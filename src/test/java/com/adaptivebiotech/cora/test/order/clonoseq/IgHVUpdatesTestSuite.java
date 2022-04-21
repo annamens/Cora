@@ -17,6 +17,7 @@ import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.QC_
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.UNMUTATED;
 import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestUrl;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
@@ -69,7 +70,6 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
-import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.cora.utils.TestHelper;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
@@ -856,7 +856,7 @@ public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
         specimen.sampleType = specimenType;
         specimen.sampleSource = specimenSource;
         specimen.anticoagulant = Blood.equals (specimen.sampleType) ? EDTA : null;
-        specimen.collectionDate = DateUtils.getPastFutureDate (-3);
+        specimen.collectionDate = genDate (-3);
         String orderNum = diagnostic.createClonoSeqOrder (physician,
                                                           TestHelper.newInternalPharmaPatient (),
                                                           icdCodes,

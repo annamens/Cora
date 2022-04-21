@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.test.patient.tdetect;
 
-import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -39,7 +39,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         newOrderTDetect.clickPickPatient ();
 
         // check birthdate can't be in future
-        patient.dateOfBirth = getPastFutureDate (2);
+        patient.dateOfBirth = genDate (2);
         createNewPatient.clickCreateNewPatient ();
         createNewPatient.fillPatientInfo (patient);
         assertEquals (createNewPatient.getBirthDateErrorMessage (), "Invalid date! Cannot be in future!");
@@ -58,7 +58,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         testLog ("Patient with dob starting from 01/01/1900 can be created");
 
         // check birthdate today's date
-        patient.dateOfBirth = getPastFutureDate (0);
+        patient.dateOfBirth = genDate (0);
         createNewPatient.fillPatientInfo (patient);
         assertFalse (createNewPatient.isBirthDateErrorzVisible ());
         testLog ("Patient with dob today can be created");

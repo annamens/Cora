@@ -1,8 +1,8 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Self;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;

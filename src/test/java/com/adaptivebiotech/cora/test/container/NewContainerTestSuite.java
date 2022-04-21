@@ -4,6 +4,7 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox100;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.TubeBox10x10;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static java.lang.String.format;
 import static java.lang.String.join;
@@ -29,7 +30,6 @@ import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.GenerateContainerLabels;
-import com.adaptivebiotech.cora.utils.DateUtils;
 import com.adaptivebiotech.test.utils.Logging;
 
 @Test (groups = "regression")
@@ -258,7 +258,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
 
         List <String> historyRows = containerDetails.getDetailHistory ();
         assertEquals (historyRows.size (), 2, "UI History: " + history);
-        String todaysDate = DateUtils.getPastFutureDate (0);
+        String todaysDate = genDate (0);
         assertTrue (historyRows.get (0).startsWith (todaysDate));
         assertTrue (historyRows.get (0).endsWith ("Created by " + coraTestUser));
         assertTrue (historyRows.get (1).startsWith (todaysDate));

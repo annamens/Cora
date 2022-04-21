@@ -7,12 +7,12 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.limsTestUrl;
-import static com.adaptivebiotech.cora.utils.DateUtils.convertDateFormat;
-import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
-import static com.adaptivebiotech.cora.utils.DateUtils.pstZoneId;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Clarity;
@@ -116,7 +116,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (activeOrder.orderNumber, orderNum);
         String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + orderNum;
         assertEquals (activeOrder.name, expectedName);
-        String expectedDueDate = getPastFutureDate (7, DateTimeFormatter.ofPattern ("M/d/uu"), pstZoneId);
+        String expectedDueDate = genDate (7, DateTimeFormatter.ofPattern ("M/d/uu"), pstZoneId);
         assertEquals (clonoSeqOrderDetail.getHeaderDueDate (), expectedDueDate);
         assertEquals (activeOrder.data_analysis_group, "Clinical");
 
@@ -196,7 +196,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         assertEquals (orderStatus.getHeaderDueDate (), expectedDueDate);
         assertEquals (orderStatus.getTestName (), orderTest.test);
         assertEquals (orderStatus.getOrderStatus (), Active);
-        assertTrue (orderStatus.getLastActivity ().contains (getPastFutureDate (0)));
+        assertTrue (orderStatus.getLastActivity ().contains (genDate (0)));
         testLog ("STEP 9 - Order status table displays above information");
 
         orderStatus.waitFor (editOrder.tests.get (0).sampleName, Clarity, Awaiting);
