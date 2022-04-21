@@ -4,9 +4,9 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5CS;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
-import static com.adaptivebiotech.cora.utils.DateUtils.convertDateFormat;
-import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
-import static com.adaptivebiotech.cora.utils.DateUtils.pstZoneId;
+import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
@@ -90,7 +90,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     private TaskDetail         taskDetail          = new TaskDetail ();
     private OrderStatus        orderStatus         = new OrderStatus ();
     private OrderDetailTDetect orderDetail         = new OrderDetailTDetect ();
-    private final String       todaysDate          = getPastFutureDate (0, formatDt1, pstZoneId);
+    private final String       todaysDate          = genDate (0, formatDt1, pstZoneId);
     private final String       todaysDateDash      = convertDateFormat (todaysDate, "MM/dd/yyyy", "yyyy-MM-dd");
     private final String       result              = "RESULT";
     private final String       expTestResult       = "NEGATIVE";
@@ -123,7 +123,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         patient.lastName = randomString (5);
         patient.mrn = randomString (10);
         String icdCode1 = "C90.00", icdCode2 = "C91.00";
-        String collectionDate = getPastFutureDate (-1);
+        String collectionDate = genDate (-1);
         String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                               patient,
                                                               new String[] { icdCode1, icdCode2 },

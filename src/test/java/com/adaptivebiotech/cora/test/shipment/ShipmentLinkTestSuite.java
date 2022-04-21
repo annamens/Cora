@@ -5,10 +5,10 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
-import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 import org.testng.annotations.BeforeMethod;
@@ -104,7 +104,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
                                                               newClientPatient (),
                                                               null,
-                                                              getPastFutureDate (-1),
+                                                              genDate (-1),
                                                               COVID19_DX_IVD);
 
         // add diagnostic shipment

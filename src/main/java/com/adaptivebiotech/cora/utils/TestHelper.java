@@ -13,11 +13,11 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.NoCharge;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.TrialProtocol;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
-import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
@@ -290,7 +290,7 @@ public class TestHelper {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
-        specimen.collectionDate = getPastFutureDate (-3);
+        specimen.collectionDate = genDate (-3);
         return specimen;
     }
 
@@ -311,7 +311,7 @@ public class TestHelper {
         BillingSurvey survey = new BillingSurvey ();
         survey.questionnaires = new ArrayList <> ();
         survey.questionnaires.add (new Questionnaire ("hadTransplantV1", asList ("Yes, a bone marrow transplant")));
-        survey.questionnaires.add (new Questionnaire ("transplantDateV1", asList (getPastFutureDate (-3))));
+        survey.questionnaires.add (new Questionnaire ("transplantDateV1", asList (genDate (-3))));
         survey.questionnaires.add (new Questionnaire ("haveDiseaseClinicalEvidenceV1", asList ("Yes")));
         survey.questionnaires.add (new Questionnaire ("haveCourseOfTherapyV1", asList ("No")));
         survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
