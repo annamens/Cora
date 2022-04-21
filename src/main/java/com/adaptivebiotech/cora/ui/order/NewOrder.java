@@ -120,8 +120,8 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void clickSaveAndActivate () {
-        String css = "#order-entry-save-and-activate";
-        assertTrue (click (css));
+        assertTrue (click ("#order-entry-save-and-activate"));
+        assertTrue (waitUntilVisible ("#toast-container"));
     }
 
     public void clickCancel () {

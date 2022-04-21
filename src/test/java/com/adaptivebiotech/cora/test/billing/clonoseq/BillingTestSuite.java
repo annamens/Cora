@@ -21,7 +21,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newMedicarePatient;
-import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -171,7 +170,7 @@ public class BillingTestSuite extends BillingTestBase {
     @Test (groups = "entlebucher")
     public void verifyNoChargeReasonIsRequired () {
         String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (TDetect_all_payments),
-                                                          newNoChargePatient (),
+                                                          newTrialProtocolPatient (),
                                                           icdCodes,
                                                           ID_BCell2_CLIA,
                                                           specimen);
