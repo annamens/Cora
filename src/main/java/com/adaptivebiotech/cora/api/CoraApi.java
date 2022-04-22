@@ -63,18 +63,6 @@ public class CoraApi extends HttpClientHelper {
     public final Header coraBasicAuth  = basicAuth (coraTestUser, coraTestPass);
     public Header       apiToken;
 
-    public void login () {
-        resetheaders ();
-        login (coraTestUser, coraTestPass);
-    }
-
-    public void login (String user, String pass) {
-        Map <String, String> forms = new HashMap <> ();
-        forms.put ("userName", user);
-        forms.put ("password", pass);
-        formPost (coraTestUrl + "/cora/login", forms);
-    }
-
     public void resetheaders () {
         super.resetheaders ();
         headers.get ().add (username);
@@ -131,33 +119,6 @@ public class CoraApi extends HttpClientHelper {
         String url = coraTestUrl + "/cora/api/v1/containers/updateEntries";
         String result = put (url, body (containers.list));
         return new Containers (mapper.readValue (result, HttpResponse.class).containers);
-    }
-
-    public void storeContainer (Containers containers, Container freezer) {
-        String url = coraTestUrl + "/cora/debug/storeContainer";
-        containers.list.forEach (c -> {
-            Map <String, String> props = new HashMap <> ();
-            props.put ("containerId", c.id);
-            props.put ("rootContainerId", freezer.id);
-            post (url, body (props));
-        });
-    }
-
-    public void setWorkflowProperties (OrderTest orderTest, Map <WorkflowProperty, String> properties) {
-        String url = coraTestUrl + "/cora/debug/forceWorkflowProperty";
-        properties.entrySet ().forEach (wp -> {
-            Map <String, String> props = new HashMap <> ();
-            props.put ("propertyName", wp.getKey ().name ());
-            props.put ("propertyValue", wp.getValue ());
-            props.put ("workflowId", orderTest.workflowId);
-            post (url, body (props));
-        });
-    }
-
-    public void resetAccountLogin (String email) {
-        Map <String, String> params = new HashMap <> ();
-        params.put ("emails", email);
-        post (coraTestUrl + "/cora/debug/resetAccountLoginSubmit", body (params));
     }
 
     public void removeWorkflowHold (OrderTest orderTest, WorkflowProperty property, String message) {
@@ -405,14 +366,6 @@ public class CoraApi extends HttpClientHelper {
 
     public AlertType getAlertType (String name) {
         return mapper.readValue (get (coraTestUrl + "/cora/api/v2/alertTypes/" + name), AlertType.class);
-    }
-
-    public String renewCoraMemoryCache (TokenData tokenData) {
-        Map <String, String> params = new HashMap <> ();
-        params.put ("tokenData", mapper.writeValueAsString (tokenData));
-        String url = coraTestUrl + "/cora/debug/emrTokenSubmit";
-        post (url, body (params));
-        return tokenData.id;
     }
 
     public Config getEmrConfig (TokenData tokenData) {
