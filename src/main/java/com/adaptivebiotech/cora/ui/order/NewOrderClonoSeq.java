@@ -52,7 +52,7 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
 
     public void clickAssayTest (Assay assay) {
-        String type = format ("//*[@class='test-type-selection']//*[text()='%s']", assay.type);
+        String type = format ("//*[@class='test-type-selection']//*[text()='%s']/ancestor::label//input", assay.type);
         if (!waitForElement (type).isSelected ())
             assertTrue (click (type));
 
