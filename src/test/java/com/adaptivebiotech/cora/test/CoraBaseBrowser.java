@@ -15,6 +15,7 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import com.adaptivebiotech.cora.api.CoraApi;
+import com.adaptivebiotech.cora.api.CoraDebugApi;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
@@ -24,7 +25,7 @@ import com.adaptivebiotech.test.utils.DbClientHelper;
 public class CoraBaseBrowser extends TestBase {
 
     protected static CoraApi        coraApi;
-    protected static CoraApi        coraDebugApi;
+    protected static CoraDebugApi   coraDebugApi;
     protected static DbClientHelper coraDb;
 
     static {
@@ -33,7 +34,7 @@ public class CoraBaseBrowser extends TestBase {
 
         coraApi = new CoraApi ();
         coraApi.getAuthToken ();
-        coraDebugApi = new CoraApi ();
+        coraDebugApi = new CoraDebugApi ();
         coraDb = new DbClientHelper (coraDbInfo, jumpbox);
         coraDb.openConnection ();
     }
