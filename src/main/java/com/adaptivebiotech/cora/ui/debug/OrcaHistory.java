@@ -231,6 +231,9 @@ public class OrcaHistory extends CoraPage {
         if (getCurrentUrl ().endsWith ("forceWorkflowStatus")) {
             navigateTo (orcaHistoryUrl);
             isCorrectPage ();
+            if (!isStagePresent (stageName, stageStatus)) {
+                forceStatusUpdate (stageName, stageStatus);
+            }
         }
         waitFor (stageName, stageStatus);
     }
