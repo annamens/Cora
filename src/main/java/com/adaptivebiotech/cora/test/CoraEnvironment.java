@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test;
 
 import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestPass;

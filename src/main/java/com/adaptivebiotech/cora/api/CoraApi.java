@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.api;
 
 import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.CDx;

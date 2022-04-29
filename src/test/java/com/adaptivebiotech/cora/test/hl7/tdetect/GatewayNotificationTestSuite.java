@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.hl7.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;

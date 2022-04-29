@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.dto.emr;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
