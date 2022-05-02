@@ -326,7 +326,8 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getShipmentArrivalDate () {
-        return getText ("//*[*[text()='Shipment Arrival']]//span");
+        String shipmentArrival = "//*[*[text()='Shipment Arrival']]//span";
+        return isElementVisible (shipmentArrival) ? getText (shipmentArrival) : null;
     }
 
     public ContainerType getSpecimenContainerType () {

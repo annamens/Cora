@@ -209,7 +209,7 @@ public class NewOrderTDetect extends NewOrder {
         String files = "//h3[contains(text(),'Dora')]/parent::div//div[contains(@class,'attachments-table-row')]";
         if (isElementPresent (files))
             for (WebElement element : waitForElements (files)) {
-                String fileName = getText (element, "./div[1]//a");
+                String fileName = getText (element, "./div[1]");
                 if (fileName.contains ("Original Dora Trf")) {
                     continue;
                 }
