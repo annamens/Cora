@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.hl7;
 
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;

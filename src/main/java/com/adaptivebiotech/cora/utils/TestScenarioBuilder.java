@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;

@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.report;
 
 import static com.adaptivebiotech.cora.dto.Orders.DeliveryType.CustomerShipment;
