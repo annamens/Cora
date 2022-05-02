@@ -1,7 +1,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt7;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -83,7 +83,7 @@ public class OrderDetail extends OrderHeader {
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
-        order.order_number = getOrderNumber ();
+        order.orderNumber = getOrderNumber ();
         order.data_analysis_group = getDataAnalysisGroup ();
         order.isTrfAttached = toBoolean (isTrfAttached ());
         order.date_signed = getDateSigned ();

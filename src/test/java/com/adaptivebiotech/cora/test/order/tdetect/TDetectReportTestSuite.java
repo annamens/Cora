@@ -4,9 +4,9 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5CS;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
-import static com.adaptivebiotech.cora.utils.DateUtils.convertDateFormat;
-import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
-import static com.adaptivebiotech.cora.utils.DateUtils.pstZoneId;
+import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
@@ -14,7 +14,7 @@ import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB_v4b;
-import static com.adaptivebiotech.test.utils.Logging.info;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxContamination;
@@ -31,11 +31,10 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFin
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFlowcellId;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.workspaceName;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
-import static com.seleniumfy.test.utils.HttpClientHelper.get;
+import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.join;
 import static java.util.Locale.US;
@@ -91,7 +90,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     private TaskDetail         taskDetail          = new TaskDetail ();
     private OrderStatus        orderStatus         = new OrderStatus ();
     private OrderDetailTDetect orderDetail         = new OrderDetailTDetect ();
-    private final String       todaysDate          = getPastFutureDate (0, formatDt1, pstZoneId);
+    private final String       todaysDate          = genDate (0, formatDt1, pstZoneId);
     private final String       todaysDateDash      = convertDateFormat (todaysDate, "MM/dd/yyyy", "yyyy-MM-dd");
     private final String       result              = "RESULT";
     private final String       expTestResult       = "NEGATIVE";
@@ -124,7 +123,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         patient.lastName = randomString (5);
         patient.mrn = randomString (10);
         String icdCode1 = "C90.00", icdCode2 = "C91.00";
-        String collectionDate = getPastFutureDate (-1);
+        String collectionDate = genDate (-1);
         String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                               patient,
                                                               new String[] { icdCode1, icdCode2 },
@@ -307,7 +306,11 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         test.workflowProperties = sample_112770_SN_7929;
 
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildTdetectOrder(coraApi.getPhysician (TDetect_client), patient, null, test, COVID19_DX_IVD);
+        Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),
+                                                   patient,
+                                                   null,
+                                                   test,
+                                                   COVID19_DX_IVD);
         diagnostic.dxResults = null;
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Covid19 order in Cora");
@@ -355,7 +358,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                          "MM/dd/yyyy",
                                          "yyyy-MM-dd"));
         assertEquals (order.orderTestId, reportDataJson.patientInfo.reportSampleOrderTestId);
-        assertEquals (reportDataJson.patientInfo.orderNumber, order.order_number);
+        assertEquals (reportDataJson.patientInfo.orderNumber, order.orderNumber);
         assertEquals (reportDataJson.patientInfo.institutionName, order.physician.accountName);
         assertEquals (reportDataJson.patientInfo.orderingPhysician, order.physician.providerFullName);
         assertEquals (order.icdcodes.size (), 2);
@@ -405,7 +408,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         validatePdfContent (fileContent, order.patient.dateOfBirth);
         validatePdfContent (fileContent, order.patient.mrn);
         validatePdfContent (fileContent, order.patient.gender);
-        validatePdfContent (fileContent, todaysDate + " " + order.order_number);
+        validatePdfContent (fileContent, todaysDate + " " + order.orderNumber);
 
         validatePdfContent (fileContent,
                             join (" ",
@@ -435,7 +438,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         info ("PDF File Location: " + pdfFileLocation);
 
         // get file from URL and save it
-        get (url, new File (pdfFileLocation));
+        coraApi.get (url, pdfFileLocation);
 
         // read PDF and extract text
         PdfReader reader = null;
@@ -458,8 +461,8 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
      */
     private ReportRender parseReportDataJson (String fileUrl) {
         String reportDataJson = join ("/", downloadDir, "reportData.json");
-        coraApi.login ();
-        get (fileUrl, new File (reportDataJson));
+        coraDebugApi.login ();
+        coraDebugApi.get (fileUrl, reportDataJson);
         return mapper.readValue (new File (reportDataJson), ReportRender.class);
     }
 

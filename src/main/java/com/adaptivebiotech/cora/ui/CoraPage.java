@@ -175,12 +175,13 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//a[text()='Barcode Comparison Tool']"));
     }
 
+    // TODO remove this once newCdxOrderPage is set to true in Prod
     public void gotoCDxOrderEntry (String orderId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/order/entry/diagnostic/" + orderId));
         pageLoading ();
     }
 
-    public void gotoTDxOrderEntry (String orderId) {
+    public void gotoOrderEntry (String orderId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/order/dx/" + orderId));
         pageLoading ();
     }
@@ -193,19 +194,19 @@ public class CoraPage extends BasePage {
     public void doOrderSearch (String searchTerm) {
         // return setText ("[type='search']", searchTerm) && pressKey (Keys.ENTER);
         // we have an issue with navbar hiding the "Search" field
-        String search = "/cora/orders?creationdate=all&sort=created&ascending=true&search=" + searchTerm;
+        String search = "/cora/orders?creationDate=all&sort=Created&ascending=true&search=" + searchTerm;
         assertTrue (navigateTo (coraTestUrl + search));
         pageLoading ();
     }
 
     public void doOrderTestSearch (String searchTerm) {
-        String search = "/cora/ordertests?status=all&sort=duedate&ascending=false&search=" + searchTerm;
+        String search = "/cora/ordertests?dueDate=all&sort=DueDate&ascending=false&search=" + searchTerm;
         assertTrue (navigateTo (coraTestUrl + search));
         pageLoading ();
     }
 
     public void doTaskSearch (String searchTerm) {
-        String search = "/cora/tasks?sort=created&ascending=false&status=all&stageStatus=all&search=" + searchTerm;
+        String search = "/cora/tasks?sort=Created&ascending=false&status=Active&stageStatus=All&search=" + searchTerm;
         assertTrue (navigateTo (coraTestUrl + search));
         pageLoading ();
     }
@@ -226,6 +227,11 @@ public class CoraPage extends BasePage {
 
     public void gotoMyCustody () {
         assertTrue (navigateTo (coraTestUrl + "/cora/containers/custody"));
+    }
+
+    public void gotoShipmentEntry (String shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId));
+        pageLoading ();
     }
 
     public void gotoContainerDetail (Container container) {
@@ -269,8 +275,7 @@ public class CoraPage extends BasePage {
     }
 
     protected void pageLoading () {
-        assertTrue (waitForElementInvisible (".loading-overlay")); // page overlay
-        assertTrue (waitForElementInvisible ("[ng-show='loading.show']")); // yello bar: Loading...
+        assertTrue (waitForElementInvisible (".loading"));
     }
 
     protected void moduleLoading () {

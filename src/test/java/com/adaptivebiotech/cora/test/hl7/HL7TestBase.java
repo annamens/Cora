@@ -1,40 +1,13 @@
 package com.adaptivebiotech.cora.test.hl7;
 
-import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
-import static com.adaptivebiotech.cora.utils.TestHelper.getRandomAddress;
-import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.POSITIVE;
 import java.util.ArrayList;
-import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
-import com.adaptivebiotech.cora.dto.Orders.Assay;
-import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Workflow;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 
 public class HL7TestBase extends CoraBaseBrowser {
-
-    protected CoraTest genCDxTest (Assay assay, String tsvPath) {
-        CoraTest test = coraApi.getCDxTest (assay);
-        test.workflowProperties = new Workflow.WorkflowProperties ();
-        test.workflowProperties.disableHiFreqSave = true;
-        test.workflowProperties.disableHiFreqSharing = true;
-        test.workflowProperties.notifyGateway = true;
-        test.workflowProperties.tsvOverridePath = tsvPath;
-        return test;
-    }
-
-    protected CoraTest genTcrTest (Assay assay, String flowcell, String tsvPath) {
-        CoraTest test = coraApi.getCDxTest (assay);
-        test.workflowProperties = new Workflow.WorkflowProperties ();
-        test.workflowProperties.notifyGateway = true;
-        test.flowcell = flowcell;
-        test.pipelineConfigOverride = "classic.calib";
-        test.tsvPath = tsvPath;
-        return test;
-    }
 
     protected WorkflowProperties sample_95268_SN_2205 () {
         WorkflowProperties workflowProperties = new WorkflowProperties ();
@@ -59,7 +32,7 @@ public class HL7TestBase extends CoraBaseBrowser {
         dxResult.qcFlags = new ArrayList <> ();
         return dxResult;
     }
-    
+
     protected ClassifierOutput positiveLymeResult () {
         ClassifierOutput dxResult = new ClassifierOutput ();
         dxResult.disease = "LYME";
@@ -73,13 +46,5 @@ public class HL7TestBase extends CoraBaseBrowser {
         dxResult.uniqueProductiveTemplates = 72905;
         dxResult.qcFlags = new ArrayList <> ();
         return dxResult;
-    }
-
-    protected Patient patientWithAddress () {
-        Patient patient = getRandomAddress (scenarioBuilderPatient ());
-        patient.billingType = PatientSelfPay;
-        patient.address2 = "Ste 200";
-        patient.postCode = "98138"; // has to be a valid zipcode
-        return patient;
     }
 }

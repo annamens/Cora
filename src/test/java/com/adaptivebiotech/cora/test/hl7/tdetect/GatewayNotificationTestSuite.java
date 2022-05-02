@@ -4,6 +4,7 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -51,7 +52,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         test.tsvPath = covidTsv;
         test.workflowProperties = sample_95268_SN_2205 ();
 
-        Patient patient = patientWithAddress ();
+        Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),
                                                    patient,
                                                    stage (DxReport, Ready),
@@ -88,7 +89,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         test.tsvPath = lymeTsv;
         test.workflowProperties = sample_95268_SN_2205 ();
 
-        Patient patient = patientWithAddress ();
+        Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),
                                                    patient,
                                                    stage (DxReport, Ready),

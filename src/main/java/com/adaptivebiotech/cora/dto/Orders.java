@@ -7,6 +7,7 @@ import static java.util.stream.Collectors.toList;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.adaptivebiotech.cora.dto.Alerts.Alert;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Reminders.Reminder;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
@@ -33,13 +34,7 @@ public final class Orders {
     }
 
     public Order findOrderByNumber (String number) {
-        return list.parallelStream ().filter (o -> o.order_number.equals (number)).findAny ().get ();
-    }
-
-    public Orders findOriginals () {
-        return new Orders (
-                list.parallelStream ().filter (o -> !o.order_number.matches (".+-.{1}?$"))
-                    .collect (toList ()));
+        return list.parallelStream ().filter (o -> o.orderNumber.equals (number)).findAny ().get ();
     }
 
     public List <Order> findTestOrders () {
@@ -71,7 +66,6 @@ public final class Orders {
         public String              manifest_file_name;
         public String              data_analysis_group;
         public String              trf_file_name;
-        public String              order_number;
         public String              calibrated_receptors;
         public String              date_signed;
         public String              project_id;
@@ -279,33 +273,6 @@ public final class Orders {
         }
     }
 
-    public static final class Alert {
-
-        public String           href;
-        public String           linkText;
-        public String           color;
-        public Order            order;
-        public Physician        physician;
-        public Patient          patient;
-        public Specimen         specimen;
-        public List <OrderTest> tests = new ArrayList <> ();
-        public String           alertTypeId;
-        public String           alertTypeName;
-        public String           referencedEntityId;
-        public List <String>    recipients;
-
-        public Alert () {}
-
-        public Alert (String href) {
-            this.href = href;
-        }
-
-        @Override
-        public String toString () {
-            return toStringOverride (this);
-        }
-    }
-
     public enum ChargeType {
         Client ("Client Bill", "Bill my Institution"),
         TrialProtocol ("Bill per Study Protocol"),
@@ -329,6 +296,30 @@ public final class Orders {
 
         public static ChargeType getChargeType (String label) {
             return allOf (ChargeType.class).parallelStream ().filter (ct -> ct.label.equals (label)).findAny ().get ();
+        }
+    }
+
+    public enum NoChargeReason {
+        NoReportIssued ("No report issued (i.e -Q/A, QC, validation, proficiency)"),
+        IncompleteDocumentation ("Incomplete documentation"),
+        TimelinessOfBilling ("Timeliness of billing"),
+        CustomerService ("Customer service - management approved (document in notes)"),
+        OperationalIssue ("Operational issue (document in notes)"),
+        Other ("Other (document in notes)");
+
+        public String label;
+
+        private NoChargeReason (String label) {
+            this.label = label;
+        }
+
+        public static NoChargeReason getNoChargeReason (String label) {
+            return allOf (NoChargeReason.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                                               .get ();
+        }
+
+        public static List <String> getAllReasons () {
+            return allOf (NoChargeReason.class).stream ().map (e -> e.label).collect (toList ());
         }
     }
 
@@ -360,13 +351,13 @@ public final class Orders {
     }
 
     public enum Assay {
-        ID_BCell2_IVD ("BCellClonality", "B-cell 2.0 Clonality (IVD)"),
-        ID_BCell2_IUO ("BCellClonality", "B-cell 2.0 Clonality (IUO CLIA-extract)"),
-        ID_BCell2_CLIA ("BCellClonality", "B-cell 2.0 Clonality (CLIA)"),
-        ID_TCRB ("TCellClonality", "TCRB Clonality (CLIA)"),
-        ID_TCRB_IUO ("TCellClonality", "TCRB Clonality (IUO CLIA-extract)"),
-        ID_TCRG ("TCellClonality", "TCRG Clonality (CLIA)"),
-        ID_TCRG_IUO ("TCellClonality", "TCRG Clonality (IUO CLIA-extract)"),
+        ID_BCell2_IVD ("B cell Clonality", "B-cell 2.0 Clonality (IVD)"),
+        ID_BCell2_IUO ("B cell Clonality", "B-cell 2.0 Clonality (IUO CLIA-extract)"),
+        ID_BCell2_CLIA ("B cell Clonality", "B-cell 2.0 Clonality (CLIA)"),
+        ID_TCRB ("T cell Clonality", "TCRB Clonality (CLIA)"),
+        ID_TCRB_IUO ("T cell Clonality", "TCRB Clonality (IUO CLIA-extract)"),
+        ID_TCRG ("T cell Clonality", "TCRG Clonality (CLIA)"),
+        ID_TCRG_IUO ("T cell Clonality", "TCRG Clonality (IUO CLIA-extract)"),
         MRD_BCell2_IVD ("Tracking", "B-cell 2.0 Tracking (IVD)"),
         MRD_BCell2_IUO ("Tracking", "B-cell 2.0 Tracking (IUO CLIA-extract)"),
         MRD_BCell2_CLIA ("Tracking", "B-cell 2.0 Tracking (CLIA)"),

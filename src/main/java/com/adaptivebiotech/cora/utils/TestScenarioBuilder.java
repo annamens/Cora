@@ -8,10 +8,10 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderCategory.Diagnostic;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSeq2_WorkflowNanny;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt2;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
@@ -24,7 +24,7 @@ import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.Diagnostic.Order;
 import com.adaptivebiotech.cora.dto.Diagnostic.Panel;
 import com.adaptivebiotech.cora.dto.Diagnostic.Task;
-import com.adaptivebiotech.cora.dto.Orders;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
@@ -156,8 +156,11 @@ public class TestScenarioBuilder {
         return diagnostic;
     }
 
-    public static Diagnostic buildTdetectOrder (Physician physician, Patient patient, Stage stage, CoraTest test,
-                                                Orders.Assay assay) {
+    public static Diagnostic buildTdetectOrder (Physician physician,
+                                                Patient patient,
+                                                Stage stage,
+                                                CoraTest test,
+                                                Assay assay) {
         String covidPanel = "132d9440-8f75-46b8-b084-efe06346dfd4";
         String lymePanel = "21c3d625-4c5a-4e0b-896b-0d4f3e817d23";
         Diagnostic diagnostic = diagnosticOrder (physician, patient, null, shipment ());
@@ -169,11 +172,13 @@ public class TestScenarioBuilder {
         diagnostic.order.specimenDto = specimen ();
         diagnostic.order.specimenDto.name = test.workflowProperties.sampleName;
         diagnostic.order.specimenDto.properties = null;
+
         if (assay.equals (LYME_DX_IVD)) {
             diagnostic.order.panels = asList (new Panel (lymePanel));
         } else if (assay.equals (COVID19_DX_IVD)) {
             diagnostic.order.panels = asList (new Panel (covidPanel));
         }
+
         diagnostic.fastForwardStatus = stage;
         diagnostic.task = null;
         return diagnostic;

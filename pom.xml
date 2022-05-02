@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adaptivebiotech.test.functional</groupId>
     <artifactId>cora</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
     <name>Adaptive Biotechnologies Functional Tests for Cora</name>
     <repositories>
         <repository>
@@ -27,6 +27,8 @@
         <test.threads>1</test.threads>
         <test.env>test</test.env>
         <testng.verbose>1</testng.verbose>
+        <poi.version>4.1.2</poi.version>
+        <code.format.file>eclipse_qa_formatter.xml</code.format.file>
     </properties>
     <build>
         <plugins>
@@ -112,7 +114,7 @@
                 <executions>
                     <execution>
                         <?m2e execute onConfiguration?>
-                        <phase>compile</phase>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
@@ -121,7 +123,7 @@
                                 <artifactItem>
                                     <groupId>com.adaptivebiotech.test.utils</groupId>
                                     <artifactId>test-commons</artifactId>
-                                    <includes>chromedriver*,geckodriver*</includes>
+                                    <includes>chromedriver*,geckodriver*,${code.format.file}</includes>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>target/test-classes</outputDirectory>
                                 </artifactItem>
@@ -149,6 +151,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>2.16.0</version>
+                <configuration>
+                    <configFile>target/test-classes/${code.format.file}</configFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <distributionManagement>
@@ -165,12 +182,22 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.36</version>
+            <version>1.1.37</version>
         </dependency>
         <dependency>
             <groupId>com.adaptivebiotech.test.functional</groupId>
             <artifactId>pipeline-portal</artifactId>
-            <version>1.0.4-SNAPSHOT</version>
+            <version>1.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

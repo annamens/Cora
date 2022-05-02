@@ -11,12 +11,12 @@ import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
 public class NewMira extends Mira {
 
     private final String typeSelector = "select[name='miraType']";
-    
+
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement (".container .mira-heading", "New MIRA"));
     }
-    
+
     public boolean isNewMiraPage () {
         return waitUntilVisible (".container .mira-heading");
     }
@@ -29,10 +29,10 @@ public class NewMira extends Mira {
     public void selectType (MiraType type) {
         selectAndVerifySelection (typeSelector, type.text);
     }
-    
+
     public MiraType getMiraType () {
         String name = waitForSelectedText (typeSelector);
-       
+
         if (Strings.isNullOrEmpty (name)) {
             return null;
         }
@@ -68,7 +68,7 @@ public class NewMira extends Mira {
         pageLoading ();
         assertTrue (waitUntilVisible (specimenInput));
     }
-    
+
     public void clickRemovePanel () {
         String trashIcon = "span[data-ng-click='ctrl.removePanel($index)']";
         String panelInput = "input[ng-model='ctrl.panelSearchText']";

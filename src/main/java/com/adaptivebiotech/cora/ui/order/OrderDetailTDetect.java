@@ -34,7 +34,7 @@ public class OrderDetailTDetect extends OrderDetail {
         return isElementPresent (orderNotes) && isElementVisible (orderNotes) ? getText (orderNotes) : null;
     }
 
-    public void clickEditPatientDemographic () {
+    public void clickEditPatientDemographics () {
         String xpath = "//button[text()='Edit Patient Demographics']";
         assertTrue (click (xpath));
         String expectedTitle = "Edit Patient Demographics";

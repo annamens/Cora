@@ -1,5 +1,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
@@ -12,13 +13,17 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import com.adaptivebiotech.cora.dto.Containers;
+import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
-import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
-import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.seleniumfy.test.utils.Timeout;
@@ -29,7 +34,10 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public abstract class NewOrder extends OrderHeader {
 
+    private final String   orderNumber      = "//*[@label='Order #']//span";
     private final String   patientMrdStatus = ".patient-status";
+    private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
+    private final String   orderNotes       = "#order-notes";
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
 
     public NewOrder () {
@@ -46,7 +54,24 @@ public abstract class NewOrder extends OrderHeader {
         return getTextList (".order-entry h2");
     }
 
-    public abstract void createNewPatient (Patient patient);
+    public void activateOrder () {
+        clickSaveAndActivate ();
+        hasPageLoaded ();
+        pageLoading ();
+        waitUntilActivated ();
+    }
+
+    public String getPatientName () {
+        return getText ("//label[text()='Patient']/../div[1]");
+    }
+
+    public String getPatientDOB () {
+        return getText ("//label[text()='Birth Date']/../div[1]");
+    }
+
+    public String getPatientGender () {
+        return getText ("//label[text()='Gender']/../div[1]");
+    }
 
     public String getPatientMRDStatus () {
         return getText (patientMrdStatus);
@@ -72,7 +97,7 @@ public abstract class NewOrder extends OrderHeader {
     public void clickPatientOrderHistory () {
         assertTrue (click ("//a[text()='Patient Order History']"));
         pageLoading ();
-        assertEquals (waitForElementVisible ("[uisref=\"main.patient.orders\"]").getText (), "PATIENT ORDER HISTORY");
+        assertEquals (waitForElementVisible ("[uisref='main.patient.orders']").getText (), "Patient Order History");
     }
 
     public String getPatientId () {
@@ -83,27 +108,20 @@ public abstract class NewOrder extends OrderHeader {
     public void clickSave () {
         assertTrue (click ("#order-entry-save"));
         pageLoading ();
-        waitForPageLoading ();
-    }
-
-    public void waitForPageLoading () {
-        final String pageLoadingBar = "div.loading";
-        waitUntilVisible (pageLoadingBar, 10, 100);
-        assertTrue (waitForElementInvisible (pageLoadingBar));
     }
 
     public void waitUntilActivated () {
         Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
         while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
-            refresh ();
             timer.Wait ();
+            refresh ();
         }
         assertEquals (getOrderStatus (), Active, "Order did not activated successfully");
     }
 
     public void clickSaveAndActivate () {
-        String css = "#order-entry-save-and-activate";
-        assertTrue (click (css));
+        assertTrue (click ("#order-entry-save-and-activate"));
+        assertTrue (waitUntilVisible ("#toast-container"));
     }
 
     public void clickCancel () {
@@ -135,8 +153,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getOrderNumber () {
-        String css = oEntry + " .ab-panel-first [ng-bind='ctrl.orderEntry.order.orderNumber']";
-        return getText (css);
+        return getText (orderNumber);
     }
 
     public void enterDateSigned (String date) {
@@ -146,6 +163,14 @@ public abstract class NewOrder extends OrderHeader {
     public String getDateSigned () {
         String css = "[ng-model^='ctrl.orderEntry.order.dateSigned']";
         return isElementVisible (css) ? readInput (css) : null;
+    }
+
+    public void enterOrderNotes (String notes) {
+        assertTrue (setText (orderNotes, notes));
+    }
+
+    public String getOrderNotes () {
+        return readInput (orderNotes);
     }
 
     public void enterInstruction (String instruction) {
@@ -210,37 +235,9 @@ public abstract class NewOrder extends OrderHeader {
         clickSelectPhysician ();
     }
 
-    public boolean searchOrCreatePatient (Patient patient) {
-        clickPickPatient ();
-        searchPatient (patient);
-
-        boolean matchFound = false;
-        String firstrow = ".ab-panel.matches .row:nth-child(1)";
-        if (getText (firstrow).matches ("No patient(s)? found\\."))
-            createNewPatient (patient);
-        else {
-            assertTrue (click (firstrow));
-            assertTrue (click ("#select-patient"));
-            moduleLoading ();
-            setPatientMRN (patient.mrn);
-            matchFound = true;
-        }
-        return matchFound;
-
-    }
-
     public void clickPickPatient () {
         assertTrue (click ("//button[text()='Pick Patient...']"));
         assertTrue (isTextInElement (popupTitle, "Pick Patient"));
-    }
-
-    public void searchPatient (Patient patient) {
-        assertTrue (setText ("#patient-firstname", patient.firstName));
-        assertTrue (setText ("#patient-lastname", patient.lastName));
-        assertTrue (setText ("#patient-dateofbirth", patient.dateOfBirth));
-        assertTrue (setText ("#patient-mrn", patient.mrn));
-        assertTrue (click ("#patient-search"));
-        pageLoading ();
     }
 
     public void removePatient () {
@@ -269,8 +266,6 @@ public abstract class NewOrder extends OrderHeader {
         String xpath = "//*[text()='Patient Code']/..//a[1]/span";
         return getText (xpath);
     }
-
-    public abstract void setPatientMRN (String mrn);
 
     public String getPatientMRN () {
         String css = "[ng-model='ctrl.orderEntry.order.mrn']";
@@ -331,14 +326,16 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getShipmentArrivalDate () {
-        String xpath = "//*[text()='Shipment Arrival']/..//span";
-        String arrivalDate = isElementVisible (xpath) ? getText (xpath) : null;
-        Logging.testLog ("Shipment Arrival Date from UI: " + arrivalDate);
-        return arrivalDate;
+        String shipmentArrival = "//*[*[text()='Shipment Arrival']]//span";
+        return isElementVisible (shipmentArrival) ? getText (shipmentArrival) : null;
+    }
+
+    public ContainerType getSpecimenContainerType () {
+        return getContainerType (getText ("//*[*[text()='Specimen Container Type']]/div"));
     }
 
     public String getSpecimenContainerQuantity () {
-        return getText ("//*[text()='Quantity']/..//div");
+        return getText ("//*[*[text()='Quantity']]/div");
     }
 
     public List <OrderTest> getSelectedTests () {
@@ -385,5 +382,61 @@ public abstract class NewOrder extends OrderHeader {
 
     public String getSpecimenApprovalStatus () {
         return getText ("//*[text()='Specimen Approval']/..//span[1]");
+    }
+
+    public void waitForSpecimenDelivery () {
+        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
+            public Boolean apply (WebDriver driver) {
+                return getDropdownOptions (specimenDelivery).size () > 0;
+            }
+        }));
+    }
+
+    public void enterSpecimenDelivery (DeliveryType type) {
+        assertTrue (clickAndSelectValue (specimenDelivery, "string:" + type));
+    }
+
+    public DeliveryType getSpecimenDelivery () {
+        return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
+    }
+
+    public List <String> getSpecimenDeliveryOptions () {
+        return getDropdownOptions (specimenDelivery);
+    }
+
+    public void expandShipment () {
+        assertTrue (click ("//*[text()='Shipment']"));
+    }
+
+    public void expandContainers () {
+        assertTrue (click ("//*[@class='row']//*[contains(text(),'Containers')]"));
+    }
+
+    public Containers getContainers () {
+        String rows = "//specimen-containers//*[@class='row']/..";
+        return new Containers (waitForElements (rows).stream ().map (row -> {
+            Container c = new Container ();
+            c.id = getConId (getAttribute (row, "//*[text()='Adaptive Container ID']/..//a", "href"));
+            c.containerNumber = getText (row, "//*[text()='Adaptive Container ID']/..//a");
+            c.location = getText (row, "//*[text()='Current Storage Location']/..//div");
+
+            if (isElementPresent (row, ".container-table")) {
+                String css = "tbody tr";
+                List <Container> children = findElements (row, css).stream ().map (childRow -> {
+                    Container childContainer = new Container ();
+                    childContainer.id = getConId (getAttribute (childRow,
+                                                                "td:nth-child(1) a",
+                                                                "href"));
+                    childContainer.containerNumber = getText (childRow,
+                                                              "td:nth-child(1) a");
+                    childContainer.name = getText (childRow, "td:nth-child(2)");
+                    childContainer.integrity = getText (childRow, "td:nth-child(3)");
+                    childContainer.root = c;
+                    return childContainer;
+                }).collect (toList ());
+                c.children = children;
+            }
+            return c;
+        }).collect (toList ()));
     }
 }

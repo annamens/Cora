@@ -1,0 +1,184 @@
+{
+    "class": "com.adaptive.analysis.AnalysisResultDto",
+    "version": 1,
+    "analysisResult": "eyJjbGFzcyI6ImNvbS5hZGFwdGl2ZS5jbG9ub3NlcXJlcG9ydC5kdG9zLkNsaW5pY2FsUmVwb3J0RHRvIiwidmVyc2lvbiI6MSwicmVwb3J0SWQiOiJlZjk5NjYzZC0xOTIyLTRlOTYtYTZhYi0zOTY5YzYxYjk1OGEiLCJyZXBvcnRTYW1wbGVPcmRlclRlc3RJZCI6IjEyNDQyMWU4LTZkYWEtNDVhMy05NzhhLWYyMTVmNzg2YzIxYSIsInJlcG9ydFR5cGUiOiJ0cmFja2luZyIsInJlcG9ydFNhbXBsZVRvdGFsU2VxdWVuY2VzIjoxNzEyOS41ODE4MDAwMDAxNjcsInJlcG9ydFNhbXBsZVVuaXF1ZVNlcXVlbmNlcyI6MTQ4ODIsInJlcG9ydFNhbXBsZUNsb25hbGl0eSI6MC4wNDEwNTU1MDg3Mzk1MzQyMywicmVwb3J0U2FtcGxlVG90YWxOdWNsZWF0ZWRDZWxscyI6MzIyODc0Ljk1LCJwaXBlbGluZVZlcnNpb24iOiJ2My4wLTg4MC1nMWMxODUyYSIsImFzc2F5VmVyc2lvbiI6InJkLkh1bWFuLkJDZWxsLm5leHRzZXEuMTQ2eDEzeDExNi50aHJlZVJlYWQudWx0cmFsaWdodC5yZXY0IiwiY29uZmlnVmVyc2lvbiI6IjAuNSIsImNsb25hbGl0eVJlc3VsdCI6MSwidHJhY2tpbmdSZXN1bHQiOjMsImxvY2lTdW1tYXJ5SW5mbyI6W3sibG9jdXMiOiJJR0siLCJ0b3RhbFNlcXVlbmNlcyI6ODMyNy41ODA5MDAwMDAwOTQsInRvdGFsVW5pcXVlU2VxdWVuY2VzIjo1ODI5fSx7ImxvY3VzIjoiSUdIIiwidG90YWxTZXF1ZW5jZXMiOjY4MzQuMDIwODAwMDAwMDE1LCJ0b3RhbFVuaXF1ZVNlcXVlbmNlcyI6NzU1MH0seyJsb2N1cyI6IklHTCIsInRvdGFsU2VxdWVuY2VzIjoxOTY3Ljk4MDEwMDAwMDAwMTYsInRvdGFsVW5pcXVlU2VxdWVuY2VzIjoxNTAzfV0sInJlc3VsdENsb25lcyI6W3siY2xhc3MiOiJjb20uYWRhcHRpdmUuY2xvbm9zZXFyZXBvcnQuZHRvcy5SZXN1bHRDbG9uZUR0byIsInZlcnNpb24iOjEsIm51Y2xlb3RpZGUiOiJDQUdHR0FDQUNHVENDQVRDQUdDQUNBR0NDVEFDQVRHR0FHQ1RHQUdDQUdHQ1RHQUdBVENUR0FDR0FDQUNHR0NDR1RHVEFDVENUQ0dHVEdUR0dUVEFUQ0NDQ0FHR0dBR1RBQ0FUR0dBQ0dUQ1RHR0dHQ0FBQUdHR0FDQyIsImlzTGlmdGVkSWRDbG9uZSI6ZmFsc2UsImxvY3VzIjoiSUdIIiwiaXNFbWVyZ2VudCI6ZmFsc2UsImlzRHhUYWdnZWRJblJlcG9ydFNhbXBsZSI6ZmFsc2UsImRlc2lnbmF0aW9uIjoiQSIsImNvbG9yIjoxLCJzeW1ib2wiOjEsImxpbmVUeXBlIjoxLCJkaXNlYXNlTG9hZE11bHRpcGxpZXIiOjEuMCwiaGlzdG9yeSI6W3siY2xhc3MiOiJjb20uYWRhcHRpdmUuY2xvbm9zZXFyZXBvcnQuZHRvcy5IaXN0b3JpY2FsQ2xvbmVEdG8iLCJ2ZXJzaW9uIjoxLCJjb2xsZWN0aW9uRGF0ZSI6IjA0LzAxLzIwMTkiLCJpc0Zyb21DbG9uYWxpdHlUZXN0Ijp0cnVlLCJjb3VudCI6NzQ2NDAuMCwibm9ybWFsaXplZENvdW50IjoxMTM3NzQ5LjAzMTIyMTMzMzQsIm5vcm1hbGl6ZWRDb3VudENvbmZNaW4iOm51bGwsIm5vcm1hbGl6ZWRDb3VudENvbmZNYXgiOm51bGwsImZyYWN0aW9uT2ZOdWNsZWF0ZWRDZWxscyI6MS4xMzc3NDkwMzEyMjEzMzM0LCJjb3VudE1lYXN1cmUiOiJjZWxscyIsImFzc2F5VmVyc2lvbiI6InJkLkh1bWFuLkJDZWxsLm5leHRzZXEuMTQ2eDEzeDExNi50aHJlZVJlYWQudWx0cmFsaWdodC5yZXY0Iiwib3JkZXJUZXN0SWQiOiI3OTI1NTJlZi1hMTMyLTQ3ZWUtYjE2MC1iNzE4MzNjNGI2ZTQiLCJzYW1wbGVOdWNsZWF0ZWRDZWxscyI6NjU2MDMuMjIsImxpbWl0T2ZEZXRlY3Rpb24iOjAuMCwibGltaXRPZlF1YW50aXRhdGlvbiI6MC4wfSx7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuSGlzdG9yaWNhbENsb25lRHRvIiwidmVyc2lvbiI6MSwiY29sbGVjdGlvbkRhdGUiOiIwNC8wMS8yMDE5IiwiaXNGcm9tQ2xvbmFsaXR5VGVzdCI6ZmFsc2UsImNvdW50IjoxLjc1OCwibm9ybWFsaXplZENvdW50Ijo1LjQ0NDgzMjQzNDM1MjY4MSwibm9ybWFsaXplZENvdW50Q29uZk1pbiI6MC4yNjM2MTIyODY0OTEyMTc2LCJub3JtYWxpemVkQ291bnRDb25mTWF4IjoxMy4wOTEyMzg3OTAxOTU3OTQsImZyYWN0aW9uT2ZOdWNsZWF0ZWRDZWxscyI6NS40NDQ4MzI0MzQzNTI2ODA1RS02LCJjb3VudE1lYXN1cmUiOiJjZWxscyIsImFzc2F5VmVyc2lvbiI6InJkLkh1bWFuLkJDZWxsLm5leHRzZXEuMTQ2eDEzeDExNi50aHJlZVJlYWQudWx0cmFsaWdodC5yZXY0Iiwib3JkZXJUZXN0SWQiOiIxMjQ0MjFlOC02ZGFhLTQ1YTMtOTc4YS1mMjE1Zjc4NmMyMWEiLCJzYW1wbGVOdWNsZWF0ZWRDZWxscyI6MzIyODc0Ljk1LCJsaW1pdE9mRGV0ZWN0aW9uIjo1Ljg5MzkyMjcwOTA4NTk3OCwibGltaXRPZlF1YW50aXRhdGlvbiI6Ny40MDIyNDgyNTc0MTM1ODh9XX0seyJjbGFzcyI6ImNvbS5hZGFwdGl2ZS5jbG9ub3NlcXJlcG9ydC5kdG9zLlJlc3VsdENsb25lRHRvIiwidmVyc2lvbiI6MSwibnVjbGVvdGlkZSI6IkNDVEdDQUdDQ1RHQUFHQVRHVFRHQ0FBQ1RUQVRUQUNHR1RDQUFDR0dBQ1RUQUNBQVRHQ0NHQ0NHR0NBQ1RUVFRHR0NDQUdHR0ciLCJpc0xpZnRlZElkQ2xvbmUiOmZhbHNlLCJsb2N1cyI6IklHSyIsImlzRW1lcmdlbnQiOmZhbHNlLCJpc0R4VGFnZ2VkSW5SZXBvcnRTYW1wbGUiOmZhbHNlLCJkZXNpZ25hdGlvbiI6IkMiLCJjb2xvciI6Mywic3ltYm9sIjozLCJsaW5lVHlwZSI6MywiZGlzZWFzZUxvYWRNdWx0aXBsaWVyIjo2My4yMzM0ODkxMTExMTExMSwiaGlzdG9yeSI6W3siY2xhc3MiOiJjb20uYWRhcHRpdmUuY2xvbm9zZXFyZXBvcnQuZHRvcy5IaXN0b3JpY2FsQ2xvbmVEdG8iLCJ2ZXJzaW9uIjoxLCJjb2xsZWN0aW9uRGF0ZSI6IjA0LzAxLzIwMTkiLCJpc0Zyb21DbG9uYWxpdHlUZXN0Ijp0cnVlLCJjb3VudCI6NTk3MTcuNzA3MTE2NTMzMzMsIm5vcm1hbGl6ZWRDb3VudCI6OTEwMjg2LjIxOTQzNDU1NDEsIm5vcm1hbGl6ZWRDb3VudENvbmZNaW4iOm51bGwsIm5vcm1hbGl6ZWRDb3VudENvbmZNYXgiOm51bGwsImZyYWN0aW9uT2ZOdWNsZWF0ZWRDZWxscyI6MC45MTAyODYyMTk0MzQ1NTQxLCJjb3VudE1lYXN1cmUiOiJjZWxscyIsImFzc2F5VmVyc2lvbiI6InJkLkh1bWFuLkJDZWxsLm5leHRzZXEuMTQ2eDEzeDExNi50aHJlZVJlYWQudWx0cmFsaWdodC5yZXY0Iiwib3JkZXJUZXN0SWQiOiI3OTI1NTJlZi1hMTMyLTQ3ZWUtYjE2MC1iNzE4MzNjNGI2ZTQiLCJzYW1wbGVOdWNsZWF0ZWRDZWxscyI6NjU2MDMuMjIsImxpbWl0T2ZEZXRlY3Rpb24iOjAuMCwibGltaXRPZlF1YW50aXRhdGlvbiI6MC4wfSx7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuSGlzdG9yaWNhbENsb25lRHRvIiwidmVyc2lvbiI6MSwiY29sbGVjdGlvbkRhdGUiOiIwNC8wMS8yMDE5IiwiaXNGcm9tQ2xvbmFsaXR5VGVzdCI6ZmFsc2UsImNvdW50IjowLjAsIm5vcm1hbGl6ZWRDb3VudCI6MC4wLCJub3JtYWxpemVkQ291bnRDb25mTWluIjowLjAsIm5vcm1hbGl6ZWRDb3VudENvbmZNYXgiOjM3Mi42OTMyOTc0NDY3MTg1LCJmcmFjdGlvbk9mTnVjbGVhdGVkQ2VsbHMiOjAuMCwiY291bnRNZWFzdXJlIjoiY2VsbHMiLCJhc3NheVZlcnNpb24iOiJyZC5IdW1hbi5CQ2VsbC5uZXh0c2VxLjE0NngxM3gxMTYudGhyZWVSZWFkLnVsdHJhbGlnaHQucmV2NCIsIm9yZGVyVGVzdElkIjoiMTI0NDIxZTgtNmRhYS00NWEzLTk3OGEtZjIxNWY3ODZjMjFhIiwic2FtcGxlTnVjbGVhdGVkQ2VsbHMiOjMyMjg3NC45NSwibGltaXRPZkRldGVjdGlvbiI6NTg5LjM5MjI3MDkwODU5OCwibGltaXRPZlF1YW50aXRhdGlvbiI6NzQwLjIyNDgyNTc0MTM1OX1dfSx7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuUmVzdWx0Q2xvbmVEdG8iLCJ2ZXJzaW9uIjoxLCJudWNsZW90aWRlIjoiR0FUR1RUR0dHR1RUVEFUVEFDVEdDQVRHQ0FBR0dUQUNBQ0FDVEdHVENDR0dHR0FDVFRUQ0dHQ0NDVEdHRyIsImlzTGlmdGVkSWRDbG9uZSI6ZmFsc2UsImxvY3VzIjoiSUdLIiwiaXNFbWVyZ2VudCI6ZmFsc2UsImlzRHhUYWdnZWRJblJlcG9ydFNhbXBsZSI6ZmFsc2UsImRlc2lnbmF0aW9uIjoiQiIsImNvbG9yIjoyLCJzeW1ib2wiOjIsImxpbmVUeXBlIjoyLCJkaXNlYXNlTG9hZE11bHRpcGxpZXIiOjY1LjY5NzEzMTU0NDAxMTU0LCJoaXN0b3J5IjpbeyJjbGFzcyI6ImNvbS5hZGFwdGl2ZS5jbG9ub3NlcXJlcG9ydC5kdG9zLkhpc3RvcmljYWxDbG9uZUR0byIsInZlcnNpb24iOjEsImNvbGxlY3Rpb25EYXRlIjoiMDQvMDEvMjAxOSIsImlzRnJvbUNsb25hbGl0eVRlc3QiOnRydWUsImNvdW50Ijo1OTcyNS4yNjIyODY2NjA4OTQsIm5vcm1hbGl6ZWRDb3VudCI6OTEwNDAxLjM4NDA1Nzk5MTIsIm5vcm1hbGl6ZWRDb3VudENvbmZNaW4iOm51bGwsIm5vcm1hbGl6ZWRDb3VudENvbmZNYXgiOm51bGwsImZyYWN0aW9uT2ZOdWNsZWF0ZWRDZWxscyI6MC45MTA0MDEzODQwNTc5OTEyLCJjb3VudE1lYXN1cmUiOiJjZWxscyIsImFzc2F5VmVyc2lvbiI6InJkLkh1bWFuLkJDZWxsLm5leHRzZXEuMTQ2eDEzeDExNi50aHJlZVJlYWQudWx0cmFsaWdodC5yZXY0Iiwib3JkZXJUZXN0SWQiOiI3OTI1NTJlZi1hMTMyLTQ3ZWUtYjE2MC1iNzE4MzNjNGI2ZTQiLCJzYW1wbGVOdWNsZWF0ZWRDZWxscyI6NjU2MDMuMjIsImxpbWl0T2ZEZXRlY3Rpb24iOjAuMCwibGltaXRPZlF1YW50aXRhdGlvbiI6MC4wfSx7ImNsYXNzIjoiY29tLmFkYXB0aXZlLmNsb25vc2VxcmVwb3J0LmR0b3MuSGlzdG9yaWNhbENsb25lRHRvIiwidmVyc2lvbiI6MSwiY29sbGVjdGlvbkRhdGUiOiIwNC8wMS8yMDE5IiwiaXNGcm9tQ2xvbmFsaXR5VGVzdCI6ZmFsc2UsImNvdW50IjowLjAsIm5vcm1hbGl6ZWRDb3VudCI6MC4wLCJub3JtYWxpemVkQ291bnRDb25mTWluIjowLjAsIm5vcm1hbGl6ZWRDb3VudENvbmZNYXgiOjM4Ny4yMTM4MTU1MjkwNTgzNywiZnJhY3Rpb25PZk51Y2xlYXRlZENlbGxzIjowLjAsImNvdW50TWVhc3VyZSI6ImNlbGxzIiwiYXNzYXlWZXJzaW9uIjoicmQuSHVtYW4uQkNlbGwubmV4dHNlcS4xNDZ4MTN4MTE2LnRocmVlUmVhZC51bHRyYWxpZ2h0LnJldjQiLCJvcmRlclRlc3RJZCI6IjEyNDQyMWU4LTZkYWEtNDVhMy05NzhhLWYyMTVmNzg2YzIxYSIsInNhbXBsZU51Y2xlYXRlZENlbGxzIjozMjI4NzQuOTUsImxpbWl0T2ZEZXRlY3Rpb24iOjU4OS4zOTIyNzA5MDg1OTgsImxpbWl0T2ZRdWFudGl0YXRpb24iOjc0MC4yMjQ4MjU3NDEzNTl9XX1dLCJhbmFseXRpY2FsTGltaXQiOjEuOTAzfQ==",
+    "mrdEngineVersion": "646.Rindja.LDT/0.5",
+    "idClones": [],
+    "mrdClones": [
+        {
+            "class": "com.adaptive.mrdengine.MrdResultCloneDto",
+            "version": 1,
+            "id": "101bfe15-d343-43d5-ac6b-8d2d5ea567d7",
+            "orderTestId": null,
+            "subLocus": "IGH",
+            "sequence": "GACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+            "count": 1.758,
+            "normalizedCount": 5.444832434352681,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 6834.020800000004,
+            "sampleAmount": 322874.95,
+            "cdr3Index": 106,
+            "idCloneId": "f1d7a958-3e54-4f60-8454-dde6373f9195",
+            "rank": 80,
+            "constituentClones": 1,
+            "limitOfDetection": 5.893922709085978,
+            "limitOfQuantitation": 7.402248257413588,
+            "adjustedMutations": 0.0,
+            "matchLength": 114,
+            "overlapCount": 0,
+            "passedContamination": true,
+            "normalizedCountConfMin": 0.2636122864912176,
+            "normalizedCountConfMax": 13.091238790195794
+        },
+        {
+            "class": "com.adaptive.mrdengine.MrdResultCloneDto",
+            "version": 1,
+            "id": "1544149d-9f68-4042-af07-b073cabaf187",
+            "orderTestId": null,
+            "subLocus": "IGK",
+            "sequence": "NEGATIVE",
+            "count": 0.0,
+            "normalizedCount": 0.0,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 6834.020800000004,
+            "sampleAmount": 322874.95,
+            "cdr3Index": 0,
+            "idCloneId": "31fef2e3-1bdf-47ef-9d43-d3e0edc5d067",
+            "rank": 0,
+            "constituentClones": 0,
+            "limitOfDetection": 589.392270908598,
+            "limitOfQuantitation": 740.224825741359,
+            "adjustedMutations": 0.0,
+            "matchLength": 0,
+            "overlapCount": 0,
+            "passedContamination": true,
+            "normalizedCountConfMin": 0.0,
+            "normalizedCountConfMax": 387.21381552905837
+        },
+        {
+            "class": "com.adaptive.mrdengine.MrdResultCloneDto",
+            "version": 1,
+            "id": "2f9dada4-eb17-4eaf-8ce7-91a490c71875",
+            "orderTestId": null,
+            "subLocus": "IGK",
+            "sequence": "NEGATIVE",
+            "count": 0.0,
+            "normalizedCount": 0.0,
+            "countMeasure": "PerMillionCells",
+            "sampleTemplates": 6834.020800000004,
+            "sampleAmount": 322874.95,
+            "cdr3Index": 0,
+            "idCloneId": "97a729f9-32c8-49f5-add4-6e2be69f6613",
+            "rank": 0,
+            "constituentClones": 0,
+            "limitOfDetection": 589.392270908598,
+            "limitOfQuantitation": 740.224825741359,
+            "adjustedMutations": 0.0,
+            "matchLength": 0,
+            "overlapCount": 0,
+            "passedContamination": true,
+            "normalizedCountConfMin": 0.0,
+            "normalizedCountConfMax": 372.6932974467185
+        }
+    ],
+    "sequenceLiteDtos": [
+        {
+            "class": "com.adaptive.clonoseqreport.dtos.MrdSequenceDetailsDto",
+            "version": 1,
+            "sampleOrderTestId": "792552ef-a132-47ee-b160-b71833c4b6e4",
+            "sampleFileS3Path": "https://adaptivecoratest.blob.core.windows.net/cora-data/orca/a0ec2b82-c3ae-45e4-9c55-10180c66046b/below-lod.id.tsv.gz",
+            "idCloneSequences": [
+                {
+                    "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "scaledCount": 74653.30470000001
+                },
+                {
+                    "sequence": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG",
+                    "scaledCount": 59717.70711653333
+                },
+                {
+                    "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG",
+                    "scaledCount": 59725.262286660894
+                }
+            ],
+            "sequences": [
+                {
+                    "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGCCTGAGAGCTGAGGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGATCATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG",
+                    "idCloneSequence": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG"
+                },
+                {
+                    "sequence": "GACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGAAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTAGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GAGGAGCCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG",
+                    "idCloneSequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG"
+                },
+                {
+                    "sequence": "GCCTACATGCAGCTGAGCAGGCTGAGATCTGAAGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGTGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGGGTGGCTATCCCCAGGGAGTACACGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "GCCTACATGGAGCTGAGTAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGAAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                },
+                {
+                    "sequence": "TCCTACATGGAGGTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGGCC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                }
+            ]
+        },
+        {
+            "class": "com.adaptive.clonoseqreport.dtos.MrdSequenceDetailsDto",
+            "version": 1,
+            "sampleOrderTestId": "124421e8-6daa-45a3-978a-f215f786c21a",
+            "sampleFileS3Path": "https://adaptivecoratest.blob.core.windows.net/cora-data/orca/55785c35-1d2e-42a3-830b-c1837452e38e/below-lod.mrd.tsv.gz",
+            "idCloneSequences": [
+                {
+                    "sequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "scaledCount": 1.758
+                },
+                {
+                    "sequence": "CCTGCAGCCTGAAGATGTTGCAACTTATTACGGTCAACGGACTTACAATGCCGCCGGCACTTTTGGCCAGGGG",
+                    "scaledCount": 0.0
+                },
+                {
+                    "sequence": "GATGTTGGGGTTTATTACTGCATGCAAGGTACACACTGGTCCGGGGACTTTCGGCCCTGGG",
+                    "scaledCount": 0.0
+                }
+            ],
+            "sequences": [
+                {
+                    "sequence": "GACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC",
+                    "idCloneSequence": "CAGGGACACGTCCATCAGCACAGCCTACATGGAGCTGAGCAGGCTGAGATCTGACGACACGGCCGTGTACTCTCGGTGTGGTTATCCCCAGGGAGTACATGGACGTCTGGGGCAAAGGGACC"
+                }
+            ]
+        }
+    ],
+    "newPatientCloneTracks": [],
+    "failLowTotalCells": false
+}

@@ -5,10 +5,12 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
 import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.util.List;
+import java.util.Objects;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -23,6 +25,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.LinkShipment;
  */
 public class NewShipment extends ShipmentHeader {
 
+    private final String shippingCondition = "#conditionType";
     private final String cssCarrier        = "#carrierType";
     private final String cssTrackingNumber = "#trackingNumber";
     private final String cssNotes          = "#shipment-notes";
@@ -50,6 +53,10 @@ public class NewShipment extends ShipmentHeader {
         transactionInProgress ();
     }
 
+    public String getShipmentId () {
+        return substringAfterLast (getCurrentUrl (), "cora/shipment/entry/");
+    }
+
     public String getArrivalDate () {
         return readInput ("#arrivalDate");
     }
@@ -58,8 +65,16 @@ public class NewShipment extends ShipmentHeader {
         return readInput ("#arrivalTime");
     }
 
+    public List <String> getAllShippingConditions () {
+        return getTextList (shippingCondition + " option").stream ().filter (Objects::nonNull).collect (toList ());
+    }
+
     public void enterShippingCondition (ShippingCondition condition) {
-        assertTrue (clickAndSelectValue ("[ng-model='ctrl.entry.shipment.condition']", "string:" + condition));
+        assertTrue (clickAndSelectValue (shippingCondition, "string:" + condition));
+    }
+
+    public ShippingCondition getShippingCondition () {
+        return ShippingCondition.valueOf (getFirstSelectedValue (shippingCondition).replace ("string:", ""));
     }
 
     public void enterOrderNumber (String orderNum) {
@@ -237,11 +252,6 @@ public class NewShipment extends ShipmentHeader {
         String expectedText = "DISCREPANCY RESOLUTIONS";
         String text = waitForElementVisible (cssDRT).getText ();
         return expectedText.equals (text);
-    }
-
-    public String getShippingCondition () {
-        String css = "[ng-model='ctrl.entry.shipment.condition']";
-        return getFirstSelectedText (css);
     }
 
     public String getOrderNumber () {

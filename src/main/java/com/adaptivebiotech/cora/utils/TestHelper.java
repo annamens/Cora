@@ -13,12 +13,12 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.NoCharge;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.TrialProtocol;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
-import static com.adaptivebiotech.cora.utils.DateUtils.getPastFutureDate;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
-import static com.adaptivebiotech.test.utils.TestHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.util.Arrays.asList;
@@ -178,7 +178,6 @@ public class TestHelper {
         return patient;
     }
 
-    // scenario builder takes only client billingType
     public static Patient scenarioBuilderPatient () {
         Patient patient = new Patient ();
         patient.id = randomUUID ().toString ();
@@ -191,11 +190,11 @@ public class TestHelper {
         patient.dateOfBirth = "1999-01-01";
         patient.race = AMERICAN_INDIAN;
         patient.ethnicity = ASKED;
-        patient.billingType = Client;
-        patient.insurance1 = null;
-        patient.insurance2 = null;
-        patient.insurance3 = null;
-        patient.address = null;
+
+        getRandomAddress (patient);
+        patient.billingType = PatientSelfPay;
+        patient.address2 = "Ste 200";
+        patient.postCode = "98138"; // has to be a valid zipcode
         return patient;
     }
 
@@ -291,7 +290,7 @@ public class TestHelper {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
-        specimen.collectionDate = getPastFutureDate (-3);
+        specimen.collectionDate = genDate (-3);
         return specimen;
     }
 
@@ -311,11 +310,10 @@ public class TestHelper {
     public static BillingSurvey cdxSurvey () {
         BillingSurvey survey = new BillingSurvey ();
         survey.questionnaires = new ArrayList <> ();
-        survey.questionnaires.add (new Questionnaire ("hadTransplant1V1", asList ("Yes, a bone marrow transplant")));
-        survey.questionnaires.add (new Questionnaire ("transplant1DateV1",
-                asList ("Transplant date", getPastFutureDate (-3))));
-        survey.questionnaires.add (new Questionnaire ("hadTransplant3V1", asList ("Yes")));
-        survey.questionnaires.add (new Questionnaire ("courseOfTherapyV1", asList ("No")));
+        survey.questionnaires.add (new Questionnaire ("hadTransplantV1", asList ("Yes, a bone marrow transplant")));
+        survey.questionnaires.add (new Questionnaire ("transplantDateV1", asList (genDate (-3))));
+        survey.questionnaires.add (new Questionnaire ("haveDiseaseClinicalEvidenceV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("haveCourseOfTherapyV1", asList ("No")));
         survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Yes")));
         return survey;
