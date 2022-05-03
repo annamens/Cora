@@ -96,7 +96,7 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
  *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "nutmeg" }, singleThreaded = true)
-public class IgHVUpdatesTestSuite extends CoraBaseBrowser {
+public class IghvOrderTestSuite extends CoraBaseBrowser {
 
     private Physician            IgHVPhysician;
     private Physician            NYPhysician;
