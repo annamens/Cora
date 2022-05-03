@@ -47,7 +47,6 @@ import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.hl7.HL7TestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
-import com.adaptivebiotech.cora.ui.hl7.MirthGateway;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
@@ -69,13 +68,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
     private OrderStatus        orderStatus        = new OrderStatus ();
     private OrderDetailTDetect orderDetail        = new OrderDetailTDetect ();
     private OrcaHistory        history            = new OrcaHistory ();
-    private MirthGateway       mirthGateway       = new MirthGateway ();
     private Specimen           specimen           = bloodSpecimen ();
-
-    public void foo () {
-        navigateTo ("http://mirth-s1.dna.corp.adaptivebiotech.com/transformed/");
-        mirthGateway.waitFor ("18daf976-3010-48cd-901f-d16002fed02f");
-    }
 
     /**
      * @sdlc.requirements SR-5243, SR-7370, SR-9446:R2
