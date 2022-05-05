@@ -3,14 +3,17 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author jpatel
@@ -56,6 +59,15 @@ public class OrderHeader extends CoraPage {
 
     public OrderStatus getOrderStatus () {
         return getEnum (OrderStatus.class, getText ("//*[text()='Status']/..//span"));
+    }
+
+    public void waitUntilActivated () {
+        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
+        while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
+            timer.Wait ();
+            refresh ();
+        }
+        assertEquals (getOrderStatus (), Active, "Order did not activated successfully");
     }
 
     public String getPatientId () {

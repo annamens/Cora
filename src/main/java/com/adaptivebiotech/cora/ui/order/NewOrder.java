@@ -4,7 +4,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -111,15 +110,6 @@ public abstract class NewOrder extends OrderHeader {
     public void clickSave () {
         assertTrue (click ("#order-entry-save"));
         pageLoading ();
-    }
-
-    public void waitUntilActivated () {
-        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
-        while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
-            timer.Wait ();
-            refresh ();
-        }
-        assertEquals (getOrderStatus (), Active, "Order did not activated successfully");
     }
 
     public void clickSaveAndActivate () {

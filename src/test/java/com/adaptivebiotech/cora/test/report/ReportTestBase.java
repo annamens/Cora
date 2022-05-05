@@ -63,10 +63,7 @@ import com.testautomationguru.utility.PDFUtil;
  */
 public class ReportTestBase extends CoraBaseBrowser {
 
-    protected final String azTsvPath       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
-    protected final String azPipelineNorth = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
-    protected final String azPipelineFda   = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
-    protected final String saResult        = "secondaryAnalysisResult.json";
+    protected final String saResult = "secondaryAnalysisResult.json";
 
     protected Diagnostic buildCdxOrder (Patient patient, Stage stage, CoraTest... tests) {
         Physician physician = coraApi.getPhysician (clonoSEQ_selfpay);

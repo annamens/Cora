@@ -320,4 +320,14 @@ public class NewShipment extends ShipmentHeader {
         enterInitialStorageLocation (initialFreezer);
         clickSave ();
     }
+
+    public String createBatchShipment (LinkShipment linkShipment) {
+        selectNewBatchShipment ();
+        isBatchOrGeneral ();
+        enterShippingCondition (Ambient);
+        clickSave ();
+        String shipmentNumber = getShipmentNumber ();
+        clickAccessionTab ();
+        return shipmentNumber;
+    }
 }

@@ -58,7 +58,7 @@ import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 public class GatewayNotificationTestSuite extends HL7TestBase {
 
     private final String       covidTsv           = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e/HCYJNBGXJ_0_CLINICAL-CLINICAL_112770-SN-7929.adap.txt.results.tsv.gz";
-    private final String       lymeTsv            = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results/200522_NB501172_0808_AHMHTHBGXF/v3.1/20200524_1354/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HMHTHBGXF_0_BALFLDB-Horn_LD011378_0001-reflex.adap.txt.results.tsv.gz";
+    private final String       lymeTsv            = azPipelineNorth + "/200522_NB501172_0808_AHMHTHBGXF/v3.1/20200524_1354/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HMHTHBGXF_0_BALFLDB-Horn_LD011378_0001-reflex.adap.txt.results.tsv.gz";
     private final String       gatewayJson        = "gatewayMessage.json";
     private Login              login              = new Login ();
     private OrdersList         ordersList         = new OrdersList ();

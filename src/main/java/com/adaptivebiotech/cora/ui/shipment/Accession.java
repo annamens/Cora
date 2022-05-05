@@ -48,13 +48,6 @@ public class Accession extends ShipmentHeader {
         return getText ("[ng-bind='ctrl.entry.specimen.approvedDate | localDateTime']") + ", " + getText ("[ng-bind='ctrl.entry.specimen.approvedBy']");
     }
 
-    public void uploadIntakeManifest (String file) {
-        waitForElement ("input[data-ng-model='ctrl.intakeManifestFiles']").sendKeys (file);
-        transactionInProgress ();
-        assertTrue (click ("[data-ng-click='ctrl.proceedToFullAccessionScreen()']"));
-        pageLoading ();
-    }
-
     public void clickIntakeComplete () {
         assertTrue (click ("[data-ng-click*='intake-complete']"));
         assertTrue (isTextInElement (popupTitle, "Intake Complete Confirmation"));

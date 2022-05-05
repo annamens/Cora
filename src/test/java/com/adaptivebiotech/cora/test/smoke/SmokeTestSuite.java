@@ -39,8 +39,8 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
-import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.cora.ui.patient.PatientsList;
+import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentsList;
 import com.adaptivebiotech.cora.ui.task.Task;
@@ -293,7 +293,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
      * Note: SR-T2443
      */
     public void new_batch_order_shipment () {
-        String sforder = "00017277";
+        String sforder = "00017277"; // order name: 3-RUO-ID-191018c
         login.doLogin ();
         oList.isCorrectPage ();
         oList.selectNewBatchShipment ();
