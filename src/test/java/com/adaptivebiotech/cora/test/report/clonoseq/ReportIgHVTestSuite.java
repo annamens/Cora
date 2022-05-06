@@ -11,7 +11,6 @@ import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.MUTATED;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.BCell;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
-import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt6;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
@@ -36,7 +35,6 @@ import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.report.ClonoSeq;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -44,6 +42,7 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmReportResult;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmSequence;
+import com.adaptivebiotech.picasso.dto.verify.ClonoSeq;
 import com.adaptivebiotech.pipeline.api.PipelineApi;
 
 /**
@@ -145,15 +144,14 @@ public class ReportIgHVTestSuite extends ReportTestBase {
                        "shmSequenceList (List<ShmSequence>)"));
 
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
-        clonoseq.isCLIA = true;
-        clonoseq.isClonality = true;
-        clonoseq.header.reportDt = formatDt1.format (releaseDt);
+        clonoseq.helper.isCLIA = true;
+        clonoseq.helper.isClonality = true;
+        clonoseq.header.reportDt = releaseDt.toLocalDate ();
         clonoseq.pageSize = 5;
-        clonoseq.pageSizeSHM = 2;
-        clonoseq.appendix.sampleTable = "0.41 122,367 IGH 9,963 5,290 IGK 7,978 5,463 IGL ≥1,661 1,661";
-        clonoseq.approval.dateTime = formatDt1.format (releaseDt);
-        clonoseq.isSHM = true;
-        clonoseq.report = report;
+        clonoseq.appendix.sampleInfo = "0.41 122,367 IGH 9,963 5,290 IGK 7,978 5,463 IGL ≥1,661 1,661";
+        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
+        clonoseq.helper.isSHM = true;
+        clonoseq.helper.report = report;
 
         String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (orderReport.getReportUrl (), actualPdf));

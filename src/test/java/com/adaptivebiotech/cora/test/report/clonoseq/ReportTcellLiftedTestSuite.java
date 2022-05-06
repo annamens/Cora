@@ -37,7 +37,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ReportRender;
-import com.adaptivebiotech.picasso.dto.ReportRender.SampleInfo;
+import com.adaptivebiotech.pipeline.dto.mrd.ClinicalJson.SampleInfo;
 
 /**
  * Note: since we rolled back Rindja release, this test is nolonger valid

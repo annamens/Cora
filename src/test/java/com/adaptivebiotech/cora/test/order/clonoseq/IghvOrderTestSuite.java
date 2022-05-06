@@ -974,9 +974,11 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
             assertEquals (shmAnalysisStages.size (), 3);
             assertEquals (shmAnalysisStages.get (2).stageStatus, Ready);
             assertEquals (shmAnalysisStages.get (1).stageStatus, Awaiting);
-            assertEquals (shmAnalysisStages.get (0).stageStatus, Finished);
-            assertNotNull (shmAnalysisStages.get (0).drilldownUrl);
+            assertEquals (shmAnalysisStages.get (1).subStatusMessage, "SHM Analysis job running");
             assertNotNull (shmAnalysisStages.get (1).drilldownUrl);
+            assertEquals (shmAnalysisStages.get (0).stageStatus, Finished);
+            assertEquals (shmAnalysisStages.get (1).subStatusMessage, "Saved result to shm_results table.");
+            assertNotNull (shmAnalysisStages.get (0).drilldownUrl);
         }
 
     }

@@ -24,10 +24,12 @@ import static java.lang.System.nanoTime;
 import static java.util.stream.Collectors.toMap;
 import static org.testng.Assert.assertEquals;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.Batch;
@@ -101,14 +103,21 @@ public class IghvBatchTestSuite extends BatchTestBase {
             history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
             testLog (format ("workflow is at %s/%s/%s for %s", ClonoSEQReport, Awaiting, CLINICAL_QC, s.getValue ()));
 
-            if (s.getValue ().equals ("SAMPLE_NAME6")) {
-                history.parseStatusHistory ().stream ()
-                       .filter (stage -> ShmAnalysis.equals (stage.stageName))
-                       .filter (stage -> Finished.equals (stage.stageStatus))
-                       .forEach (stage -> {
-                           assertEquals (stage.subStatusMessage, "SHM Analysis is not enabled for the workflow.");
-                       });
-                testLog ("there is no ShmAnalysis performed for regression sample");
+            List <Stage> stages = history.parseStatusHistory ();
+            if (s.getKey ().equals ("SAMPLE_NAME6")) {
+                stages.stream ()
+                      .filter (stage -> ShmAnalysis.equals (stage.stageName))
+                      .filter (stage -> Finished.equals (stage.stageStatus)).forEach (stage -> {
+                          assertEquals (stage.subStatusMessage, "SHM Analysis is not enabled for the workflow.");
+                      });
+                testLog ("there is no ShmAnalysis performed for regression sample: " + s.getValue ());
+            } else {
+                stages.stream ()
+                      .filter (stage -> ShmAnalysis.equals (stage.stageName))
+                      .filter (stage -> Finished.equals (stage.stageStatus)).forEach (stage -> {
+                          assertEquals (stage.subStatusMessage, "Saved result to shm_results table.");
+                      });
+                testLog ("there is ShmAnalysis performed for regression sample: " + s.getValue ());
             }
         });
 

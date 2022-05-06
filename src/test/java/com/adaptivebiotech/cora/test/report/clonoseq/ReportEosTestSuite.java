@@ -11,7 +11,6 @@ import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.BCell;
-import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt6;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.Skin;
@@ -32,13 +31,13 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.report.AnalysisConfig;
-import com.adaptivebiotech.cora.dto.report.ClonoSeq;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ReportRender;
+import com.adaptivebiotech.picasso.dto.verify.ClonoSeq;
+import com.adaptivebiotech.pipeline.dto.mrd.ClinicalJson;
 
 /**
  * @author Harry Soehalim
@@ -93,17 +92,17 @@ public class ReportEosTestSuite extends ReportTestBase {
         report.clickReportTab (ID_BCell2_CLIA);
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
-        clonoseq.isCLIA = true;
-        clonoseq.isClonality = true;
+        clonoseq.helper.isCLIA = true;
+        clonoseq.helper.isClonality = true;
         clonoseq.pageSize = 3;
-        clonoseq.header.reportDt = formatDt1.format (releaseDt);
-        clonoseq.appendix.sampleTable = "0.81 70,977 IGH 60,049 2,671 IGK 64,371 4,749 IGL 2,108 1,700";
-        clonoseq.approval.dateTime = formatDt1.format (releaseDt);
+        clonoseq.header.reportDt = releaseDt.toLocalDate ();
+        clonoseq.appendix.sampleInfo = "0.81 70,977 IGH 60,049 2,671 IGK 64,371 4,749 IGL 2,108 1,700";
+        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
         String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
-        AnalysisConfig config = parseAnalysisConfig (saInputJson);
+        ClinicalJson config = parseAnalysisConfig (saInputJson);
         config.patientSamples.forEach (p -> {
             assertEquals (p.specimenType, gDNA);
             assertEquals (p.specimenSource, Skin);
@@ -143,12 +142,12 @@ public class ReportEosTestSuite extends ReportTestBase {
         report.clickReportTab (MRD_BCell2_CLIA);
         releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
-        clonoseq.isCLIA = true;
+        clonoseq.helper.isCLIA = true;
         clonoseq.pageSize = 4;
-        clonoseq.header.reportDt = formatDt1.format (releaseDt);
-        clonoseq.appendix.sampleTable = "0.09 3,261,145 IGH 73,326 71,309 IGK 98,699 37,457 IGL 28,278 11,994";
-        clonoseq.appendix.sequenceTable = "IGH - Sequence A <1 <1 IGK - Sequence B <1 <1";
-        clonoseq.approval.dateTime = formatDt1.format (releaseDt);
+        clonoseq.header.reportDt = releaseDt.toLocalDate ();
+        clonoseq.appendix.sampleInfo = "0.09 3,261,145 IGH 73,326 71,309 IGK 98,699 37,457 IGL 28,278 11,994";
+        clonoseq.appendix.sequenceInfo = "IGH - Sequence A <1 <1 IGK - Sequence B <1 <1";
+        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
         actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
@@ -210,17 +209,17 @@ public class ReportEosTestSuite extends ReportTestBase {
         report.clickReportTab (ID_BCell2_IVD);
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
-        clonoseq.isIVD = true;
-        clonoseq.isClonality = true;
+        clonoseq.helper.isIVD = true;
+        clonoseq.helper.isClonality = true;
         clonoseq.pageSize = 3;
-        clonoseq.header.reportDt = formatDt1.format (releaseDt);
-        clonoseq.appendix.sampleTable = "0.81 70,977 IGH 60,049 2,671 IGK 64,371 4,749 IGL 2,108 1,700";
-        clonoseq.approval.dateTime = formatDt1.format (releaseDt);
+        clonoseq.header.reportDt = releaseDt.toLocalDate ();
+        clonoseq.appendix.sampleInfo = "0.81 70,977 IGH 60,049 2,671 IGK 64,371 4,749 IGL 2,108 1,700";
+        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
         String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
-        AnalysisConfig config = parseAnalysisConfig (saInputJson);
+        ClinicalJson config = parseAnalysisConfig (saInputJson);
         config.patientSamples.forEach (p -> {
             assertEquals (p.specimenType, gDNA);
             assertEquals (p.specimenSource, Skin);
@@ -260,12 +259,12 @@ public class ReportEosTestSuite extends ReportTestBase {
         report.clickReportTab (MRD_BCell2_IVD);
         releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
-        clonoseq.isIVD = true;
+        clonoseq.helper.isIVD = true;
         clonoseq.pageSize = 4;
-        clonoseq.header.reportDt = formatDt1.format (releaseDt);
-        clonoseq.appendix.sampleTable = "0.09 3,261,145 IGH 73,326 71,309 IGK 98,699 37,457 IGL 28,278 11,994";
-        clonoseq.appendix.sequenceTable = "IGH - Sequence A <1 <1 IGK - Sequence B <1 <1";
-        clonoseq.approval.dateTime = formatDt1.format (releaseDt);
+        clonoseq.header.reportDt = releaseDt.toLocalDate ();
+        clonoseq.appendix.sampleInfo = "0.09 3,261,145 IGH 73,326 71,309 IGK 98,699 37,457 IGL 28,278 11,994";
+        clonoseq.appendix.sequenceInfo = "IGH - Sequence A <1 <1 IGK - Sequence B <1 <1";
+        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
         actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
