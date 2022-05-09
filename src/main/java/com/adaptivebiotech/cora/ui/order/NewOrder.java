@@ -106,6 +106,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickSave () {
         assertTrue (click ("#order-entry-save"));
+        hasPageLoaded ();
         pageLoading ();
     }
 

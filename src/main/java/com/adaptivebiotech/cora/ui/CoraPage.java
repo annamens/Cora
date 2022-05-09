@@ -10,6 +10,7 @@ import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import static org.testng.util.Strings.isNullOrEmpty;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -17,6 +18,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Element;
 import com.seleniumfy.test.utils.BasePage;
 
 /**
@@ -332,6 +334,18 @@ public class CoraPage extends BasePage {
 
     public void navigateToTab (int tabIndex) {
         getDriver ().switchTo ().window (new ArrayList <> (getDriver ().getWindowHandles ()).get (tabIndex));
+    }
+
+    public List <Element> getUnauthorizedMsgs () {
+        waitForElementVisible ("#unauthorized");
+        List <Element> elements = new LinkedList <> ();
+        Element element1 = new Element ();
+        element1.text = getText (".unauthorized h2");
+        Element element2 = new Element ();
+        element1.text = getText (".unauthorized p");
+        elements.add (element1);
+        elements.add (element2);
+        return elements;
     }
 
     public String getFirstSelectedText (String select) {
