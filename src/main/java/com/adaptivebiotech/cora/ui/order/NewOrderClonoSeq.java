@@ -231,6 +231,15 @@ public class NewOrderClonoSeq extends NewOrder {
         pageLoading ();
     }
 
+    public void activateOrder () {
+        clickSaveAndActivate ();
+        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
+        assertTrue (click (".modal-content .btn-primary"));
+        moduleLoading ();
+        pageLoading ();
+        waitUntilActivated ();
+    }
+
     public void clickEnterSpecimenDetails () {
         assertTrue (click (specimenDetails));
     }

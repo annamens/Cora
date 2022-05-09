@@ -45,8 +45,7 @@ public class OrderDetailTDetect extends OrderDetail {
     }
 
     public List <String> getTextDangerText () {
-        String css = ".text-danger";
-        List <String> text = getTextList (css);
+        List <String> text = getTextList (requiredMsg);
         return text;
     }
 

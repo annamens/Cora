@@ -17,6 +17,7 @@ import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import com.adaptivebiotech.cora.dto.Containers;
@@ -53,15 +54,10 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
+    public abstract void activateOrder ();
+
     public List <String> getSectionHeaders () {
         return getTextList (".order-entry h2");
-    }
-
-    public void activateOrder () {
-        clickSaveAndActivate ();
-        hasPageLoaded ();
-        pageLoading ();
-        waitUntilActivated ();
     }
 
     public String getPatientName () {
@@ -104,8 +100,8 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getPatientId () {
-        String patientUrl = getAttribute ("//a[contains(text(),'Edit Patient')]", "href");
-        return patientUrl.substring (patientUrl.lastIndexOf ("/") + 1);
+        String patientUrl = getAttribute ("//*[contains(text(),'Patient Order History')]", "href");
+        return StringUtils.substringBetween (patientUrl, "patient/", "/orders");
     }
 
     public void clickSave () {
@@ -124,7 +120,8 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickSaveAndActivate () {
         assertTrue (click ("#order-entry-save-and-activate"));
-        assertTrue (waitUntilVisible ("#toast-container"));
+        List <String> errors = isElementVisible (requiredMsg) ? getTextList (requiredMsg) : new ArrayList <> ();
+        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
     }
 
     public void clickCancel () {

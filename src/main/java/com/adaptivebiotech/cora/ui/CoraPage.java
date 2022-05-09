@@ -14,6 +14,7 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.seleniumfy.test.utils.BasePage;
@@ -24,10 +25,11 @@ import com.seleniumfy.test.utils.BasePage;
  */
 public class CoraPage extends BasePage {
 
-    private final String   newmenu    = "li:nth-child(1) .new-order #navNewDropdown";
-    private final String   utilities  = "li:nth-child(9) .new-order #navNewDropdown";
-    protected final String popupTitle = ".modal-header .modal-title";
-    protected final String tabBase    = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
+    private final String   newmenu     = "li:nth-child(1) .new-order #navNewDropdown";
+    private final String   utilities   = "li:nth-child(9) .new-order #navNewDropdown";
+    protected final String popupTitle  = ".modal-header .modal-title";
+    protected final String tabBase     = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
+    protected final String requiredMsg = ".text-danger";
 
     public CoraPage () {
         staticNavBarHeight = 35;
@@ -331,4 +333,16 @@ public class CoraPage extends BasePage {
     public void navigateToTab (int tabIndex) {
         getDriver ().switchTo ().window (new ArrayList <> (getDriver ().getWindowHandles ()).get (tabIndex));
     }
+
+    public String getFirstSelectedText (String select) {
+        return getFirstSelectedText (waitForElementVisible (select));
+    }
+
+    public String getFirstSelectedText (WebElement el) {
+        Select selectEle = new Select (scrollTo (el));
+        WebElement selectedEle = selectEle.getOptions ().stream ().filter (WebElement::isSelected).findFirst ()
+                                          .orElse (null);
+        return selectedEle == null ? null : getText (selectedEle);
+    }
+
 }

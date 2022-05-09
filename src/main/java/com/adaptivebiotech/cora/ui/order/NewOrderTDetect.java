@@ -44,6 +44,13 @@ public class NewOrderTDetect extends NewOrder {
         return readInput (xpath);
     }
 
+    public void activateOrder () {
+        clickSaveAndActivate ();
+        hasPageLoaded ();
+        pageLoading ();
+        waitUntilActivated ();
+    }
+
     public void clickAssayTest (Assay assay) {
         assertTrue (click (format ("//*[@class='test-type-selection']//*[text()='%s']", assay.test)));
     }
