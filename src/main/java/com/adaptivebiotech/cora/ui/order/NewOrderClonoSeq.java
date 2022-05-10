@@ -11,6 +11,7 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -235,8 +236,18 @@ public class NewOrderClonoSeq extends NewOrder {
         clickSaveAndActivate ();
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click (".modal-content .btn-primary"));
+        String css = ".toast-container .toast-error .toast-message";
+        if (isElementPresent (css)) {
+            fail (getText (css));
+        }
         moduleLoading ();
+        if (isElementPresent (css)) {
+            fail (getText (css));
+        }
         pageLoading ();
+        if (isElementPresent (css)) {
+            fail (getText (css));
+        }
         waitUntilActivated ();
     }
 
