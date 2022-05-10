@@ -342,7 +342,7 @@ public class CoraPage extends BasePage {
         Element element1 = new Element ();
         element1.text = getText (".unauthorized h2");
         Element element2 = new Element ();
-        element1.text = getText (".unauthorized p");
+        element2.text = getText (".unauthorized p");
         elements.add (element1);
         elements.add (element2);
         return elements;

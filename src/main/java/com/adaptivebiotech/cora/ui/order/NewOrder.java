@@ -354,10 +354,6 @@ public abstract class NewOrder extends OrderHeader {
         return orderTest;
     }
 
-    public String getSampleName () {
-        return getText ("[ng-bind='orderTest.sampleName']");
-    }
-
     public void enterCollectionDate (String date) {
         assertTrue (setText ("//*[text()='Collection Date']/..//input", date));
     }

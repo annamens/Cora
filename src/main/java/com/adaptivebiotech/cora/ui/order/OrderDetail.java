@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
@@ -307,8 +308,23 @@ public class OrderDetail extends OrderHeader {
         return orderTest;
     }
 
-    public String getSampleName () {
-        return getText ("[ng-bind='orderTest.sampleName']");
+    public List <OrderTest> getOrderTests () {
+        List <OrderTest> orderTests = new ArrayList <> ();
+        for (WebElement element : waitForElements ("[ng-repeat='orderTest in ctrl.orderEntry.orderTests']")) {
+            OrderTest orderTest = new OrderTest ();
+            orderTest.assay = getAssay (getText (element, "[ng-bind='orderTest.test.name']"));
+            orderTest.sampleName = getText (element, "[ng-bind='orderTest.sampleName']");
+            orderTests.add (orderTest);
+        }
+        return orderTests;
+    }
+
+    public String getSampleName (Assay assay) {
+        List <OrderTest> orderTests = getOrderTests ();
+        String sampleException = "Not Found SampleName, " + assay + ", Order: " + getOrderNumber () + ", OrderTests: " + orderTests;
+        OrderTest orderTest = orderTests.stream ().filter (o -> o.assay.equals (assay)).findFirst ()
+                                        .orElseThrow ( () -> new RuntimeException (sampleException));
+        return orderTest.sampleName;
     }
 
     private List <UploadFile> getCoraAttachments () {
