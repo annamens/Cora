@@ -4,11 +4,13 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.FailedActivation;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
@@ -63,11 +65,15 @@ public class OrderHeader extends CoraPage {
 
     public void waitUntilActivated () {
         Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
-        while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
+        OrderStatus orderStatus = getOrderStatus ();
+        while (!timer.Timedout () && !orderStatus.equals (Active)) {
+            if (orderStatus.equals (FailedActivation))
+                fail (format ("the order is '%s'", FailedActivation));
+
             timer.Wait ();
             refresh ();
         }
-        assertEquals (getOrderStatus (), Active, "Order did not activated successfully");
+        assertEquals (orderStatus, Active, "Order did not activated successfully");
     }
 
     public String getPatientId () {

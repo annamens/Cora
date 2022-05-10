@@ -56,13 +56,7 @@ public abstract class NewOrder extends OrderHeader {
         return getTextList (".order-entry h2");
     }
 
-    public void activateOrder () {
-        clickSaveAndActivate ();
-        assertTrue (waitUntilVisible ("#toast-container"));
-        hasPageLoaded ();
-        pageLoading ();
-        waitUntilActivated ();
-    }
+   
 
     public String getPatientName () {
         return getText ("//label[text()='Patient']/../div[1]");
@@ -115,6 +109,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickSaveAndActivate () {
         assertTrue (click ("#order-entry-save-and-activate"));
+        assertTrue (waitUntilVisible ("#toast-container"));
     }
 
     public void clickCancel () {

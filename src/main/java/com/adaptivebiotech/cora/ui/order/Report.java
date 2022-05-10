@@ -5,7 +5,6 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
-import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
@@ -125,8 +124,7 @@ public class Report extends OrderHeader {
         }
 
         setQCstatus (qc);
-        if (Pass.equals (qc))
-            clickReleaseReport ();
+        clickReleaseReport ();
     }
 
     public void releaseReportWithSignatureRequired () {

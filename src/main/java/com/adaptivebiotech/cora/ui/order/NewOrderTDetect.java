@@ -39,6 +39,13 @@ public class NewOrderTDetect extends NewOrder {
     private final String          dateSigned     = "[formcontrolname='dateSigned']";
     private final String          collectionDate = "[formcontrolname='collectionDate']";
 
+    public void activateOrder () {
+        clickSaveAndActivate ();
+        hasPageLoaded ();
+        pageLoading ();
+        waitUntilActivated ();
+    }
+
     public String getPhysicianOrderCode () {
         String xpath = "input[formcontrolname='externalOrderCode']";
         return readInput (xpath);
