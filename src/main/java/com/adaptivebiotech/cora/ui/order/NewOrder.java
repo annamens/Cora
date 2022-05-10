@@ -58,6 +58,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public void activateOrder () {
         clickSaveAndActivate ();
+        assertTrue (waitUntilVisible ("#toast-container"));
         hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();
@@ -114,7 +115,6 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickSaveAndActivate () {
         assertTrue (click ("#order-entry-save-and-activate"));
-        assertTrue (waitUntilVisible ("#toast-container"));
     }
 
     public void clickCancel () {
@@ -275,7 +275,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterPatientICD_Codes (String... codes) {
-        String dropdown = "//*[*[text()='ICD Codes']]//ul";
+        String dropdown = ".icd-code-list-item .dropdown-item";
         String css = "//button[text()='Add Code']";
         for (String code : codes) {
             if (isElementVisible (css))

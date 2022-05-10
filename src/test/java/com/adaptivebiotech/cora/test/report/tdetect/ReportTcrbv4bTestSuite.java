@@ -4,7 +4,7 @@
 package com.adaptivebiotech.cora.test.report.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
@@ -118,7 +118,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
      */
     @Test (groups = "akita")
     public void verify_lyme_report () {
-        CoraTest test = coraApi.getTDxTest (LYME_DX_IVD);
+        CoraTest test = coraApi.getTDxTest (LYME_DX);
         test.tsvPath = azPipelineNorth + "/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz";;
         test.workflowProperties = sample_860011348 ();
 
@@ -128,19 +128,19 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
                                                    patient,
                                                    stage (DxReport, Ready),
                                                    test,
-                                                   LYME_DX_IVD);
+                                                   LYME_DX);
         diagnostic.dxResults = lyme;
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
 
-        OrderTest orderTest = diagnostic.findOrderTest (LYME_DX_IVD);
+        OrderTest orderTest = diagnostic.findOrderTest (LYME_DX);
         String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        report.clickReportTab (LYME_DX_IVD);
-        report.releaseReport (LYME_DX_IVD, Pass);
+        report.clickReportTab (LYME_DX);
+        report.releaseReport (LYME_DX, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
 
         coraDebugApi.login ();

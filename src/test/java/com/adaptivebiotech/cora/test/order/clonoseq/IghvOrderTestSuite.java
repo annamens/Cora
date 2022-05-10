@@ -860,22 +860,20 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         specimen.sampleSource = specimenSource;
         specimen.anticoagulant = Blood.equals (specimen.sampleType) ? EDTA : null;
         specimen.collectionDate = genDate (-3);
-        String orderNum = diagnostic.createClonoSeqOrder (physician,
-                                                          TestHelper.newInternalPharmaPatient (),
-                                                          icdCodes,
-                                                          assayTest,
-                                                          specimen,
-                                                          Active,
-                                                          Tube);
-        info ("Order Number: " + orderNum + ", Order Notes: " + orderNotes);
+        Order order = diagnostic.createClonoSeqOrder (physician,
+                                                      TestHelper.newInternalPharmaPatient (),
+                                                      icdCodes,
+                                                      assayTest,
+                                                      specimen,
+                                                      Active,
+                                                      Tube);
+        info ("Order Number: " + order.orderNumber + ", Order Notes: " + orderNotes);
 
         String sampleName = diagnostic.getSampleName ();
         orderStatus.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
         orderStatus.expandWorkflowHistory ();
 
-        Order order = new Order ();
-        order.orderNumber = orderNum;
         order.specimenDto = new Specimen ();
         order.specimenDto.sampleName = sampleName;
         order.orderTestId = orderStatus.getOrderTestIdFromUrl ();

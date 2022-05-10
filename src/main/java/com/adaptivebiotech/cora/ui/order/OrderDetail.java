@@ -47,6 +47,7 @@ public class OrderDetail extends OrderHeader {
     private final String      patientMrdStatus    = ".patient-status";
     private final String      specimenNumber      = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
     private final String      specimenArrivalDate = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
+    private final String      messagesLabel       = "//h2[text()='Messages']";
 
     public OrderDetail () {
         staticNavBarHeight = 200;
@@ -393,16 +394,14 @@ public class OrderDetail extends OrderHeader {
     }
 
     public int getMessageTableRowCount () {
-        String messages = "//h2[text()='Messages']";
-        assertTrue (click (messages));
+        assertTrue (click (messagesLabel));
         String messagesTableRows = "[ng-repeat*='ctrl.orderEntry.orderMessages']";
         List <WebElement> rows = waitForElementsVisible (messagesTableRows);
         return rows.size ();
     }
 
     public boolean isMessagesTableVisible () {
-        String messages = "//h2[text()='Messages']";
-        return waitUntilVisible (messages);
+        return isElementVisible (messagesLabel);
     }
 
     public List <String> getHistory () {

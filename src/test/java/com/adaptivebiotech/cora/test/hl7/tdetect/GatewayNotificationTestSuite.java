@@ -5,7 +5,7 @@ package com.adaptivebiotech.cora.test.hl7.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_canada;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
@@ -41,6 +41,7 @@ import java.util.Map;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -77,20 +78,19 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
     public void verifyCovidGatewayMessageUpdate () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        String orderNumber = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
-                                                                 scenarioBuilderPatient (),
-                                                                 null,
-                                                                 specimen.collectionDate.toString (),
-                                                                 COVID19_DX_IVD,
-                                                                 Active,
-                                                                 Tube);
-        testLog ("submitted a new Covid19 order in Cora: " + orderNumber);
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
+                                                          scenarioBuilderPatient (),
+                                                          null,
+                                                          specimen.collectionDate.toString (),
+                                                          COVID19_DX_IVD,
+                                                          Active,
+                                                          Tube);
+        testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);
 
         String sample = orderDetailTDetect.getSampleName ();
         history.gotoOrderDebug (sample);
         history.setWorkflowProperties (properties ());
         history.forceStatusUpdate (DxAnalysis, Ready);
-        String orderId = history.getOrderId ();
         history.clickOrder ();
         testLog ("set workflow properties and force workflow to move to DxAnalysis/Ready stage");
 
@@ -98,7 +98,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.waitFor (sample, DxAnalysis, Finished);
         orderStatus.waitFor (sample, DxContamination, Finished);
         orderStatus.waitFor (sample, DxReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (orderId);
+        orderStatus.gotoOrderDetailsPage (order.id);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (COVID19_DX_IVD);
         report.isCorrectPage ();
@@ -129,20 +129,19 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
         login.doLogin ();
         ordersList.isCorrectPage ();
-        String orderNumber = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_canada),
-                                                                 patient,
-                                                                 null,
-                                                                 specimen.collectionDate.toString (),
-                                                                 COVID19_DX_IVD,
-                                                                 Active,
-                                                                 Tube);
-        testLog ("submitted a new Covid19 order in Cora: " + orderNumber);
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_canada),
+                                                          patient,
+                                                          null,
+                                                          specimen.collectionDate.toString (),
+                                                          COVID19_DX_IVD,
+                                                          Active,
+                                                          Tube);
+        testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);
 
         String sample = orderDetailTDetect.getSampleName ();
         history.gotoOrderDebug (sample);
         history.setWorkflowProperties (properties ());
         history.forceStatusUpdate (DxAnalysis, Ready);
-        String orderId = history.getOrderId ();
         history.clickOrder ();
         testLog ("set workflow properties and force workflow to move to DxAnalysis/Ready stage");
 
@@ -150,7 +149,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.waitFor (sample, DxAnalysis, Finished);
         orderStatus.waitFor (sample, DxContamination, Finished);
         orderStatus.waitFor (sample, DxReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (orderId);
+        orderStatus.gotoOrderDetailsPage (order.id);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (COVID19_DX_IVD);
         report.isCorrectPage ();
@@ -170,7 +169,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
     @Test (groups = "dingo")
     public void verifyLymeGatewayMessage () {
-        CoraTest test = coraApi.getTDxTest (LYME_DX_IVD);
+        CoraTest test = coraApi.getTDxTest (LYME_DX);
         test.tsvPath = lymeTsv;
         test.workflowProperties = sample_95268_SN_2205 ();
 
@@ -179,12 +178,12 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                                    patient,
                                                    stage (DxReport, Ready),
                                                    test,
-                                                   LYME_DX_IVD);
+                                                   LYME_DX);
         diagnostic.dxResults = positiveLymeResult ();
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
         testLog ("submitted a new Lyme order in Cora");
 
-        OrderTest orderTest = diagnostic.findOrderTest (LYME_DX_IVD);
+        OrderTest orderTest = diagnostic.findOrderTest (LYME_DX);
         login.doLogin ();
         ordersList.isCorrectPage ();
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
@@ -192,9 +191,9 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.waitFor (orderTest.sampleName, DxReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
-        orderDetail.clickReportTab (LYME_DX_IVD);
+        orderDetail.clickReportTab (LYME_DX);
         report.isCorrectPage ();
-        report.releaseReport (LYME_DX_IVD, Pass);
+        report.releaseReport (LYME_DX, Pass);
         testLog ("released the Lyme report");
 
         report.clickOrderStatusTab ();
