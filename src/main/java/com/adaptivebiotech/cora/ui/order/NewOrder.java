@@ -115,7 +115,6 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickSaveAndActivate () {
         assertTrue (click ("#order-entry-save-and-activate"));
-        assertTrue (waitUntilVisible (toastContainer));
     }
 
     public List <String> getRequiredFieldMsgs () {

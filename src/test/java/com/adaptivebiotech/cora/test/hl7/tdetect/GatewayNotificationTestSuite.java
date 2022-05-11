@@ -87,7 +87,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                                           Tube);
         testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);
 
-        String sample = orderDetailTDetect.getSampleName ();
+        String sample = orderDetailTDetect.getSampleName (COVID19_DX_IVD);
         history.gotoOrderDebug (sample);
         history.setWorkflowProperties (properties ());
         history.forceStatusUpdate (DxAnalysis, Ready);
@@ -138,7 +138,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
                                                           Tube);
         testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);
 
-        String sample = orderDetailTDetect.getSampleName ();
+        String sample = orderDetailTDetect.getSampleName (COVID19_DX_IVD);
         history.gotoOrderDebug (sample);
         history.setWorkflowProperties (properties ());
         history.forceStatusUpdate (DxAnalysis, Ready);

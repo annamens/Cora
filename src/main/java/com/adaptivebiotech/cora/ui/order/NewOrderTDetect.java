@@ -42,6 +42,9 @@ public class NewOrderTDetect extends NewOrder {
 
     public void activateOrder () {
         clickSaveAndActivate ();
+        assertTrue (waitUntilVisible (toastContainer));
+        List <String> errors = getRequiredFieldMsgs ();
+        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
         hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();
@@ -50,16 +53,6 @@ public class NewOrderTDetect extends NewOrder {
     public String getPhysicianOrderCode () {
         String xpath = "input[formcontrolname='externalOrderCode']";
         return readInput (xpath);
-    }
-
-    public void activateOrder () {
-        clickSaveAndActivate ();
-        assertTrue (isElementPresent (toastContainer));
-        List <String> errors = getRequiredFieldMsgs ();
-        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
-        hasPageLoaded ();
-        pageLoading ();
-        waitUntilActivated ();
     }
 
     public void clickAssayTest (Assay assay) {
