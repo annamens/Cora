@@ -56,7 +56,7 @@ public abstract class NewOrder extends OrderHeader {
         return getTextList (".order-entry h2");
     }
 
-   
+    public abstract void activateOrder ();
 
     public String getPatientName () {
         return getText ("//label[text()='Patient']/../div[1]");
