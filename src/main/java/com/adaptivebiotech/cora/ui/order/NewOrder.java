@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.joining;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -136,7 +138,16 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
         pageLoading ();
         moduleLoading ();
+        checkOrderActivateCancelError ();
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+    }
+
+    protected WebElement checkOrderActivateCancelError () {
+        WebElement toastEle = waitForElementVisible (toastContainer);
+        if (isElementPresent (toastEle, toastError)) {
+            fail (getText (toastEle, join (" ", toastError, toastMessage)));
+        }
+        return toastEle;
     }
 
     public void clickSeeOriginal () {

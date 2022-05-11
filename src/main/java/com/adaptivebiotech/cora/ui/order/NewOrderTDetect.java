@@ -42,9 +42,9 @@ public class NewOrderTDetect extends NewOrder {
 
     public void activateOrder () {
         clickSaveAndActivate ();
-        assertTrue (waitUntilVisible (toastContainer));
         List <String> errors = getRequiredFieldMsgs ();
         assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
+        failOnOrderProcessingError ();
         hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();

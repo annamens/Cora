@@ -8,11 +8,9 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,21 +58,17 @@ public class NewOrderClonoSeq extends NewOrder {
         clickSaveAndActivate ();
         List <String> errors = getRequiredFieldMsgs ();
         assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
-        WebElement toastEle = confirmActivate ();
-        if (isElementPresent (toastEle, toastError)) {
-            fail (getText (toastEle, join (" ", toastError, toastMessage)));
-        }
+        confirmActivate ();
         hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();
     }
 
-    public WebElement confirmActivate () {
+    public void confirmActivate () {
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click ("//*[text()='Activate the Order']"));
-        WebElement toastEle = waitForElementVisible (toastContainer);
+        WebElement toastEle = failOnOrderProcessingError ();
         assertTrue (toastEle.isDisplayed ());
-        return toastEle;
     }
 
     public void clickAssayTest (Assay assay) {
