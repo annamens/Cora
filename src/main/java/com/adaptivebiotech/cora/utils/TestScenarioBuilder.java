@@ -5,7 +5,7 @@ package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
 import static com.adaptivebiotech.cora.dto.Orders.DeliveryType.CustomerShipment;
 import static com.adaptivebiotech.cora.dto.Orders.OrderCategory.Diagnostic;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
@@ -176,7 +176,7 @@ public class TestScenarioBuilder {
         diagnostic.order.specimenDto.name = test.workflowProperties.sampleName;
         diagnostic.order.specimenDto.properties = null;
 
-        if (assay.equals (LYME_DX_IVD)) {
+        if (assay.equals (LYME_DX)) {
             diagnostic.order.panels = asList (new Panel (lymePanel));
         } else if (assay.equals (COVID19_DX_IVD)) {
             diagnostic.order.panels = asList (new Panel (covidPanel));

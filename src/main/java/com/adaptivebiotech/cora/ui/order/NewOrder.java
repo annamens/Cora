@@ -4,7 +4,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -58,11 +57,11 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
-    public abstract void activateOrder ();
-
     public List <String> getSectionHeaders () {
         return getTextList (".order-entry h2");
     }
+
+    public abstract void activateOrder ();
 
     public String getPatientName () {
         return getText ("//label[text()='Patient']/../div[1]");
@@ -114,17 +113,9 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
-    public void waitUntilActivated () {
-        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
-        while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
-            timer.Wait ();
-            refresh ();
-        }
-        assertEquals (getOrderStatus (), Active, "Order did not activated successfully");
-    }
-
     public void clickSaveAndActivate () {
         assertTrue (click ("#order-entry-save-and-activate"));
+        assertTrue (waitUntilVisible (toastContainer));
     }
 
     public List <String> getRequiredFieldMsgs () {
@@ -289,7 +280,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterPatientICD_Codes (String... codes) {
-        String dropdown = "//*[*[text()='ICD Codes']]//ul";
+        String dropdown = ".icd-code-list-item .dropdown-item";
         String css = "//button[text()='Add Code']";
         for (String code : codes) {
             if (isElementVisible (css))
@@ -442,5 +433,4 @@ public abstract class NewOrder extends OrderHeader {
             return c;
         }).collect (toList ()));
     }
-
 }

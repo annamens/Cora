@@ -24,6 +24,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
@@ -103,17 +104,17 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
      */
     public void order_activation () {
         // create T-Detect diagnostic order
-        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
-                                                              newClientPatient (),
-                                                              null,
-                                                              bloodSpecimen ().collectionDate.toString (),
-                                                              COVID19_DX_IVD);
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
+                                                          newClientPatient (),
+                                                          null,
+                                                          bloodSpecimen ().collectionDate.toString (),
+                                                          COVID19_DX_IVD);
 
         // add diagnostic shipment
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
         shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
+        shipment.enterOrderNumber (order.orderNumber);
         shipment.selectDiagnosticSpecimenContainerType (SlideBox5CS);
         shipment.clickAddSlide ();
         shipment.clickAddSlide ();

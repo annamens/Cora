@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.billing.BillingTestBase;
@@ -152,15 +153,15 @@ public class BillingTestSuite extends BillingTestBase {
      */
     @Test (groups = "entlebucher")
     public void verifyNoChargeReasonIsRequired () {
-        String orderNum = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_all_payments),
-                                                         newTrialProtocolPatient (),
-                                                         null,
-                                                         specimen.collectionDate.toString (),
-                                                         COVID19_DX_IVD);
+        Order order = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_all_payments),
+                                                     newTrialProtocolPatient (),
+                                                     null,
+                                                     specimen.collectionDate.toString (),
+                                                     COVID19_DX_IVD);
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
         shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
+        shipment.enterOrderNumber (order.orderNumber);
         shipment.selectDiagnosticSpecimenContainerType (Vacutainer);
         shipment.clickSave ();
         shipment.clickAccessionTab ();
@@ -188,7 +189,7 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.activateOrder ();
         testLog ("Order activated");
 
-        List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + orderNum + "'");
+        List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + order.orderNumber + "'");
         assertEquals (queryResults.size (), 1);
         Map <String, Object> queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("no_charge_reason").toString (), IncompleteDocumentation.label);

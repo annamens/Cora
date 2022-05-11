@@ -295,14 +295,16 @@ public class NewShipment extends ShipmentHeader {
         assertTrue (click ("//table//a[text()='" + containerNo + "']"));
     }
 
-    public void createShipment (String orderNumber, ContainerType containerType) {
+    public String createShipment (String orderNumber, ContainerType containerType) {
         selectNewDiagnosticShipment ();
         isDiagnostic ();
         enterShippingCondition (Ambient);
         enterOrderNumber (orderNumber);
         selectDiagnosticSpecimenContainerType (containerType);
         clickSave ();
+        String shipmentNumber = getShipmentNumber ();
         clickAccessionTab ();
+        return shipmentNumber;
     }
 
     public void createShipment (ShippingCondition shippingCondition,
@@ -319,5 +321,15 @@ public class NewShipment extends ShipmentHeader {
         selectDiagnosticSpecimenContainerType (containerType);
         enterInitialStorageLocation (initialFreezer);
         clickSave ();
+    }
+
+    public String createBatchShipment (LinkShipment linkShipment) {
+        selectNewBatchShipment ();
+        isBatchOrGeneral ();
+        enterShippingCondition (Ambient);
+        clickSave ();
+        String shipmentNumber = getShipmentNumber ();
+        clickAccessionTab ();
+        return shipmentNumber;
     }
 }

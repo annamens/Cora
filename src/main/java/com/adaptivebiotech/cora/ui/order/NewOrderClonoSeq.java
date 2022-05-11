@@ -56,6 +56,27 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
 
+    public void activateOrder () {
+        clickSaveAndActivate ();
+        List <String> errors = getRequiredFieldMsgs ();
+        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
+        WebElement toastEle = confirmActivate ();
+        if (isElementPresent (toastEle, toastError)) {
+            fail (getText (toastEle, join (" ", toastError, toastMessage)));
+        }
+        hasPageLoaded ();
+        pageLoading ();
+        waitUntilActivated ();
+    }
+
+    public WebElement confirmActivate () {
+        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
+        assertTrue (click ("//*[text()='Activate the Order']"));
+        WebElement toastEle = waitForElementVisible (toastContainer);
+        assertTrue (toastEle.isDisplayed ());
+        return toastEle;
+    }
+
     public void clickAssayTest (Assay assay) {
         String type = format ("//*[@class='test-type-selection']//*[text()='%s']/ancestor::label//input", assay.type);
         if (!waitForElement (type).isSelected ())
@@ -233,21 +254,6 @@ public class NewOrderClonoSeq extends NewOrder {
         pageLoading ();
     }
 
-    public void activateOrder () {
-        clickSaveAndActivate ();
-        List <String> errors = getRequiredFieldMsgs ();
-        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
-        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
-        assertTrue (click (".modal-content .btn-primary"));
-        WebElement toastEle = waitForElementVisible (toastContainer);
-        if (isElementPresent (toastEle, toastError)) {
-            fail (getText (toastEle, join (" ", toastError, toastMessage)));
-        }
-        moduleLoading ();
-        pageLoading ();
-        waitUntilActivated ();
-    }
-
     public void clickEnterSpecimenDetails () {
         assertTrue (click (specimenDetails));
     }
@@ -315,12 +321,11 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param specimen
      * @return
      */
-    public String createClonoSeqOrder (Physician physician,
-                                       Patient patient,
-                                       String[] icdCodes,
-                                       Assay assayTest,
-                                       Specimen specimen) {
-
+    public Order createClonoSeqOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      Assay assayTest,
+                                      Specimen specimen) {
         selectNewClonoSEQDiagnosticOrder ();
         isCorrectPage ();
 
@@ -364,9 +369,11 @@ public class NewOrderClonoSeq extends NewOrder {
         clickAssayTest (assayTest);
         clickSave ();
 
-        String orderNum = getOrderNumber ();
-        info ("ClonoSeq Order Number: " + orderNum);
-        return orderNum;
+        Order order = new Order ();
+        order.orderNumber = getOrderNumber ();
+        order.id = getOrderId ();
+        info ("ClonoSeq Order Number: " + order.orderNumber);
+        return order;
     }
 
     /**
@@ -383,18 +390,18 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param containerType
      * @return
      */
-    public String createClonoSeqOrder (Physician physician,
-                                       Patient patient,
-                                       String[] icdCodes,
-                                       Assay assayTest,
-                                       Specimen specimen,
-                                       OrderStatus orderStatus,
-                                       ContainerType containerType) {
+    public Order createClonoSeqOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      Assay assayTest,
+                                      Specimen specimen,
+                                      OrderStatus orderStatus,
+                                      ContainerType containerType) {
         // create clonoSEQ diagnostic order
-        String orderNum = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
+        Order order = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
 
         // add diagnostic shipment
-        new NewShipment ().createShipment (orderNum, containerType);
+        new NewShipment ().createShipment (order.orderNumber, containerType);
 
         // accession complete
         if (orderStatus.equals (Active)) {
@@ -403,11 +410,15 @@ public class NewOrderClonoSeq extends NewOrder {
             // activate order
             isCorrectPage ();
             activateOrder ();
+
+            // refreshing the page doesn't automatically take you to order detail
+            gotoOrderDetailsPage (order.id);
+            isCorrectPage ();
         } else {
             accession.clickOrderNumber ();
             isCorrectPage ();
         }
 
-        return orderNum;
+        return order;
     }
 }

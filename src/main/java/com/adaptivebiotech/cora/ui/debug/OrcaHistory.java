@@ -188,9 +188,12 @@ public class OrcaHistory extends CoraPage {
         return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
     }
 
+    public String getOrderId () {
+        return substringAfterLast (getAttribute ("a[href*='/cora/order/auto?id=']", "href"), "id=");
+    }
+
     public String getOrderTestId () {
-        String url = getAttribute ("a[href*='/cora/order/status']", "href");
-        return substringAfterLast (url, "ordertestid=");
+        return substringAfterLast (getAttribute ("a[href*='/cora/order/status']", "href"), "ordertestid=");
     }
 
     public void clickOrder () {

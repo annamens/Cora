@@ -7,9 +7,6 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5CS;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
-import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
-import static com.adaptivebiotech.test.utils.DateHelper.genDate;
-import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
@@ -17,7 +14,10 @@ import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB_v4b;
+import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxContamination;
@@ -127,17 +127,17 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         patient.mrn = randomString (10);
         String icdCode1 = "C90.00", icdCode2 = "C91.00";
         String collectionDate = genDate (-1);
-        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
-                                                              patient,
-                                                              new String[] { icdCode1, icdCode2 },
-                                                              collectionDate,
-                                                              assayTest,
-                                                              Active,
-                                                              SlideBox5CS);
-        testLog ("T-Detect Order created: " + orderNum);
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
+                                                          patient,
+                                                          new String[] { icdCode1, icdCode2 },
+                                                          collectionDate,
+                                                          assayTest,
+                                                          Active,
+                                                          SlideBox5CS);
+        testLog ("T-Detect Order created: " + order.orderNumber);
 
         String patientId = orderDetailTDetect.getPatientId ();
-        Order order = orderDetailTDetect.parseOrder ();
+        order = orderDetailTDetect.parseOrder ();
         String sample = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sample);
         history.isCorrectPage ();

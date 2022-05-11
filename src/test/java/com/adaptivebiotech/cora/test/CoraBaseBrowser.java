@@ -7,6 +7,7 @@ import static com.adaptivebiotech.cora.test.CoraEnvironment.coraDbInfo;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.initialization;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.jumpbox;
 import static com.adaptivebiotech.test.BaseEnvironment.gitcommitId;
+import static com.adaptivebiotech.test.BaseEnvironment.useDbTunnel;
 import static com.adaptivebiotech.test.BaseEnvironment.version;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.seleniumfy.test.utils.Logging.info;
@@ -27,6 +28,9 @@ import com.adaptivebiotech.test.utils.DbClientHelper;
 
 public class CoraBaseBrowser extends TestBase {
 
+    protected final String          azTsvPath       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
+    protected final String          azPipelineNorth = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
+    protected final String          azPipelineFda   = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
     protected static CoraApi        coraApi;
     protected static CoraDebugApi   coraDebugApi;
     protected static DbClientHelper coraDb;
@@ -39,6 +43,7 @@ public class CoraBaseBrowser extends TestBase {
         coraApi.getAuthToken ();
         coraDebugApi = new CoraDebugApi ();
         coraDb = new DbClientHelper (coraDbInfo, jumpbox);
+        coraDb.useDbTunnel = useDbTunnel;
         coraDb.openConnection ();
     }
 

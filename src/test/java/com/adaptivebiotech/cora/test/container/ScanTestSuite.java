@@ -22,7 +22,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.BatchAccession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
 @Test (groups = "regression")
@@ -143,9 +143,9 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.clickSave ();
         shipment.clickAccessionTab ();
 
-        Accession accession = new Accession ();
+        BatchAccession accession = new BatchAccession ();
         accession.isCorrectPage ();
-        accession.uploadIntakeManifest (getSystemResource ("intakemanifest_full_slidebox.xlsx").getPath ());
+        accession.uploadIntakeManifest (getSystemResource ("batch/intakemanifest_full_slidebox.xlsx").getPath ());
         accession.clickIntakeComplete ();
         accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();

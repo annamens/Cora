@@ -18,6 +18,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -54,14 +55,14 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      */
     public void verifyClonoSeqShipmentLink () {
         // create clonoSEQ diagnostic order
-        String orderNum = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
-                                                                newNoChargePatient (),
-                                                                new String[] { "C90.00" },
-                                                                ID_BCell2_CLIA,
-                                                                bloodSpecimen ());
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
+                                                            newNoChargePatient (),
+                                                            new String[] { "C90.00" },
+                                                            ID_BCell2_CLIA,
+                                                            bloodSpecimen ());
 
         // add diagnostic shipment
-        shipment.createShipment (orderNum, SlideBox5);
+        shipment.createShipment (order.orderNumber, SlideBox5);
 
         // accession complete
         accession.isCorrectPage ();
@@ -104,14 +105,14 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      */
     public void verifyTDetectShipmentLink () {
         // create T-Detect diagnostic order
-        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
-                                                              newClientPatient (),
-                                                              null,
-                                                              genDate (-1),
-                                                              COVID19_DX_IVD);
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
+                                                          newClientPatient (),
+                                                          null,
+                                                          genDate (-1),
+                                                          COVID19_DX_IVD);
 
         // add diagnostic shipment
-        shipment.createShipment (orderNum, SlideBox5);
+        shipment.createShipment (order.orderNumber, SlideBox5);
 
         // accession complete
         accession.isCorrectPage ();

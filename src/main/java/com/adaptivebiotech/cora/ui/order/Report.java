@@ -4,7 +4,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
@@ -118,7 +118,7 @@ public class Report extends OrderHeader {
 
     public void releaseReport (Assay assay, QC qc) {
         // for TCell
-        if (!COVID19_DX_IVD.equals (assay) && !LYME_DX_IVD.equals (assay) && isElementVisible (".report-blocked-msg")) {
+        if (!COVID19_DX_IVD.equals (assay) && !LYME_DX.equals (assay) && isElementVisible (".report-blocked-msg")) {
             assertTrue (click ("//*[text()='Generate Report']"));
             pageLoading ();
         }
