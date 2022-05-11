@@ -43,6 +43,10 @@ public abstract class NewOrder extends OrderHeader {
     private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
     private final String   orderNotes       = "#order-notes";
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
+    protected final String toastContainer   = "#toast-container";
+    protected final String toastError       = ".toast-error";
+    protected final String toastSuccess     = ".toast-error";
+    protected final String toastMessage     = ".toast-message";
 
     public NewOrder () {
         staticNavBarHeight = 200;
@@ -121,8 +125,10 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickSaveAndActivate () {
         assertTrue (click ("#order-entry-save-and-activate"));
-        List <String> errors = isElementVisible (requiredMsg) ? getTextList (requiredMsg) : new ArrayList <> ();
-        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
+    }
+
+    public List <String> getRequiredFieldMsgs () {
+        return isElementVisible (requiredMsg) ? getTextList (requiredMsg) : new ArrayList <> ();
     }
 
     public void clickCancel () {
@@ -436,4 +442,5 @@ public abstract class NewOrder extends OrderHeader {
             return c;
         }).collect (toList ()));
     }
+
 }

@@ -9,6 +9,7 @@ import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,6 +47,9 @@ public class NewOrderTDetect extends NewOrder {
 
     public void activateOrder () {
         clickSaveAndActivate ();
+        assertTrue (isElementPresent (toastContainer));
+        List <String> errors = getRequiredFieldMsgs ();
+        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
         hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();

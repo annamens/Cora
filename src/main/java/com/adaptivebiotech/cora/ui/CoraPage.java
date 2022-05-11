@@ -15,10 +15,8 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.dto.Element;
 import com.seleniumfy.test.utils.BasePage;
 
 /**
@@ -336,27 +334,12 @@ public class CoraPage extends BasePage {
         getDriver ().switchTo ().window (new ArrayList <> (getDriver ().getWindowHandles ()).get (tabIndex));
     }
 
-    public List <Element> getUnauthorizedMsgs () {
+    public List <String> getUnauthorizedMsgs () {
         waitForElementVisible ("#unauthorized");
-        List <Element> elements = new LinkedList <> ();
-        Element element1 = new Element ();
-        element1.text = getText (".unauthorized h2");
-        Element element2 = new Element ();
-        element2.text = getText (".unauthorized p");
-        elements.add (element1);
-        elements.add (element2);
+        List <String> elements = new LinkedList <> ();
+        elements.add (getText (".unauthorized h2"));
+        elements.add (getText (".unauthorized p"));
         return elements;
-    }
-
-    public String getFirstSelectedText (String select) {
-        return getFirstSelectedText (waitForElementVisible (select));
-    }
-
-    public String getFirstSelectedText (WebElement el) {
-        Select selectEle = new Select (scrollTo (el));
-        WebElement selectedEle = selectEle.getOptions ().stream ().filter (WebElement::isSelected).findFirst ()
-                                          .orElse (null);
-        return selectedEle == null ? null : getText (selectedEle);
     }
 
 }

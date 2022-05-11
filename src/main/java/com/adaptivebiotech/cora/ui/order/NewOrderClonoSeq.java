@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -234,20 +235,16 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void activateOrder () {
         clickSaveAndActivate ();
+        List <String> errors = getRequiredFieldMsgs ();
+        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click (".modal-content .btn-primary"));
-        String css = ".toast-container .toast-error .toast-message";
-        if (isElementPresent (css)) {
-            fail (getText (css));
+        WebElement toastEle = waitForElementVisible (toastContainer);
+        if (isElementPresent (toastEle, toastError)) {
+            fail (getText (toastEle, join (" ", toastError, toastMessage)));
         }
         moduleLoading ();
-        if (isElementPresent (css)) {
-            fail (getText (css));
-        }
         pageLoading ();
-        if (isElementPresent (css)) {
-            fail (getText (css));
-        }
         waitUntilActivated ();
     }
 

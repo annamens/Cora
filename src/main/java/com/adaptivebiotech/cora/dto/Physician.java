@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public final class Physician {
 
-    @JsonAlias ({ "emrId", "ID", "accountId" })
+    @JsonAlias ({ "emrId", "ID" })
     public String        id;
     public Integer       version;
     @JsonFormat (shape = JsonFormat.Shape.STRING)

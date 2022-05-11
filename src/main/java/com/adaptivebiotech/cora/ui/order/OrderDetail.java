@@ -320,11 +320,7 @@ public class OrderDetail extends OrderHeader {
     }
 
     public String getSampleName (Assay assay) {
-        List <OrderTest> orderTests = getOrderTests ();
-        String sampleException = "Not Found SampleName, " + assay + ", Order: " + getOrderNumber () + ", OrderTests: " + orderTests;
-        OrderTest orderTest = orderTests.stream ().filter (o -> o.assay.equals (assay)).findFirst ()
-                                        .orElseThrow ( () -> new RuntimeException (sampleException));
-        return orderTest.sampleName;
+        return getText (format ("//*[text()='%s']/parent::div//*[@ng-bind='orderTest.sampleName']", assay.test));
     }
 
     private List <UploadFile> getCoraAttachments () {
