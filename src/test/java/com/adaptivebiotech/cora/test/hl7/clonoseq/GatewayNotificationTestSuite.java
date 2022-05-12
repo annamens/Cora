@@ -56,9 +56,9 @@ import com.adaptivebiotech.cora.ui.task.TaskStatus;
 @Test (groups = { "regression", "akita" }, singleThreaded = true)
 public class GatewayNotificationTestSuite extends HL7TestBase {
 
-    private final String        bcellIdTsv     = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.id.tsv.gz";
-    private final String        bcellMrdTsv    = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.mrd.tsv.gz";
-    private final String        tcellTsv       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
+    private final String        bcellIdTsv     = azTsvPath + "/above-loq.id.tsv.gz";
+    private final String        bcellMrdTsv    = azTsvPath + "/above-loq.mrd.tsv.gz";
+    private final String        tcellTsv       = azTsvPath + "/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
     private final String        lastFlowcellId = "HKJVGBGXC";
     private final String        gatewayJson    = "gatewayMessage.json";
     private Login               login          = new Login ();

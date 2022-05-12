@@ -47,6 +47,7 @@ public class OrderDetail extends OrderHeader {
     private final String      patientMrdStatus    = ".patient-status";
     private final String      specimenNumber      = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
     private final String      specimenArrivalDate = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
+    private final String      messagesLabel       = "//h2[text()='Messages']";
 
     public OrderDetail () {
         staticNavBarHeight = 200;
@@ -191,8 +192,12 @@ public class OrderDetail extends OrderHeader {
         return getText ("[ng-bind$='providerFullName']");
     }
 
-    private String getProviderAccount () {
+    public String getProviderAccount () {
         return getText ("[ng-bind='ctrl.orderEntry.order.authorizingProvider.account.name']");
+    }
+
+    public String getPhysicianOrderCode () {
+        return getText ("(//*[*[text()='Order Code']]//div)[last()]");
     }
 
     public String getPatientName () {
@@ -298,7 +303,7 @@ public class OrderDetail extends OrderHeader {
         return ContainerType.getContainerType (getText ("[ng-bind='ctrl.orderEntry.specimenDisplayContainerType']"));
     }
 
-    private OrderTest getTestState (Assay assay) {
+    public OrderTest getTestState (Assay assay) {
         String xpath = format ("//*[@ng-bind='orderTest.test.name' and text()='%s']", assay.test);
         boolean selected = isElementPresent (xpath);
         OrderTest orderTest = new OrderTest (assay);
@@ -393,16 +398,14 @@ public class OrderDetail extends OrderHeader {
     }
 
     public int getMessageTableRowCount () {
-        String messages = "//h2[text()='Messages']";
-        assertTrue (click (messages));
+        assertTrue (click (messagesLabel));
         String messagesTableRows = "[ng-repeat*='ctrl.orderEntry.orderMessages']";
         List <WebElement> rows = waitForElementsVisible (messagesTableRows);
         return rows.size ();
     }
 
     public boolean isMessagesTableVisible () {
-        String messages = "//h2[text()='Messages']";
-        return waitUntilVisible (messages);
+        return isElementVisible (messagesLabel);
     }
 
     public List <String> getHistory () {

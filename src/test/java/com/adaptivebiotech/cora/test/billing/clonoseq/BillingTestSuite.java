@@ -11,7 +11,7 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.NoCharge;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.TimelinessOfBilling;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.getAllReasons;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
-import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_all_payments;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_all_payments;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_insurance;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_medicare;
@@ -19,7 +19,6 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_self
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
-import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
@@ -35,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.billing.BillingTestBase;
@@ -49,7 +49,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 public class BillingTestSuite extends BillingTestBase {
 
     private final String        log         = "created an order with billing: %s";
-    private final String[]      icdCodes    = { "V95.43" };
+    private final String[]      icdCodes    = { "V95.43XA" };
     private Login               login       = new Login ();
     private OrdersList          ordersList  = new OrdersList ();
     private NewOrderClonoSeq    diagnostic  = new NewOrderClonoSeq ();
@@ -96,7 +96,7 @@ public class BillingTestSuite extends BillingTestBase {
                                         Tube);
         testLog (format (log, patient.billingType.label));
 
-        assertEquals (orderDetail.billing.getAbnStatus (), RequiredIncludedBillMedicare);
+        assertEquals (orderDetail.billing.getAbnStatus (), patient.abnStatusType);
         testLog ("ABN Status dropdown was visible and was able to make a selection");
     }
 
@@ -172,15 +172,15 @@ public class BillingTestSuite extends BillingTestBase {
      */
     @Test (groups = "entlebucher")
     public void verifyNoChargeReasonIsRequired () {
-        String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (TDetect_all_payments),
-                                                          newTrialProtocolPatient (),
-                                                          icdCodes,
-                                                          ID_BCell2_CLIA,
-                                                          specimen);
+        Order order = diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_all_payments),
+                                                      newTrialProtocolPatient (),
+                                                      icdCodes,
+                                                      ID_BCell2_CLIA,
+                                                      specimen);
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
         shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
+        shipment.enterOrderNumber (order.orderNumber);
         shipment.selectDiagnosticSpecimenContainerType (Vacutainer);
         shipment.clickSave ();
         shipment.clickAccessionTab ();
@@ -208,7 +208,7 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.activateOrder ();
         testLog ("Order activated");
 
-        List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + orderNum + "'");
+        List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + order.orderNumber + "'");
         assertEquals (queryResults.size (), 1);
         Map <String, Object> queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("no_charge_reason").toString (), TimelinessOfBilling.label);

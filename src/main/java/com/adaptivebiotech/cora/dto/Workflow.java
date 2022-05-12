@@ -44,6 +44,7 @@ public final class Workflow {
         public Boolean ighvReportEnabled;
         public Boolean notifyGateway;
         public String  shmDataSourcePath;
+        public String  country;
     }
 
     public static final class Stage {

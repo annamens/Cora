@@ -30,7 +30,7 @@ public class BillingOrderDetail extends CoraPage {
         assertTrue (click ("[ng-click='ctrl.saveBilling()']"));
     }
 
-    protected ChargeType getBillingType () {
+    public ChargeType getBillingType () {
         String css = "[ng-bind^='ctrl.orderEntry.order.billingType']";
         return ChargeType.getChargeType (getText (css));
     }

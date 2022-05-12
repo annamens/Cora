@@ -54,6 +54,24 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
 
+    public void activateOrder () {
+        clickSaveAndActivate ();
+        confirmActivate ();
+        hasPageLoaded ();
+        pageLoading ();
+        waitUntilActivated ();
+    }
+
+    public void clickSaveAndActivate () {
+        assertTrue (click ("#order-entry-save-and-activate"));
+    }
+
+    public void confirmActivate () {
+        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
+        assertTrue (click ("//*[text()='Activate the Order']"));
+        assertTrue (waitUntilVisible ("#toast-container"));
+    }
+
     public void clickAssayTest (Assay assay) {
         String type = format ("//*[@class='test-type-selection']//*[text()='%s']/ancestor::label//input", assay.type);
         if (!waitForElement (type).isSelected ())
@@ -298,12 +316,11 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param specimen
      * @return
      */
-    public String createClonoSeqOrder (Physician physician,
-                                       Patient patient,
-                                       String[] icdCodes,
-                                       Assay assayTest,
-                                       Specimen specimen) {
-
+    public Order createClonoSeqOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      Assay assayTest,
+                                      Specimen specimen) {
         selectNewClonoSEQDiagnosticOrder ();
         isCorrectPage ();
 
@@ -347,9 +364,11 @@ public class NewOrderClonoSeq extends NewOrder {
         clickAssayTest (assayTest);
         clickSave ();
 
-        String orderNum = getOrderNumber ();
-        info ("ClonoSeq Order Number: " + orderNum);
-        return orderNum;
+        Order order = new Order ();
+        order.orderNumber = getOrderNumber ();
+        order.id = getOrderId ();
+        info ("ClonoSeq Order Number: " + order.orderNumber);
+        return order;
     }
 
     /**
@@ -366,18 +385,18 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param containerType
      * @return
      */
-    public String createClonoSeqOrder (Physician physician,
-                                       Patient patient,
-                                       String[] icdCodes,
-                                       Assay assayTest,
-                                       Specimen specimen,
-                                       OrderStatus orderStatus,
-                                       ContainerType containerType) {
+    public Order createClonoSeqOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      Assay assayTest,
+                                      Specimen specimen,
+                                      OrderStatus orderStatus,
+                                      ContainerType containerType) {
         // create clonoSEQ diagnostic order
-        String orderNum = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
+        Order order = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
 
         // add diagnostic shipment
-        new NewShipment ().createShipment (orderNum, containerType);
+        new NewShipment ().createShipment (order.orderNumber, containerType);
 
         // accession complete
         if (orderStatus.equals (Active)) {
@@ -386,11 +405,15 @@ public class NewOrderClonoSeq extends NewOrder {
             // activate order
             isCorrectPage ();
             activateOrder ();
+
+            // refreshing the page doesn't automatically take you to order detail
+            gotoOrderDetailsPage (order.id);
+            isCorrectPage ();
         } else {
             accession.clickOrderNumber ();
             isCorrectPage ();
         }
 
-        return orderNum;
+        return order;
     }
 }

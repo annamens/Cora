@@ -4,7 +4,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -27,6 +26,8 @@ import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
+import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
+import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.seleniumfy.test.utils.Timeout;
@@ -57,12 +58,7 @@ public abstract class NewOrder extends OrderHeader {
         return getTextList (".order-entry h2");
     }
 
-    public void activateOrder () {
-        clickSaveAndActivate ();
-        hasPageLoaded ();
-        pageLoading ();
-        waitUntilActivated ();
-    }
+    public abstract void activateOrder ();
 
     public String getPatientName () {
         return getText ("//label[text()='Patient']/../div[1]");
@@ -74,6 +70,14 @@ public abstract class NewOrder extends OrderHeader {
 
     public String getPatientGender () {
         return getText ("//label[text()='Gender']/../div[1]");
+    }
+
+    public Race getPatientRace () {
+        return Race.getRace (getText ("//label[text()='Race']/../div[1]"));
+    }
+
+    public Ethnicity getPatientEthnicity () {
+        return Ethnicity.getEthnicity (getText ("//label[text()='Ethnicity']/../div[1]"));
     }
 
     public String getPatientMRDStatus () {
@@ -113,19 +117,7 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
-    public void waitUntilActivated () {
-        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
-        while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
-            timer.Wait ();
-            refresh ();
-        }
-        assertEquals (getOrderStatus (), Active, "Order did not activated successfully");
-    }
-
-    public void clickSaveAndActivate () {
-        assertTrue (click ("#order-entry-save-and-activate"));
-        assertTrue (waitUntilVisible ("#toast-container"));
-    }
+    public abstract void clickSaveAndActivate ();
 
     public void clickCancel () {
         assertTrue (click ("[ng-click='ctrl.cancel();']"));
@@ -285,7 +277,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterPatientICD_Codes (String... codes) {
-        String dropdown = "//*[*[text()='ICD Codes']]//ul";
+        String dropdown = ".icd-code-list-item .dropdown-item";
         String css = "//button[text()='Add Code']";
         for (String code : codes) {
             if (isElementVisible (css))
@@ -346,7 +338,7 @@ public abstract class NewOrder extends OrderHeader {
                                   .parallelStream ().filter (t -> t.selected).collect (toList ());
     }
 
-    private OrderTest getTestState (Assay assay) {
+    public OrderTest getTestState (Assay assay) {
         OrderTest orderTest = new OrderTest (assay);
         orderTest.selected = false;
 
@@ -362,6 +354,10 @@ public abstract class NewOrder extends OrderHeader {
 
     public void enterCollectionDate (String date) {
         assertTrue (setText ("//*[text()='Collection Date']/..//input", date));
+    }
+
+    public String getPhlebotomySelection () {
+        return getText ("//*[text()='Phlebotomy Selection']/../div");
     }
 
     public void uploadAttachments (String... files) {

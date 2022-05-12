@@ -350,7 +350,7 @@ public final class Orders {
     }
 
     public enum OrderStatus {
-        All, Pending, Active, Completed, Cancelled, FailedActivation, PendingActivation
+        All, Pending, Active, Completed, Cancelled, Failed, FailedActivation, PendingActivation
     }
 
     public enum Assay {
@@ -369,7 +369,7 @@ public final class Orders {
         MRD_TCRG ("Tracking", "TCRG Tracking (CLIA)"),
         MRD_TCRG_IUO ("Tracking", "TCRG Tracking (IUO CLIA-extract)"),
         COVID19_DX_IVD ("Covid19", "T-Detect COVID"),
-        LYME_DX_IVD ("Lyme", "T-Detect Lyme");
+        LYME_DX ("Lyme", "T-Detect Lyme");
 
         public String type;
         public String test;
