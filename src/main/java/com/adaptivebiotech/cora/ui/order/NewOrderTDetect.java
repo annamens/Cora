@@ -46,6 +46,11 @@ public class NewOrderTDetect extends NewOrder {
         waitUntilActivated ();
     }
 
+    public void clickSaveAndActivate () {
+        assertTrue (click ("#order-entry-save-and-activate"));
+        assertTrue (waitUntilVisible ("#toast-container"));
+    }
+
     public String getPhysicianOrderCode () {
         String xpath = "input[formcontrolname='externalOrderCode']";
         return readInput (xpath);
@@ -75,6 +80,8 @@ public class NewOrderTDetect extends NewOrder {
         order.patient.gender = getPatientGender ();
         order.patient.patientCode = Integer.valueOf (getPatientCode ());
         order.patient.mrn = getPatientMRN ();
+        order.patient.race = getPatientRace ();
+        order.patient.ethnicity = getPatientEthnicity ();
         order.patient.notes = getPatientNotes ();
         order.patient = billing.getPatientBilling (order.patient);
         order.icdcodes = getPatientICD_Codes ();

@@ -62,6 +62,10 @@ public class NewOrderClonoSeq extends NewOrder {
         waitUntilActivated ();
     }
 
+    public void clickSaveAndActivate () {
+        assertTrue (click ("#order-entry-save-and-activate"));
+    }
+
     public void confirmActivate () {
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click ("//*[text()='Activate the Order']"));

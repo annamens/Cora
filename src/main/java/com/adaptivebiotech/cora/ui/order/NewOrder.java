@@ -26,6 +26,8 @@ import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
+import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
+import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.seleniumfy.test.utils.Timeout;
@@ -70,6 +72,14 @@ public abstract class NewOrder extends OrderHeader {
         return getText ("//label[text()='Gender']/../div[1]");
     }
 
+    public Race getPatientRace () {
+        return Race.getRace (getText ("//label[text()='Race']/../div[1]"));
+    }
+
+    public Ethnicity getPatientEthnicity () {
+        return Ethnicity.getEthnicity (getText ("//label[text()='Ethnicity']/../div[1]"));
+    }
+
     public String getPatientMRDStatus () {
         return getText (patientMrdStatus);
     }
@@ -107,10 +117,7 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
-    public void clickSaveAndActivate () {
-        assertTrue (click ("#order-entry-save-and-activate"));
-        assertTrue (waitUntilVisible ("#toast-container"));
-    }
+    public abstract void clickSaveAndActivate ();
 
     public void clickCancel () {
         assertTrue (click ("[ng-click='ctrl.cancel();']"));
@@ -331,7 +338,7 @@ public abstract class NewOrder extends OrderHeader {
                                   .parallelStream ().filter (t -> t.selected).collect (toList ());
     }
 
-    private OrderTest getTestState (Assay assay) {
+    public OrderTest getTestState (Assay assay) {
         OrderTest orderTest = new OrderTest (assay);
         orderTest.selected = false;
 
@@ -347,6 +354,10 @@ public abstract class NewOrder extends OrderHeader {
 
     public void enterCollectionDate (String date) {
         assertTrue (setText ("//*[text()='Collection Date']/..//input", date));
+    }
+
+    public String getPhlebotomySelection () {
+        return getText ("//*[text()='Phlebotomy Selection']/../div");
     }
 
     public void uploadAttachments (String... files) {

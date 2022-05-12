@@ -350,7 +350,7 @@ public final class Orders {
     }
 
     public enum OrderStatus {
-        All, Pending, Active, Completed, Cancelled, FailedActivation, PendingActivation
+        All, Pending, Active, Completed, Cancelled, Failed, FailedActivation, PendingActivation
     }
 
     public enum Assay {
