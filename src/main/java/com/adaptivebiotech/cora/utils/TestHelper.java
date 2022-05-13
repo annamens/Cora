@@ -131,7 +131,7 @@ public class TestHelper {
         return patient;
     }
 
-    public static Patient newClientPatientCovid () {
+    public static Patient newClientPatientTDx () {
         Patient patient = newPatient ();
         patient.billingType = Client;
         return patient;
@@ -153,7 +153,7 @@ public class TestHelper {
         return patient;
     }
 
-    public static Patient newSelfPayPatientCovid () {
+    public static Patient newSelfPayPatientTDx () {
         Patient patient = newPatient ();
         patient.billingType = PatientSelfPay;
         return patient;
