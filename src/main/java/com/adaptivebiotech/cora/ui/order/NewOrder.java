@@ -146,16 +146,15 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
         pageLoading ();
         moduleLoading ();
-        checkOrderActivateCancelError ();
+        checkOrderForErrors ();
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
     }
 
-    protected WebElement checkOrderActivateCancelError () {
+    protected void checkOrderForErrors () {
         WebElement toastEle = waitForElementVisible (toastContainer);
         if (isElementPresent (toastEle, toastError)) {
             fail (getText (toastEle, join (" ", toastError, toastMessage)));
         }
-        return toastEle;
     }
 
     public void clickSeeOriginal () {

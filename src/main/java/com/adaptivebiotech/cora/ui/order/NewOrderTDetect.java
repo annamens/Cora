@@ -44,7 +44,7 @@ public class NewOrderTDetect extends NewOrder {
         clickSaveAndActivate ();
         List <String> errors = getRequiredFieldMsgs ();
         assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
-        checkOrderActivateCancelError ();
+        checkOrderForErrors ();
         hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();

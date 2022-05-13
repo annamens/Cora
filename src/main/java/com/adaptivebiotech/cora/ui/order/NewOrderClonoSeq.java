@@ -71,8 +71,7 @@ public class NewOrderClonoSeq extends NewOrder {
     public void confirmActivate () {
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click ("//*[text()='Activate the Order']"));
-        WebElement toastEle = checkOrderActivateCancelError ();
-        assertTrue (toastEle.isDisplayed ());
+        checkOrderForErrors ();
     }
 
     public void clickAssayTest (Assay assay) {
