@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.patient;
 
+import static java.lang.String.join;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -26,11 +27,11 @@ public class PickPatientModule extends CoraPage {
     }
 
     public String getBirthDateErrorMessage () {
-        return getText (birthDate + " + .text-danger");
+        return getText (join (" + ", birthDate, requiredMsg));
     }
 
     public boolean isBirthDateErrorzVisible () {
-        return isElementVisible (birthDate + " + .text-danger");
+        return isElementVisible (join (" + ", birthDate, requiredMsg));
     }
 
     public void fillPatientInfo (Patient patient) {
@@ -82,6 +83,7 @@ public class PickPatientModule extends CoraPage {
             assertTrue (click ("#select-patient"));
             moduleLoading ();
             matchFound = true;
+            assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
         }
         return matchFound;
     }

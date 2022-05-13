@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.joining;
@@ -16,8 +17,10 @@ import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -43,6 +46,10 @@ public abstract class NewOrder extends OrderHeader {
     private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
     private final String   orderNotes       = "#order-notes";
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
+    protected final String toastContainer   = "#toast-container";
+    protected final String toastError       = ".toast-error";
+    protected final String toastSuccess     = ".toast-error";
+    protected final String toastMessage     = ".toast-message";
 
     public NewOrder () {
         staticNavBarHeight = 200;
@@ -108,13 +115,18 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getPatientId () {
-        String patientUrl = getAttribute ("//a[contains(text(),'Edit Patient')]", "href");
-        return patientUrl.substring (patientUrl.lastIndexOf ("/") + 1);
+        String patientUrl = getAttribute ("//*[contains(text(),'Patient Order History')]", "href");
+        return StringUtils.substringBetween (patientUrl, "patient/", "/orders");
     }
 
     public void clickSave () {
         assertTrue (click ("#order-entry-save"));
+        hasPageLoaded ();
         pageLoading ();
+    }
+
+    public List <String> getRequiredFieldMsgs () {
+        return isElementVisible (requiredMsg) ? getTextList (requiredMsg) : new ArrayList <> ();
     }
 
     public abstract void clickSaveAndActivate ();
@@ -134,7 +146,15 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
         pageLoading ();
         moduleLoading ();
+        checkOrderForErrors ();
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+    }
+
+    protected void checkOrderForErrors () {
+        WebElement toastEle = waitForElementVisible (toastContainer);
+        if (isElementPresent (toastEle, toastError)) {
+            fail (getText (toastEle, join (" ", toastError, toastMessage)));
+        }
     }
 
     public void clickSeeOriginal () {
@@ -346,10 +366,6 @@ public abstract class NewOrder extends OrderHeader {
         if (isElementPresent (labelPath))
             orderTest.selected = findElement (labelPath + "/../input").isSelected ();
         return orderTest;
-    }
-
-    public String getSampleName () {
-        return getText ("[ng-bind='orderTest.sampleName']");
     }
 
     public void enterCollectionDate (String date) {

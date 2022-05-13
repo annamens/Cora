@@ -131,6 +131,12 @@ public class TestHelper {
         return patient;
     }
 
+    public static Patient newClientPatientTDx () {
+        Patient patient = newPatient ();
+        patient.billingType = Client;
+        return patient;
+    }
+
     // Bill my Study Protocol
     public static Patient newTrialProtocolPatient () {
         Patient patient = newPatient ();
@@ -144,6 +150,12 @@ public class TestHelper {
         patient.billingType = PatientSelfPay;
         patient.insurance1 = new Insurance ();
         patient.insurance1.hospitalizationStatus = NonHospital;
+        return patient;
+    }
+
+    public static Patient newSelfPayPatientTDx () {
+        Patient patient = newPatient ();
+        patient.billingType = PatientSelfPay;
         return patient;
     }
 

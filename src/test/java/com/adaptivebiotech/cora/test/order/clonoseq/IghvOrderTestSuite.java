@@ -70,6 +70,7 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
+import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
@@ -104,6 +105,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
     private ReportClonoSeq       reportClonoSeq                   = new ReportClonoSeq ();
     private OrcaHistory          history                          = new OrcaHistory ();
     private OrderStatus          orderStatus                      = new OrderStatus ();
+    private OrderDetailClonoSeq  orderDetailClonoSeq              = new OrderDetailClonoSeq ();
     private PipelineApi          pipelineApi                      = new PipelineApi ();
 
     private final String         c91_10                           = "C91.10";
@@ -869,7 +871,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
                                                       Tube);
         info ("Order Number: " + order.orderNumber + ", Order Notes: " + orderNotes);
 
-        String sampleName = diagnostic.getSampleName ();
+        String sampleName = orderDetailClonoSeq.getSampleName (assayTest);
         orderStatus.clickOrderStatusTab ();
         orderStatus.isCorrectPage ();
         orderStatus.expandWorkflowHistory ();

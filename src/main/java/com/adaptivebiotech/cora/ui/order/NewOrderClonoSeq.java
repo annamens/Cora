@@ -56,6 +56,8 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void activateOrder () {
         clickSaveAndActivate ();
+        List <String> errors = getRequiredFieldMsgs ();
+        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
         confirmActivate ();
         hasPageLoaded ();
         pageLoading ();
@@ -69,7 +71,7 @@ public class NewOrderClonoSeq extends NewOrder {
     public void confirmActivate () {
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click ("//*[text()='Activate the Order']"));
-        assertTrue (waitUntilVisible ("#toast-container"));
+        checkOrderForErrors ();
     }
 
     public void clickAssayTest (Assay assay) {

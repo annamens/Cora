@@ -95,7 +95,15 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
         default:
             break;
         }
-        getPatientBillingAddress (patient);
+        switch (patient.billingType) {
+        case CommercialInsurance:
+        case Medicare:
+        case Client:
+        case PatientSelfPay:
+            getPatientBillingAddress (patient);
+        default:
+            break;
+        }
         return patient;
     }
 }

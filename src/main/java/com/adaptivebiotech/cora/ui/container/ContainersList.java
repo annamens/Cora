@@ -135,7 +135,7 @@ public class ContainersList extends CoraPage {
     }
 
     public String getScanError () {
-        return getText (".scan-msg.text-danger");
+        return getText (".scan-msg" + requiredMsg);
     }
 
     public String getScanError2 () {
@@ -288,7 +288,7 @@ public class ContainersList extends CoraPage {
             }
         } else {
             String err = "Container " + holding.containerNumber + " is not a holding container. Choose another container.";
-            assertTrue (isTextInElement (".text-danger", err));
+            assertTrue (isTextInElement (requiredMsg, err));
         }
         closePopup ();
         return true;
