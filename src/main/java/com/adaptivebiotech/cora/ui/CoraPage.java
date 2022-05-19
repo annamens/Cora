@@ -187,7 +187,7 @@ public class CoraPage extends BasePage {
     }
 
     public void gotoOrderEntry (String orderId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/order/dx/" + orderId));
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/auto?id=" + orderId));
         pageLoading ();
     }
 
