@@ -41,9 +41,10 @@ public class NewOrderTDetect extends NewOrder {
     private final String          collectionDate = "[formcontrolname='collectionDate']";
 
     public void activateOrder () {
+        String orderNumber = getOrderNumber ();
         clickSaveAndActivate ();
         List <String> errors = getRequiredFieldMsgs ();
-        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
+        assertEquals (errors.size (), 0, "Order No: " + orderNumber + " failed to activate, Errors: " + errors);
         checkOrderForErrors ();
         transactionInProgress ();
         waitUntilActivated ();

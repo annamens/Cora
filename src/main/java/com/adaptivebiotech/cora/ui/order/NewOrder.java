@@ -159,9 +159,13 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void closeToast () {
-        WebElement toastEle = findElement (toastContainer);
-        if (isElementPresent (toastEle, toastError))
-            assertTrue (click (toastEle, toastError));
+        if (isElementPresent (toastContainer)) {
+            WebElement toastEle = findElement (toastContainer);
+            if (isElementPresent (toastEle, toastError)) {
+                assertTrue (click (toastEle, toastError));
+                assertTrue (waitForElementInvisible (join (" ", toastContainer, toastError)));
+            }
+        }
     }
 
     public void clickSeeOriginal () {

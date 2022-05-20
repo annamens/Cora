@@ -55,9 +55,10 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
 
     public void activateOrder () {
+        String orderNumber = getOrderNumber ();
         clickSaveAndActivate ();
         List <String> errors = getRequiredFieldMsgs ();
-        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
+        assertEquals (errors.size (), 0, "Order No: " + orderNumber + " failed to activate, Errors: " + errors);
         checkOrderForErrors ();
         confirmActivate ();
         moduleLoading ();
