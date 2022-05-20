@@ -48,7 +48,6 @@ public abstract class NewOrder extends OrderHeader {
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
     protected final String toastContainer   = "#toast-container";
     protected final String toastError       = ".toast-error";
-    protected final String toastSuccess     = ".toast-error";
     protected final String toastMessage     = ".toast-message";
 
     public NewOrder () {
@@ -151,10 +150,16 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     protected void checkOrderForErrors () {
-        WebElement toastEle = waitForElementVisible (toastContainer);
+        WebElement toastEle = findElement (toastContainer);
         if (isElementPresent (toastEle, toastError)) {
             fail (getText (toastEle, join (" ", toastError, toastMessage)));
         }
+    }
+
+    public void closeToast () {
+        WebElement toastEle = findElement (toastContainer);
+        if (isElementPresent (toastEle, toastError))
+            assertTrue (click (toastEle, toastError));
     }
 
     public void clickSeeOriginal () {

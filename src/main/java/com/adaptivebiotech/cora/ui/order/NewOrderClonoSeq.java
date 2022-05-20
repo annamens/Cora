@@ -59,7 +59,6 @@ public class NewOrderClonoSeq extends NewOrder {
         List <String> errors = getRequiredFieldMsgs ();
         assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
         confirmActivate ();
-        hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();
     }

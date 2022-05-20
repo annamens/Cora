@@ -45,14 +45,12 @@ public class NewOrderTDetect extends NewOrder {
         List <String> errors = getRequiredFieldMsgs ();
         assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
         checkOrderForErrors ();
-        hasPageLoaded ();
         pageLoading ();
         waitUntilActivated ();
     }
 
     public void clickSaveAndActivate () {
         assertTrue (click ("#order-entry-save-and-activate"));
-        assertTrue (waitUntilVisible ("#toast-container"));
     }
 
     public String getPhysicianOrderCode () {

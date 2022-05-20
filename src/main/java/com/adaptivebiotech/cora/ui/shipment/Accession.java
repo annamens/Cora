@@ -26,6 +26,10 @@ public class Accession extends ShipmentHeader {
     private final String  specimenApprovalPass = "#specimen-pass-button";
     private final String  specimenApprovalFail = "#specimen-fail-button";
 
+    public Accession () {
+        staticNavBarHeight = 195;
+    }
+
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(2)", "ACCESSION"));
