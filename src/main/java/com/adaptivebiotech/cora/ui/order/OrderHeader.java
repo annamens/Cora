@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.FailedActivation;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -110,9 +111,8 @@ public class OrderHeader extends CoraPage {
         assertTrue (click (newAlert));
     }
 
-    public String getOrderId () {
-        String[] splitUrl = getCurrentUrl ().split ("/");
-        return splitUrl[splitUrl.length - 1];
+    public String getPendingOrderId () {
+        return substringBetween (getCurrentUrl (), "cora/order/dx/", "/details");
     }
 
     public String getHeaderDueDate () {

@@ -84,7 +84,7 @@ public class OrderDetail extends OrderHeader {
 
     public Order parseOrder () {
         Order order = new Order ();
-        order.id = getOrderId ();
+        order.id = getPendingOrderId ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();

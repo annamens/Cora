@@ -150,9 +150,11 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     protected void checkOrderForErrors () {
-        WebElement toastEle = findElement (toastContainer);
-        if (isElementPresent (toastEle, toastError)) {
-            fail (getText (toastEle, join (" ", toastError, toastMessage)));
+        if (isElementPresent (toastContainer)) {
+            WebElement toastEle = findElement (toastContainer);
+            if (isElementPresent (toastEle, toastError)) {
+                fail (getText (toastEle, join (" ", toastError, toastMessage)));
+            }
         }
     }
 

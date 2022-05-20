@@ -58,8 +58,9 @@ public class NewOrderClonoSeq extends NewOrder {
         clickSaveAndActivate ();
         List <String> errors = getRequiredFieldMsgs ();
         assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
+        checkOrderForErrors ();
         confirmActivate ();
-        pageLoading ();
+        moduleLoading ();
         waitUntilActivated ();
     }
 
@@ -70,7 +71,6 @@ public class NewOrderClonoSeq extends NewOrder {
     public void confirmActivate () {
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click ("//*[text()='Activate the Order']"));
-        checkOrderForErrors ();
     }
 
     public void clickAssayTest (Assay assay) {
@@ -111,7 +111,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public Order parseOrder () {
         Order order = new Order ();
-        order.id = getOrderId ();
+        order.id = getPendingOrderId ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
@@ -367,8 +367,8 @@ public class NewOrderClonoSeq extends NewOrder {
 
         Order order = new Order ();
         order.orderNumber = getOrderNumber ();
-        order.id = getOrderId ();
-        info ("ClonoSeq Order Number: " + order.orderNumber);
+        order.id = getPendingOrderId ();
+        info (format ("ClonoSeq Order Number: %s (%s)", order.orderNumber, order.id));
         return order;
     }
 

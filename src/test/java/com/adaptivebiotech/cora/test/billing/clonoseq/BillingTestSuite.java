@@ -48,7 +48,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 public class BillingTestSuite extends BillingTestBase {
 
     private final String        log         = "created an order with billing: %s";
-    private final String[]      icdCodes    = { "V95.43XA" };
+    private final String[]      icdCodes    = { "B40.0" };
     private Login               login       = new Login ();
     private OrdersList          ordersList  = new OrdersList ();
     private NewOrderClonoSeq    diagnostic  = new NewOrderClonoSeq ();

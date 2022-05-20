@@ -45,7 +45,7 @@ public class NewOrderTDetect extends NewOrder {
         List <String> errors = getRequiredFieldMsgs ();
         assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
         checkOrderForErrors ();
-        pageLoading ();
+        transactionInProgress ();
         waitUntilActivated ();
     }
 
@@ -64,7 +64,7 @@ public class NewOrderTDetect extends NewOrder {
 
     public Order parseOrder () {
         Order order = new Order ();
-        order.id = getOrderId ();
+        order.id = getPendingOrderId ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
@@ -301,8 +301,8 @@ public class NewOrderTDetect extends NewOrder {
 
         Order order = new Order ();
         order.orderNumber = getOrderNumber ();
-        order.id = getOrderId ();
-        info ("T-Detect Order Number: " + order.orderNumber);
+        order.id = getPendingOrderId ();
+        info (format ("T-Detect Order Number: %s (%s)", order.orderNumber, order.id));
         return order;
     }
 
