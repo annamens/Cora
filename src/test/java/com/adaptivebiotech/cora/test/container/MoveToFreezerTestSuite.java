@@ -96,7 +96,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             detail.isCorrectPage ();
             Container actual = detail.parsePrimaryDetail ();
             actual.comment = comment;
-            assertTrue (primary.location.startsWith (freezer.name));
+            assertTrue (primary.location.startsWith (freezer.location));
             verifyDetails (actual, primary);
 
             // test: go to history page to verify location
@@ -207,7 +207,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             detail.isCorrectPage ();
             Container actual = detail.parsePrimaryDetail ();
             actual.comment = child.comment;
-            assertTrue (actual.location.startsWith (freezer.name));
+            assertTrue (actual.location.startsWith (freezer.location));
             verifyDetails (actual, child);
 
             // test: go to child history page to verify location

@@ -20,6 +20,7 @@ import static java.util.Arrays.asList;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -60,7 +61,8 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     public void afterMethod () {
         ordersList.gotoMyCustody ();
         myCustody.isCorrectPage ();
-        myCustody.sendContainersToFreezer (containers.get (), freezerDestroyed);
+        myCustody.bulkMoveToFreezer (containers.get (), freezerDestroyed, "HoldingContainerTestSuite.afterMethod");
+        assertTrue (myCustody.isBulkMoveSuccessMessageDisplayed ());
     }
 
     /**
