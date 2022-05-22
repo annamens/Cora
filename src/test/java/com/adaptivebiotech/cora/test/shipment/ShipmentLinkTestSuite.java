@@ -84,8 +84,6 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         Containers expContainers = shipmentDetail.getPrimaryContainers (SlideBox5);
         shipmentDetail.clickOrderNumber ();
         newOrderClonoSeq.isCorrectPage ();
-        newOrderClonoSeq.expandShipment ();
-        newOrderClonoSeq.expandContainers ();
         assertEquals (newOrderClonoSeq.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (newOrderClonoSeq.getSpecimenId (), expSpecimenId);
         assertNotEquals (newOrderClonoSeq.getSpecimenContainerType (), expContainerType);
@@ -134,8 +132,6 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         Containers expContainers = shipmentDetail.getPrimaryContainers (SlideBox5);
         shipmentDetail.clickOrderNumber ();
         newOrderTDetect.isCorrectPage ();
-        newOrderTDetect.expandShipment ();
-        newOrderTDetect.expandContainers ();
         assertEquals (newOrderTDetect.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (newOrderTDetect.getSpecimenId (), expSpecimenId);
         assertNotEquals (newOrderTDetect.getSpecimenContainerType (), expContainerType);

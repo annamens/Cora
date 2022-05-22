@@ -110,8 +110,8 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         // activate order
         diagnostic.isCorrectPage ();
         diagnostic.activateOrder ();
-        diagnostic.refresh ();
-        diagnostic.isCorrectPage ();
+        diagnostic.gotoOrderDetailsPage (order.id);
+        clonoSeqOrderDetail.isCorrectPage ();
         List <String> activeHistory = clonoSeqOrderDetail.getHistory ();
         String activateDateTime = activeHistory.get (2).split ("Activated by")[0].trim ();
         Order activeOrder = clonoSeqOrderDetail.parseOrder ();

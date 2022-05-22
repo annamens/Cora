@@ -61,6 +61,7 @@ import java.util.UUID;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.db.ShmResultData;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Physician;
@@ -140,8 +141,6 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
     private final String         shmDataSourcePathOrcaIgHVO9      = azPipelineNorth + "/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229";
     private final String         workSpaceNameOrcaIgHVO9          = "MDAnderson-Thompson";
 
-    private final String         orderTestQuery                   = "select * from orca.shm_results where order_test_id = 'REPLACEORDERTESTID'";
-    private final String         shmResultsSchema                 = "select * from information_schema.columns where table_name = 'shm_results' order by ordinal_position asc";
     private final String         noResultsAvailable               = "No result available";
     private final String         beginIghvMutationStatus          = "IGHV MUTATION STATUS";
     private final String         beginClonalityResult             = "CLONALITY RESULT";
@@ -634,7 +633,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         assertEquals (reportData.shmReportResult.mutationStatus, QC_FAILURE);
         testLog ("step 12 - order 6 - mutationStatus property contains the value QC_FAILURE");
 
-        validateQueryReturnsZeroRow (orderDetails.orderTestId);
+        assertNull (coraDb.getShmResult (orderDetails.orderTestId));
         testLog ("step 13 - order 6 - Query has no rows returned");
 
     }
@@ -724,7 +723,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         assertNull (reportData.shmReportResult);
         testLog ("step 18 - order 8 - There is no shmReportResult, mutationStatus, or shmSequenceList properties in reportData.json");
 
-        validateQueryReturnsZeroRow (orderDetails.orderTestId);
+        assertNull (coraDb.getShmResult (orderDetails.orderTestId));
         testLog ("step 19 - order 8 - Query has no rows returned");
     }
 
@@ -764,11 +763,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         testLog ("step 21.1 - order 9 - There is only one SHM sequence in shmSequenceList for sequence " + passConsensusSeq + " clone in reportData.json");
         testLog ("step 21.2 - order 9 - There is no SHM sequence in shmSequenceList for sequence " + lowBaseConsensusSeq + " clone in reportData.json");
 
-        String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderDetails.orderTestId);
-        List <Map <String, Object>> queryData = coraDb.executeSelect (query);
-        assertEquals (queryData.size (), 1);
-
-        ShmResult shmResult = mapper.readValue (queryData.get (0).get ("shm_result").toString (), ShmResult.class);
+        ShmResult shmResult = coraDb.getShmResult (orderDetails.orderTestId).shm_result;
         assertEquals (shmResult.clones.size (), 2);
         assertEquals (shmResult.clones.stream ()
                                       .filter (c -> passConsensusSeq.equals (c.Consensus_Sequence))
@@ -792,6 +787,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "orcaighv")
     public void validateShmResultsTableSchema () {
+        String shmResultsSchema = "select * from information_schema.columns where table_name = 'shm_results' order by ordinal_position asc";
         List <Map <String, Object>> queryResult = coraDb.executeSelect (shmResultsSchema);
         assertEquals (queryResult.size (), 9);
 
@@ -1085,26 +1081,11 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
     private void validateShmResultReportType (String orderTestId,
                                               ShmMutationStatus mutationStatus,
                                               EricSampleCall ericSampleCall) {
-        String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderTestId);
-        List <Map <String, Object>> queryData = coraDb.executeSelect (query);
-        assertEquals (queryData.size (), 1);
-        assertEquals (ShmMutationStatus.valueOf (queryData.get (0).get ("report_type").toString ()), mutationStatus);
+        ShmResultData shmResultData = coraDb.getShmResult (orderTestId);
+        assertEquals (shmResultData.report_type, mutationStatus);
 
-        if (ericSampleCall != null) {
-            ShmResult shmResult = mapper.readValue (queryData.get (0).get ("shm_result").toString (), ShmResult.class);
-            assertEquals (shmResult.ericSampleCall, ericSampleCall);
-        }
-    }
-
-    /**
-     * Validate query returns zero row for given order test id
-     * 
-     * @param orderTestId
-     */
-    private void validateQueryReturnsZeroRow (String orderTestId) {
-        String query = orderTestQuery.replace ("REPLACEORDERTESTID", orderTestId);
-        List <Map <String, Object>> queryData = coraDb.executeSelect (query);
-        assertEquals (queryData.size (), 0);
+        if (ericSampleCall != null)
+            assertEquals (shmResultData.shm_result.ericSampleCall, ericSampleCall);
     }
 
     /**

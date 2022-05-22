@@ -24,12 +24,13 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
     private final List <String> headers          = asList ("Customer Instructions",
                                                            "Order Notes",
                                                            "Ordering Physician",
-                                                           "Patient Information",
+                                                           "Patient",
                                                            "Specimen",
                                                            "Order Test",
                                                            "Billing",
-                                                           "clonoSEQ Order Authorization",
+                                                           "Order Authorization",
                                                            "Attachments",
+                                                           "Messages",
                                                            "History");
     private Login               login            = new Login ();
     private OrdersList          ordersList       = new OrdersList ();

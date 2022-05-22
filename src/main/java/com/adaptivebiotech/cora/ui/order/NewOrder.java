@@ -7,9 +7,7 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainer
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
-import static java.util.Arrays.asList;
 import static java.util.EnumSet.allOf;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -388,10 +386,10 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void uploadAttachments (String... files) {
-        String attachments = asList (files).parallelStream ().map (f -> getSystemResource (f).getPath ())
-                                           .collect (joining ("\n"));
-        waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
-        pageLoading ();
+        for (String file : files) {
+            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            transactionInProgress ();
+        }
     }
 
     public List <String> getHistory () {
@@ -431,11 +429,11 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void expandShipment () {
-        assertTrue (click ("//*[text()='Shipment']"));
-    }
+        if (isElementPresent ("//*[*[text()='Shipment']]//*[contains (@class, 'glyphicon-triangle-right')]"))
+            assertTrue (click ("//*[text()='Shipment']"));
 
-    public void expandContainers () {
-        assertTrue (click ("//*[@class='row']//*[contains(text(),'Containers')]"));
+        if (!isElementPresent ("specimen-containers"))
+            assertTrue (click ("//order-specimen-shipment//*[contains(text(),'Containers')]"));
     }
 
     public Containers getContainers () {
