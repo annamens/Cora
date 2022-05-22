@@ -134,6 +134,7 @@ public class ContainersList extends CoraPage {
         assertTrue (clear (scan));
         assertTrue (setText (scan, containerNumber));
         assertTrue (pressKey (Keys.ENTER));
+        pageLoading ();
     }
 
     public String getScanError () {
