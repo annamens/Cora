@@ -388,7 +388,6 @@ public class ContainersList extends CoraPage {
         setBulkMoveComment (comment);
         clickSelectAllCheckbox ();
         clickBulkMoveBtn ();
-        waitForBulkMoveComplete ();
     }
 
     public void bulkMoveAllToCustody () {
@@ -401,7 +400,6 @@ public class ContainersList extends CoraPage {
         setBulkMoveComment (comment);
         clickSelectAllCheckbox ();
         clickBulkMoveBtn ();
-        waitForBulkMoveComplete ();
     }
 
     public void clickBulkMoveContainers () {
@@ -419,10 +417,6 @@ public class ContainersList extends CoraPage {
 
     public boolean isBulkMoveSuccessMessageDisplayed () {
         return isElementVisible (bulkMoveSuccess);
-    }
-
-    public boolean isBulkMoveErrorMessageDisplayed () {
-        return isElementVisible (bulkMoveError);
     }
 
     public String getBulkMoveErrorMessage () {
@@ -488,7 +482,7 @@ public class ContainersList extends CoraPage {
         assertTrue (click (selectAllCheckbox));
     }
 
-    protected void waitForBulkMoveComplete () {
+    public void waitForBulkMoveComplete () {
         assertTrue (waitForElementInvisible (".highlighted-blue"));
         transactionInProgress ();
         assertTrue (waitUntilVisible ("#toast-container"));
