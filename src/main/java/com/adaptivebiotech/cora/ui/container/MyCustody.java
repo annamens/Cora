@@ -63,6 +63,7 @@ public class MyCustody extends ContainersList {
         containers.list.forEach (c -> selectContainerToBulkMove (c));
         clickBulkMoveBtn ();
         transactionInProgress ();
+        waitForBulkMoveComplete ();
     }
 
 }

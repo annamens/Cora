@@ -389,6 +389,7 @@ public class ContainersList extends CoraPage {
         clickSelectAllCheckbox ();
         clickBulkMoveBtn ();
         transactionInProgress ();
+        waitForBulkMoveComplete ();
     }
 
     public void bulkMoveAllToCustody () {
@@ -402,6 +403,7 @@ public class ContainersList extends CoraPage {
         clickSelectAllCheckbox ();
         clickBulkMoveBtn ();
         transactionInProgress ();
+        waitForBulkMoveComplete ();
     }
 
     public void clickBulkMoveContainers () {
@@ -489,8 +491,7 @@ public class ContainersList extends CoraPage {
     }
 
     protected void waitForBulkMoveComplete () {
-        waitForElementVisible (bulkMoveSuccess);
-        if (isBulkMoveSuccessMessageDisplayed ())
-            assertTrue (waitForElementInvisible (".highlighted-blue"));
+        assertTrue (waitForElementInvisible (".highlighted-blue"));
+        waitForElementVisible ("#toast-container");
     }
 }
