@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -283,6 +284,10 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText (specimenSourceOther, source));
     }
 
+    public void enterCellCount (int count) {
+        assertTrue (setText ("#specimen-entry-cell-count", String.valueOf (count)));
+    }
+
     public void enterRetrievalDate (String date) {
         assertTrue (setText (retrievalDate, date));
     }
@@ -361,6 +366,8 @@ public class NewOrderClonoSeq extends NewOrder {
             enterSpecimenSource (specimen.sampleSource);
         if (specimen.anticoagulant != null)
             enterAntiCoagulant (specimen.anticoagulant);
+        if (CellPellet.equals (specimen.sampleType))
+            enterCellCount (1000000);
 
         enterCollectionDate (specimen.collectionDate.toString ());
         clickAssayTest (assayTest);

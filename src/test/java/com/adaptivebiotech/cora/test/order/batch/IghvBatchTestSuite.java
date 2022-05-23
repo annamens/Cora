@@ -69,8 +69,7 @@ public class IghvBatchTestSuite extends BatchTestBase {
                 { "SAMPLE_NAME2", "selenium-batch-ighv-" + nanoTime () },
                 { "SAMPLE_NAME3", "selenium-batch-ighv-" + nanoTime () },
                 { "SAMPLE_NAME4", "selenium-batch-ighv-" + nanoTime () },
-                { "SAMPLE_NAME5", "selenium-batch-ighv-" + nanoTime () },
-                { "SAMPLE_NAME6", "selenium-batch-ighv-" + nanoTime () }
+                { "SAMPLE_NAME5", "selenium-batch-ighv-" + nanoTime () }
         }).collect (toMap (data -> data[0], data -> data[1]));
         String intakeManifest = join ("/", downloadDir.get (), "ighv-intakemanifest.xlsx");
         String preManifest = join ("/", downloadDir.get (), "ighv-premanifest.xlsx");
