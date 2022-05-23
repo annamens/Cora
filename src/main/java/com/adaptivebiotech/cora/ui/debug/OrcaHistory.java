@@ -32,9 +32,8 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class OrcaHistory extends CoraPage {
 
-    private final long   millisDuration = 3000000l;                                                    // 50mins
-    private final long   millisPoll     = 60000l;                                                      // 60sec
-    private final String fileLocator    = "//h3[text()='Files']/following-sibling::ul//a[text()='%s']";
+    private final long millisDuration = 3000000l; // 50mins
+    private final long millisPoll     = 60000l;   // 60sec
 
     public OrcaHistory () {
         staticNavBarHeight = 200;
@@ -311,9 +310,14 @@ public class OrcaHistory extends CoraPage {
     }
 
     public boolean isFilePresent (String fileName) {
+        String fileLocator = "//h3[text()='Files']/following-sibling::ul//a[text()='%s']";
+        return isElementPresent (format (fileLocator, fileName));
+    }
+
+    public boolean waitForFilePresent (String fileName) {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {
-                if (isElementPresent (format (fileLocator, fileName)))
+                if (isFilePresent (fileName))
                     return true;
                 else {
                     refresh ();

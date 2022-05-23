@@ -112,7 +112,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.waitForFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.clickOrder ();
@@ -163,7 +163,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.waitForFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.clickOrder ();
@@ -219,7 +219,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.waitForFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.clickOrder ();
@@ -271,7 +271,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.waitForFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.clickOrder ();
