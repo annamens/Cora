@@ -578,7 +578,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
 
         releaseReport (assayTest, false);
 
-        String pdfUrl = reportClonoSeq.getPreviewReportPdfUrl ();
+        String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
         info ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 4, beginIghvMutationStatus, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
@@ -623,7 +623,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         assertTrue (history.isStagePresent (ClonoSEQReport, Awaiting, CLINICAL_QC));
 
         releaseReport (assayTest, false);
-        String pdfUrl = reportClonoSeq.getPreviewReportPdfUrl ();
+        String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
         info ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));

@@ -21,8 +21,6 @@ public class Report extends OrderHeader {
 
     private final String reportNotes        = "[ng-model=\"ctrl.reportEntry.notes\"]";
     private final String additionalComments = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
-    private final String previewReportPdf   = ".report-preview ng-pdf";
-    private final String releasedReportPdf  = ".released-report-table tr td:nth-child(3) a";
     private final String editJson           = "[ng-click='ctrl.editReportData()']";
     private final String reportDataJson     = "[ng-model='ctrl.reportDataJSON']";
     private final String modalOk            = "[data-ng-click='ctrl.ok();']";
@@ -55,12 +53,9 @@ public class Report extends OrderHeader {
         assertTrue (setText (additionalComments, comments));
     }
 
-    public String getPreviewReportPdfUrl () {
-        return getAttribute (previewReportPdf, "pdf-url");
-    }
-
     public String getReleasedReportPdfUrl () {
-        return getAttribute (releasedReportPdf, "href");
+        String firstReportPdf = ".released-report-table tr:nth-child(1) td:nth-child(3) a";
+        return getAttribute (firstReportPdf, "href");
     }
 
     public void clickEditJson () {
@@ -76,7 +71,7 @@ public class Report extends OrderHeader {
         assertTrue (clear (reportDataJson));
         assertTrue (setText (reportDataJson, jsonData));
         assertTrue (click (modalOk));
-        pageLoading ();
+        transactionInProgress ();
     }
 
     public void clickSaveAndUpdate () {
