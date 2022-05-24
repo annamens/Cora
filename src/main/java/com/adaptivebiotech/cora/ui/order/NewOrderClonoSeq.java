@@ -84,10 +84,7 @@ public class NewOrderClonoSeq extends NewOrder {
         if (isElementPresent (showTestMenu))
             assertTrue (click (showTestMenu));
 
-        clickSave ();
-        String test = format ("//*[text()='%s']/ancestor::li//input", assay.test);
-        if (!waitForElement (test).isSelected ())
-            assertTrue (click (test));
+        assertTrue (click (format ("//*[text()='%s']/ancestor::li//input", assay.test)));
     }
 
     public void findSpecimenId (String id) {
