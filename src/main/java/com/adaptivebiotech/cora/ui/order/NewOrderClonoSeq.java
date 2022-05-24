@@ -7,8 +7,10 @@ import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -363,7 +365,7 @@ public class NewOrderClonoSeq extends NewOrder {
             enterSpecimenSource (specimen.sampleSource);
         if (specimen.anticoagulant != null)
             enterAntiCoagulant (specimen.anticoagulant);
-        if (CellPellet.equals (specimen.sampleType))
+        if (asList (CellPellet, CellSuspension).contains (specimen.sampleType))
             enterCellCount (1000000);
 
         enterCollectionDate (specimen.collectionDate.toString ());
