@@ -41,18 +41,17 @@ public class NewOrderTDetect extends NewOrder {
     private final String          collectionDate = "[formcontrolname='collectionDate']";
 
     public void activateOrder () {
+        String orderNumber = getOrderNumber ();
         clickSaveAndActivate ();
         List <String> errors = getRequiredFieldMsgs ();
-        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
+        assertEquals (errors.size (), 0, "Order No: " + orderNumber + " failed to activate, Errors: " + errors);
         checkOrderForErrors ();
-        hasPageLoaded ();
-        pageLoading ();
+        transactionInProgress ();
         waitUntilActivated ();
     }
 
     public void clickSaveAndActivate () {
         assertTrue (click ("#order-entry-save-and-activate"));
-        assertTrue (waitUntilVisible ("#toast-container"));
     }
 
     public String getPhysicianOrderCode () {
@@ -304,7 +303,7 @@ public class NewOrderTDetect extends NewOrder {
         Order order = new Order ();
         order.orderNumber = getOrderNumber ();
         order.id = getOrderId ();
-        info ("T-Detect Order Number: " + order.orderNumber);
+        info (format ("T-Detect Order Number: %s (%s)", order.orderNumber, order.id));
         return order;
     }
 

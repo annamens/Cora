@@ -17,7 +17,6 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_insu
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_medicare;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
-import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
@@ -49,7 +48,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 public class BillingTestSuite extends BillingTestBase {
 
     private final String        log         = "created an order with billing: %s";
-    private final String[]      icdCodes    = { "V95.43XA" };
+    private final String[]      icdCodes    = { "B40.0" };
     private Login               login       = new Login ();
     private OrdersList          ordersList  = new OrdersList ();
     private NewOrderClonoSeq    diagnostic  = new NewOrderClonoSeq ();
@@ -177,16 +176,9 @@ public class BillingTestSuite extends BillingTestBase {
                                                       icdCodes,
                                                       ID_BCell2_CLIA,
                                                       specimen);
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (order.orderNumber);
-        shipment.selectDiagnosticSpecimenContainerType (Vacutainer);
-        shipment.clickSave ();
-        shipment.clickAccessionTab ();
+        shipment.createShipment (order.orderNumber, Vacutainer);
         accession.completeAccession ();
         diagnostic.isCorrectPage ();
-        diagnostic.waitForSpecimenDelivery ();
         diagnostic.billing.selectBilling (Client);
         assertFalse (diagnostic.billing.isReasonVisible ());
         testLog ("Reason drop down is not visible when anything but No Charge is picked as billing option");
@@ -202,6 +194,7 @@ public class BillingTestSuite extends BillingTestBase {
 
         diagnostic.clickSaveAndActivate ();
         assertTrue (diagnostic.billing.isErrorForNoChargeReasonVisible ());
+        diagnostic.closeToast ();
         testLog ("Reason is required when No Charge is picked as billing option");
 
         diagnostic.billing.selectReason (TimelinessOfBilling);

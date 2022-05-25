@@ -35,7 +35,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.workspa
 import static java.lang.Boolean.TRUE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 import org.testng.annotations.Test;
@@ -112,7 +111,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         assertEquals (history.getWorkflowProperties ().get ("country"), "US");
         testLog ("workflow property: 'country' is set and has value: 'US'");
 
-        assertTrue (history.isFilePresent (gatewayJson));
+        assertFalse (history.isFilePresent (gatewayJson));
         testLog ("gateway message sent");
     }
 
@@ -163,7 +162,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         assertEquals (history.getWorkflowProperties ().get ("country"), "CA");
         testLog ("workflow property: 'country' is set and has value: 'CA'");
 
-        assertFalse (history.isElementPresent (gatewayJson));
+        assertFalse (history.isFilePresent (gatewayJson));
         testLog ("gateway message wasn't sent");
     }
 
@@ -200,7 +199,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Finished);
         history.gotoOrderDebug (orderTest.sampleName);
-        assertFalse (history.isElementPresent (gatewayJson));
+        assertFalse (history.isFilePresent (gatewayJson));
         testLog ("gateway message wasn't sent");
     }
 

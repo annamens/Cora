@@ -60,7 +60,8 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     public void afterMethod () {
         ordersList.gotoMyCustody ();
         myCustody.isCorrectPage ();
-        myCustody.sendContainersToFreezer (containers.get (), freezerDestroyed);
+        myCustody.bulkMoveToFreezer (containers.get (), freezerDestroyed, "HoldingContainerTestSuite.afterMethod");
+        myCustody.waitForBulkMoveComplete ();
     }
 
     /**

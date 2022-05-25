@@ -8,13 +8,12 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
+import static java.time.LocalDateTime.parse;
 import static java.util.EnumSet.allOf;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -39,7 +38,6 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 /**
  * @author jpatel
- *
  */
 public class OrderDetail extends OrderHeader {
 
@@ -49,6 +47,10 @@ public class OrderDetail extends OrderHeader {
     private final String      specimenNumber      = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
     private final String      specimenArrivalDate = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
     private final String      messagesLabel       = "//h2[text()='Messages']";
+    private final String      attachmentName      = "[ng-show='!ctrl.showPreview(attachment.name)'] [ng-bind='attachment.name']";
+    private final String      attachmentUrl       = "a[href]";
+    private final String      attachmentDate      = "[ng-bind$='localDateTime']";
+    private final String      attachmentCreatedBy = "[ng-bind='attachment.createdBy']";
 
     public OrderDetail () {
         staticNavBarHeight = 200;
@@ -58,6 +60,10 @@ public class OrderDetail extends OrderHeader {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
         pageLoading ();
+    }
+
+    public String getOrderId () {
+        return substringAfterLast (getCurrentUrl (), "cora/order/details/");
     }
 
     public void clickCancelOrder () {
@@ -334,11 +340,10 @@ public class OrderDetail extends OrderHeader {
         if (isElementPresent (files))
             for (WebElement element : waitForElements (files)) {
                 UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
-                attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
-                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
-                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
+                attachment.fileName = getText (element, attachmentName);
+                attachment.fileUrl = getAttribute (element, attachmentUrl, "href");
+                attachment.createdDateTime = parse (getText (element, attachmentDate), formatDt7);
+                attachment.createdBy = getText (element, attachmentCreatedBy);
                 coraAttachments.add (attachment);
             }
         return coraAttachments;
@@ -350,11 +355,10 @@ public class OrderDetail extends OrderHeader {
         if (isElementPresent (files))
             for (WebElement element : waitForElements (files)) {
                 UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
-                attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
-                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
-                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
+                attachment.fileName = getText (element, attachmentName);
+                attachment.fileUrl = getAttribute (element, attachmentUrl, "href");
+                attachment.createdDateTime = parse (getText (element, attachmentDate), formatDt7);
+                attachment.createdBy = getText (element, attachmentCreatedBy);
                 shipmentAttachments.add (attachment);
             }
         return shipmentAttachments;
@@ -365,7 +369,7 @@ public class OrderDetail extends OrderHeader {
         String doraTrf = "[ng-if='ctrl.orderEntry.hasDoraTrf']";
         if (isElementPresent (doraTrf)) {
             doraTrFile.fileName = getText (String.join (" ", doraTrf, ".btn-link"));
-            doraTrFile.fileUrl = getAttribute (String.join (" ", doraTrf, "a[href]"), "href");
+            doraTrFile.fileUrl = getAttribute (String.join (" ", doraTrf, attachmentUrl), "href");
         }
         return doraTrFile;
     }
@@ -376,11 +380,10 @@ public class OrderDetail extends OrderHeader {
         if (isElementPresent (files))
             for (WebElement element : waitForElements (files)) {
                 UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
-                attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
-                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
-                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
+                attachment.fileName = getText (element, attachmentName);
+                attachment.fileUrl = getAttribute (element, attachmentUrl, "href");
+                attachment.createdDateTime = parse (getText (element, attachmentDate), formatDt7);
+                attachment.createdBy = getText (element, attachmentCreatedBy);
                 doraAttachments.add (attachment);
             }
         return doraAttachments;
@@ -397,11 +400,10 @@ public class OrderDetail extends OrderHeader {
     }
 
     public void uploadAttachments (String... files) {
-        String attachments = asList (files).parallelStream ()
-                                           .map (f -> getSystemResource (f).getPath ())
-                                           .collect (joining ("\n"));
-        waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
-        pageLoading ();
+        for (String file : files) {
+            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            transactionInProgress ();
+        }
     }
 
     public String getDAGText () {

@@ -12,6 +12,8 @@ import java.io.File;
  */
 public class BatchAccession extends Accession {
 
+    private final String intakeRow = "[ng-if='ctrl.entry.shipment.intakeInitialized']";
+
     public void uploadIntakeManifest (String file) {
         waitForElement ("input[name='intakeManifestFiles']").sendKeys (new File (file).getAbsolutePath ());
         transactionInProgress ();
@@ -21,9 +23,29 @@ public class BatchAccession extends Accession {
     }
 
     public void clickPassAllSpecimens () {
-        assertTrue (click ("[ng-click='ctrl.setAllIsApprovalSelected(container, true)']"));
-        assertTrue (click (".accession-item-set-approval-header button"));
-        assertTrue (click ("[data-ng-click=\"ctrl.setApproval(container, 'Pass')\"]"));
+        waitForElements (intakeRow).forEach (el -> {
+            assertTrue (click (el, "[ng-click='ctrl.setAllIsApprovalSelected(container, true)']"));
+            assertTrue (click (el, ".accession-item-set-approval-header button"));
+            assertTrue (click (el, "[data-ng-click=\"ctrl.setApproval(container, 'Pass')\"]"));
+        });
+    }
+
+    public void clickLabelingComplete () {
+        waitForElements (intakeRow).forEach (el -> {
+            assertTrue (click (el, "[ng-click='ctrl.setLabelingComplete(container)']"));
+            assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
+            clickPopupOK ();
+        });
+        assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
+    }
+
+    public void clickLabelVerificationComplete () {
+        waitForElements (intakeRow).forEach (el -> {
+            assertTrue (click (el, "[ng-click='ctrl.setLabelVerificationComplete(container)']"));
+            assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
+            clickPopupOK ();
+        });
+        assertTrue (isTextInElement (shipmentStatus, "Label Verification Complete"));
     }
 
     public void completeBatchAccession () {

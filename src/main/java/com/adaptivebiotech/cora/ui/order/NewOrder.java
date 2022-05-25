@@ -7,10 +7,9 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainer
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
-import static java.util.Arrays.asList;
 import static java.util.EnumSet.allOf;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -48,7 +47,6 @@ public abstract class NewOrder extends OrderHeader {
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
     protected final String toastContainer   = "#toast-container";
     protected final String toastError       = ".toast-error";
-    protected final String toastSuccess     = ".toast-error";
     protected final String toastMessage     = ".toast-message";
 
     public NewOrder () {
@@ -59,6 +57,10 @@ public abstract class NewOrder extends OrderHeader {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
         pageLoading ();
+    }
+
+    public String getOrderId () {
+        return substringBetween (getCurrentUrl (), "cora/order/dx/", "/details");
     }
 
     public List <String> getSectionHeaders () {
@@ -151,9 +153,21 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     protected void checkOrderForErrors () {
-        WebElement toastEle = waitForElementVisible (toastContainer);
-        if (isElementPresent (toastEle, toastError)) {
-            fail (getText (toastEle, join (" ", toastError, toastMessage)));
+        if (isElementPresent (toastContainer)) {
+            WebElement toastEle = findElement (toastContainer);
+            if (isElementPresent (toastEle, toastError)) {
+                fail (getText (toastEle, join (" ", toastError, toastMessage)));
+            }
+        }
+    }
+
+    public void closeToast () {
+        if (isElementPresent (toastContainer)) {
+            WebElement toastEle = findElement (toastContainer);
+            if (isElementPresent (toastEle, toastError)) {
+                assertTrue (click (toastEle, toastError));
+                assertTrue (waitForElementInvisible (join (" ", toastContainer, toastError)));
+            }
         }
     }
 
@@ -377,10 +391,10 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void uploadAttachments (String... files) {
-        String attachments = asList (files).parallelStream ().map (f -> getSystemResource (f).getPath ())
-                                           .collect (joining ("\n"));
-        waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
-        pageLoading ();
+        for (String file : files) {
+            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            transactionInProgress ();
+        }
     }
 
     public List <String> getHistory () {
@@ -420,11 +434,11 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void expandShipment () {
-        assertTrue (click ("//*[text()='Shipment']"));
-    }
+        if (isElementPresent ("//*[*[text()='Shipment']]//*[contains (@class, 'glyphicon-triangle-right')]"))
+            assertTrue (click ("//*[text()='Shipment']"));
 
-    public void expandContainers () {
-        assertTrue (click ("//*[@class='row']//*[contains(text(),'Containers')]"));
+        if (!isElementPresent ("specimen-containers"))
+            assertTrue (click ("//order-specimen-shipment//*[contains(text(),'Containers')]"));
     }
 
     public Containers getContainers () {

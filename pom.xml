@@ -104,6 +104,7 @@
                     </systemPropertyVariables>
                     <properties>
                         <surefire.testng.verbose>${testng.verbose}</surefire.testng.verbose>
+                        <configfailurepolicy>continue</configfailurepolicy>
                     </properties>
                 </configuration>
             </plugin>

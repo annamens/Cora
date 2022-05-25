@@ -57,7 +57,7 @@ public class DepletionTestSuite extends ContainerTestBase {
         // test: move primary to freezer, set depletion and comment
         Container child = SerializationUtils.clone (containers.get ().list.get (0));
         child.depleted = true;
-        child.comment = "send to " + freezerAB018055.name;
+        child.comment = "send to " + freezerAB018055.location;
         myCustody.moveToFreezer (child, freezerAB018055);
 
         // test: go to detail page to verify depletion
@@ -65,7 +65,7 @@ public class DepletionTestSuite extends ContainerTestBase {
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
         actual.comment = child.comment;
-        assertTrue (actual.location.startsWith (freezerAB018055.name));
+        assertTrue (actual.location.startsWith (freezerAB018055.location));
         verifyDetails (actual, child);
 
         // test: go to history page to verify comment
@@ -87,7 +87,7 @@ public class DepletionTestSuite extends ContainerTestBase {
 
         // test: move child container to freezer, set depletion and comment
         child.depleted = true;
-        child.comment = "send to " + freezerAB018055.name;
+        child.comment = "send to " + freezerAB018055.location;
         myCustody.moveToFreezer (child, freezerAB018055);
 
         // test: go to primary detail page to verify depletion
@@ -95,7 +95,7 @@ public class DepletionTestSuite extends ContainerTestBase {
         detail.isCorrectPage ();
         Container actual = detail.parsePrimaryDetail ();
         actual.comment = child.comment;
-        assertTrue (actual.location.startsWith (freezerAB018055.name));
+        assertTrue (actual.location.startsWith (freezerAB018055.location));
         verifyDetails (actual, child);
 
         // test: go to primary history page to verify comment
@@ -116,7 +116,7 @@ public class DepletionTestSuite extends ContainerTestBase {
         myCustody.setHoldingContainer (child, holding);
 
         // test: move holding container to freezer, set depletion on child and comment
-        String comment = "send to " + freezerAB018078.name;
+        String comment = "send to " + freezerAB018078.location;
         child.depleted = true;
         myCustody.scan (holding);
         myCustody.setChildDepletion (child);
@@ -128,7 +128,7 @@ public class DepletionTestSuite extends ContainerTestBase {
         detail.isCorrectPage ();
         Container actual = detail.parseHoldingDetail ();
         actual.comment = comment;
-        assertTrue (actual.location.startsWith (freezerAB018078.name));
+        assertTrue (actual.location.startsWith (freezerAB018078.location));
         verifyDetails (actual, holding);
 
         // test: go to holding history page to verify comment
@@ -143,7 +143,7 @@ public class DepletionTestSuite extends ContainerTestBase {
         history.gotoContainerDetail (child);
         detail.isCorrectPage ();
         Container childUI = detail.parseChildDetail ();
-        assertTrue (childUI.location.startsWith (freezerAB018078.name));
+        assertTrue (childUI.location.startsWith (freezerAB018078.location));
         verifyDetails (childUI, child);
 
         // test: go to child history page to verify comment

@@ -6,8 +6,11 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -55,12 +58,13 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
 
     public void activateOrder () {
+        String orderNumber = getOrderNumber ();
         clickSaveAndActivate ();
         List <String> errors = getRequiredFieldMsgs ();
-        assertEquals (errors.size (), 0, "Order No: " + getOrderNumber () + " failed to activate, Errors: " + errors);
+        assertEquals (errors.size (), 0, "Order No: " + orderNumber + " failed to activate, Errors: " + errors);
+        checkOrderForErrors ();
         confirmActivate ();
-        hasPageLoaded ();
-        pageLoading ();
+        moduleLoading ();
         waitUntilActivated ();
     }
 
@@ -71,7 +75,6 @@ public class NewOrderClonoSeq extends NewOrder {
     public void confirmActivate () {
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click ("//*[text()='Activate the Order']"));
-        checkOrderForErrors ();
     }
 
     public void clickAssayTest (Assay assay) {
@@ -83,10 +86,7 @@ public class NewOrderClonoSeq extends NewOrder {
         if (isElementPresent (showTestMenu))
             assertTrue (click (showTestMenu));
 
-        clickSave ();
-        String test = format ("//*[text()='%s']/ancestor::li//input", assay.test);
-        if (!waitForElement (test).isSelected ())
-            assertTrue (click (test));
+        assertTrue (click (format ("//*[text()='%s']/ancestor::li//input", assay.test)));
     }
 
     public void findSpecimenId (String id) {
@@ -283,6 +283,10 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText (specimenSourceOther, source));
     }
 
+    public void enterCellCount (int count) {
+        assertTrue (setText ("#specimen-entry-cell-count", String.valueOf (count)));
+    }
+
     public void enterRetrievalDate (String date) {
         assertTrue (setText (retrievalDate, date));
     }
@@ -361,6 +365,8 @@ public class NewOrderClonoSeq extends NewOrder {
             enterSpecimenSource (specimen.sampleSource);
         if (specimen.anticoagulant != null)
             enterAntiCoagulant (specimen.anticoagulant);
+        if (asList (CellPellet, CellSuspension).contains (specimen.sampleType))
+            enterCellCount (1000000);
 
         enterCollectionDate (specimen.collectionDate.toString ());
         clickAssayTest (assayTest);
@@ -369,7 +375,7 @@ public class NewOrderClonoSeq extends NewOrder {
         Order order = new Order ();
         order.orderNumber = getOrderNumber ();
         order.id = getOrderId ();
-        info ("ClonoSeq Order Number: " + order.orderNumber);
+        info (format ("ClonoSeq Order Number: %s (%s)", order.orderNumber, order.id));
         return order;
     }
 

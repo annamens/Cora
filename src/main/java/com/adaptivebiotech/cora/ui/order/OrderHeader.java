@@ -8,10 +8,10 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.FailedActivation;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
-import org.apache.commons.lang3.StringUtils;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -99,20 +99,15 @@ public class OrderHeader extends CoraPage {
     }
 
     public String getActiveAlert () {
-        return StringUtils.substringBetween (getText (activeAlert), "(", ")");
+        return substringBetween (getText (activeAlert), "(", ")");
     }
 
     public String getResolvedAlert () {
-        return StringUtils.substringBetween (getText (resolvedAlert), "(", ")");
+        return substringBetween (getText (resolvedAlert), "(", ")");
     }
 
     public void createNewAlert () {
         assertTrue (click (newAlert));
-    }
-
-    public String getOrderId () {
-        String[] splitUrl = getCurrentUrl ().split ("/");
-        return splitUrl[splitUrl.length - 1];
     }
 
     public String getHeaderDueDate () {

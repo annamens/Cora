@@ -5,6 +5,8 @@ package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Plate;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.cora.ui.container.ContainersList.BulkMoveAction.BulkMoveToFreezer;
+import static com.adaptivebiotech.cora.ui.container.ContainersList.BulkMoveAction.BulkMoveToMyCustody;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -132,6 +134,7 @@ public class ContainersList extends CoraPage {
         assertTrue (clear (scan));
         assertTrue (setText (scan, containerNumber));
         assertTrue (pressKey (Keys.ENTER));
+        pageLoading ();
     }
 
     public String getScanError () {
@@ -190,7 +193,7 @@ public class ContainersList extends CoraPage {
         if (isLocked)
             fail ("unable to move to freezer");
 
-        assertTrue (isTextInElement (pass, success + freezer.name));
+        assertTrue (isTextInElement (pass, success + freezer.location));
         assertTrue (noSuchElementPresent (depleted));
         assertTrue (noSuchElementPresent (comments));
 
@@ -381,12 +384,11 @@ public class ContainersList extends CoraPage {
 
     public void bulkMoveAllToFreezer (Container freezer, String comment) {
         clickBulkMoveContainers ();
-        selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
+        selectBulkMoveAction (BulkMoveToFreezer);
         selectBulkMoveFreezer (freezer);
         setBulkMoveComment (comment);
         clickSelectAllCheckbox ();
         clickBulkMoveBtn ();
-        waitForBulkMoveComplete ();
     }
 
     public void bulkMoveAllToCustody () {
@@ -395,11 +397,10 @@ public class ContainersList extends CoraPage {
 
     public void bulkMoveAllToCustody (String comment) {
         clickBulkMoveContainers ();
-        selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
+        selectBulkMoveAction (BulkMoveToMyCustody);
         setBulkMoveComment (comment);
         clickSelectAllCheckbox ();
         clickBulkMoveBtn ();
-        waitForBulkMoveComplete ();
     }
 
     public void clickBulkMoveContainers () {
@@ -419,10 +420,6 @@ public class ContainersList extends CoraPage {
         return isElementVisible (bulkMoveSuccess);
     }
 
-    public boolean isBulkMoveErrorMessageDisplayed () {
-        return isElementVisible (bulkMoveError);
-    }
-
     public String getBulkMoveErrorMessage () {
         return getText (bulkMoveError);
     }
@@ -436,13 +433,14 @@ public class ContainersList extends CoraPage {
         return !getAttribute (freezerDropdownContainer, "class").contains ("div-disabled");
     }
 
-    public void selectContainerToBulkMove (String containerName) {
-        String checkbox = format ("//*[@title='%s']/ancestor::tr/descendant::*[@type='checkbox']", containerName);
+    public void selectContainerToBulkMove (Container container) {
+        String checkbox = format ("//*[@title='%s']/ancestor::tr/descendant::*[@type='checkbox']",
+                                  container.containerNumber);
         assertTrue (click (checkbox));
     }
 
-    public boolean rowIsSelected (String containerName) {
-        String row = format ("//*[@title='%s']/ancestor::tr", containerName);
+    public boolean rowIsSelected (Container container) {
+        String row = format ("//*[@title='%s']/ancestor::tr", container.containerNumber);
         String rowClass = getAttribute (row, "class");
         return rowClass != null && rowClass.contains ("highlighted-blue");
     }
@@ -481,18 +479,13 @@ public class ContainersList extends CoraPage {
         assertTrue (click (bulkMoveBtn));
     }
 
-    protected void waitForBulkMoveComplete () {
-        waitForElementVisible (".toast-success, .toast-error");
-        if (isBulkMoveSuccessMessageDisplayed ()) {
-            waitForRowsDeselected ();
-        }
-    }
-
     private void clickSelectAllCheckbox () {
         assertTrue (click (selectAllCheckbox));
     }
 
-    private void waitForRowsDeselected () {
-        waitForElementInvisible (".highlighted-blue");
+    public void waitForBulkMoveComplete () {
+        assertTrue (waitForElementInvisible (".highlighted-blue"));
+        transactionInProgress ();
+        assertTrue (waitUntilVisible ("#toast-container"));
     }
 }
