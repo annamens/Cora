@@ -12,6 +12,7 @@ import static java.time.LocalDateTime.parse;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,10 @@ public class OrderDetail extends OrderHeader {
         pageLoading ();
     }
 
+    public String getOrderId () {
+        return substringAfterLast (getCurrentUrl (), "cora/order/details/");
+    }
+
     public void clickCancelOrder () {
         assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
@@ -85,7 +90,7 @@ public class OrderDetail extends OrderHeader {
 
     public Order parseOrder () {
         Order order = new Order ();
-        order.id = getActiveOrderId ();
+        order.id = getOrderId ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();

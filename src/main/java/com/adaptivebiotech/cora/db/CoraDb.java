@@ -11,6 +11,7 @@ import static com.seleniumfy.test.utils.Logging.info;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import com.adaptivebiotech.common.dto.Server;
+import com.adaptivebiotech.cora.dto.ShmResultData;
 import com.adaptivebiotech.test.utils.DbClientHelper;
 
 /**

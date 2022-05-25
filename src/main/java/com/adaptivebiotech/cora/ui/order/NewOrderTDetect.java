@@ -65,7 +65,7 @@ public class NewOrderTDetect extends NewOrder {
 
     public Order parseOrder () {
         Order order = new Order ();
-        order.id = getPendingOrderId ();
+        order.id = getOrderId ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
@@ -302,7 +302,7 @@ public class NewOrderTDetect extends NewOrder {
 
         Order order = new Order ();
         order.orderNumber = getOrderNumber ();
-        order.id = getPendingOrderId ();
+        order.id = getOrderId ();
         info (format ("T-Detect Order Number: %s (%s)", order.orderNumber, order.id));
         return order;
     }

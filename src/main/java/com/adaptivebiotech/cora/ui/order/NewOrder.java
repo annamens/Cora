@@ -9,6 +9,7 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -56,6 +57,10 @@ public abstract class NewOrder extends OrderHeader {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
         pageLoading ();
+    }
+
+    public String getOrderId () {
+        return substringBetween (getCurrentUrl (), "cora/order/dx/", "/details");
     }
 
     public List <String> getSectionHeaders () {

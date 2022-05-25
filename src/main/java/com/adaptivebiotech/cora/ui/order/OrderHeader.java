@@ -110,14 +110,6 @@ public class OrderHeader extends CoraPage {
         assertTrue (click (newAlert));
     }
 
-    public String getPendingOrderId () {
-        return substringBetween (getCurrentUrl (), "cora/order/dx/", "/details");
-    }
-
-    public String getActiveOrderId () {
-        return substringAfterLast (getCurrentUrl (), "cora/order/details/");
-    }
-
     public String getHeaderDueDate () {
         return getText (".header-alert-dashboard [ng-bind^='ctrl.orderEntry.orderTests[0].dueDate']");
     }

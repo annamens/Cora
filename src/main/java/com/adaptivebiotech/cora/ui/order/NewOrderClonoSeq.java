@@ -112,7 +112,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public Order parseOrder () {
         Order order = new Order ();
-        order.id = getPendingOrderId ();
+        order.id = getOrderId ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
         order.status = getOrderStatus ();
@@ -374,7 +374,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
         Order order = new Order ();
         order.orderNumber = getOrderNumber ();
-        order.id = getPendingOrderId ();
+        order.id = getOrderId ();
         info (format ("ClonoSeq Order Number: %s (%s)", order.orderNumber, order.id));
         return order;
     }

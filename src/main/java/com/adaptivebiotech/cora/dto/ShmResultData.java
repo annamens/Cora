@@ -4,7 +4,7 @@
 /**
  * 
  */
-package com.adaptivebiotech.cora.db;
+package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import java.sql.ResultSet;
