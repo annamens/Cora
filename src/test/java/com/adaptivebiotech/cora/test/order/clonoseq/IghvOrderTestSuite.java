@@ -18,6 +18,7 @@ import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.MUT
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.NO_CLONES;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.QC_FAILURE;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.UNMUTATED;
+import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.isIVD;
 import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestUrl;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
@@ -92,12 +93,11 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 /**
  * Note:
  * - this feature is in Prod, we don't need a test for feature flag off anymore
- * - we only have 1 pipeline node for secondary analysis, set this for single threaded test run
  * 
  * @author Jaydeepkumar Patel
  *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
  */
-@Test (groups = { "regression", "nutmeg" }, singleThreaded = true)
+@Test (groups = { "regression", "nutmeg" })
 public class IghvOrderTestSuite extends CoraBaseBrowser {
 
     private Physician            IgHVPhysician;
@@ -107,7 +107,6 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
     private OrcaHistory          history                          = new OrcaHistory ();
     private OrderStatus          orderStatus                      = new OrderStatus ();
     private OrderDetailClonoSeq  orderDetailClonoSeq              = new OrderDetailClonoSeq ();
-    private PipelineApi          pipelineApi                      = new PipelineApi ();
 
     private final String         c91_10                           = "C91.10";
     private final String         c83_00                           = "C83.00";
@@ -196,7 +195,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 2 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
-        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
+        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
         assertTrue (isCLIAIGHVFlagPresent);
         testLog ("step 3 - CLIA-IGHV flag appears just below the Report tab ");
 
@@ -237,7 +236,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 6 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
-        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
+        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
         assertFalse (isCLIAIGHVFlagPresent);
         testLog ("step 7 - CLIA-IGHV flag does not appear below the Report tab ");
 
@@ -278,7 +277,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 10 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
-        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
+        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
         assertTrue (isCLIAIGHVFlagPresent);
         testLog ("step 11, order3 - CLIA-IGHV flag appears below the Report tab ");
 
@@ -319,7 +318,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
         testLog ("step 10 - 2 - order4 - An eos.shm analysis job was spawned and Completed in portal");
 
-        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest, true);
+        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
         assertTrue (isCLIAIGHVFlagPresent);
         testLog ("step 11, order3 - CLIA-IGHV flag appears below the Report tab ");
 
@@ -449,7 +448,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
                            null);
         testLog ("step 1 - order 1 - After SecondaryAnalysis stage, the workflow moved to the ShmAnalysis stage prior to ClonoSEQReport stage");
 
-        releaseReport (assayTest, true);
+        releaseReport (assayTest);
         ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
         assertEquals (reportData.shmReportResult.mutationStatus, MUTATED);
         assertTrue (reportData.shmReportResult.shmSequenceList.size () >= 1);
@@ -576,7 +575,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
                            null,
                            null);
 
-        releaseReport (assayTest, false);
+        releaseReport (assayTest);
 
         String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
         info ("PDF File URL: " + pdfUrl);
@@ -622,7 +621,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         assertTrue (history.isStagePresent (ClonoSEQReport, Awaiting, CLINICAL_QC));
 
-        releaseReport (assayTest, false);
+        releaseReport (assayTest);
         String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
         info ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
@@ -668,15 +667,15 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
 
         // navigate to order status page
         orderStatus.isCorrectPage ();
-        diagnostic.clickReportTab (assayTest);
-
+        orderStatus.clickReportTab (assayTest);
+        reportClonoSeq.isCorrectPage ();
         reportClonoSeq.setQCstatus (Fail);
 
         // we will jave multiple ClonoSEQReport/Awaiting/CLINICAL_QC stages, look for the last one
         history.gotoOrderDebug (orderDetails.specimenDto.sampleName);
         history.waitForTopLevel (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        releaseReport (assayTest, true);
+        releaseReport (assayTest);
         String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
         info ("PDF File URL: " + pdfUrl);
         String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
@@ -718,7 +717,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         testLog ("step 17.1 - order 8 - ShmAnalysis moved from Ready to Finished status, with no SHM Analysis job spawned in portal");
         testLog ("step 17.2 - order 8 - SHM Finished stage contains a message that SHM Analysis is not enabled for the workflow");
 
-        releaseReport (assayTest, true);
+        releaseReport (assayTest);
         ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
         assertNull (reportData.shmReportResult);
         testLog ("step 18 - order 8 - There is no shmReportResult, mutationStatus, or shmSequenceList properties in reportData.json");
@@ -756,7 +755,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         validateShmAnalysisStagesDrillDownUrl (false);
         testLog ("step 20 - order 9 - ShmAnalysis moved from Ready to Finished status, with SHM Analysis job spawned in portal");
 
-        releaseReport (assayTest, true);
+        releaseReport (assayTest);
         ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
         assertEquals (reportData.shmReportResult.shmSequenceList.get (0).sequence, passConsensusSeq);
         assertEquals (reportData.shmReportResult.shmSequenceList.size (), 1);
@@ -973,7 +972,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
             assertEquals (shmAnalysisStages.get (1).subStatusMessage, "SHM Analysis job running");
             assertNotNull (shmAnalysisStages.get (1).drilldownUrl);
             assertEquals (shmAnalysisStages.get (0).stageStatus, Finished);
-            assertEquals (shmAnalysisStages.get (1).subStatusMessage, "Saved result to shm_results table.");
+            assertEquals (shmAnalysisStages.get (0).subStatusMessage, "Saved result to shm_results table.");
             assertNotNull (shmAnalysisStages.get (0).drilldownUrl);
         }
 
@@ -988,7 +987,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
      * @param setQCStatus
      * @return
      */
-    private boolean releaseReport (Assay assayTest, boolean setQCStatus) {
+    private boolean releaseReport (Assay assayTest) {
         history.isCorrectPage ();
         history.clickOrderTest ();
 
@@ -997,10 +996,7 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
         orderStatus.clickReportTab (assayTest);
         reportClonoSeq.isCorrectPage ();
         boolean isCLIAIGHVFlagPresent = reportClonoSeq.isCLIAIGHVBtnVisible ();
-
-        if (setQCStatus)
-            reportClonoSeq.releaseReport (assayTest, Pass);
-
+        reportClonoSeq.releaseReport (assayTest, Pass);
         return isCLIAIGHVFlagPresent;
     }
 
@@ -1031,10 +1027,16 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
      * @param assayTest
      */
     private void validatePipelineStatusToComplete (String sampleName, Assay assayTest) {
-        pipelineApi.addBasicAuth ();
-        if (assayTest.equals (ID_BCell2_IVD))
+        if (assayTest.equals (ID_BCell2_IVD)) {
             portalTestUrl = portalIvdTestUrl;
+            isIVD = true;
+        } else
+            isIVD = false;
+
+        PipelineApi pipelineApi = new PipelineApi ();
+        pipelineApi.addBasicAuth ();
         Sample[] samples = pipelineApi.findFlowcellRuns (sampleName);
+        pipelineApi.resetheaders ();
         assertEquals (samples.length, 1, "Validate pipeline portal job is completed");
     }
 
@@ -1047,7 +1049,10 @@ public class IghvOrderTestSuite extends CoraBaseBrowser {
      * @param charMaxLength
      * @param rowMap
      */
-    private void validateColumnDetails (String colName, String colDefault, String colDataType, String charMaxLength,
+    private void validateColumnDetails (String colName,
+                                        String colDefault,
+                                        String colDataType,
+                                        String charMaxLength,
                                         Map <String, Object> rowMap) {
         assertEquals (rowMap.get ("table_catalog"), "coradb", "Validate table catalog");
         assertEquals (rowMap.get ("table_schema"), "orca", "Validate table schema");

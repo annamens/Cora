@@ -166,6 +166,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         orderStatus.gotoOrderDetailsPage (order.id);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (assayTest);
+        reportTDetect.isCorrectPage ();
         reportTDetect.setQCstatus (Pass);
         testLog ("set QC status to Pass");
 
@@ -184,7 +185,8 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         // navigate to order status page
         history.clickOrderTest ();
         orderStatus.isCorrectPage ();
-        orderDetailTDetect.clickReportTab (assayTest);
+        orderStatus.clickReportTab (assayTest);
+        reportTDetect.isCorrectPage ();
         reportTDetect.enterReportNotes ("testing report notes");
         String additionalComments = "testing additional comments";
         reportTDetect.enterAdditionalComments (additionalComments);
@@ -218,6 +220,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         history.clickOrderTest ();
         orderStatus.isCorrectPage ();
         orderStatus.clickReportTab (assayTest);
+        reportTDetect.isCorrectPage ();
         reportTDetect.clickCorrectReport ();
         reportTDetect.selectCorrectionType (Updated);
         String correctedReason = "testing corrected report";
@@ -305,7 +308,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         orderDetailTDetect.gotoOrderDetailsPage (orderTest.orderId);
         orderDetailTDetect.isCorrectPage ();
         orderDetailTDetect.clickReportTab (assayTest);
-
+        reportTDetect.isCorrectPage ();
         reportTDetect.setQCstatus (Pass);
         reportTDetect.clickReleaseReport ();
         history.gotoOrderDebug (orderTest.sampleName);
