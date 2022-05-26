@@ -50,10 +50,12 @@ public class CoraEnvironment extends BaseEnvironment {
             coraDbInfo.pass = getPropertyEncrypted ("cora.db.pass");
 
             useDbTunnel = parseBoolean (getProperty ("db.tunnel"));
-            if (useDbTunnel)
+            if (useDbTunnel) {
+                coraDbInfo.useDbTunnel = useDbTunnel;
                 coraDbInfo.databaseUrl = format ("jdbc:postgresql://%s:%s/coradb",
                                                  jumpbox.localHost,
                                                  jumpbox.localPort);
+            }
         } catch (Exception e) {
             error ("failed to parse the config file", e);
             throw new RuntimeException (e);
