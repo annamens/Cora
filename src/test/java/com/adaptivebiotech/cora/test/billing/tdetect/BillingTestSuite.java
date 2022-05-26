@@ -85,7 +85,7 @@ public class BillingTestSuite extends BillingTestBase {
      * 
      * @sdlc.requirements SR-7907:R1, SR-10644
      */
-    @Test (groups = "corgi")
+    @Test (groups = { "corgi", "fox-terrier" })
     public void medicare () {
         Patient patient = newMedicarePatient ();
         patient.abnStatusType = null;

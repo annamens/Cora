@@ -53,7 +53,7 @@ import com.adaptivebiotech.cora.ui.task.TaskStatus;
  * @author Olha Tereshchuk
  *         <a href="mailto:otereshchuk@adaptivebiotech.com">otereshchuk@adaptivebiotech.com</a>
  */
-@Test (groups = { "regression", "akita" }, singleThreaded = true)
+@Test (groups = { "regression", "akita" })
 public class GatewayNotificationTestSuite extends HL7TestBase {
 
     private final String        bcellIdTsv     = azTsvPath + "/above-loq.id.tsv.gz";
