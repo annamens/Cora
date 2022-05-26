@@ -9,7 +9,6 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_IVD;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
@@ -47,7 +46,7 @@ public class AboveLoQTestSuite extends ReportTestBase {
     public void verify_clia_report () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
-                                               stage (SecondaryAnalysis, Ready),
+                                               null,
                                                genCDxTest (ID_BCell2_CLIA, azTsvPath + "/above-loq.id.tsv.gz"),
                                                genCDxTest (MRD_BCell2_CLIA, azTsvPath + "/above-loq.mrd.tsv.gz"));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
@@ -55,6 +54,7 @@ public class AboveLoQTestSuite extends ReportTestBase {
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.forceStatusUpdate (SecondaryAnalysis, Ready);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
@@ -71,6 +71,7 @@ public class AboveLoQTestSuite extends ReportTestBase {
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
+        history.forceStatusUpdate (SecondaryAnalysis, Ready);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
@@ -89,7 +90,7 @@ public class AboveLoQTestSuite extends ReportTestBase {
     public void verify_ivd_report () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
-                                               stage (SecondaryAnalysis, Ready),
+                                               null,
                                                genCDxTest (ID_BCell2_IVD, azTsvPath + "/above-loq.id.tsv.gz"),
                                                genCDxTest (MRD_BCell2_IVD, azTsvPath + "/above-loq.mrd.tsv.gz"));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
@@ -97,6 +98,7 @@ public class AboveLoQTestSuite extends ReportTestBase {
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_IVD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
+        history.forceStatusUpdate (SecondaryAnalysis, Ready);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
@@ -113,6 +115,7 @@ public class AboveLoQTestSuite extends ReportTestBase {
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_IVD);
         history.gotoOrderDebug (orderTest.sampleName);
+        history.forceStatusUpdate (SecondaryAnalysis, Ready);
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);

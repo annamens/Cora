@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Self;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
+import static java.lang.String.join;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
@@ -310,8 +311,14 @@ public abstract class BillingNewOrder extends CoraPage {
 
     // email is not required
     public void enterPatientEmail (String email) {
-        if (isNotNullAndNotEmpty (email))
+        if (isNotNullAndNotEmpty (email)) {
+            assertTrue (clear (patientEmail));
             assertTrue (setText (patientEmail, email));
+        }
+    }
+
+    public boolean isPatientEmailErrorVisible () {
+        return isElementVisible (join (" + ", patientEmail, requiredMsg));
     }
 
     public String getPatientEmail () {
