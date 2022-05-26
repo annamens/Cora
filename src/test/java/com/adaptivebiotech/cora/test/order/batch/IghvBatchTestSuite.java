@@ -62,7 +62,7 @@ public class IghvBatchTestSuite extends BatchTestBase {
     /**
      * @sdlc.requirements SR-9373:R1,R2,R3,R4
      */
-    @Test (groups = "fox-terrier")
+    @Test (groups = "golden-retriever")
     public void happypath () {
         Map <String, String> samples = Stream.of (new String[][] {
                 { "SAMPLE_NAME1", "selenium-batch-ighv-" + nanoTime () },
