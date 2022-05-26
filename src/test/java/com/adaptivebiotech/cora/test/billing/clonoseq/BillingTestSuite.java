@@ -63,18 +63,51 @@ public class BillingTestSuite extends BillingTestBase {
         ordersList.isCorrectPage ();
     }
 
+    /**
+     * @sdlc.requirements SR-10644
+     */
     public void insurance () {
         Patient patient = newInsurancePatient ();
         patient.race = null;
         patient.ethnicity = null;
 
-        diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_insurance),
-                                        patient,
-                                        icdCodes,
-                                        ID_BCell2_CLIA,
-                                        specimen,
-                                        Active,
-                                        Tube);
+        Order order = diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_insurance),
+                                                      patient,
+                                                      icdCodes,
+                                                      ID_BCell2_CLIA,
+                                                      specimen);
+        shipment.createShipment (order.orderNumber, Vacutainer);
+        accession.completeAccession ();
+        diagnostic.isCorrectPage ();
+
+        String email = "foo@bar@gmail.com";
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorzVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo@gmail.";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorzVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorzVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo@gmail.com";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.activateOrder ();
+        testLog ("there was no patient email validation error");
         testLog (format (log, patient.billingType.label));
     }
 

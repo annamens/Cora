@@ -83,19 +83,50 @@ public class BillingTestSuite extends BillingTestBase {
      * Note:
      * - ABN Status is "Not Required" by default
      * 
-     * @sdlc.requirements SR-7907:R1
+     * @sdlc.requirements SR-7907:R1, SR-10644
      */
     @Test (groups = "corgi")
     public void medicare () {
         Patient patient = newMedicarePatient ();
         patient.abnStatusType = null;
-        diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_medicare),
-                                       patient,
-                                       null,
-                                       specimen.collectionDate.toString (),
-                                       COVID19_DX_IVD,
-                                       Active,
-                                       Tube);
+
+        Order order = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_medicare),
+                                                     patient,
+                                                     null,
+                                                     specimen.collectionDate.toString (),
+                                                     COVID19_DX_IVD);
+        shipment.createShipment (order.orderNumber, Vacutainer);
+        accession.completeAccession ();
+        diagnostic.isCorrectPage ();
+
+        String email = "foo@bar@gmail.com";
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorzVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo@gmail.";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorzVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorzVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo@gmail.com";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.activateOrder ();
+        testLog ("there was no patient email validation error");
         testLog (format (log, patient.billingType.label));
     }
 

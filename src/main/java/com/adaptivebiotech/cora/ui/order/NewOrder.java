@@ -171,6 +171,10 @@ public abstract class NewOrder extends OrderHeader {
         }
     }
 
+    public String getToastError () {
+        return getText (toastError);
+    }
+
     public void clickSeeOriginal () {
         assertTrue (click ("[ng-if='ctrl.orderEntry.order.parentReference.sourceOrderId'] .data-value-link"));
         pageLoading ();
