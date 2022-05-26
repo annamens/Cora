@@ -4,6 +4,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
@@ -13,6 +14,7 @@ import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -25,9 +27,11 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
+import com.adaptivebiotech.cora.dto.Orders.OrderAuthorization;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
+import com.adaptivebiotech.cora.dto.UploadFile;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
@@ -41,9 +45,16 @@ import com.seleniumfy.test.utils.Timeout;
 public abstract class NewOrder extends OrderHeader {
 
     private final String   orderNumber      = "//*[@label='Order #']//span";
+    private final String   dateSigned       = "[formcontrolname='dateSigned']";
+    private final String   instructions     = "[formcontrolname='specialInstructions']";
     private final String   patientMrdStatus = ".patient-status";
     private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
     private final String   orderNotes       = "#order-notes";
+    private final String   patientMrn       = "[formcontrolname='mrn']";
+    private final String   patientNotes     = ".patient-note";
+    private final String   orderAuth        = "order-documentation .row span";
+    private final String   attachments      = "//h3[contains(text(),'%s')]/ancestor::div[@class='row']//attachments//*[contains(@class,'row')]";
+    private final String   fileLoc          = "//a[contains(text(),'%s')]";
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
     protected final String toastContainer   = "#toast-container";
     protected final String toastError       = ".toast-error";
@@ -59,6 +70,12 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
+    @Override
+    public void gotoOrderEntry (String orderId) {
+        super.gotoOrderEntry (orderId);
+        isCorrectPage ();
+    }
+
     public String getOrderId () {
         return substringBetween (getCurrentUrl (), "cora/order/dx/", "/details");
     }
@@ -68,6 +85,22 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public abstract void activateOrder ();
+
+    public String getOrderName () {
+        return getText ("//labeled-value[@label='Order Name']/div/div[2]/span");
+    }
+
+    public String isTrfAttached () {
+        return getText ("labeled-value[label='Internal TRF Attached'] span");
+    }
+
+    public void enterDateSigned (String date) {
+        assertTrue (setText (dateSigned, date));
+    }
+
+    public String getDateSigned () {
+        return isElementVisible (dateSigned) ? readInput (dateSigned) : null;
+    }
 
     public String getPatientName () {
         return getText ("//label[text()='Patient']/../div[1]");
@@ -185,15 +218,6 @@ public abstract class NewOrder extends OrderHeader {
         return getText (orderNumber);
     }
 
-    public void enterDateSigned (String date) {
-        assertTrue (setText ("[ng-model='ctrl.orderEntry.order.dateSigned']", date));
-    }
-
-    public String getDateSigned () {
-        String css = "[ng-model^='ctrl.orderEntry.order.dateSigned']";
-        return isElementVisible (css) ? readInput (css) : null;
-    }
-
     public void enterOrderNotes (String notes) {
         assertTrue (setText (orderNotes, notes));
     }
@@ -203,12 +227,11 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterInstruction (String instruction) {
-        assertTrue (setText ("[ng-model='ctrl.orderEntry.order.specialInstructions']", instruction));
+        assertTrue (setText (instructions, instruction));
     }
 
     protected String getInstructions () {
-        String css = "[ng-model='ctrl.orderEntry.order.specialInstructions']";
-        return isElementVisible (css) ? readInput (css) : null;
+        return isElementVisible (instructions) ? readInput (instructions) : null;
     }
 
     public void clickPickPhysician () {
@@ -264,6 +287,14 @@ public abstract class NewOrder extends OrderHeader {
         clickSelectPhysician ();
     }
 
+    public String getProviderName () {
+        return getText ("//*[@formcontrolname='providerForm']//label[text()='Name']/parent::div//span");
+    }
+
+    public String getProviderAccount () {
+        return getText ("//*[@formcontrolname='providerForm']//label[text()='Account']/parent::div//span");
+    }
+
     public void clickPickPatient () {
         assertTrue (click ("//button[text()='Pick Patient...']"));
         assertTrue (isTextInElement (popupTitle, "Pick Patient"));
@@ -297,8 +328,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getPatientMRN () {
-        String css = "[ng-model='ctrl.orderEntry.order.mrn']";
-        return isElementVisible (css) ? readInput (css) : null;
+        return isElementVisible (patientMrn) ? readInput (patientMrn) : null;
     }
 
     public void enterPatientNotes (String notes) {
@@ -306,8 +336,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getPatientNotes () {
-        String css = "[ng-model='ctrl.orderEntry.order.patient.notes']";
-        return isElementPresent (css) ? readInput (css) : null;
+        return isElementPresent (patientNotes) ? readInput (patientNotes) : null;
     }
 
     public void enterPatientICD_Codes (String... codes) {
@@ -467,5 +496,58 @@ public abstract class NewOrder extends OrderHeader {
             }
             return c;
         }).collect (toList ()));
+    }
+
+    public OrderAuthorization getOrderAuthorization () {
+        return isElementVisible (orderAuth) ? OrderAuthorization.getOrderAuthorization (getText (orderAuth)) : null;
+    }
+
+    private List <UploadFile> getOrderAttachments (String attachmentLoc) {
+        List <UploadFile> attachments = new ArrayList <> ();
+        if (isElementPresent (attachmentLoc))
+            for (WebElement element : waitForElements (attachmentLoc)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, "a[title]");
+                attachment.fileNameTitle = getAttribute (element, "a[title]", "title");
+                attachment.fileUrl = getAttribute (element, "a[href]", "href");
+                String createdDateTime = getText (element, ".//div[3]");
+                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
+                attachment.createdBy = getText (element, ".//div[4]");
+                attachments.add (attachment);
+            }
+        return attachments;
+    }
+
+    public List <UploadFile> getCoraAttachments () {
+        return getOrderAttachments (format (attachments, "Orders"));
+    }
+
+    public List <UploadFile> getShipmentAttachments () {
+        return getOrderAttachments (format (attachments, "Shipments"));
+    }
+
+    public UploadFile getDoraTrf () {
+        UploadFile doraTrFile = new UploadFile ();
+        String doraTrf = "//h3[contains(text(),'Dora')]/ancestor::div[@class='row']";
+        if (isElementPresent (doraTrf)) {
+            WebElement element = findElement (doraTrf);
+            doraTrFile.fileName = getText (element, ".//*[contains(text(),'Original Dora Trf')]");
+            doraTrFile.fileUrl = getAttribute (element, ".//a[contains(@href,'downloadDoraTrf')]", "href");
+        }
+        return doraTrFile;
+    }
+
+    public List <UploadFile> getDoraAttachments () {
+        return getOrderAttachments (format (attachments, "Dora"));
+    }
+
+    public void closeFilePreview () {
+        assertTrue (click (".modal-header button.close"));
+        moduleLoading ();
+    }
+
+    public void clickFilePreviewLink (String fileName) {
+        assertTrue (click (format (fileLoc, fileName)));
+        assertTrue (isTextInElement (popupTitle, fileName));
     }
 }

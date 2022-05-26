@@ -34,7 +34,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
@@ -50,7 +50,7 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
  *
  */
 @Test (groups = "regression")
-public class OrderDetailsTestSuite extends CoraBaseBrowser {
+public class OrderDetailsTestSuite extends NewOrderTestBase {
 
     private Login               login               = new Login ();
     private OrdersList          ordersList          = new OrdersList ();

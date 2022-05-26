@@ -25,6 +25,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Orders.OrderAuthorization;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -51,6 +52,8 @@ public class OrderDetail extends OrderHeader {
     private final String      attachmentUrl       = "a[href]";
     private final String      attachmentDate      = "[ng-bind$='localDateTime']";
     private final String      attachmentCreatedBy = "[ng-bind='attachment.createdBy']";
+    private final String      orderAuth           = "[ng-bind*='\'documentedByType\'']";
+    private final String      attachments         = "[attachments='ctrl.orderEntry.attachments']%s .attachments-table-row";
 
     public OrderDetail () {
         staticNavBarHeight = 200;
@@ -148,6 +151,7 @@ public class OrderDetail extends OrderHeader {
         order.patient.locality = billing.getPatientCity ();
         order.patient.region = billing.getPatientState ();
         order.patient.postCode = billing.getPatientZipcode ();
+        order.documentedByType = getOrderAuthorization ();
         order.notes = getOrderNotes ();
         return order;
     }
@@ -334,34 +338,26 @@ public class OrderDetail extends OrderHeader {
         return getText (format ("//*[text()='%s']/parent::div//*[@ng-bind='orderTest.sampleName']", assay.test));
     }
 
-    private List <UploadFile> getCoraAttachments () {
-        List <UploadFile> coraAttachments = new ArrayList <> ();
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isOrderAttachment'] .attachments-table-row";
-        if (isElementPresent (files))
-            for (WebElement element : waitForElements (files)) {
+    private List <UploadFile> getOrderAttachments (String attachmentLoc) {
+        List <UploadFile> attachments = new ArrayList <> ();
+        if (isElementPresent (attachmentLoc))
+            for (WebElement element : waitForElements (attachmentLoc)) {
                 UploadFile attachment = new UploadFile ();
                 attachment.fileName = getText (element, attachmentName);
                 attachment.fileUrl = getAttribute (element, attachmentUrl, "href");
                 attachment.createdDateTime = parse (getText (element, attachmentDate), formatDt7);
                 attachment.createdBy = getText (element, attachmentCreatedBy);
-                coraAttachments.add (attachment);
+                attachments.add (attachment);
             }
-        return coraAttachments;
+        return attachments;
+    }
+
+    private List <UploadFile> getCoraAttachments () {
+        return getOrderAttachments (format (attachments, "[filter='ctrl.isOrderAttachment']"));
     }
 
     private List <UploadFile> getShipmentAttachments () {
-        List <UploadFile> shipmentAttachments = new ArrayList <> ();
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter-by='CORA.SHIPMENTS'] .attachments-table-row";
-        if (isElementPresent (files))
-            for (WebElement element : waitForElements (files)) {
-                UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, attachmentName);
-                attachment.fileUrl = getAttribute (element, attachmentUrl, "href");
-                attachment.createdDateTime = parse (getText (element, attachmentDate), formatDt7);
-                attachment.createdBy = getText (element, attachmentCreatedBy);
-                shipmentAttachments.add (attachment);
-            }
-        return shipmentAttachments;
+        return getOrderAttachments (format (attachments, "[filter-by='CORA.SHIPMENTS']"));
     }
 
     private UploadFile getDoraTrf () {
@@ -375,18 +371,7 @@ public class OrderDetail extends OrderHeader {
     }
 
     private List <UploadFile> getDoraAttachments () {
-        List <UploadFile> doraAttachments = new ArrayList <> ();
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isDoraAttachment'] .attachments-table-row";
-        if (isElementPresent (files))
-            for (WebElement element : waitForElements (files)) {
-                UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, attachmentName);
-                attachment.fileUrl = getAttribute (element, attachmentUrl, "href");
-                attachment.createdDateTime = parse (getText (element, attachmentDate), formatDt7);
-                attachment.createdBy = getText (element, attachmentCreatedBy);
-                doraAttachments.add (attachment);
-            }
-        return doraAttachments;
+        return getOrderAttachments (format (attachments, "[filter='ctrl.isDoraAttachment']"));
     }
 
     public String getOrderNotes () {
@@ -424,5 +409,9 @@ public class OrderDetail extends OrderHeader {
 
     public List <String> getHistory () {
         return getTextList ("//*[text()='History']/ancestor::div[@class='row']//li");
+    }
+
+    public OrderAuthorization getOrderAuthorization () {
+        return isElementVisible (orderAuth) ? OrderAuthorization.getOrderAuthorization (getText (orderAuth)) : null;
     }
 }

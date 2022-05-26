@@ -18,7 +18,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Physician;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -37,7 +37,7 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentsList;
  *
  */
 @Test (groups = "regression")
-public class OrderLinkTestSuite extends CoraBaseBrowser {
+public class OrderLinkTestSuite extends NewOrderTestBase {
 
     private final String[]      icdcodes            = new String[] { "C90.00" };
     private Login               login               = new Login ();
