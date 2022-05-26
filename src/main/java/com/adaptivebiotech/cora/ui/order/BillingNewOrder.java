@@ -317,7 +317,7 @@ public abstract class BillingNewOrder extends CoraPage {
         }
     }
 
-    public boolean isPatientEmailErrorzVisible () {
+    public boolean isPatientEmailErrorVisible () {
         return isElementVisible (join (" + ", patientEmail, requiredMsg));
     }
 

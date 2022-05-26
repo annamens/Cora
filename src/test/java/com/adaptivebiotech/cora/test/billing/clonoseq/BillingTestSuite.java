@@ -83,7 +83,7 @@ public class BillingTestSuite extends BillingTestBase {
         String email = "foo@bar@gmail.com";
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
-        assertTrue (diagnostic.billing.isPatientEmailErrorzVisible ());
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
         testLog (format (emailErrLog1, email));
         testLog (format (emailErrLog2, diagnostic.getToastError ()));
 
@@ -91,7 +91,7 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
-        assertTrue (diagnostic.billing.isPatientEmailErrorzVisible ());
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
         testLog (format (emailErrLog1, email));
         testLog (format (emailErrLog2, diagnostic.getToastError ()));
 
@@ -99,7 +99,7 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
-        assertTrue (diagnostic.billing.isPatientEmailErrorzVisible ());
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
         testLog (format (emailErrLog1, email));
         testLog (format (emailErrLog2, diagnostic.getToastError ()));
 
