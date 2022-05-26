@@ -30,7 +30,7 @@ public class PickPatientModule extends CoraPage {
         return getText (join (" + ", birthDate, requiredMsg));
     }
 
-    public boolean isBirthDateErrorzVisible () {
+    public boolean isBirthDateErrorVisible () {
         return isElementVisible (join (" + ", birthDate, requiredMsg));
     }
 
