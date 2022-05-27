@@ -66,6 +66,7 @@ public class BillingTestSuite extends BillingTestBase {
     /**
      * @sdlc.requirements SR-10644
      */
+    @Test (groups = "fox-terrier")
     public void insurance () {
         Patient patient = newInsurancePatient ();
         patient.race = null;
