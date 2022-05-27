@@ -65,6 +65,12 @@ public class OrderDetail extends OrderHeader {
         pageLoading ();
     }
 
+    @Override
+    public void gotoOrderDetailsPage (String orderId) {
+        super.gotoOrderDetailsPage (orderId);
+        isCorrectPage ();
+    }
+
     public String getOrderId () {
         return substringAfterLast (getCurrentUrl (), "cora/order/details/");
     }

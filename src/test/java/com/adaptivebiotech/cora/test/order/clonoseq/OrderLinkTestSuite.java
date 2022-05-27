@@ -7,11 +7,19 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Pending;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
+import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenType;
+import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee.CLINICAL_TRIALS;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
+import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+import java.util.List;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -28,6 +36,7 @@ import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientOrderHistory;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.DiscrepancyResolutions;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentsList;
@@ -39,20 +48,21 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentsList;
 @Test (groups = "regression")
 public class OrderLinkTestSuite extends NewOrderTestBase {
 
-    private final String[]      icdcodes            = new String[] { "C90.00" };
-    private Login               login               = new Login ();
-    private OrdersList          ordersList          = new OrdersList ();
-    private OrderStatus         orderStatus         = new OrderStatus ();
-    private NewOrderClonoSeq    newOrderClonoSeq    = new NewOrderClonoSeq ();
-    private OrderDetailClonoSeq orderDetailClonoSeq = new OrderDetailClonoSeq ();
-    private NewShipment         shipment            = new NewShipment ();
-    private ShipmentDetail      shipmentDetail      = new ShipmentDetail ();
-    private Detail              containerDetail     = new Detail ();
-    private Accession           accession           = new Accession ();
-    private OrderTestsList      orderTestsList      = new OrderTestsList ();
-    private ShipmentsList       shipmentList        = new ShipmentsList ();
-    private PatientOrderHistory patientOrderHistory = new PatientOrderHistory ();
-    private Physician           physician;
+    private final String[]         icdcodes               = new String[] { "C90.00" };
+    private Login                  login                  = new Login ();
+    private OrdersList             ordersList             = new OrdersList ();
+    private OrderStatus            orderStatus            = new OrderStatus ();
+    private NewOrderClonoSeq       newOrderClonoSeq       = new NewOrderClonoSeq ();
+    private OrderDetailClonoSeq    orderDetailClonoSeq    = new OrderDetailClonoSeq ();
+    private NewShipment            shipment               = new NewShipment ();
+    private ShipmentDetail         shipmentDetail         = new ShipmentDetail ();
+    private Detail                 containerDetail        = new Detail ();
+    private Accession              accession              = new Accession ();
+    private OrderTestsList         orderTestsList         = new OrderTestsList ();
+    private ShipmentsList          shipmentList           = new ShipmentsList ();
+    private PatientOrderHistory    patientOrderHistory    = new PatientOrderHistory ();
+    private DiscrepancyResolutions discrepancyResolutions = new DiscrepancyResolutions ();
+    private Physician              physician;
 
     @BeforeClass
     public void beforeClass () {
@@ -207,5 +217,152 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         orderStatus.isCorrectPage ();
         assertEquals (orderStatus.getheaderOrderNumber (), order.orderNumber);
         testLog ("STEP 14 - The generic order status page is displayed");
+    }
+
+    /**
+     * NOTE: SR-T4182
+     * 
+     * @sdlc.requirements SR-10524:R1
+     */
+    @Test (groups = "fox-terrier")
+    public void validateOrderTabsWithDiscrepancy () {
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_client),
+                                                            newClientPatient (),
+                                                            new String[] { "C90.00" },
+                                                            ID_BCell2_CLIA,
+                                                            bloodSpecimen ());
+        validateTabsOrderPage (order, asList (orderDetailsTab));
+
+        shipment.createShipment (order.orderNumber, Tube);
+        testLog ("Shipment Created");
+
+        String shipmentId = accession.getShipmentId ();
+        validateTabsShipmentPage (shipmentId, accessionTabList);
+
+        validateTabsOrderPage (order, asList (orderDetailsTab));
+
+        validateTabsShipmentPage (shipmentId, accessionTabList);
+        accession.clickAddContainerSpecimenDiscrepancy ();
+        accession.addDiscrepancy (SpecimenType, "This is a specimen/container discrepancy", CLINICAL_TRIALS);
+        accession.clickDiscrepancySave ();
+        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        testLog ("Discrepancy created");
+
+        validateTabsOrderPage (order, asList (orderDetailsTab));
+
+        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        accession.clickIntakeComplete ();
+        testLog ("Accession - Intake complete");
+
+        validateTabsOrderPage (order, orderDiscrepTabList);
+
+        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        accession.clickLabelingComplete ();
+        testLog ("Labelling complete");
+
+        validateTabsOrderPage (order, orderDiscrepTabList);
+
+        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        accession.clickLabelVerificationComplete ();
+        testLog ("Label verification complete");
+
+        validateTabsOrderPage (order, orderDiscrepTabList);
+
+        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        assertFalse (accession.isApproveSpecimenEnabled ());
+        testLog ("Specimen approval is disabled");
+
+        accession.gotoDiscrepancyResolutions ();
+        discrepancyResolutions.resolveAllDiscrepancies ();
+        discrepancyResolutions.clickSave ();
+        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        testLog ("Resolve discrepancy");
+
+        validateTabsOrderPage (order, orderDiscrepTabList);
+
+        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        accession.clickPass ();
+        testLog ("Specimen approval pass");
+
+        validateTabsOrderPage (order, orderDiscrepTabList);
+
+        newOrderClonoSeq.activateOrder ();
+        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
+        assertEquals (orderDetailClonoSeq.getTabList (), asList (orderStatusTab, orderDetailsTab));
+        testLog ("activate Order");
+
+    }
+
+    /**
+     * NOTE: SR-T4182
+     * 
+     * @sdlc.requirements SR-10524:R1
+     */
+    @Test (groups = "fox-terrier")
+    public void validateOrderTabsWithoutDiscrepancy () {
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_client),
+                                                            newClientPatient (),
+                                                            new String[] { "C90.00" },
+                                                            ID_BCell2_CLIA,
+                                                            bloodSpecimen ());
+        validateTabsOrderPage (order, asList (orderDetailsTab));
+
+        shipment.createShipment (order.orderNumber, Tube);
+        testLog ("Shipment Created");
+
+        String shipmentId = accession.getShipmentId ();
+        validateTabsShipmentPage (shipmentId, accessionTabList);
+
+        validateTabsOrderPage (order, asList (orderDetailsTab));
+
+        validateTabsShipmentPage (shipmentId, accessionTabList);
+        accession.clickIntakeComplete ();
+        testLog ("Accession - Intake complete");
+
+        validateTabsOrderPage (order, orderDetailsTabList);
+
+        validateTabsShipmentPage (shipmentId, accessionTabList);
+        accession.clickLabelingComplete ();
+        testLog ("Labelling complete");
+
+        validateTabsOrderPage (order, orderDetailsTabList);
+
+        validateTabsShipmentPage (shipmentId, accessionTabList);
+        accession.clickLabelVerificationComplete ();
+        testLog ("Label verification complete");
+
+        validateTabsOrderPage (order, orderDetailsTabList);
+
+        validateTabsShipmentPage (shipmentId, accessionTabList);
+        assertTrue (accession.isApproveSpecimenEnabled ());
+        testLog ("Specimen approval is enabled");
+
+        validateTabsShipmentPage (shipmentId, accessionTabList);
+
+        validateTabsOrderPage (order, orderDetailsTabList);
+
+        validateTabsShipmentPage (shipmentId, accessionTabList);
+        accession.clickPass ();
+        testLog ("Specimen approval pass");
+
+        validateTabsOrderPage (order, orderDetailsTabList);
+
+        newOrderClonoSeq.activateOrder ();
+        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
+        assertEquals (orderDetailClonoSeq.getTabList (), asList (orderStatusTab, orderDetailsTab));
+        testLog ("activate Order");
+
+    }
+
+    private void validateTabsShipmentPage (String shipmentId, List <String> expTabs) {
+        accession.gotoAccession (shipmentId);
+        assertEquals (accession.getTabList (), expTabs);
+        testLog ("Validate Tabs on Shipment Page");
+    }
+
+    private void validateTabsOrderPage (Order order, List <String> expTabs) {
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        assertEquals (newOrderClonoSeq.getTabList (), expTabs);
+        testLog ("Validate Tabs on Orders Page");
     }
 }
