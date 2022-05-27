@@ -305,6 +305,15 @@ public class NewShipment extends ShipmentHeader {
         clickAccessionTab ();
     }
 
+    public void createShipment (ContainerType containerType, String initialFreezer) {
+        selectNewDiagnosticShipment ();
+        isDiagnostic ();
+        enterShippingCondition (Ambient);
+        selectDiagnosticSpecimenContainerType (containerType);
+        enterInitialStorageLocation (initialFreezer);
+        clickSave ();
+    }
+
     public void createShipment (ShippingCondition shippingCondition,
                                 Carrier carrier,
                                 String trackingNumber,

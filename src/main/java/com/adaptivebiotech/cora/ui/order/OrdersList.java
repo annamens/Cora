@@ -84,7 +84,6 @@ public class OrdersList extends CoraPage {
         selectOrderStatus (status);
         selectCreationDate (Last30);
         clickFilter ();
-        pageLoading ();
         return getOrders ();
     }
 
