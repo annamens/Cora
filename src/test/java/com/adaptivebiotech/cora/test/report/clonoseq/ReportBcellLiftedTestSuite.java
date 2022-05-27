@@ -29,13 +29,13 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.report.AnalysisConfig;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ClinicalReport;
-import com.adaptivebiotech.picasso.dto.ReportRender.SampleInfo;
+import com.adaptivebiotech.pipeline.dto.mrd.ClinicalJson;
+import com.adaptivebiotech.pipeline.dto.mrd.ClinicalJson.SampleInfo;
 
 /**
  * @author Harry Soehalim
@@ -81,7 +81,7 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
         report.clickReportTab (MRD_BCell2_CLIA);
         report.releaseReport (MRD_BCell2_CLIA, Pass);
 
-        AnalysisConfig config = parseAnalysisConfig (saInputJson);
+        ClinicalJson config = parseAnalysisConfig (saInputJson);
         assertEquals (config.reportType, tracking);
         assertEquals (config.compartment, Cellular.label.toLowerCase ());
         assertEquals (config.testLocus, BCell);

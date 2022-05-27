@@ -6,8 +6,11 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -54,6 +57,26 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
 
+    public void activateOrder () {
+        String orderNumber = getOrderNumber ();
+        clickSaveAndActivate ();
+        List <String> errors = getRequiredFieldMsgs ();
+        assertEquals (errors.size (), 0, "Order No: " + orderNumber + " failed to activate, Errors: " + errors);
+        checkOrderForErrors ();
+        confirmActivate ();
+        moduleLoading ();
+        waitUntilActivated ();
+    }
+
+    public void clickSaveAndActivate () {
+        assertTrue (click ("#order-entry-save-and-activate"));
+    }
+
+    public void confirmActivate () {
+        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
+        assertTrue (click ("//*[text()='Activate the Order']"));
+    }
+
     public void clickAssayTest (Assay assay) {
         String type = format ("//*[@class='test-type-selection']//*[text()='%s']/ancestor::label//input", assay.type);
         if (!waitForElement (type).isSelected ())
@@ -63,10 +86,7 @@ public class NewOrderClonoSeq extends NewOrder {
         if (isElementPresent (showTestMenu))
             assertTrue (click (showTestMenu));
 
-        clickSave ();
-        String test = format ("//*[text()='%s']/ancestor::li//input", assay.test);
-        if (!waitForElement (test).isSelected ())
-            assertTrue (click (test));
+        assertTrue (click (format ("//*[text()='%s']/ancestor::li//input", assay.test)));
     }
 
     public void findSpecimenId (String id) {
@@ -263,6 +283,10 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText (specimenSourceOther, source));
     }
 
+    public void enterCellCount (int count) {
+        assertTrue (setText ("#specimen-entry-cell-count", String.valueOf (count)));
+    }
+
     public void enterRetrievalDate (String date) {
         assertTrue (setText (retrievalDate, date));
     }
@@ -298,12 +322,11 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param specimen
      * @return
      */
-    public String createClonoSeqOrder (Physician physician,
-                                       Patient patient,
-                                       String[] icdCodes,
-                                       Assay assayTest,
-                                       Specimen specimen) {
-
+    public Order createClonoSeqOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      Assay assayTest,
+                                      Specimen specimen) {
         selectNewClonoSEQDiagnosticOrder ();
         isCorrectPage ();
 
@@ -342,14 +365,18 @@ public class NewOrderClonoSeq extends NewOrder {
             enterSpecimenSource (specimen.sampleSource);
         if (specimen.anticoagulant != null)
             enterAntiCoagulant (specimen.anticoagulant);
+        if (asList (CellPellet, CellSuspension).contains (specimen.sampleType))
+            enterCellCount (1000000);
 
         enterCollectionDate (specimen.collectionDate.toString ());
         clickAssayTest (assayTest);
         clickSave ();
 
-        String orderNum = getOrderNumber ();
-        info ("ClonoSeq Order Number: " + orderNum);
-        return orderNum;
+        Order order = new Order ();
+        order.orderNumber = getOrderNumber ();
+        order.id = getOrderId ();
+        info (format ("ClonoSeq Order Number: %s (%s)", order.orderNumber, order.id));
+        return order;
     }
 
     /**
@@ -366,18 +393,18 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param containerType
      * @return
      */
-    public String createClonoSeqOrder (Physician physician,
-                                       Patient patient,
-                                       String[] icdCodes,
-                                       Assay assayTest,
-                                       Specimen specimen,
-                                       OrderStatus orderStatus,
-                                       ContainerType containerType) {
+    public Order createClonoSeqOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      Assay assayTest,
+                                      Specimen specimen,
+                                      OrderStatus orderStatus,
+                                      ContainerType containerType) {
         // create clonoSEQ diagnostic order
-        String orderNum = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
+        Order order = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
 
         // add diagnostic shipment
-        new NewShipment ().createShipment (orderNum, containerType);
+        new NewShipment ().createShipment (order.orderNumber, containerType);
 
         // accession complete
         if (orderStatus.equals (Active)) {
@@ -386,11 +413,15 @@ public class NewOrderClonoSeq extends NewOrder {
             // activate order
             isCorrectPage ();
             activateOrder ();
+
+            // refreshing the page doesn't automatically take you to order detail
+            gotoOrderDetailsPage (order.id);
+            isCorrectPage ();
         } else {
             accession.clickOrderNumber ();
             isCorrectPage ();
         }
 
-        return orderNum;
+        return order;
     }
 }

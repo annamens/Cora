@@ -25,7 +25,7 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 @Test (groups = "regression")
 public class ContainerDetailTestSuite extends ContainerTestBase {
 
-    private final String             error1     = "Only '.pdf,.jpg,.png,.gif,.xlsx' files allowed";
+    private final String             error1     = "Only '.pdf,.jpg,.jpeg,.png,.gif,.xlsx' files allowed";
     private Login                    login      = new Login ();
     private OrdersList               ordersList = new OrdersList ();
     private Detail                   detail     = new Detail ();
@@ -66,8 +66,6 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         // test: view attachment
         String[] files = new String[] { "attachment.gif", "attachment.jpg", "attachment.pdf", "attachment.png" };
         detail.uploadAttachments (files);
-        detail.viewAttachment (2);
-        detail.closePopup ();
         detail.deleteAttachment (2);
     }
 
@@ -110,7 +108,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         ContainerHistory activity2 = new ContainerHistory ();
         activity2.activityDate = detailHistories2.get (1).replace (" Last modified by " + coraTestUser, "");
         activity2.activity = "Moved to Location";
-        activity2.location = join (" : ", freezerAB039003.name, "5-Slide boxes");
+        activity2.location = join (" : ", freezerAB039003.location, "5-Slide boxes");
         activity2.activityBy = coraTestUser;
 
         // test: check history section of history view one more time

@@ -7,17 +7,18 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5CS;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
-import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
-import static com.adaptivebiotech.test.utils.DateHelper.genDate;
-import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
+import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.COVID19;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB_v4b;
+import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxContamination;
@@ -41,7 +42,9 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.join;
 import static java.util.Locale.US;
-import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
+import static org.apache.commons.lang3.StringUtils.substringBefore;
+import static org.apache.commons.text.WordUtils.capitalize;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
@@ -101,9 +104,8 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     private final String       approvedBy          = "John Alsobrook, II, PhD, DABCC";
 
     private final String       tsvPath             = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e/HCYJNBGXJ_0_CLINICAL-CLINICAL_112770-SN-7929.adap.txt.results.tsv.gz";
-    private final String       reviewText          = "REVIEWED AND RELEASED BY DATE & TIME";
     private final String       reviewSignStr       = "REVIEWED AND RELEASED BY SIGNATURE DATE & TIME";
-    private final String       approvedSignStr     = "CLINICAL LABORATORY DIRECTOR SIGNATURE DATE";
+    private final String       approvedSignStr     = "APPROVED BY SIGNATURE DATE";
     private final String       reasonCorrectionStr = "REASON FOR CORRECTION";
     private final String       addCommentsStr      = "ADDITIONAL COMMENTS";
     private final Assay        assayTest           = COVID19_DX_IVD;;
@@ -127,17 +129,17 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         patient.mrn = randomString (10);
         String icdCode1 = "C90.00", icdCode2 = "C91.00";
         String collectionDate = genDate (-1);
-        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
-                                                              patient,
-                                                              new String[] { icdCode1, icdCode2 },
-                                                              collectionDate,
-                                                              assayTest,
-                                                              Active,
-                                                              SlideBox5CS);
-        testLog ("T-Detect Order created: " + orderNum);
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
+                                                          patient,
+                                                          new String[] { icdCode1, icdCode2 },
+                                                          collectionDate,
+                                                          assayTest,
+                                                          Active,
+                                                          SlideBox5CS);
+        testLog ("T-Detect Order created: " + order.orderNumber);
 
         String patientId = orderDetailTDetect.getPatientId ();
-        Order order = orderDetailTDetect.parseOrder ();
+        order = orderDetailTDetect.parseOrder ();
         String sample = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sample);
         history.isCorrectPage ();
@@ -164,17 +166,9 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         orderStatus.gotoOrderDetailsPage (order.id);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (assayTest);
+        reportTDetect.isCorrectPage ();
         reportTDetect.setQCstatus (Pass);
         testLog ("set QC status to Pass");
-
-        String fileContent = getTextFromPDF (reportTDetect.getPreviewReportPdfUrl (), 1);
-        validateReportContent (fileContent, order);
-        validatePdfContent (fileContent, result);
-        validatePdfContent (fileContent, expTestResult);
-        validatePdfContent (fileContent, reviewText);
-        validatePdfContent (fileContent, approvedSignStr);
-        validatePdfContent (fileContent, approvedBy);
-        testLog ("STEP 1 - validate preview report");
 
         history.gotoOrderDebug (sample);
         String reportDataJsonFileUrl = history.getFileUrl ("reportData.json");
@@ -191,14 +185,15 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         // navigate to order status page
         history.clickOrderTest ();
         orderStatus.isCorrectPage ();
-        orderDetailTDetect.clickReportTab (assayTest);
+        orderStatus.clickReportTab (assayTest);
+        reportTDetect.isCorrectPage ();
         reportTDetect.enterReportNotes ("testing report notes");
         String additionalComments = "testing additional comments";
         reportTDetect.enterAdditionalComments (additionalComments);
         reportTDetect.clickSaveAndUpdate ();
         reportTDetect.clickReleaseReport ();
 
-        fileContent = getTextFromPDF (reportTDetect.getReleasedReportPdfUrl (), 1);
+        String fileContent = getTextFromPDF (reportTDetect.getReleasedReportPdfUrl (), 1);
         validateReportContent (fileContent, order);
         validatePdfContent (fileContent, result);
         validatePdfContent (fileContent, expTestResult);
@@ -224,7 +219,8 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         history.waitFor (ReportDelivery, Finished);
         history.clickOrderTest ();
         orderStatus.isCorrectPage ();
-        orderDetailTDetect.clickReportTab (assayTest);
+        orderStatus.clickReportTab (assayTest);
+        reportTDetect.isCorrectPage ();
         reportTDetect.clickCorrectReport ();
         reportTDetect.selectCorrectionType (Updated);
         String correctedReason = "testing corrected report";
@@ -244,26 +240,10 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         editReportDataJson.patientInfo.name = updatedPatientName;
         order.patient.fullname = updatedPatientName;
         reportTDetect.setReportDataJson (editReportDataJson.toString ());
-        String correctedPreviewPdfUrl = reportTDetect.getPreviewReportPdfUrl ();
-        String correctedPreviewPdfContent = getTextFromPDF (correctedPreviewPdfUrl, 1);
-        validateReportContent (correctedPreviewPdfContent, order);
-        validatePdfContent (correctedPreviewPdfContent, reasonCorrectionStr);
-        validatePdfContent (correctedPreviewPdfContent, correctedReason);
-        testLog ("STEP 6.1 - The report pdf Page 1 preview contains values for the following fields as listed above");
-
-        correctedPreviewPdfContent = getTextFromPDF (correctedPreviewPdfUrl, 2);
-        validateReportContent (correctedPreviewPdfContent, order);
-        validatePdfContent (correctedPreviewPdfContent, result);
-        validatePdfContent (correctedPreviewPdfContent, expTestResult);
-        validatePdfContent (correctedPreviewPdfContent, addCommentsStr);
-        validatePdfContent (correctedPreviewPdfContent, additionalComments);
-        validatePdfContent (correctedPreviewPdfContent, reviewText);
-        validatePdfContent (correctedPreviewPdfContent, approvedSignStr);
-        validatePdfContent (correctedPreviewPdfContent, approvedBy);
-        testLog ("STEP 6.2 - The report pdf Page 2 preview contains additional values for the following fields as listed below");
-
         reportTDetect.releaseReportWithSignatureRequired ();
-        String correctedReleasePdfContent = getTextFromPDF (reportTDetect.getReleasedReportPdfUrl (), 1);
+
+        String correctedPreviewPdfUrl = reportTDetect.getReleasedReportPdfUrl ();
+        String correctedReleasePdfContent = getTextFromPDF (correctedPreviewPdfUrl, 1);
         validateReportContent (correctedReleasePdfContent, order);
         validatePdfContent (correctedReleasePdfContent, reasonCorrectionStr);
         validatePdfContent (correctedReleasePdfContent, correctedReason);
@@ -328,7 +308,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         orderDetailTDetect.gotoOrderDetailsPage (orderTest.orderId);
         orderDetailTDetect.isCorrectPage ();
         orderDetailTDetect.clickReportTab (assayTest);
-
+        reportTDetect.isCorrectPage ();
         reportTDetect.setQCstatus (Pass);
         reportTDetect.clickReleaseReport ();
         history.gotoOrderDebug (orderTest.sampleName);
@@ -377,7 +357,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
         assertNull (reportDataJson.patientInfo.reportNumber);
         assertEquals (reportDataJson.patientInfo.klass, "com.adaptive.clonoseqreport.dtos.PatientInfoDto");
 
-        assertEquals (reportDataJson.dxResult.disease, "COVID19");
+        assertEquals (reportDataJson.dxResult.disease, COVID19);
         assertEquals (reportDataJson.dxResult.dxStatus, NEGATIVE);
         assertEquals (reportDataJson.dxResult.dxScore.doubleValue (), -9.097219383308602d);
         assertTrue (reportDataJson.dxResult.containerVersion.startsWith ("dx-classifiers/covid-19:"));
@@ -407,7 +387,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
                                   "GENDER",
                                   "REPORT DATE",
                                   "ORDER #"));
-        validatePdfContent (fileContent.toUpperCase (), order.patient.fullname.toUpperCase ());
+        validatePdfContent (fileContent, capitalize (order.patient.fullname));
         validatePdfContent (fileContent, order.patient.dateOfBirth);
         validatePdfContent (fileContent, order.patient.mrn);
         validatePdfContent (fileContent, order.patient.gender);
@@ -437,7 +417,7 @@ public class TDetectReportTestSuite extends CoraBaseBrowser {
     }
 
     private String getTextFromPDF (String url, int pageNumber) {
-        String pdfFileLocation = join ("/", downloadDir, randomUUID () + ".pdf");
+        String pdfFileLocation = join ("/", downloadDir, substringBefore (substringAfterLast (url, "/"), "?"));
         info ("PDF File Location: " + pdfFileLocation);
 
         // get file from URL and save it

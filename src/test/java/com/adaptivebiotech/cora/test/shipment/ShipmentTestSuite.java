@@ -16,6 +16,7 @@ import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -44,11 +45,11 @@ public class ShipmentTestSuite extends CoraBaseBrowser {
     public void diagnosticShipment () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        String orderNumber = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_client),
-                                                                   newClientPatient (),
-                                                                   icdCodes,
-                                                                   ID_BCell2_CLIA,
-                                                                   specimen);
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_client),
+                                                            newClientPatient (),
+                                                            icdCodes,
+                                                            ID_BCell2_CLIA,
+                                                            specimen);
 
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
@@ -59,7 +60,7 @@ public class ShipmentTestSuite extends CoraBaseBrowser {
                        join ("\n\t", expected)));
 
         shipment.enterShippingCondition (Refrigerated);
-        shipment.enterOrderNumber (orderNumber);
+        shipment.enterOrderNumber (order.orderNumber);
         shipment.selectDiagnosticSpecimenContainerType (Tube);
         shipment.clickSave ();
         String shipmentId = shipment.getShipmentId ();

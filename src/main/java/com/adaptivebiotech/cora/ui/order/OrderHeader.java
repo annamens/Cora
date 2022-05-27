@@ -3,14 +3,19 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.FailedActivation;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import org.apache.commons.lang3.StringUtils;
+import static org.testng.Assert.fail;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author jpatel
@@ -58,6 +63,20 @@ public class OrderHeader extends CoraPage {
         return getEnum (OrderStatus.class, getText ("//*[text()='Status']/..//span"));
     }
 
+    public void waitUntilActivated () {
+        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
+        OrderStatus orderStatus = getOrderStatus ();
+        while (!timer.Timedout () && !orderStatus.equals (Active)) {
+            if (orderStatus.equals (FailedActivation))
+                fail (format ("the order is '%s'", FailedActivation));
+
+            timer.Wait ();
+            refresh ();
+            orderStatus = getOrderStatus ();
+        }
+        assertEquals (orderStatus, Active, "Order did not activated successfully");
+    }
+
     public String getPatientId () {
         String css = "//*[@class='summary']//a[*[@ng-bind='ctrl.orderEntry.order.patient.patientCode']]";
         return substringAfterLast (getAttribute (css, "href"), "patient/");
@@ -80,20 +99,15 @@ public class OrderHeader extends CoraPage {
     }
 
     public String getActiveAlert () {
-        return StringUtils.substringBetween (getText (activeAlert), "(", ")");
+        return substringBetween (getText (activeAlert), "(", ")");
     }
 
     public String getResolvedAlert () {
-        return StringUtils.substringBetween (getText (resolvedAlert), "(", ")");
+        return substringBetween (getText (resolvedAlert), "(", ")");
     }
 
     public void createNewAlert () {
         assertTrue (click (newAlert));
-    }
-
-    public String getOrderId () {
-        String[] splitUrl = getCurrentUrl ().split ("/");
-        return splitUrl[splitUrl.length - 1];
     }
 
     public String getHeaderDueDate () {

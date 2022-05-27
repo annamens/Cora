@@ -11,15 +11,13 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.NoCharge;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.TimelinessOfBilling;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.getAllReasons;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
-import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_all_payments;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_all_payments;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_insurance;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_medicare;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
-import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
-import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
@@ -35,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.billing.BillingTestBase;
@@ -49,7 +48,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 public class BillingTestSuite extends BillingTestBase {
 
     private final String        log         = "created an order with billing: %s";
-    private final String[]      icdCodes    = { "V95.43" };
+    private final String[]      icdCodes    = { "B40.0" };
     private Login               login       = new Login ();
     private OrdersList          ordersList  = new OrdersList ();
     private NewOrderClonoSeq    diagnostic  = new NewOrderClonoSeq ();
@@ -64,18 +63,52 @@ public class BillingTestSuite extends BillingTestBase {
         ordersList.isCorrectPage ();
     }
 
+    /**
+     * @sdlc.requirements SR-10644
+     */
+    @Test (groups = "fox-terrier")
     public void insurance () {
         Patient patient = newInsurancePatient ();
         patient.race = null;
         patient.ethnicity = null;
 
-        diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_insurance),
-                                        patient,
-                                        icdCodes,
-                                        ID_BCell2_CLIA,
-                                        specimen,
-                                        Active,
-                                        Tube);
+        Order order = diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_insurance),
+                                                      patient,
+                                                      icdCodes,
+                                                      ID_BCell2_CLIA,
+                                                      specimen);
+        shipment.createShipment (order.orderNumber, Vacutainer);
+        accession.completeAccession ();
+        diagnostic.isCorrectPage ();
+
+        String email = "foo@bar@gmail.com";
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo@gmail.";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo@gmail.com";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.activateOrder ();
+        testLog ("there was no patient email validation error");
         testLog (format (log, patient.billingType.label));
     }
 
@@ -96,7 +129,7 @@ public class BillingTestSuite extends BillingTestBase {
                                         Tube);
         testLog (format (log, patient.billingType.label));
 
-        assertEquals (orderDetail.billing.getAbnStatus (), RequiredIncludedBillMedicare);
+        assertEquals (orderDetail.billing.getAbnStatus (), patient.abnStatusType);
         testLog ("ABN Status dropdown was visible and was able to make a selection");
     }
 
@@ -172,21 +205,14 @@ public class BillingTestSuite extends BillingTestBase {
      */
     @Test (groups = "entlebucher")
     public void verifyNoChargeReasonIsRequired () {
-        String orderNum = diagnostic.createClonoSeqOrder (coraApi.getPhysician (TDetect_all_payments),
-                                                          newTrialProtocolPatient (),
-                                                          icdCodes,
-                                                          ID_BCell2_CLIA,
-                                                          specimen);
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
-        shipment.selectDiagnosticSpecimenContainerType (Vacutainer);
-        shipment.clickSave ();
-        shipment.clickAccessionTab ();
+        Order order = diagnostic.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_all_payments),
+                                                      newTrialProtocolPatient (),
+                                                      icdCodes,
+                                                      ID_BCell2_CLIA,
+                                                      specimen);
+        shipment.createShipment (order.orderNumber, Vacutainer);
         accession.completeAccession ();
         diagnostic.isCorrectPage ();
-        diagnostic.waitForSpecimenDelivery ();
         diagnostic.billing.selectBilling (Client);
         assertFalse (diagnostic.billing.isReasonVisible ());
         testLog ("Reason drop down is not visible when anything but No Charge is picked as billing option");
@@ -202,13 +228,14 @@ public class BillingTestSuite extends BillingTestBase {
 
         diagnostic.clickSaveAndActivate ();
         assertTrue (diagnostic.billing.isErrorForNoChargeReasonVisible ());
+        diagnostic.closeToast ();
         testLog ("Reason is required when No Charge is picked as billing option");
 
         diagnostic.billing.selectReason (TimelinessOfBilling);
         diagnostic.activateOrder ();
         testLog ("Order activated");
 
-        List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + orderNum + "'");
+        List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + order.orderNumber + "'");
         assertEquals (queryResults.size (), 1);
         Map <String, Object> queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("no_charge_reason").toString (), TimelinessOfBilling.label);

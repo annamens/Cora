@@ -26,6 +26,10 @@ public class Accession extends ShipmentHeader {
     private final String  specimenApprovalPass = "#specimen-pass-button";
     private final String  specimenApprovalFail = "#specimen-fail-button";
 
+    public Accession () {
+        staticNavBarHeight = 195;
+    }
+
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(2)", "ACCESSION"));
@@ -46,13 +50,6 @@ public class Accession extends ShipmentHeader {
 
     public String getSpecimenApprovedDate () {
         return getText ("[ng-bind='ctrl.entry.specimen.approvedDate | localDateTime']") + ", " + getText ("[ng-bind='ctrl.entry.specimen.approvedBy']");
-    }
-
-    public void uploadIntakeManifest (String file) {
-        waitForElement ("input[data-ng-model='ctrl.intakeManifestFiles']").sendKeys (file);
-        transactionInProgress ();
-        assertTrue (click ("[data-ng-click='ctrl.proceedToFullAccessionScreen()']"));
-        pageLoading ();
     }
 
     public void clickIntakeComplete () {

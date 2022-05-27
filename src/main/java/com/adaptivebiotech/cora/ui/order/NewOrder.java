@@ -4,21 +4,22 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
+import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -27,6 +28,8 @@ import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
+import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
+import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.seleniumfy.test.utils.Timeout;
@@ -42,6 +45,9 @@ public abstract class NewOrder extends OrderHeader {
     private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
     private final String   orderNotes       = "#order-notes";
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
+    protected final String toastContainer   = "#toast-container";
+    protected final String toastError       = ".toast-error";
+    protected final String toastMessage     = ".toast-message";
 
     public NewOrder () {
         staticNavBarHeight = 200;
@@ -53,16 +59,15 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
+    public String getOrderId () {
+        return substringBetween (getCurrentUrl (), "cora/order/dx/", "/details");
+    }
+
     public List <String> getSectionHeaders () {
         return getTextList (".order-entry h2");
     }
 
-    public void activateOrder () {
-        clickSaveAndActivate ();
-        hasPageLoaded ();
-        pageLoading ();
-        waitUntilActivated ();
-    }
+    public abstract void activateOrder ();
 
     public String getPatientName () {
         return getText ("//label[text()='Patient']/../div[1]");
@@ -74,6 +79,14 @@ public abstract class NewOrder extends OrderHeader {
 
     public String getPatientGender () {
         return getText ("//label[text()='Gender']/../div[1]");
+    }
+
+    public Race getPatientRace () {
+        return Race.getRace (getText ("//label[text()='Race']/../div[1]"));
+    }
+
+    public Ethnicity getPatientEthnicity () {
+        return Ethnicity.getEthnicity (getText ("//label[text()='Ethnicity']/../div[1]"));
     }
 
     public String getPatientMRDStatus () {
@@ -104,28 +117,21 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getPatientId () {
-        String patientUrl = getAttribute ("//a[contains(text(),'Edit Patient')]", "href");
-        return patientUrl.substring (patientUrl.lastIndexOf ("/") + 1);
+        String patientUrl = getAttribute ("//*[contains(text(),'Patient Order History')]", "href");
+        return StringUtils.substringBetween (patientUrl, "patient/", "/orders");
     }
 
     public void clickSave () {
         assertTrue (click ("#order-entry-save"));
+        hasPageLoaded ();
         pageLoading ();
     }
 
-    public void waitUntilActivated () {
-        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
-        while (!timer.Timedout () && ! (getOrderStatus ().equals (Active))) {
-            timer.Wait ();
-            refresh ();
-        }
-        assertEquals (getOrderStatus (), Active, "Order did not activated successfully");
+    public List <String> getRequiredFieldMsgs () {
+        return isElementVisible (requiredMsg) ? getTextList (requiredMsg) : new ArrayList <> ();
     }
 
-    public void clickSaveAndActivate () {
-        assertTrue (click ("#order-entry-save-and-activate"));
-        assertTrue (waitUntilVisible ("#toast-container"));
-    }
+    public abstract void clickSaveAndActivate ();
 
     public void clickCancel () {
         assertTrue (click ("[ng-click='ctrl.cancel();']"));
@@ -142,7 +148,31 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
         pageLoading ();
         moduleLoading ();
+        checkOrderForErrors ();
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+    }
+
+    protected void checkOrderForErrors () {
+        if (isElementPresent (toastContainer)) {
+            WebElement toastEle = findElement (toastContainer);
+            if (isElementPresent (toastEle, toastError)) {
+                fail (getText (toastEle, join (" ", toastError, toastMessage)));
+            }
+        }
+    }
+
+    public void closeToast () {
+        if (isElementPresent (toastContainer)) {
+            WebElement toastEle = findElement (toastContainer);
+            if (isElementPresent (toastEle, toastError)) {
+                assertTrue (click (toastEle, toastError));
+                assertTrue (waitForElementInvisible (join (" ", toastContainer, toastError)));
+            }
+        }
+    }
+
+    public String getToastError () {
+        return getText (toastError);
     }
 
     public void clickSeeOriginal () {
@@ -285,7 +315,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterPatientICD_Codes (String... codes) {
-        String dropdown = "//*[*[text()='ICD Codes']]//ul";
+        String dropdown = ".icd-code-list-item .dropdown-item";
         String css = "//button[text()='Add Code']";
         for (String code : codes) {
             if (isElementVisible (css))
@@ -346,7 +376,7 @@ public abstract class NewOrder extends OrderHeader {
                                   .parallelStream ().filter (t -> t.selected).collect (toList ());
     }
 
-    private OrderTest getTestState (Assay assay) {
+    public OrderTest getTestState (Assay assay) {
         OrderTest orderTest = new OrderTest (assay);
         orderTest.selected = false;
 
@@ -356,19 +386,19 @@ public abstract class NewOrder extends OrderHeader {
         return orderTest;
     }
 
-    public String getSampleName () {
-        return getText ("[ng-bind='orderTest.sampleName']");
-    }
-
     public void enterCollectionDate (String date) {
         assertTrue (setText ("//*[text()='Collection Date']/..//input", date));
     }
 
+    public String getPhlebotomySelection () {
+        return getText ("//*[text()='Phlebotomy Selection']/../div");
+    }
+
     public void uploadAttachments (String... files) {
-        String attachments = asList (files).parallelStream ().map (f -> getSystemResource (f).getPath ())
-                                           .collect (joining ("\n"));
-        waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
-        pageLoading ();
+        for (String file : files) {
+            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            transactionInProgress ();
+        }
     }
 
     public List <String> getHistory () {
@@ -408,11 +438,11 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void expandShipment () {
-        assertTrue (click ("//*[text()='Shipment']"));
-    }
+        if (isElementPresent ("//*[*[text()='Shipment']]//*[contains (@class, 'glyphicon-triangle-right')]"))
+            assertTrue (click ("//*[text()='Shipment']"));
 
-    public void expandContainers () {
-        assertTrue (click ("//*[@class='row']//*[contains(text(),'Containers')]"));
+        if (!isElementPresent ("specimen-containers"))
+            assertTrue (click ("//order-specimen-shipment//*[contains(text(),'Containers')]"));
     }
 
     public Containers getContainers () {

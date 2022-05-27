@@ -76,7 +76,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         String[] icdCode = new String[] { "C90.00" };
         Assay orderTest = ID_BCell2_CLIA;
         Specimen specimen = bloodSpecimen ();
-        String orderNum = diagnostic.createClonoSeqOrder (physician, patient, icdCode, orderTest, specimen);
+        Order order = diagnostic.createClonoSeqOrder (physician, patient, icdCode, orderTest, specimen);
         List <String> history = diagnostic.getHistory ();
         String createdDateTime = history.get (0).split ("Created by")[0].trim ();
 
@@ -84,7 +84,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
         shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
+        shipment.enterOrderNumber (order.orderNumber);
         ContainerType containerType = Tube;
         shipment.selectDiagnosticSpecimenContainerType (containerType);
         shipment.clickSave ();
@@ -110,14 +110,14 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         // activate order
         diagnostic.isCorrectPage ();
         diagnostic.activateOrder ();
-        diagnostic.refresh ();
-        diagnostic.isCorrectPage ();
+        diagnostic.gotoOrderDetailsPage (order.id);
+        clonoSeqOrderDetail.isCorrectPage ();
         List <String> activeHistory = clonoSeqOrderDetail.getHistory ();
         String activateDateTime = activeHistory.get (2).split ("Activated by")[0].trim ();
         Order activeOrder = clonoSeqOrderDetail.parseOrder ();
         assertEquals (activeOrder.status, Active);
-        assertEquals (activeOrder.orderNumber, orderNum);
-        String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + orderNum;
+        assertEquals (activeOrder.orderNumber, order.orderNumber);
+        String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + order.orderNumber;
         assertEquals (activeOrder.name, expectedName);
         String expectedDueDate = genDate (7, DateTimeFormatter.ofPattern ("M/d/uu"), pstZoneId);
         assertEquals (clonoSeqOrderDetail.getHeaderDueDate (), expectedDueDate);

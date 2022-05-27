@@ -56,15 +56,11 @@ public class MyCustody extends ContainersList {
 
     }
 
-    public void bulkMoveToFreezer (List <String> containers, Container freezer, String comment) {
+    public void bulkMoveToFreezer (Containers containers, Container freezer, String comment) {
         clickBulkMoveContainers ();
         selectBulkMoveFreezer (freezer);
         setBulkMoveComment (comment);
-        for (String container : containers) {
-            selectContainerToBulkMove (container);
-        }
+        containers.list.forEach (c -> selectContainerToBulkMove (c));
         clickBulkMoveBtn ();
-        waitForBulkMoveComplete ();
     }
-
 }

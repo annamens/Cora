@@ -4,7 +4,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
@@ -21,8 +21,6 @@ public class Report extends OrderHeader {
 
     private final String reportNotes        = "[ng-model=\"ctrl.reportEntry.notes\"]";
     private final String additionalComments = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
-    private final String previewReportPdf   = ".report-preview ng-pdf";
-    private final String releasedReportPdf  = ".released-report-table tr td:nth-child(3) a";
     private final String editJson           = "[ng-click='ctrl.editReportData()']";
     private final String reportDataJson     = "[ng-model='ctrl.reportDataJSON']";
     private final String modalOk            = "[data-ng-click='ctrl.ok();']";
@@ -55,12 +53,9 @@ public class Report extends OrderHeader {
         assertTrue (setText (additionalComments, comments));
     }
 
-    public String getPreviewReportPdfUrl () {
-        return getAttribute (previewReportPdf, "pdf-url");
-    }
-
     public String getReleasedReportPdfUrl () {
-        return getAttribute (releasedReportPdf, "href");
+        String firstReportPdf = ".released-report-table tr:nth-child(1) td:nth-child(3) a";
+        return getAttribute (firstReportPdf, "href");
     }
 
     public void clickEditJson () {
@@ -76,7 +71,7 @@ public class Report extends OrderHeader {
         assertTrue (clear (reportDataJson));
         assertTrue (setText (reportDataJson, jsonData));
         assertTrue (click (modalOk));
-        pageLoading ();
+        transactionInProgress ();
     }
 
     public void clickSaveAndUpdate () {
@@ -118,7 +113,7 @@ public class Report extends OrderHeader {
 
     public void releaseReport (Assay assay, QC qc) {
         // for TCell
-        if (!COVID19_DX_IVD.equals (assay) && !LYME_DX_IVD.equals (assay) && isElementVisible (".report-blocked-msg")) {
+        if (!COVID19_DX_IVD.equals (assay) && !LYME_DX.equals (assay) && isElementVisible (".report-blocked-msg")) {
             assertTrue (click ("//*[text()='Generate Report']"));
             pageLoading ();
         }
