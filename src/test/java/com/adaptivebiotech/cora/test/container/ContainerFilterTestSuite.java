@@ -37,7 +37,7 @@ public class ContainerFilterTestSuite extends ContainerTestBase {
     }
 
     /**
-     * @sdlc.requirements SR-9060:R1
+     * @sdlc.requirements SR-9904:R1
      */
     // assumes freezerAB018055 is in 1551, has capacity
     public void applyFilters () {
@@ -61,42 +61,41 @@ public class ContainerFilterTestSuite extends ContainerTestBase {
         containersList.setCategoryFilter (wrongCategory);
         containersList.clickFilter ();
         assertFalse (containersList.containerIsDisplayed (container));
-        testLog ("After applying filter, container with different category was not displayed");
+        testLog ("Mismatching category filter did not return container");
         containersList.setCategoryFilter (targetCategory);
         containersList.clickFilter ();
         assertTrue (containersList.containerIsDisplayed (container));
-        testLog ("After applying filter, container with corresponding category was displayed");
-
-        // currentLocation
-        containersList.setCurrentLocationFilter (wrongFreezer.name);
-        containersList.clickFilter ();
-        assertFalse (containersList.containerIsDisplayed (container));
-        testLog ("After applying filter, container with different current location was not displayed");
-        containersList.setCurrentLocationFilter (targetFreezer.name);
-        containersList.clickFilter ();
-        assertTrue (containersList.containerIsDisplayed (container));
-        testLog ("After applying filter, container with corresponding current location was displayed");
-
-        // containerType
-        containersList.setContainerTypeFilter (wrongContainerType);
-        containersList.clickFilter ();
-        assertFalse (containersList.containerIsDisplayed (container));
-        testLog ("After applying filter, container with different container type was not displayed");
-        containersList.setContainerTypeFilter (targetContainerType);
-        containersList.clickFilter ();
-        assertTrue (containersList.containerIsDisplayed (container));
-        testLog ("After applying filter, container with corresponding container type was displayed");
+        testLog ("Matching category filter returned container");
 
         // building
         containersList.setBuildingFilter (wrongBuilding);
         containersList.clickFilter ();
         assertFalse (containersList.containerIsDisplayed (container));
-        testLog ("SR-9060:R1 A building filter was present");
-        testLog ("SR-9060:R1 After applying filter, container with different building was not displayed");
+        testLog ("SR-9904:R1 Mismatching building filter did not return container");
         containersList.setBuildingFilter (targetBuilding);
         containersList.clickFilter ();
         assertTrue (containersList.containerIsDisplayed (container));
-        testLog ("SR-9060:R1 After applying filter, container with corresponding building was displayed");
+        testLog ("SR-9904:R1 Matching building filter returned container");
+
+        // currentLocation
+        containersList.setCurrentLocationFilter (wrongFreezer.name);
+        containersList.clickFilter ();
+        assertFalse (containersList.containerIsDisplayed (container));
+        testLog ("Mismatching current location filter did not return container");
+        containersList.setCurrentLocationFilter (targetFreezer.name);
+        containersList.clickFilter ();
+        assertTrue (containersList.containerIsDisplayed (container));
+        testLog ("Matching current location filter returned container");
+
+        // containerType
+        containersList.setContainerTypeFilter (wrongContainerType);
+        containersList.clickFilter ();
+        assertFalse (containersList.containerIsDisplayed (container));
+        testLog ("Mismatching container type filter did not return container");
+        containersList.setContainerTypeFilter (targetContainerType);
+        containersList.clickFilter ();
+        assertTrue (containersList.containerIsDisplayed (container));
+        testLog ("Matching container type filter returned container");
     }
 
 }
