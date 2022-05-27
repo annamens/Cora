@@ -8,7 +8,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018055;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -23,37 +22,31 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 @Test (groups = { "regression", "fox terrier" })
 public class ContainerFilterTestSuite extends ContainerTestBase {
 
-    private Login                    login                  = new Login ();
-    private OrdersList               ordersList             = new OrdersList ();
-    private ContainersList           containersList         = new ContainersList ();
-    private NewShipment              newShipment            = new NewShipment ();
-    private ThreadLocal <Containers> containersToDeactivate = new ThreadLocal <> ();
-    private final Container          freezerAB018055        = freezerAB018055 ();
-    private final Container          freezerAB018018        = freezerAB018018 ();
-
-    @AfterMethod (alwaysRun = true)
-    public void afterMethod () {
-        coraApi.deactivateContainers (containersToDeactivate.get ());
-    }
+    private Login           login           = new Login ();
+    private OrdersList      ordersList      = new OrdersList ();
+    private ContainersList  containersList  = new ContainersList ();
+    private NewShipment     newShipment     = new NewShipment ();
+    private final Container freezerAB018055 = freezerAB018055 ();
+    private final Container freezerAB018018 = freezerAB018018 ();
 
     /**
      * @sdlc.requirements SR-9904:R1
      */
     // assumes freezerAB018055 is in 1551, has capacity
     public void applyFilters () {
-        login.doLogin ();
-        ordersList.isCorrectPage ();
         ContainerType targetContainerType = ContainerType.Tube;
         ContainerType wrongContainerType = ContainerType.Conical;
         Container targetFreezer = freezerAB018055;
         Container wrongFreezer = freezerAB018018;
-        Building targetBuilding = Building.building1551;
-        Building wrongBuilding = Building.buildingSSF;
+        Building targetBuilding = Building.WA_1551;
+        Building wrongBuilding = Building.SSF;
         Category targetCategory = Category.Diagnostic;
         Category wrongCategory = Category.Batch;
+        login.doLogin ();
+        ordersList.isCorrectPage ();
         newShipment.createShipment (targetContainerType, freezerAB018055.name);
-        containersToDeactivate.set (new Containers (newShipment.getPrimaryContainers (targetContainerType).list));
-        Container container = newShipment.getPrimaryContainers (targetContainerType).list.get (0);
+        Containers containers = newShipment.getPrimaryContainers (targetContainerType);
+        Container container = containers.list.get (0);
         ordersList.clickContainers ();
 
         // category
@@ -96,6 +89,8 @@ public class ContainerFilterTestSuite extends ContainerTestBase {
         containersList.clickFilter ();
         assertTrue (containersList.containerIsDisplayed (container));
         testLog ("Matching container type filter returned container");
+
+        coraApi.deactivateContainers (containers);
     }
 
 }

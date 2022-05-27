@@ -75,7 +75,7 @@ public class ContainersList extends CoraPage {
     }
 
     public static enum Building {
-        building1165 ("1165"), building1208 ("1208"), building1551 ("1551"), buildingSSF ("SSF");
+        WA_1165 ("1165"), WA_1208 ("1208"), WA_1551 ("1551"), SSF ("SSF");
 
         public final String text;
 
