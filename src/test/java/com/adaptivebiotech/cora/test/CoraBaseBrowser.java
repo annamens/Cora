@@ -6,6 +6,10 @@ package com.adaptivebiotech.cora.test;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.coraDbInfo;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.initialization;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.jumpbox;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
+import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.isIVD;
+import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.gitcommitId;
 import static com.adaptivebiotech.test.BaseEnvironment.version;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -62,6 +66,16 @@ public class CoraBaseBrowser extends TestBase {
         MDC.put (jobId, testName);
         coraApi.addTokenAndUsername ();
         info (format ("running: %s()", testName));
+    }
+
+    protected void prepPipelineApi (boolean isClia) {
+        if (isClia) {
+            isIVD = false;
+            portalTestUrl = portalCliaTestUrl;
+        } else {
+            isIVD = true;
+            portalTestUrl = portalIvdTestUrl;
+        }
     }
 
     protected String artifacts (String... paths) {
