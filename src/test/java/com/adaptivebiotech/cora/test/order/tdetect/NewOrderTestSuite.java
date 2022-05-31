@@ -26,10 +26,8 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
-import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
-import com.adaptivebiotech.cora.ui.shipment.DiscrepancyResolutions;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
 /**
@@ -39,13 +37,11 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 @Test (groups = "regression")
 public class NewOrderTestSuite extends NewOrderTestBase {
 
-    private Login                  login                  = new Login ();
-    private OrdersList             ordersList             = new OrdersList ();
-    private NewOrderTDetect        newOrderTDetect        = new NewOrderTDetect ();
-    private OrderDetailTDetect     orderDetailTDetect     = new OrderDetailTDetect ();
-    private NewShipment            shipment               = new NewShipment ();
-    private Accession              accession              = new Accession ();
-    private DiscrepancyResolutions discrepancyResolutions = new DiscrepancyResolutions ();
+    private Login           login           = new Login ();
+    private OrdersList      ordersList      = new OrdersList ();
+    private NewOrderTDetect newOrderTDetect = new NewOrderTDetect ();
+    private NewShipment     shipment        = new NewShipment ();
+    private Accession       accession       = new Accession ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
