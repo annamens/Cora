@@ -25,7 +25,7 @@ public final class Insurance {
     public String              billingInstitution;
     public String              dischargeDate;
     public String              priorAuthorizationNumber;
-    
+
     @JsonIgnore
     public boolean isEmpty () {
         return provider == null && groupNumber == null && policyNumber == null && insuredRelationship == null && policyholder == null && hospitalizationStatus == null && billingInstitution == null && dischargeDate == null && priorAuthorizationNumber == null;
