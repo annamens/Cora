@@ -55,7 +55,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
@@ -75,7 +75,7 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
  *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "tDetectOrder" })
-public class TDetectReportTestSuite extends CoraBaseBrowser {
+public class TDetectReportTestSuite extends NewOrderTestBase {
 
     private Login              login               = new Login ();
     private OrdersList         ordersList          = new OrdersList ();
