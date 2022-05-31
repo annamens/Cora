@@ -135,7 +135,6 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         assertNull (report.specimenInfo);
         assertNull (report.dataEncoded);
         assertNull (report.data);
-
         assertEquals (report.dxResult, sample_112770_SN_7929 ());
         testLog ("found the corrct DTO structure in the " + reportData);
     }
