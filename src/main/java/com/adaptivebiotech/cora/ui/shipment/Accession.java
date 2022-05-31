@@ -4,6 +4,7 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
@@ -25,6 +26,7 @@ public class Accession extends ShipmentHeader {
     private final String  accessionNotes       = "#accession-notes";
     private final String  specimenApprovalPass = "#specimen-pass-button";
     private final String  specimenApprovalFail = "#specimen-fail-button";
+    private final String  approveSpecimen      = "[ng-click='ctrl.approveSpecimen(true)']";
 
     public Accession () {
         staticNavBarHeight = 195;
@@ -34,6 +36,16 @@ public class Accession extends ShipmentHeader {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(2)", "ACCESSION"));
         pageLoading ();
+    }
+
+    @Override
+    public void gotoAccession (String shipmentId) {
+        super.gotoAccession (shipmentId);
+        isCorrectPage ();
+    }
+
+    public String getShipmentId () {
+        return substringBetween (getCurrentUrl (), "cora/shipment/entry/", "?p=accession");
     }
 
     public void clickOrderNumber () {
@@ -65,6 +77,10 @@ public class Accession extends ShipmentHeader {
             assertTrue (clickAndSelectValue (conditionType, "ResolvedYes"));
             assertTrue (click ("[data-ng-click*='accession-save']"));
         }
+    }
+
+    public boolean isApproveSpecimenEnabled () {
+        return waitForElement (approveSpecimen).isEnabled ();
     }
 
     public void clickPass () {
