@@ -4,6 +4,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.getPatientStatus;
+import static java.lang.String.format;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
@@ -18,7 +19,19 @@ import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
  */
 public class BillingOrderDetail extends CoraPage {
 
-    private final String billing = "#billing-type";
+    private final String billing                  = "#billing-type";
+    private final String primaryInsurance         = "insurance";
+    private final String secondaryInsurance       = "secondaryInsurance";
+    private final String tertiaryInsurance        = "tertiaryInsurance";
+    private final String insuranceProvider        = "[ng-bind*='ctrl.orderEntry.orderBilling.%s.insuranceProvider']";
+    private final String priorAuthorizationNumber = "[ng-bind*='ctrl.orderEntry.orderBilling.%s.priorAuthorizationNumber']";
+    private final String groupNumber              = "[ng-bind*='ctrl.orderEntry.orderBilling.%s.groupNumber']";
+    private final String policyNumber             = "[ng-bind*='ctrl.orderEntry.orderBilling.%s.policyNumber']";
+    private final String insuredRelationship      = "[ng-bind*='ctrl.orderEntry.orderBilling.%s.insuredRelationship']";
+    private final String policyholder             = "[ng-bind*='ctrl.orderEntry.orderBilling.%s.policyholder']";
+    private final String patientStatus            = "[ng-bind*='ctrl.orderEntry.orderBilling.%s.hospitalizationStatus']";
+    private final String hospital                 = "[ng-bind*='ctrl.orderEntry.orderBilling.%s.institution']";
+    private final String dischargeDate            = "[ng-bind*='ctrl.orderEntry.orderBilling.%s.dischargeDate']";
 
     public void selectBilling (ChargeType type) {
         assertTrue (clickAndSelectText (billing, type.label));
@@ -37,71 +50,126 @@ public class BillingOrderDetail extends CoraPage {
 
     public AbnStatus getAbnStatus () {
         String css = "[ng-bind^='ctrl.orderEntry.order.abnStatusType']";
-        return AbnStatus.getAbnStatus (getText (css));
+        return isElementVisible (css) ? AbnStatus.getAbnStatus (getText (css)) : null;
+    }
+
+    protected boolean isPrimaryInsurancePresent () {
+        String css = format (insuranceProvider, primaryInsurance);
+        return isElementPresent (css);
     }
 
     protected String getInsurance1Provider () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.insuranceProvider']";
+        String css = format (insuranceProvider, primaryInsurance);
+        return isElementPresent (css) ? getText (css) : null;
+    }
+
+    protected String getInsurance1AuthorizationNo () {
+        String css = format (priorAuthorizationNumber, primaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance1GroupNumber () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.groupNumber']";
+        String css = format (groupNumber, primaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance1Policy () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.policyNumber']";
+        String css = format (policyNumber, primaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected PatientRelationship getInsurance1Relationship () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.insuredRelationship']";
+        String css = format (insuredRelationship, primaryInsurance);
         return getEnum (PatientRelationship.class, isElementPresent (css) ? getText (css) : null);
     }
 
     protected String getInsurance1PolicyHolder () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.policyholder']";
+        String css = format (policyholder, primaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected PatientStatus getInsurance1PatientStatus () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.hospitalizationStatus']";
+        String css = format (patientStatus, primaryInsurance);
         return isElementPresent (css) ? getPatientStatus (getText (css)) : null;
     }
 
     protected String getInsurance1Hospital () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.institution']";
+        String css = format (hospital, primaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance1DischargeDate () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.insurance.dischargeDate']";
+        String css = format (dischargeDate, primaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 
+    protected boolean isSecondaryInsurancePresent () {
+        String css = format (insuranceProvider, secondaryInsurance);
+        return isElementPresent (css);
+    }
+
     protected String getInsurance2Provider () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuranceProvider']";
+        String css = format (insuranceProvider, secondaryInsurance);
+        return isElementPresent (css) ? getText (css) : null;
+    }
+
+    protected String getInsurance2AuthorizationNo () {
+        String css = format (priorAuthorizationNumber, secondaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance2GroupNumber () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.groupNumber']";
+        String css = format (groupNumber, secondaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected String getInsurance2Policy () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyNumber']";
+        String css = format (policyNumber, secondaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 
     protected PatientRelationship getInsurance2Relationship () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.insuredRelationship']";
+        String css = format (insuredRelationship, secondaryInsurance);
         return isElementPresent (css) ? PatientRelationship.valueOf (getText (css)) : null;
     }
 
     protected String getInsurance2PolicyHolder () {
-        String css = "[ng-bind*='ctrl.orderEntry.orderBilling.secondaryInsurance.policyholder']";
+        String css = format (policyholder, secondaryInsurance);
+        return isElementPresent (css) ? getText (css) : null;
+    }
+
+    protected boolean isTertiaryInsurancePresent () {
+        String css = format (insuranceProvider, tertiaryInsurance);
+        return isElementPresent (css);
+    }
+
+    protected String getInsurance3Provider () {
+        String css = format (insuranceProvider, tertiaryInsurance);
+        return isElementPresent (css) ? getText (css) : null;
+    }
+
+    protected String getInsurance3AuthorizationNo () {
+        String css = format (priorAuthorizationNumber, tertiaryInsurance);
+        return isElementPresent (css) ? getText (css) : null;
+    }
+
+    protected String getInsurance3GroupNumber () {
+        String css = format (groupNumber, tertiaryInsurance);
+        return isElementPresent (css) ? getText (css) : null;
+    }
+
+    protected String getInsurance3Policy () {
+        String css = format (policyNumber, tertiaryInsurance);
+        return isElementPresent (css) ? getText (css) : null;
+    }
+
+    protected PatientRelationship getInsurance3Relationship () {
+        String css = format (insuredRelationship, tertiaryInsurance);
+        return isElementPresent (css) ? PatientRelationship.valueOf (getText (css)) : null;
+    }
+
+    protected String getInsurance3PolicyHolder () {
+        String css = format (policyholder, tertiaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
 

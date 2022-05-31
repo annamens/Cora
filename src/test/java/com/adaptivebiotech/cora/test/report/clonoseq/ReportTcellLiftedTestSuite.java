@@ -60,7 +60,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
     private Diagnostic     diagnostic;
     private Patient        patient;
 
-    @BeforeClass
+    @BeforeClass (alwaysRun = true)
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
         patient = new Patient ();

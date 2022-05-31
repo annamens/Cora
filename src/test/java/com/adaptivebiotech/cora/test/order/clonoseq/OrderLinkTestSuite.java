@@ -64,13 +64,13 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
     private DiscrepancyResolutions discrepancyResolutions = new DiscrepancyResolutions ();
     private Physician              physician;
 
-    @BeforeClass
+    @BeforeClass (alwaysRun = true)
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
         physician = coraApi.getPhysician (non_CLEP_clonoseq);
     }
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
