@@ -78,7 +78,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
 
     /**
      * Note:
-     * - for Auto QC to work, you have to comlete NorthQC stage
+     * - for Auto QC to work, you have to complete NorthQC stage
      * 
      * @sdlc.requirements SR-5671, SR-6487, SR-6488
      */
