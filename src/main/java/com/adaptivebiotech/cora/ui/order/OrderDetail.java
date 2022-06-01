@@ -52,7 +52,7 @@ public class OrderDetail extends OrderHeader {
     private final String      attachmentUrl       = "a[href]";
     private final String      attachmentDate      = "[ng-bind$='localDateTime']";
     private final String      attachmentCreatedBy = "[ng-bind='attachment.createdBy']";
-    private final String      orderAuth           = "[ng-bind*='\\'documentedByType\\'']";
+    private final String      orderAuth           = "//*[*[text()='Order Authorization']]/following-sibling::div";
     private final String      attachments         = "[attachments='ctrl.orderEntry.attachments']%s .attachments-table-row";
 
     public OrderDetail () {
