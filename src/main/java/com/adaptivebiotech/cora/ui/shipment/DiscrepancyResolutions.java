@@ -15,7 +15,7 @@ public class DiscrepancyResolutions extends ShipmentHeader {
 
     @Override
     public void isCorrectPage () {
-        assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(2)", "DISCREPANCY RESOLUTIONS"));
+        assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(3)", "DISCREPANCY RESOLUTIONS"));
         pageLoading ();
     }
 

@@ -62,5 +62,6 @@ public class ShipmentHeader extends CoraPage {
     public void clickDiscrepancySave () {
         String cssSave = "[ng-click='ctrl.save()'";
         assertTrue (click (cssSave));
+        transactionInProgress ();
     }
 }
