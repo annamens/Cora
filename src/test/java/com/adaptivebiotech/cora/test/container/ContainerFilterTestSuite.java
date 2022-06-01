@@ -4,7 +4,7 @@
 package com.adaptivebiotech.cora.test.container;
 
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018018;
-import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018055;
+import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018078;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -26,17 +26,17 @@ public class ContainerFilterTestSuite extends ContainerTestBase {
     private OrdersList      ordersList      = new OrdersList ();
     private ContainersList  containersList  = new ContainersList ();
     private NewShipment     newShipment     = new NewShipment ();
-    private final Container freezerAB018055 = freezerAB018055 ();
+    private final Container freezerAB018078 = freezerAB018078 ();
     private final Container freezerAB018018 = freezerAB018018 ();
 
     /**
      * @sdlc.requirements SR-9904:R1
      */
-    // assumes freezerAB018055 is in 1551, has capacity
+    // assumes freezerAB018078 is in 1551, has unlimited capacity
     public void applyFilters () {
         ContainerType targetContainerType = ContainerType.Tube;
         ContainerType wrongContainerType = ContainerType.Conical;
-        Container targetFreezer = freezerAB018055;
+        Container targetFreezer = freezerAB018078;
         Container wrongFreezer = freezerAB018018;
         Building targetBuilding = Building.WA_1551;
         Building wrongBuilding = Building.SSF;
@@ -44,7 +44,7 @@ public class ContainerFilterTestSuite extends ContainerTestBase {
         Category wrongCategory = Category.Batch;
         login.doLogin ();
         ordersList.isCorrectPage ();
-        newShipment.createShipment (targetContainerType, freezerAB018055.name);
+        newShipment.createShipment (targetContainerType, targetFreezer.name);
         Containers containers = newShipment.getPrimaryContainers (targetContainerType);
         Container container = containers.list.get (0);
         ordersList.clickContainers ();
