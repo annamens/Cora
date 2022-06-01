@@ -93,10 +93,13 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
 
         validateTabsOrderPage (order, orderDiscrepTabList);
         newOrderTDetect.clickAccessionTab ();
+        accession.isCorrectPage ();
         newOrderTDetect.clickDiscrepancyResolutionsTab ();
+        discrepancyResolutions.isCorrectPage ();
         testLog ("Validate Accession and Discrepancy tabs open in same window");
 
         newOrderTDetect.clickOrderDetailsTab ();
+        newOrderTDetect.isCorrectPage ();
         newOrderTDetect.activateOrder ();
         orderDetailTDetect.gotoOrderDetailsPage (order.id);
         assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
@@ -135,9 +138,11 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
 
         validateTabsOrderPage (order, orderDetailsTabList);
         newOrderTDetect.clickAccessionTab ();
+        accession.isCorrectPage ();
         testLog ("Validate Accession tab opens in same window");
 
         newOrderTDetect.clickOrderDetailsTab ();
+        newOrderTDetect.isCorrectPage ();
         newOrderTDetect.activateOrder ();
         orderDetailTDetect.gotoOrderDetailsPage (order.id);
         assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
