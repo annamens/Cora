@@ -46,7 +46,7 @@ public class ScanTestSuite extends ContainerTestBase {
     private Containers   mytestContainers;
     private Containers   shipContainers;
 
-    @BeforeClass
+    @BeforeClass (alwaysRun = true)
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
         mytestContainers = coraApi.addContainers (new Containers (asList (container (Slide), container (SlideBox5))));
@@ -67,13 +67,13 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.clickSignOut ();
     }
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
     }
 
-    @AfterClass
+    @AfterClass (alwaysRun = true)
     public void afterClass () {
         coraApi.deactivateContainers (mytestContainers);
         coraApi.deactivateContainers (shipContainers);

@@ -52,7 +52,7 @@ public class OrderDetail extends OrderHeader {
     private final String      attachmentUrl       = "a[href]";
     private final String      attachmentDate      = "[ng-bind$='localDateTime']";
     private final String      attachmentCreatedBy = "[ng-bind='attachment.createdBy']";
-    private final String      orderAuth           = "[ng-bind*='\'documentedByType\'']";
+    private final String      orderAuth           = "//*[*[text()='Order Authorization']]/following-sibling::div";
     private final String      attachments         = "[attachments='ctrl.orderEntry.attachments']%s .attachments-table-row";
 
     public OrderDetail () {
@@ -137,21 +137,40 @@ public class OrderDetail extends OrderHeader {
         order.shipmentAttachments = getShipmentAttachments ();
         order.trf = getDoraTrf ();
         order.doraAttachments = getDoraAttachments ();
-        order.patient.insurance1 = new Insurance ();
-        order.patient.insurance1.provider = billing.getInsurance1Provider ();
-        order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
-        order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
-        order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
-        order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
-        order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
-        order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
-        order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
-        order.patient.insurance2 = new Insurance ();
-        order.patient.insurance2.provider = billing.getInsurance2Provider ();
-        order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
-        order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
-        order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
-        order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+
+        if (billing.isPrimaryInsurancePresent ()) {
+            order.patient.insurance1 = new Insurance ();
+            order.patient.insurance1.provider = billing.getInsurance1Provider ();
+            order.patient.insurance1.priorAuthorizationNumber = billing.getInsurance1AuthorizationNumber ();
+            order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
+            order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
+            order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
+            order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
+            order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
+            order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
+            order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
+        }
+
+        if (billing.isSecondaryInsurancePresent ()) {
+            order.patient.insurance2 = new Insurance ();
+            order.patient.insurance2.provider = billing.getInsurance2Provider ();
+            order.patient.insurance2.priorAuthorizationNumber = billing.getInsurance2AuthorizationNumber ();
+            order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
+            order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
+            order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
+            order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+        }
+
+        if (billing.isTertiaryInsurancePresent ()) {
+            order.patient.insurance3 = new Insurance ();
+            order.patient.insurance3.provider = billing.getInsurance3Provider ();
+            order.patient.insurance3.priorAuthorizationNumber = billing.getInsurance3AuthorizationNumber ();
+            order.patient.insurance3.groupNumber = billing.getInsurance3GroupNumber ();
+            order.patient.insurance3.policyNumber = billing.getInsurance3Policy ();
+            order.patient.insurance3.insuredRelationship = billing.getInsurance3Relationship ();
+            order.patient.insurance3.policyholder = billing.getInsurance3PolicyHolder ();
+        }
+
         order.patient.address = billing.getPatientAddress1 ();
         order.patient.phone = billing.getPatientPhone ();
         order.patient.locality = billing.getPatientCity ();

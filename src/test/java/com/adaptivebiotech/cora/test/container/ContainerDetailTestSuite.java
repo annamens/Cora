@@ -32,7 +32,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
     private MyCustody                myCustody  = new MyCustody ();
     private ThreadLocal <Containers> containers = new ThreadLocal <> ();
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         containers.set (coraApi.addContainers (new Containers (asList (container (SlideBox5CS)))));
 
@@ -40,7 +40,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         ordersList.isCorrectPage ();
     }
 
-    @AfterMethod
+    @AfterMethod (alwaysRun = true)
     public void afterMethod () {
         coraApi.deactivateContainers (containers.get ());
     }

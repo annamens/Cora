@@ -34,7 +34,7 @@ public class BatchTestSuite extends BatchTestBase {
     private Batch                batch       = new Batch ();
     private ThreadLocal <String> downloadDir = new ThreadLocal <> ();
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
     }

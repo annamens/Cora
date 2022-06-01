@@ -34,7 +34,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     private History                  history    = new History ();
     private ThreadLocal <Containers> containers = new ThreadLocal <> ();
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         containers.set (coraApi.addContainers (new Containers (asList (container (Tube), container (TubeBox5x5)))));
 
@@ -44,7 +44,7 @@ public class DepletionTestSuite extends ContainerTestBase {
         myCustody.isCorrectPage ();
     }
 
-    @AfterMethod
+    @AfterMethod (alwaysRun = true)
     public void afterMethod () {
         coraApi.deactivateContainers (containers.get ());
     }
