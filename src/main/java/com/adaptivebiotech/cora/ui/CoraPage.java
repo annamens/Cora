@@ -273,6 +273,12 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
+    public void gotoAccession (String shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=accession"));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
     // click on (X) icon
     public void closePopup () {
         assertTrue (click ("[ng-click='ctrl.cancel()'] .glyphicon-remove"));
@@ -343,4 +349,7 @@ public class CoraPage extends BasePage {
         return elements;
     }
 
+    public List <String> getTabList () {
+        return getTextList (".nav-tabs li:not([class*='ng-hide']) a");
+    }
 }

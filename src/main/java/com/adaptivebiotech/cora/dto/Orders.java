@@ -93,6 +93,7 @@ public final class Orders {
         public Boolean             postToImmunoSEQ;
         public ChargeType          billingType;
         public DeliveryType        specimenDeliveryType;
+        public OrderAuthorization  documentedByType;
 
         // for /cora/api/v1/orders/search
         public String              category;
@@ -381,6 +382,24 @@ public final class Orders {
 
         public static Assay getAssay (String test) {
             return allOf (Assay.class).parallelStream ().filter (a -> a.test.equals (test)).findAny ().get ();
+        }
+    }
+
+    public enum OrderAuthorization {
+        TrfWetSig ("Physician wet signature on TRF"),
+        TrfESig ("Physician e-signature on TRF"),
+        ExternalTrf ("Internal requisition form with handwritten or electronic physician signature authorizing clonoSEQ order"),
+        SignatureBypass ("Electronically Authorized in Medical Record");
+
+        public String coraLabel;
+
+        private OrderAuthorization (String coraLabel) {
+            this.coraLabel = coraLabel;
+        }
+
+        public static OrderAuthorization getOrderAuthorization (String coraLabel) {
+            return allOf (OrderAuthorization.class).parallelStream ().filter (st -> st.coraLabel.equals (coraLabel))
+                                                   .findAny ().get ();
         }
     }
 
