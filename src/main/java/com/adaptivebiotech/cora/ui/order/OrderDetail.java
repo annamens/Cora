@@ -141,7 +141,7 @@ public class OrderDetail extends OrderHeader {
         if (billing.isPrimaryInsurancePresent ()) {
             order.patient.insurance1 = new Insurance ();
             order.patient.insurance1.provider = billing.getInsurance1Provider ();
-            order.patient.insurance1.priorAuthorizationNumber = billing.getInsurance1AuthorizationNo ();
+            order.patient.insurance1.priorAuthorizationNumber = billing.getInsurance1AuthorizationNumber ();
             order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
             order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
             order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
@@ -154,7 +154,7 @@ public class OrderDetail extends OrderHeader {
         if (billing.isSecondaryInsurancePresent ()) {
             order.patient.insurance2 = new Insurance ();
             order.patient.insurance2.provider = billing.getInsurance2Provider ();
-            order.patient.insurance2.priorAuthorizationNumber = billing.getInsurance2AuthorizationNo ();
+            order.patient.insurance2.priorAuthorizationNumber = billing.getInsurance2AuthorizationNumber ();
             order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
             order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
             order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
@@ -164,7 +164,7 @@ public class OrderDetail extends OrderHeader {
         if (billing.isTertiaryInsurancePresent ()) {
             order.patient.insurance3 = new Insurance ();
             order.patient.insurance3.provider = billing.getInsurance3Provider ();
-            order.patient.insurance3.priorAuthorizationNumber = billing.getInsurance3AuthorizationNo ();
+            order.patient.insurance3.priorAuthorizationNumber = billing.getInsurance3AuthorizationNumber ();
             order.patient.insurance3.groupNumber = billing.getInsurance3GroupNumber ();
             order.patient.insurance3.policyNumber = billing.getInsurance3Policy ();
             order.patient.insurance3.insuredRelationship = billing.getInsurance3Relationship ();

@@ -13,8 +13,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -61,61 +59,44 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
                                                           null,
                                                           bloodSpecimen ().collectionDate.toString (),
                                                           COVID19_DX_IVD);
-        validateTabsOrderPage (order, asList (orderDetailsTab));
+        assertEquals (newOrderTDetect.getTabList (), asList (orderDetailsTab));
 
         shipment.createShipment (order.orderNumber, Tube);
-        testLog ("Shipment Created");
-
         String shipmentId = accession.getShipmentId ();
-        validateTabsShipmentPage (shipmentId, accessionTabList);
+        assertEquals (accession.getTabList (), accessionTabList);
+        testLog ("Shipment Created");
 
         validateTabsOrderPage (order, asList (orderDetailsTab));
 
-        validateTabsShipmentPage (shipmentId, accessionTabList);
+        accession.gotoAccession (shipmentId);
         accession.clickAddContainerSpecimenDiscrepancy ();
         accession.addDiscrepancy (SpecimenType, "This is a specimen/container discrepancy", CLINICAL_TRIALS);
         accession.clickDiscrepancySave ();
-        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        assertEquals (accession.getTabList (), discrepancyTabList);
         testLog ("Discrepancy created");
 
         validateTabsOrderPage (order, asList (orderDetailsTab));
 
-        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        accession.gotoAccession (shipmentId);
         accession.clickIntakeComplete ();
-        testLog ("Accession - Intake complete");
-
-        validateTabsOrderPage (order, orderDiscrepTabList);
-
-        validateTabsShipmentPage (shipmentId, discrepancyTabList);
         accession.clickLabelingComplete ();
-        testLog ("Labelling complete");
-
-        validateTabsOrderPage (order, orderDiscrepTabList);
-
-        validateTabsShipmentPage (shipmentId, discrepancyTabList);
         accession.clickLabelVerificationComplete ();
-        testLog ("Label verification complete");
-
-        validateTabsOrderPage (order, orderDiscrepTabList);
-
-        validateTabsShipmentPage (shipmentId, discrepancyTabList);
-        assertFalse (accession.isApproveSpecimenEnabled ());
-        testLog ("Specimen approval is disabled");
-
         accession.gotoDiscrepancyResolutions ();
         discrepancyResolutions.resolveAllDiscrepancies ();
         discrepancyResolutions.clickSave ();
-        validateTabsShipmentPage (shipmentId, discrepancyTabList);
         testLog ("Resolve discrepancy");
 
-        validateTabsOrderPage (order, orderDiscrepTabList);
-
-        validateTabsShipmentPage (shipmentId, discrepancyTabList);
+        discrepancyResolutions.clickAccessionTab ();
         accession.clickPass ();
+        assertEquals (accession.getTabList (), discrepancyTabList);
         testLog ("Specimen approval pass");
 
         validateTabsOrderPage (order, orderDiscrepTabList);
+        newOrderTDetect.clickAccessionTab ();
+        newOrderTDetect.clickDiscrepancyResolutionsTab ();
+        testLog ("Validate Accession and Discrepancy tabs open in same window");
 
+        newOrderTDetect.clickOrderDetailsTab ();
         newOrderTDetect.activateOrder ();
         orderDetailTDetect.gotoOrderDetailsPage (order.id);
         assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
@@ -135,59 +116,33 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
                                                           null,
                                                           bloodSpecimen ().collectionDate.toString (),
                                                           COVID19_DX_IVD);
-        validateTabsOrderPage (order, asList (orderDetailsTab));
+        assertEquals (newOrderTDetect.getTabList (), asList (orderDetailsTab));
 
         shipment.createShipment (order.orderNumber, Tube);
-        testLog ("Shipment Created");
-
         String shipmentId = accession.getShipmentId ();
-        validateTabsShipmentPage (shipmentId, accessionTabList);
+        assertEquals (accession.getTabList (), accessionTabList);
+        testLog ("Shipment Created");
 
         validateTabsOrderPage (order, asList (orderDetailsTab));
 
-        validateTabsShipmentPage (shipmentId, accessionTabList);
+        accession.gotoAccession (shipmentId);
         accession.clickIntakeComplete ();
-        testLog ("Accession - Intake complete");
-
-        validateTabsOrderPage (order, orderDetailsTabList);
-
-        validateTabsShipmentPage (shipmentId, accessionTabList);
         accession.clickLabelingComplete ();
-        testLog ("Labelling complete");
-
-        validateTabsOrderPage (order, orderDetailsTabList);
-
-        validateTabsShipmentPage (shipmentId, accessionTabList);
         accession.clickLabelVerificationComplete ();
-        testLog ("Label verification complete");
-
-        validateTabsOrderPage (order, orderDetailsTabList);
-
-        validateTabsShipmentPage (shipmentId, accessionTabList);
-        assertTrue (accession.isApproveSpecimenEnabled ());
-        testLog ("Specimen approval is enabled");
-
-        validateTabsShipmentPage (shipmentId, accessionTabList);
-
-        validateTabsOrderPage (order, orderDetailsTabList);
-
-        validateTabsShipmentPage (shipmentId, accessionTabList);
         accession.clickPass ();
+        assertEquals (accession.getTabList (), accessionTabList);
         testLog ("Specimen approval pass");
 
         validateTabsOrderPage (order, orderDetailsTabList);
+        newOrderTDetect.clickAccessionTab ();
+        testLog ("Validate Accession tab opens in same window");
 
+        newOrderTDetect.clickOrderDetailsTab ();
         newOrderTDetect.activateOrder ();
         orderDetailTDetect.gotoOrderDetailsPage (order.id);
         assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
 
-    }
-
-    private void validateTabsShipmentPage (String shipmentId, List <String> expTabs) {
-        accession.gotoAccession (shipmentId);
-        assertEquals (accession.getTabList (), expTabs);
-        testLog ("Validate Tabs on Shipment Page");
     }
 
     private void validateTabsOrderPage (Order order, List <String> expTabs) {

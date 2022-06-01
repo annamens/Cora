@@ -63,7 +63,7 @@ public class BillingOrderDetail extends CoraPage {
         return isElementPresent (css) ? getText (css) : null;
     }
 
-    protected String getInsurance1AuthorizationNo () {
+    protected String getInsurance1AuthorizationNumber () {
         String css = format (priorAuthorizationNumber, primaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
@@ -113,7 +113,7 @@ public class BillingOrderDetail extends CoraPage {
         return isElementPresent (css) ? getText (css) : null;
     }
 
-    protected String getInsurance2AuthorizationNo () {
+    protected String getInsurance2AuthorizationNumber () {
         String css = format (priorAuthorizationNumber, secondaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
@@ -148,7 +148,7 @@ public class BillingOrderDetail extends CoraPage {
         return isElementPresent (css) ? getText (css) : null;
     }
 
-    protected String getInsurance3AuthorizationNo () {
+    protected String getInsurance3AuthorizationNumber () {
         String css = format (priorAuthorizationNumber, tertiaryInsurance);
         return isElementPresent (css) ? getText (css) : null;
     }
