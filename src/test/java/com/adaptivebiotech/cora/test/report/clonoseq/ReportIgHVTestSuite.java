@@ -157,6 +157,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
         verifyReport (clonoseq, getReport (orderReport.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
+        prepPipelineApi (true);
         pipelineApi.addBasicAuth ();
         assertEquals (pipelineApi.findFlowcellRuns (diagnostic.order.tests.get (0).workflowProperties.sampleName).length,
                       1);

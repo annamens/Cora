@@ -19,11 +19,21 @@ import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
+import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.COVID19;
+import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.disableHiFreqSave;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.disableHiFreqSharing;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcceptedTsvPath;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFinishedPipelineJobId;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFlowcellId;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.workspaceName;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
+import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import java.time.LocalDate;
@@ -39,6 +49,8 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
+import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
+import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.github.javafaker.Faker;
 
 public class TestHelper {
@@ -329,5 +341,34 @@ public class TestHelper {
         survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Yes")));
         return survey;
+    }
+
+    public static Map <WorkflowProperty, String> covidProperties () {
+        Map <WorkflowProperty, String> properties = new HashMap <> ();
+        properties.put (lastAcceptedTsvPath,
+                        "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e/HCYJNBGXJ_0_CLINICAL-CLINICAL_112770-SN-7929.adap.txt.results.tsv.gz");
+        properties.put (sampleName, "112770-SN-7929");
+        properties.put (workspaceName, "CLINICAL-CLINICAL");
+        properties.put (lastFlowcellId, "HCYJNBGXJ");
+        properties.put (lastFinishedPipelineJobId, "8a7a958877a26e74017a213f79fe6d45");
+        properties.put (disableHiFreqSave, TRUE.toString ());
+        properties.put (disableHiFreqSharing, TRUE.toString ());
+        return properties;
+    }
+
+    public static ClassifierOutput sample_112770_SN_7929 () {
+        ClassifierOutput dxResult = new ClassifierOutput ();
+        dxResult.disease = COVID19;
+        dxResult.classifierVersion = "v1.0";
+        dxResult.dxScore = -9.097219383308602d;
+        dxResult.posteriorProbability = 1.1196420300544642E-4d;
+        dxResult.countEnhancedSeq = 18;
+        dxResult.containerVersion = "dx-classifiers/covid-19:d23228f";
+        dxResult.pipelineVersion = "v3.1-385-g1340003";
+        dxResult.dxStatus = NEGATIVE;
+        dxResult.configVersion = "dx.covid19.rev1";
+        dxResult.uniqueProductiveTemplates = 343874;
+        dxResult.qcFlags = asList ();
+        return dxResult;
     }
 }

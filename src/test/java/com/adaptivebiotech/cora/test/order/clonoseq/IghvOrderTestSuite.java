@@ -10,7 +10,6 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
-import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Fail;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.INDETERMINATE;
@@ -18,8 +17,6 @@ import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.MUT
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.NO_CLONES;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.QC_FAILURE;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.UNMUTATED;
-import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.isIVD;
-import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestUrl;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -1027,12 +1024,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
      * @param assayTest
      */
     private void validatePipelineStatusToComplete (String sampleName, Assay assayTest) {
-        if (assayTest.equals (ID_BCell2_IVD)) {
-            portalTestUrl = portalIvdTestUrl;
-            isIVD = true;
-        } else
-            isIVD = false;
-
+        prepPipelineApi (assayTest.equals (ID_BCell2_CLIA));
         PipelineApi pipelineApi = new PipelineApi ();
         pipelineApi.addBasicAuth ();
         Sample[] samples = pipelineApi.findFlowcellRuns (sampleName);
