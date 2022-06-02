@@ -307,6 +307,15 @@ public class NewShipment extends ShipmentHeader {
         return shipmentNumber;
     }
 
+    public void createShipment (ContainerType containerType, String initialFreezer) {
+        selectNewDiagnosticShipment ();
+        isDiagnostic ();
+        enterShippingCondition (Ambient);
+        selectDiagnosticSpecimenContainerType (containerType);
+        enterInitialStorageLocation (initialFreezer);
+        clickSave ();
+    }
+
     public void createShipment (ShippingCondition shippingCondition,
                                 Carrier carrier,
                                 String trackingNumber,

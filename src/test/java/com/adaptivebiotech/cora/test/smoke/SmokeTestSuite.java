@@ -411,9 +411,9 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         addContainer.clickContainers ();
         cList.isCorrectPage ();
         cList.searchContainerIdOrName (test.containerNumber);
-        cList.setCategory (ContainersList.Category.Any);
+        cList.setCategoryFilter (ContainersList.Category.Any);
         cList.setCurrentLocationFilter (freezer);
-        cList.setContainerType (TubeBox5x5);
+        cList.setContainerTypeFilter (TubeBox5x5);
         cList.setGroupBy (ContainersList.GroupBy.None);
         cList.clickFilter ();
         containers = cList.getContainers ();

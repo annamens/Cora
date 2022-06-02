@@ -317,6 +317,7 @@ public class CoraPage extends BasePage {
 
     public void clickFilter () {
         assertTrue (click ("//*[text()='Filter list']"));
+        pageLoading ();
     }
 
     public void gotoTaskById (String id) {
