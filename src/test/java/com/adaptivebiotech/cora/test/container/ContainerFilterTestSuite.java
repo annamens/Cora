@@ -19,7 +19,7 @@ import com.adaptivebiotech.cora.ui.container.ContainersList.Category;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
-@Test (groups = { "regression", "fox terrier" })
+@Test (groups = { "regression", "fox-terrier" })
 public class ContainerFilterTestSuite extends ContainerTestBase {
 
     private Login           login           = new Login ();
