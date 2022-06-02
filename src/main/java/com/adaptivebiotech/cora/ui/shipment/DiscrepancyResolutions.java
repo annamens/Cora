@@ -9,6 +9,16 @@ import org.openqa.selenium.WebElement;
 
 public class DiscrepancyResolutions extends ShipmentHeader {
 
+    public DiscrepancyResolutions () {
+        staticNavBarHeight = 195;
+    }
+
+    @Override
+    public void isCorrectPage () {
+        assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(3)", "DISCREPANCY RESOLUTIONS"));
+        pageLoading ();
+    }
+
     public int getNumberOfDiscrepancies () {
         String css = "[ng-bind=\"ctrl.entry.discrepancies.length\"]";
         String text = getText (css);

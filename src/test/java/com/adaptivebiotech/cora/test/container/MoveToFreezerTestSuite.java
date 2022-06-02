@@ -54,7 +54,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     private NewShipment          shipment      = new NewShipment ();
     private BatchAccession       accession     = new BatchAccession ();
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
         login.doLogin ();

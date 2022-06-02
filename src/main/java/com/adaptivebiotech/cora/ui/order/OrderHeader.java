@@ -38,6 +38,16 @@ public class OrderHeader extends CoraPage {
         assertTrue (waitForElementInvisible ("[ng-show='ctrl.isLoadingPDF']"));
     }
 
+    public void clickAccessionTab () {
+        assertTrue (click (format (tabBase, "Accession")));
+        pageLoading ();
+    }
+
+    public void clickDiscrepancyResolutionsTab () {
+        assertTrue (click (format (tabBase, "Discrepancy Resolutions")));
+        pageLoading ();
+    }
+
     public void clickOrderStatusTab () {
         assertTrue (click (format (tabBase, "Order Status")));
         pageLoading ();

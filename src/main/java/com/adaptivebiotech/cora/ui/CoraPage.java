@@ -350,6 +350,6 @@ public class CoraPage extends BasePage {
     }
 
     public List <String> getTabList () {
-        return getTextList (".nav-tabs li:not([class*='ng-hide']) a");
+        return getTextList (".nav-tabs li:not([class*='ng-hide']) a:not([target='_blank'])");
     }
 }

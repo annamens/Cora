@@ -56,7 +56,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         ordersList.isCorrectPage ();
     }
 
-    @AfterMethod
+    @AfterMethod (alwaysRun = true)
     public void afterMethod () {
         ordersList.gotoMyCustody ();
         myCustody.isCorrectPage ();

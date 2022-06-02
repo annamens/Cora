@@ -44,7 +44,7 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
     private OrcaHistory    history     = new OrcaHistory ();
     private ReportClonoSeq report      = new ReportClonoSeq ();
 
-    @BeforeClass
+    @BeforeClass (alwaysRun = true)
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
 
