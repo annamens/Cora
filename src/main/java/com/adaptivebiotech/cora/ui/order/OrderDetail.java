@@ -437,6 +437,6 @@ public class OrderDetail extends OrderHeader {
     }
 
     public OrderAuthorization getOrderAuthorization () {
-        return isElementVisible (orderAuth) ? OrderAuthorization.getOrderAuthorization (getText (orderAuth)) : null;
+        return OrderAuthorization.getOrderAuthorization (getText (orderAuth));
     }
 }

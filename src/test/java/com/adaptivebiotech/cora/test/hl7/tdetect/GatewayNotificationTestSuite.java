@@ -81,22 +81,13 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         history.setWorkflowProperties (covidProperties ());
         history.forceStatusUpdate (NorthQC, Ready);
         history.clickOrder ();
-        testLog ("set workflow properties and force workflow to move to DxAnalysis/Ready stage");
+        testLog ("set workflow properties and force workflow to move to NorthQC/Ready stage");
 
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (sample, NorthQC, Finished);
         orderStatus.waitFor (sample, DxAnalysis, Finished);
         orderStatus.waitFor (sample, DxContamination, Finished);
-        orderStatus.waitFor (sample, DxReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (order.id);
-        orderDetail.isCorrectPage ();
-        orderDetail.clickReportTab (COVID19_DX_IVD);
-        report.isCorrectPage ();
-        report.releaseReport (COVID19_DX_IVD, Pass);
-        testLog ("released the Covid report");
-
-        report.clickOrderStatusTab ();
-        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (sample, DxReport, Finished);
         orderStatus.waitFor (sample, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (sample);
         assertEquals (history.getWorkflowProperties ().get (country.name ()), "US");
@@ -133,22 +124,13 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         history.setWorkflowProperties (covidProperties ());
         history.forceStatusUpdate (NorthQC, Ready);
         history.clickOrder ();
-        testLog ("set workflow properties and force workflow to move to DxAnalysis/Ready stage");
+        testLog ("set workflow properties and force workflow to move to NorthQC/Ready stage");
 
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (sample, NorthQC, Finished);
         orderStatus.waitFor (sample, DxAnalysis, Finished);
         orderStatus.waitFor (sample, DxContamination, Finished);
-        orderStatus.waitFor (sample, DxReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (order.id);
-        orderDetail.isCorrectPage ();
-        orderDetail.clickReportTab (COVID19_DX_IVD);
-        report.isCorrectPage ();
-        report.releaseReport (COVID19_DX_IVD, Pass);
-        testLog ("released the Covid report");
-
-        report.clickOrderStatusTab ();
-        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (sample, DxReport, Finished);
         orderStatus.waitFor (sample, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (sample);
         assertEquals (history.getWorkflowProperties ().get (country.name ()), "CA");

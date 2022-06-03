@@ -399,7 +399,7 @@ public final class Orders {
 
         public static OrderAuthorization getOrderAuthorization (String coraLabel) {
             return allOf (OrderAuthorization.class).parallelStream ().filter (st -> st.coraLabel.equals (coraLabel))
-                                                   .findAny ().get ();
+                                                   .findAny ().orElse (null);
         }
     }
 
