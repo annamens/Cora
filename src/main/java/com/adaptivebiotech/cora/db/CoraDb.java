@@ -1,9 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
  *******************************************************************************/
-/**
- * 
- */
 package com.adaptivebiotech.cora.db;
 
 import static com.seleniumfy.test.utils.Logging.error;

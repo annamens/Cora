@@ -1,9 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
  *******************************************************************************/
-/**
- * 
- */
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
