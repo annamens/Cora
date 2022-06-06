@@ -40,7 +40,6 @@ import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.text.WordUtils.capitalize;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.io.File;
@@ -85,17 +84,15 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
     private OrcaHistory        history             = new OrcaHistory ();
     private TaskDetail         taskDetail          = new TaskDetail ();
     private OrderStatus        orderStatus         = new OrderStatus ();
-    private OrderDetailTDetect orderDetail         = new OrderDetailTDetect ();
     private final String       todaysDate          = genDate (0, formatDt1, pstZoneId);
     private final String       todaysDateDash      = convertDateFormat (todaysDate, "MM/dd/yyyy", "yyyy-MM-dd");
     private final String       result              = "RESULT";
     private final String       expTestResult       = "NEGATIVE";
-    private final String       reviewedReleasedBy  = "svc_cora_test_phi_preprod, NBCDCH-PS";
+    private final String       reviewedReleasedBy  = "This report was released by an automated process.";
     private final String       approvedBy          = "John Alsobrook, II, PhD, DABCC";
-    private final String       reviewSignStr       = "REVIEWED AND RELEASED BY SIGNATURE DATE & TIME";
+    private final String       reviewSignStr       = "RELEASED BY DATE & TIME";
     private final String       approvedSignStr     = "APPROVED BY SIGNATURE DATE";
     private final String       reasonCorrectionStr = "REASON FOR CORRECTION";
-    private final String       addCommentsStr      = "ADDITIONAL COMMENTS";
     private final Assay        assayTest           = COVID19_DX_IVD;;
     private String             downloadDir;
 
@@ -136,28 +133,22 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         history.setWorkflowProperties (covidProperties ());
         history.forceStatusUpdate (NorthQC, Ready);
         history.clickOrder ();
-        testLog ("set workflow properties and force workflow to move to DxAnalysis/Ready stage");
+        testLog ("set workflow properties and force workflow to move to NorthQC/Ready stage");
 
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (sample, NorthQC, Finished);
         orderStatus.waitFor (sample, DxAnalysis, Finished);
         orderStatus.waitFor (sample, DxContamination, Finished);
-        orderStatus.waitFor (sample, DxReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (order.id);
-        orderDetail.isCorrectPage ();
-        orderDetail.clickReportTab (assayTest);
-        reportTDetect.isCorrectPage ();
-        reportTDetect.setQCstatus (Pass);
-        testLog ("set QC status to Pass");
-
+        orderStatus.waitFor (sample, DxReport, Finished);
         history.gotoOrderDebug (sample);
-        String reportDataJsonFileUrl = history.getFileUrl ("reportData.json");
-        ReportRender reportDataJson = parseReportDataJson (reportDataJsonFileUrl);
+        ReportRender reportDataJson = parseReportDataJson (history.getFileUrl ("reportData.json"));
         validateReportDataJson (reportDataJson, order, patientId);
         assertFalse (reportDataJson.patientInfo.isCorrected);
         assertNull (reportDataJson.commentInfo.comments);
         assertNull (reportDataJson.commentInfo.correctionReason);
         assertNull (reportDataJson.commentInfo.clinicalConsultantName);
+        assertNull (reportDataJson.commentInfo.clinicalConsultantTitle);
+        assertEquals (reportDataJson.commentInfo.labDirectorName, approvedBy);
         assertTrue (reportDataJson.commentInfo.signatureImage.isEmpty ());
         assertNull (reportDataJson.previousReportDate);
         testLog ("STEP 2 - validate reportData.json file");
@@ -167,11 +158,6 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         orderStatus.isCorrectPage ();
         orderStatus.clickReportTab (assayTest);
         reportTDetect.isCorrectPage ();
-        reportTDetect.enterReportNotes ("testing report notes");
-        String additionalComments = "testing additional comments";
-        reportTDetect.enterAdditionalComments (additionalComments);
-        reportTDetect.clickSaveAndUpdate ();
-        reportTDetect.clickReleaseReport ();
 
         String fileContent = getTextFromPDF (reportTDetect.getReleasedReportPdfUrl (), 1);
         validateReportContent (fileContent, order);
@@ -184,16 +170,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         testLog ("STEP 3 - validate released report");
 
         history.gotoOrderDebug (sample);
-        reportDataJsonFileUrl = history.getFileUrl ("reportData.json");
-        reportDataJson = parseReportDataJson (reportDataJsonFileUrl);
-        validateReportDataJson (reportDataJson, order, patientId);
-        assertFalse (reportDataJson.patientInfo.isCorrected);
-        assertEquals (reportDataJson.commentInfo.comments, additionalComments);
-        assertNull (reportDataJson.commentInfo.correctionReason);
-        assertEquals (reportDataJson.commentInfo.clinicalConsultantName, reviewedReleasedBy);
-        assertTrue (reportDataJson.commentInfo.signedAt.toString ().startsWith (todaysDateDash));
-        assertNotNull (reportDataJson.commentInfo.signatureImage);
-        assertNull (reportDataJson.previousReportDate);
+        assertEquals (parseReportDataJson (history.getFileUrl ("reportData.json")), reportDataJson);
         testLog ("STEP 4 - validate released reportData.json file");
 
         history.waitFor (ReportDelivery, Finished);
@@ -211,7 +188,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         ReportRender editReportDataJson = mapper.readValue (reportTDetect.getReportDataJson (), ReportRender.class);
         validateReportDataJson (editReportDataJson, order, patientId);
         assertTrue (editReportDataJson.patientInfo.isCorrected);
-        assertEquals (editReportDataJson.commentInfo.comments, additionalComments);
+        assertNull (editReportDataJson.commentInfo.comments);
         assertEquals (editReportDataJson.commentInfo.correctionReason, correctedReason);
         assertEquals (editReportDataJson.previousReportDate.toString (), todaysDateDash);
         testLog ("STEP 5 - The above JSON properties are listed with the values matching the tables below.");
@@ -233,8 +210,6 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         validateReportContent (correctedReleasePdfContent, order);
         validatePdfContent (correctedReleasePdfContent, result);
         validatePdfContent (correctedReleasePdfContent, expTestResult);
-        validatePdfContent (correctedReleasePdfContent, addCommentsStr);
-        validatePdfContent (correctedReleasePdfContent, additionalComments);
         validatePdfContent (correctedReleasePdfContent, reviewSignStr);
         validatePdfContent (correctedReleasePdfContent, reviewedReleasedBy + " " + todaysDate);
         validatePdfContent (correctedReleasePdfContent, approvedSignStr);
@@ -247,11 +222,13 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
 
         reportDataJson = parseReportDataJson (taskDetail.taskFiles ().get ("reportData.json"));
         validateReportDataJson (reportDataJson, order, patientId);
-        assertEquals (reportDataJson.commentInfo.comments, additionalComments);
+        assertNull (reportDataJson.commentInfo.comments);
         assertEquals (reportDataJson.commentInfo.correctionReason, correctedReason);
-        assertEquals (reportDataJson.commentInfo.clinicalConsultantName, reviewedReleasedBy);
+        assertEquals (reportDataJson.commentInfo.clinicalConsultantName, "svc_cora_test_phi_preprod, NBCDCH-PS");
+        assertNull (reportDataJson.commentInfo.clinicalConsultantTitle);
+        assertEquals (reportDataJson.commentInfo.labDirectorName, approvedBy);
         assertTrue (reportDataJson.commentInfo.signedAt.toString ().startsWith (todaysDateDash));
-        assertNotNull (reportDataJson.commentInfo.signatureImage);
+        assertFalse (reportDataJson.commentInfo.signatureImage.isEmpty ());
         assertEquals (reportDataJson.previousReportDate.toString (), todaysDateDash);
         testLog ("STEP 8 - validate released reportData.json file");
     }
@@ -340,9 +317,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         assertEquals (reportDataJson.commentInfo.klass, "com.adaptive.clonoseqreport.dtos.ReportCommentDto");
         assertEquals (reportDataJson.commentInfo.version, 1);
         assertNull (reportDataJson.commentInfo.clinicalConsultantTitle);
-        assertEquals (reportDataJson.commentInfo.labDirectorName,
-                      approvedBy.replaceAll ("\\.", "").replace ("(", "").replace (")", ""));
-
+        assertEquals (reportDataJson.commentInfo.labDirectorName, approvedBy);
         assertEquals (reportDataJson.isFailure, Boolean.valueOf (false));
     }
 
