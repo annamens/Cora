@@ -15,16 +15,16 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
-import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
+import static com.adaptivebiotech.test.utils.DateHelper.utcZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Clarity;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CANCELLED;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -66,6 +66,7 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
      * Note: SR-T2166
      * - we nolonger seeing Clarity/Awaiting/PROCESSING_SAMPLE
      * - now, we're getting Clarity/Awaiting/SAMPLE_NOT_FOUND, we can't check for Clarity link
+     * - due date is in UTC, only reflex uses PST
      */
     public void verifyOrderDetailsPage () {
         login.doLogin ();
@@ -119,7 +120,7 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
         assertEquals (activeOrder.orderNumber, order.orderNumber);
         String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + order.orderNumber;
         assertEquals (activeOrder.name, expectedName);
-        String expectedDueDate = genDate (7, DateTimeFormatter.ofPattern ("M/d/uu"), pstZoneId);
+        String expectedDueDate = genDate (7, ofPattern ("M/d/uu"), utcZoneId);
         assertEquals (clonoSeqOrderDetail.getHeaderDueDate (), expectedDueDate);
         assertEquals (activeOrder.data_analysis_group, "Clinical");
 
