@@ -196,11 +196,8 @@ public abstract class NewOrder extends OrderHeader {
 
     public void closeToast () {
         if (isElementPresent (toastContainer)) {
-            WebElement toastEle = findElement (toastContainer);
-            if (isElementPresent (toastEle, toastError)) {
-                assertTrue (click (toastEle, toastError));
-                assertTrue (waitForElementInvisible (join (" ", toastContainer, toastError)));
-            }
+            assertTrue (click (toastContainer));
+            assertTrue (waitForElementInvisible (toastContainer));
         }
     }
 
