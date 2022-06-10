@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
@@ -41,6 +44,24 @@ public final class Shipment {
 
         public static List <String> getAllShippingConditions () {
             return allOf (ShippingCondition.class).stream ().map (e -> e.label).collect (toList ());
+        }
+    }
+
+    public enum LimsProjectType {
+        PreferredCustomer ("Preferred Customer"),
+        Grant ("Grant"),
+        RnDScienceProject ("R&amp;D Science Project"),
+        FeeForServiceCustomer ("Fee for Service Customer"),
+        BetaKitTest ("Beta Kit Test"),
+        RnDAssayDevelopment ("R&D Assay Development"),
+        Collaboration ("Collaboration"),
+        PharmaceuticalBiotech ("Pharmaceutical/Biotech"),
+        Testing ("Testing");
+
+        public String label;
+
+        private LimsProjectType (String label) {
+            this.label = label;
         }
     }
 }

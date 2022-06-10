@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Conical;
@@ -53,11 +56,12 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         ordersList.isCorrectPage ();
     }
 
-    @AfterMethod
+    @AfterMethod (alwaysRun = true)
     public void afterMethod () {
         ordersList.gotoMyCustody ();
         myCustody.isCorrectPage ();
-        myCustody.sendContainersToFreezer (containers.get (), freezerDestroyed);
+        myCustody.bulkMoveToFreezer (containers.get (), freezerDestroyed, "HoldingContainerTestSuite.afterMethod");
+        myCustody.waitForBulkMoveComplete ();
     }
 
     /**

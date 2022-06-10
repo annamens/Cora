@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.report.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRG;
@@ -6,7 +9,6 @@ import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRG;
-import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt6;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Analyzer;
@@ -26,11 +28,11 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.report.ClonoSeq;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
+import com.adaptivebiotech.picasso.dto.verify.ClonoSeq;
 
 /**
  * @author Harry Soehalim
@@ -72,12 +74,12 @@ public class ReportTcrgTestSuite extends ReportTestBase {
 
         LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, TCRG);
-        clonoseq.isCLIA = true;
-        clonoseq.isClonality = true;
+        clonoseq.helper.isCLIA = true;
+        clonoseq.helper.isClonality = true;
         clonoseq.pageSize = 3;
-        clonoseq.header.reportDt = formatDt1.format (releaseDt);
-        clonoseq.appendix.sampleTable = "0.95 61,795 TCRG 59,450 3,019";
-        clonoseq.approval.dateTime = formatDt1.format (releaseDt);
+        clonoseq.header.reportDt = releaseDt.toLocalDate ();
+        clonoseq.appendix.sampleInfo = "0.95 61,795 TCRG 59,450 3,019";
+        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
         String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the TCRG ClonoSEQ 2.0 clonality report matched with the baseline");
@@ -95,11 +97,11 @@ public class ReportTcrgTestSuite extends ReportTestBase {
 
         releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
         clonoseq = basicClonoSeq (patient, diagnostic, orderTest, TCRG);
-        clonoseq.isCLIA = true;
+        clonoseq.helper.isCLIA = true;
         clonoseq.pageSize = 3;
-        clonoseq.header.reportDt = formatDt1.format (releaseDt);
-        clonoseq.appendix.sampleTable = "0.95 61,795 TCRG 59,450 3,019";
-        clonoseq.approval.dateTime = formatDt1.format (releaseDt);
+        clonoseq.header.reportDt = releaseDt.toLocalDate ();
+        clonoseq.appendix.sampleInfo = "0.95 61,795 TCRG 59,450 3,019";
+        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
         actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the TCRG ClonoSEQ 2.0 tracking report matched with the baseline");

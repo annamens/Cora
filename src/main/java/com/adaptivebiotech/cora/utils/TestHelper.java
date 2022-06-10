@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.utils;
 
 import static com.adaptivebiotech.cora.dto.Insurance.PatientRelationship.Child;
@@ -16,11 +19,21 @@ import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.RequiredIncludedBillMedicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
+import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.COVID19;
+import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.disableHiFreqSave;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.disableHiFreqSharing;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcceptedTsvPath;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFinishedPipelineJobId;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFlowcellId;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.workspaceName;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
+import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import java.time.LocalDate;
@@ -36,6 +49,8 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
+import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
+import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 import com.github.javafaker.Faker;
 
 public class TestHelper {
@@ -45,6 +60,7 @@ public class TestHelper {
         container.id = testdata ().get ("freezerDestroyed_id");
         container.containerNumber = testdata ().get ("freezerDestroyed_num");
         container.name = "[Destroyed]";
+        container.location = "[Destroyed]";
         return container;
     }
 
@@ -53,6 +69,7 @@ public class TestHelper {
         container.id = testdata ().get ("dumbwaiter_id");
         container.containerNumber = testdata ().get ("dumbwaiter_num");
         container.name = "1165 Dumbwaiter";
+        container.location = "1165 Dumbwaiter";
         return container;
     }
 
@@ -61,6 +78,7 @@ public class TestHelper {
         container.id = testdata ().get ("AB018055_id");
         container.containerNumber = testdata ().get ("AB018055_num");
         container.name = "AB018055 (4C)";
+        container.location = "1551 : RM 258 : AB018055 (4C)";
         return container;
     }
 
@@ -69,14 +87,7 @@ public class TestHelper {
         container.id = testdata ().get ("AB018078_id");
         container.containerNumber = testdata ().get ("AB018078_num");
         container.name = "AB018078 (4C) Right";
-        return container;
-    }
-
-    public static Container freezerAB018082 () {
-        Container container = new Container ();
-        container.id = testdata ().get ("AB018082_id");
-        container.containerNumber = testdata ().get ("AB018082_num");
-        container.name = "AB018082 (-20C)";
+        container.location = "1551 : RM 258 : AB018078 (4C) Right";
         return container;
     }
 
@@ -85,6 +96,7 @@ public class TestHelper {
         container.id = testdata ().get ("AB039003_id");
         container.containerNumber = testdata ().get ("AB039003_num");
         container.name = "AB039003 (Ambient)";
+        container.location = "RM 255 : AB039003 (Ambient)";
         return container;
     }
 
@@ -93,6 +105,7 @@ public class TestHelper {
         container.id = testdata ().get ("AB018018_id");
         container.containerNumber = testdata ().get ("AB018018_num");
         container.name = "AB018018 (-20C)";
+        container.location = "RM 243 : AB018018 (-20C)";
         return container;
     }
 
@@ -101,6 +114,7 @@ public class TestHelper {
         container.id = testdata ().get ("AB018056_id");
         container.containerNumber = testdata ().get ("AB018056_num");
         container.name = "AB018056 : Validation (-20C)";
+        container.location = "1551 : RM 258 : AB018056 : Validation (-20C)";
         return container;
     }
 
@@ -128,6 +142,12 @@ public class TestHelper {
         return patient;
     }
 
+    public static Patient newClientPatientTDx () {
+        Patient patient = newPatient ();
+        patient.billingType = Client;
+        return patient;
+    }
+
     // Bill my Study Protocol
     public static Patient newTrialProtocolPatient () {
         Patient patient = newPatient ();
@@ -141,6 +161,12 @@ public class TestHelper {
         patient.billingType = PatientSelfPay;
         patient.insurance1 = new Insurance ();
         patient.insurance1.hospitalizationStatus = NonHospital;
+        return patient;
+    }
+
+    public static Patient newSelfPayPatientTDx () {
+        Patient patient = newPatient ();
+        patient.billingType = PatientSelfPay;
         return patient;
     }
 
@@ -254,8 +280,6 @@ public class TestHelper {
         data.put ("AB018055_num", "CO-100001");
         data.put ("AB018078_id", "53ddaaf6-eeeb-46c5-8f58-4dfbfa83146e");
         data.put ("AB018078_num", "CO-297770");
-        data.put ("AB018082_id", "7be0a979-ea12-4452-a9bd-987fe03474c7");
-        data.put ("AB018082_num", "CO-100162");
         data.put ("AB039003_id", "8fba58e9-6d78-4e0f-993a-63c7b9450494");
         data.put ("AB039003_num", "CO-166946");
         data.put ("dumbwaiter_id", "eec8c896-0cbe-4531-83a6-da958c79c368");
@@ -317,5 +341,34 @@ public class TestHelper {
         survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Yes")));
         return survey;
+    }
+
+    public static Map <WorkflowProperty, String> covidProperties () {
+        Map <WorkflowProperty, String> properties = new HashMap <> ();
+        properties.put (lastAcceptedTsvPath,
+                        "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e/HCYJNBGXJ_0_CLINICAL-CLINICAL_112770-SN-7929.adap.txt.results.tsv.gz");
+        properties.put (sampleName, "112770-SN-7929");
+        properties.put (workspaceName, "CLINICAL-CLINICAL");
+        properties.put (lastFlowcellId, "HCYJNBGXJ");
+        properties.put (lastFinishedPipelineJobId, "8a7a958877a26e74017a213f79fe6d45");
+        properties.put (disableHiFreqSave, TRUE.toString ());
+        properties.put (disableHiFreqSharing, TRUE.toString ());
+        return properties;
+    }
+
+    public static ClassifierOutput sample_112770_SN_7929 () {
+        ClassifierOutput dxResult = new ClassifierOutput ();
+        dxResult.disease = COVID19;
+        dxResult.classifierVersion = "v1.0";
+        dxResult.dxScore = -9.097219383308602d;
+        dxResult.posteriorProbability = 1.1196420300544642E-4d;
+        dxResult.countEnhancedSeq = 18;
+        dxResult.containerVersion = "dx-classifiers/covid-19:d23228f";
+        dxResult.pipelineVersion = "v3.1-385-g1340003";
+        dxResult.dxStatus = NEGATIVE;
+        dxResult.configVersion = "dx.covid19.rev1";
+        dxResult.uniqueProductiveTemplates = 343874;
+        dxResult.qcFlags = asList ();
+        return dxResult;
     }
 }

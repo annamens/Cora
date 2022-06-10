@@ -1,16 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
+import static java.time.LocalDateTime.parse;
 import static java.util.EnumSet.allOf;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -22,6 +25,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Orders.OrderAuthorization;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -35,7 +39,6 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 
 /**
  * @author jpatel
- *
  */
 public class OrderDetail extends OrderHeader {
 
@@ -44,6 +47,13 @@ public class OrderDetail extends OrderHeader {
     private final String      patientMrdStatus    = ".patient-status";
     private final String      specimenNumber      = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
     private final String      specimenArrivalDate = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
+    private final String      messagesLabel       = "//h2[text()='Messages']";
+    private final String      attachmentName      = "[ng-show='!ctrl.showPreview(attachment.name)'] [ng-bind='attachment.name']";
+    private final String      attachmentUrl       = "a[href]";
+    private final String      attachmentDate      = "[ng-bind$='localDateTime']";
+    private final String      attachmentCreatedBy = "[ng-bind='attachment.createdBy']";
+    private final String      orderAuth           = "//*[*[text()='Order Authorization']]/following-sibling::div";
+    private final String      attachments         = "[attachments='ctrl.orderEntry.attachments']%s .attachments-table-row";
 
     public OrderDetail () {
         staticNavBarHeight = 200;
@@ -53,6 +63,16 @@ public class OrderDetail extends OrderHeader {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER DETAILS"));
         pageLoading ();
+    }
+
+    @Override
+    public void gotoOrderDetailsPage (String orderId) {
+        super.gotoOrderDetailsPage (orderId);
+        isCorrectPage ();
+    }
+
+    public String getOrderId () {
+        return substringAfterLast (getCurrentUrl (), "cora/order/details/");
     }
 
     public void clickCancelOrder () {
@@ -117,26 +137,46 @@ public class OrderDetail extends OrderHeader {
         order.shipmentAttachments = getShipmentAttachments ();
         order.trf = getDoraTrf ();
         order.doraAttachments = getDoraAttachments ();
-        order.patient.insurance1 = new Insurance ();
-        order.patient.insurance1.provider = billing.getInsurance1Provider ();
-        order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
-        order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
-        order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
-        order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
-        order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
-        order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
-        order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
-        order.patient.insurance2 = new Insurance ();
-        order.patient.insurance2.provider = billing.getInsurance2Provider ();
-        order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
-        order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
-        order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
-        order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+
+        if (billing.isPrimaryInsurancePresent ()) {
+            order.patient.insurance1 = new Insurance ();
+            order.patient.insurance1.provider = billing.getInsurance1Provider ();
+            order.patient.insurance1.priorAuthorizationNumber = billing.getInsurance1AuthorizationNumber ();
+            order.patient.insurance1.groupNumber = billing.getInsurance1GroupNumber ();
+            order.patient.insurance1.policyNumber = billing.getInsurance1Policy ();
+            order.patient.insurance1.insuredRelationship = billing.getInsurance1Relationship ();
+            order.patient.insurance1.policyholder = billing.getInsurance1PolicyHolder ();
+            order.patient.insurance1.hospitalizationStatus = billing.getInsurance1PatientStatus ();
+            order.patient.insurance1.billingInstitution = billing.getInsurance1Hospital ();
+            order.patient.insurance1.dischargeDate = billing.getInsurance1DischargeDate ();
+        }
+
+        if (billing.isSecondaryInsurancePresent ()) {
+            order.patient.insurance2 = new Insurance ();
+            order.patient.insurance2.provider = billing.getInsurance2Provider ();
+            order.patient.insurance2.priorAuthorizationNumber = billing.getInsurance2AuthorizationNumber ();
+            order.patient.insurance2.groupNumber = billing.getInsurance2GroupNumber ();
+            order.patient.insurance2.policyNumber = billing.getInsurance2Policy ();
+            order.patient.insurance2.insuredRelationship = billing.getInsurance2Relationship ();
+            order.patient.insurance2.policyholder = billing.getInsurance2PolicyHolder ();
+        }
+
+        if (billing.isTertiaryInsurancePresent ()) {
+            order.patient.insurance3 = new Insurance ();
+            order.patient.insurance3.provider = billing.getInsurance3Provider ();
+            order.patient.insurance3.priorAuthorizationNumber = billing.getInsurance3AuthorizationNumber ();
+            order.patient.insurance3.groupNumber = billing.getInsurance3GroupNumber ();
+            order.patient.insurance3.policyNumber = billing.getInsurance3Policy ();
+            order.patient.insurance3.insuredRelationship = billing.getInsurance3Relationship ();
+            order.patient.insurance3.policyholder = billing.getInsurance3PolicyHolder ();
+        }
+
         order.patient.address = billing.getPatientAddress1 ();
         order.patient.phone = billing.getPatientPhone ();
         order.patient.locality = billing.getPatientCity ();
         order.patient.region = billing.getPatientState ();
         order.patient.postCode = billing.getPatientZipcode ();
+        order.documentedByType = getOrderAuthorization ();
         order.notes = getOrderNotes ();
         return order;
     }
@@ -188,8 +228,12 @@ public class OrderDetail extends OrderHeader {
         return getText ("[ng-bind$='providerFullName']");
     }
 
-    private String getProviderAccount () {
+    public String getProviderAccount () {
         return getText ("[ng-bind='ctrl.orderEntry.order.authorizingProvider.account.name']");
+    }
+
+    public String getPhysicianOrderCode () {
+        return getText ("(//*[*[text()='Order Code']]//div)[last()]");
     }
 
     public String getPatientName () {
@@ -295,7 +339,7 @@ public class OrderDetail extends OrderHeader {
         return ContainerType.getContainerType (getText ("[ng-bind='ctrl.orderEntry.specimenDisplayContainerType']"));
     }
 
-    private OrderTest getTestState (Assay assay) {
+    public OrderTest getTestState (Assay assay) {
         String xpath = format ("//*[@ng-bind='orderTest.test.name' and text()='%s']", assay.test);
         boolean selected = isElementPresent (xpath);
         OrderTest orderTest = new OrderTest (assay);
@@ -304,40 +348,41 @@ public class OrderDetail extends OrderHeader {
         return orderTest;
     }
 
-    public String getSampleName () {
-        return getText ("[ng-bind='orderTest.sampleName']");
+    public List <OrderTest> getOrderTests () {
+        List <OrderTest> orderTests = new ArrayList <> ();
+        for (WebElement element : waitForElements ("[ng-repeat='orderTest in ctrl.orderEntry.orderTests']")) {
+            OrderTest orderTest = new OrderTest ();
+            orderTest.assay = getAssay (getText (element, "[ng-bind='orderTest.test.name']"));
+            orderTest.sampleName = getText (element, "[ng-bind='orderTest.sampleName']");
+            orderTests.add (orderTest);
+        }
+        return orderTests;
+    }
+
+    public String getSampleName (Assay assay) {
+        return getText (format ("//*[text()='%s']/parent::div//*[@ng-bind='orderTest.sampleName']", assay.test));
+    }
+
+    private List <UploadFile> getOrderAttachments (String attachmentLoc) {
+        List <UploadFile> attachments = new ArrayList <> ();
+        if (isElementPresent (attachmentLoc))
+            for (WebElement element : waitForElements (attachmentLoc)) {
+                UploadFile attachment = new UploadFile ();
+                attachment.fileName = getText (element, attachmentName);
+                attachment.fileUrl = getAttribute (element, attachmentUrl, "href");
+                attachment.createdDateTime = parse (getText (element, attachmentDate), formatDt7);
+                attachment.createdBy = getText (element, attachmentCreatedBy);
+                attachments.add (attachment);
+            }
+        return attachments;
     }
 
     private List <UploadFile> getCoraAttachments () {
-        List <UploadFile> coraAttachments = new ArrayList <> ();
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isOrderAttachment'] .attachments-table-row";
-        if (isElementPresent (files))
-            for (WebElement element : waitForElements (files)) {
-                UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
-                attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
-                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
-                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
-                coraAttachments.add (attachment);
-            }
-        return coraAttachments;
+        return getOrderAttachments (format (attachments, "[filter='ctrl.isOrderAttachment']"));
     }
 
     private List <UploadFile> getShipmentAttachments () {
-        List <UploadFile> shipmentAttachments = new ArrayList <> ();
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter-by='CORA.SHIPMENTS'] .attachments-table-row";
-        if (isElementPresent (files))
-            for (WebElement element : waitForElements (files)) {
-                UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
-                attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
-                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
-                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
-                shipmentAttachments.add (attachment);
-            }
-        return shipmentAttachments;
+        return getOrderAttachments (format (attachments, "[filter-by='CORA.SHIPMENTS']"));
     }
 
     private UploadFile getDoraTrf () {
@@ -345,25 +390,13 @@ public class OrderDetail extends OrderHeader {
         String doraTrf = "[ng-if='ctrl.orderEntry.hasDoraTrf']";
         if (isElementPresent (doraTrf)) {
             doraTrFile.fileName = getText (String.join (" ", doraTrf, ".btn-link"));
-            doraTrFile.fileUrl = getAttribute (String.join (" ", doraTrf, "a[href]"), "href");
+            doraTrFile.fileUrl = getAttribute (String.join (" ", doraTrf, attachmentUrl), "href");
         }
         return doraTrFile;
     }
 
     private List <UploadFile> getDoraAttachments () {
-        List <UploadFile> doraAttachments = new ArrayList <> ();
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isDoraAttachment'] .attachments-table-row";
-        if (isElementPresent (files))
-            for (WebElement element : waitForElements (files)) {
-                UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
-                attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
-                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
-                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
-                doraAttachments.add (attachment);
-            }
-        return doraAttachments;
+        return getOrderAttachments (format (attachments, "[filter='ctrl.isDoraAttachment']"));
     }
 
     public String getOrderNotes () {
@@ -377,11 +410,10 @@ public class OrderDetail extends OrderHeader {
     }
 
     public void uploadAttachments (String... files) {
-        String attachments = asList (files).parallelStream ()
-                                           .map (f -> getSystemResource (f).getPath ())
-                                           .collect (joining ("\n"));
-        waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (attachments);
-        pageLoading ();
+        for (String file : files) {
+            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            transactionInProgress ();
+        }
     }
 
     public String getDAGText () {
@@ -390,19 +422,21 @@ public class OrderDetail extends OrderHeader {
     }
 
     public int getMessageTableRowCount () {
-        String messages = "//h2[text()='Messages']";
-        assertTrue (click (messages));
+        assertTrue (click (messagesLabel));
         String messagesTableRows = "[ng-repeat*='ctrl.orderEntry.orderMessages']";
         List <WebElement> rows = waitForElementsVisible (messagesTableRows);
         return rows.size ();
     }
 
     public boolean isMessagesTableVisible () {
-        String messages = "//h2[text()='Messages']";
-        return waitUntilVisible (messages);
+        return isElementVisible (messagesLabel);
     }
 
     public List <String> getHistory () {
         return getTextList ("//*[text()='History']/ancestor::div[@class='row']//li");
+    }
+
+    public OrderAuthorization getOrderAuthorization () {
+        return OrderAuthorization.getOrderAuthorization (getText (orderAuth));
     }
 }

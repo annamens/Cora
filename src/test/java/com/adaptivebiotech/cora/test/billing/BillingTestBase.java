@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.billing;
 
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
@@ -5,4 +8,6 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 public class BillingTestBase extends CoraBaseBrowser {
 
     protected final String noChargeReasonQuery = "select no_charge_reason from cora.order_billing ob join cora.orders o on ob.order_id = o.id where o.order_number =";
+    protected final String emailErrLog1        = "got a patient email validation error for: %s";
+    protected final String emailErrLog2        = "unable to activate the order with this error: %s";
 }

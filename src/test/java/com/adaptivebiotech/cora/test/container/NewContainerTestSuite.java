@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox100;
@@ -150,7 +153,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertEquals (containers.list.size (), 2);
         assertEquals (containers.list.get (0).containerType, TubeBox10x10);
         assertEquals (containers.list.get (0).name, name32);
-        assertTrue (containers.list.get (0).location.startsWith (dumbwaiter.name));
+        assertTrue (containers.list.get (0).location.startsWith (dumbwaiter.location));
         assertEquals (containers.list.get (1).containerType, SlideBox5);
         assertEquals (containers.list.get (1).name, name33.substring (0, 32));
 

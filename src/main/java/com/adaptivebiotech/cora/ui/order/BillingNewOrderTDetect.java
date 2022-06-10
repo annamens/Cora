@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
@@ -82,7 +85,15 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
         default:
             break;
         }
-        getPatientBillingAddress (patient);
+        switch (patient.billingType) {
+        case CommercialInsurance:
+        case Medicare:
+        case Client:
+        case PatientSelfPay:
+            getPatientBillingAddress (patient);
+        default:
+            break;
+        }
         return patient;
     }
 }

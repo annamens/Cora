@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static org.testng.Assert.assertTrue;
@@ -59,5 +62,6 @@ public class ShipmentHeader extends CoraPage {
     public void clickDiscrepancySave () {
         String cssSave = "[ng-click='ctrl.save()'";
         assertTrue (click (cssSave));
+        transactionInProgress ();
     }
 }

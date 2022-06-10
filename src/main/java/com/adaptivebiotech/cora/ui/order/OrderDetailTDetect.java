@@ -1,7 +1,9 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
-import java.util.List;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 
@@ -39,12 +41,6 @@ public class OrderDetailTDetect extends OrderDetail {
         assertTrue (click (xpath));
         String expectedTitle = "Edit Patient Demographics";
         assertTrue (isTextInElement (popupTitle, expectedTitle));
-    }
-
-    public List <String> getTextDangerText () {
-        String css = ".text-danger";
-        List <String> text = getTextList (css);
-        return text;
     }
 
     public Race getPatientRace () {

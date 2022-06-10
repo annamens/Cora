@@ -1,7 +1,12 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Plate;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.cora.ui.container.ContainersList.BulkMoveAction.BulkMoveToFreezer;
+import static com.adaptivebiotech.cora.ui.container.ContainersList.BulkMoveAction.BulkMoveToMyCustody;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -32,6 +37,7 @@ public class ContainersList extends CoraPage {
     private final String   moveBtn                = "[ng-click='ctrl.moveHere()']";
     private final String   locked                 = "//*[contains (@class, 'alert-danger') and contains (text(), 'All containers are locked by another process.')]";
     protected final String scan                   = "#container-scan-input";
+    private final String   containerRows          = ".containers-list > tbody > tr";
     private final String   bulkMoveBtn            = "//button[text()='Bulk Move']";
     private final String   bulkComment            = "input[placeholder='Add Comment']";
     private final String   selectAllCheckbox      = ".containers-list th [type='checkbox']";
@@ -68,6 +74,16 @@ public class ContainersList extends CoraPage {
         }
     }
 
+    public static enum Building {
+        WA_1165 ("1165"), WA_1208 ("1208"), WA_1551 ("1551"), SSF ("SSF");
+
+        public final String text;
+
+        private Building (String text) {
+            this.text = text;
+        }
+    }
+
     public int getMyCustodySize () {
         return Integer.valueOf (getText ("[uisref='main.containers.custody'] span").replaceAll (",", ""));
     }
@@ -84,7 +100,7 @@ public class ContainersList extends CoraPage {
         searchContainerIdOrName (String.join (",", containerIdsOrNames));
     }
 
-    public void setCategory (Category category) {
+    public void setCategoryFilter (Category category) {
         assertTrue (click ("//*[contains (p,'Category')]//button"));
         assertTrue (click (format ("//*[contains (p,'Category')]//a[text()='%s']", category.name ())));
     }
@@ -94,7 +110,12 @@ public class ContainersList extends CoraPage {
         assertTrue (click (format ("//*[contains (p,'Current Location')]//a[text()='%s']", freezer)));
     }
 
-    public void setContainerType (ContainerType type) {
+    public void setBuildingFilter (Building building) {
+        assertTrue (click ("//*[contains (p,'Building')]//button"));
+        assertTrue (click (format ("//*[contains (p,'Building')]//a[text()='%s']", building.text)));
+    }
+
+    public void setContainerTypeFilter (ContainerType type) {
         assertTrue (click ("//*[contains (p,'Container Type')]//button"));
         assertTrue (click (format ("//*[contains (p,'Container Type')]//a[text()='%s']", type.label)));
     }
@@ -104,8 +125,14 @@ public class ContainersList extends CoraPage {
         assertTrue (click (format ("//*[contains (p,'Group By')]//a[text()='%s']", groupBy.name ())));
     }
 
+    public boolean containerIsDisplayed (Container container) {
+        return containerRowsPresent () ? getContainers ().list.stream ()
+                                                              .filter (parsedContainer -> parsedContainer.containerNumber.equals (container.containerNumber))
+                                                              .count () > 0 : false;
+    }
+
     public Containers getContainers () {
-        return new Containers (waitForElements (".containers-list > tbody > tr").stream ().map (el -> {
+        return new Containers (waitForElements (containerRows).stream ().map (el -> {
             List <WebElement> columns = findElements (el, "td");
             Container c = new Container ();
             c.id = getConId (getAttribute (columns.get (2), "a", "href"));
@@ -129,10 +156,11 @@ public class ContainersList extends CoraPage {
         assertTrue (clear (scan));
         assertTrue (setText (scan, containerNumber));
         assertTrue (pressKey (Keys.ENTER));
+        pageLoading ();
     }
 
     public String getScanError () {
-        return getText (".scan-msg.text-danger");
+        return getText (".scan-msg" + requiredMsg);
     }
 
     public String getScanError2 () {
@@ -187,7 +215,7 @@ public class ContainersList extends CoraPage {
         if (isLocked)
             fail ("unable to move to freezer");
 
-        assertTrue (isTextInElement (pass, success + freezer.name));
+        assertTrue (isTextInElement (pass, success + freezer.location));
         assertTrue (noSuchElementPresent (depleted));
         assertTrue (noSuchElementPresent (comments));
 
@@ -285,7 +313,7 @@ public class ContainersList extends CoraPage {
             }
         } else {
             String err = "Container " + holding.containerNumber + " is not a holding container. Choose another container.";
-            assertTrue (isTextInElement (".text-danger", err));
+            assertTrue (isTextInElement (requiredMsg, err));
         }
         closePopup ();
         return true;
@@ -378,12 +406,11 @@ public class ContainersList extends CoraPage {
 
     public void bulkMoveAllToFreezer (Container freezer, String comment) {
         clickBulkMoveContainers ();
-        selectBulkMoveAction (BulkMoveAction.BulkMoveToFreezer);
+        selectBulkMoveAction (BulkMoveToFreezer);
         selectBulkMoveFreezer (freezer);
         setBulkMoveComment (comment);
         clickSelectAllCheckbox ();
         clickBulkMoveBtn ();
-        waitForBulkMoveComplete ();
     }
 
     public void bulkMoveAllToCustody () {
@@ -392,11 +419,10 @@ public class ContainersList extends CoraPage {
 
     public void bulkMoveAllToCustody (String comment) {
         clickBulkMoveContainers ();
-        selectBulkMoveAction (BulkMoveAction.BulkMoveToMyCustody);
+        selectBulkMoveAction (BulkMoveToMyCustody);
         setBulkMoveComment (comment);
         clickSelectAllCheckbox ();
         clickBulkMoveBtn ();
-        waitForBulkMoveComplete ();
     }
 
     public void clickBulkMoveContainers () {
@@ -416,10 +442,6 @@ public class ContainersList extends CoraPage {
         return isElementVisible (bulkMoveSuccess);
     }
 
-    public boolean isBulkMoveErrorMessageDisplayed () {
-        return isElementVisible (bulkMoveError);
-    }
-
     public String getBulkMoveErrorMessage () {
         return getText (bulkMoveError);
     }
@@ -433,13 +455,14 @@ public class ContainersList extends CoraPage {
         return !getAttribute (freezerDropdownContainer, "class").contains ("div-disabled");
     }
 
-    public void selectContainerToBulkMove (String containerName) {
-        String checkbox = format ("//*[@title='%s']/ancestor::tr/descendant::*[@type='checkbox']", containerName);
+    public void selectContainerToBulkMove (Container container) {
+        String checkbox = format ("//*[@title='%s']/ancestor::tr/descendant::*[@type='checkbox']",
+                                  container.containerNumber);
         assertTrue (click (checkbox));
     }
 
-    public boolean rowIsSelected (String containerName) {
-        String row = format ("//*[@title='%s']/ancestor::tr", containerName);
+    public boolean rowIsSelected (Container container) {
+        String row = format ("//*[@title='%s']/ancestor::tr", container.containerNumber);
         String rowClass = getAttribute (row, "class");
         return rowClass != null && rowClass.contains ("highlighted-blue");
     }
@@ -478,18 +501,17 @@ public class ContainersList extends CoraPage {
         assertTrue (click (bulkMoveBtn));
     }
 
-    protected void waitForBulkMoveComplete () {
-        waitForElementVisible (".toast-success, .toast-error");
-        if (isBulkMoveSuccessMessageDisplayed ()) {
-            waitForRowsDeselected ();
-        }
-    }
-
     private void clickSelectAllCheckbox () {
         assertTrue (click (selectAllCheckbox));
     }
 
-    private void waitForRowsDeselected () {
-        waitForElementInvisible (".highlighted-blue");
+    public void waitForBulkMoveComplete () {
+        assertTrue (waitForElementInvisible (".highlighted-blue"));
+        transactionInProgress ();
+        assertTrue (waitUntilVisible ("#toast-container"));
+    }
+
+    private boolean containerRowsPresent () {
+        return isElementPresent (containerRows);
     }
 }

@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.report.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_TCRB;
@@ -34,7 +37,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ReportRender;
-import com.adaptivebiotech.picasso.dto.ReportRender.SampleInfo;
+import com.adaptivebiotech.pipeline.dto.mrd.ClinicalJson.SampleInfo;
 
 /**
  * Note: since we rolled back Rindja release, this test is nolonger valid
@@ -57,7 +60,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
     private Diagnostic     diagnostic;
     private Patient        patient;
 
-    @BeforeClass
+    @BeforeClass (alwaysRun = true)
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
         patient = new Patient ();

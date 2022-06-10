@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
@@ -54,7 +57,6 @@ public class AddContainer extends CoraPage {
         assertTrue (click ("[data-ng-click='ctrl.save()']"));
         assertTrue (isTextInElement (popupTitle, "New Container Confirmation"));
         clickPopupOK ();
-        assertTrue (waitUntilVisible ("[ng-click='ctrl.generateLabels()']"));
     }
 
     public void isFailedValidation (String error) {

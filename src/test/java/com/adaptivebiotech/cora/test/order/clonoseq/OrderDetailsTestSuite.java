@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
@@ -12,16 +15,16 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
-import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
+import static com.adaptivebiotech.test.utils.DateHelper.utcZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Clarity;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CANCELLED;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -31,7 +34,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
@@ -47,7 +50,7 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
  *
  */
 @Test (groups = "regression")
-public class OrderDetailsTestSuite extends CoraBaseBrowser {
+public class OrderDetailsTestSuite extends NewOrderTestBase {
 
     private Login               login               = new Login ();
     private OrdersList          ordersList          = new OrdersList ();
@@ -63,6 +66,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
      * Note: SR-T2166
      * - we nolonger seeing Clarity/Awaiting/PROCESSING_SAMPLE
      * - now, we're getting Clarity/Awaiting/SAMPLE_NOT_FOUND, we can't check for Clarity link
+     * - due date is in UTC, only reflex uses PST
      */
     public void verifyOrderDetailsPage () {
         login.doLogin ();
@@ -73,7 +77,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         String[] icdCode = new String[] { "C90.00" };
         Assay orderTest = ID_BCell2_CLIA;
         Specimen specimen = bloodSpecimen ();
-        String orderNum = diagnostic.createClonoSeqOrder (physician, patient, icdCode, orderTest, specimen);
+        Order order = diagnostic.createClonoSeqOrder (physician, patient, icdCode, orderTest, specimen);
         List <String> history = diagnostic.getHistory ();
         String createdDateTime = history.get (0).split ("Created by")[0].trim ();
 
@@ -81,7 +85,7 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
         shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
+        shipment.enterOrderNumber (order.orderNumber);
         ContainerType containerType = Tube;
         shipment.selectDiagnosticSpecimenContainerType (containerType);
         shipment.clickSave ();
@@ -107,16 +111,16 @@ public class OrderDetailsTestSuite extends CoraBaseBrowser {
         // activate order
         diagnostic.isCorrectPage ();
         diagnostic.activateOrder ();
-        diagnostic.refresh ();
-        diagnostic.isCorrectPage ();
+        diagnostic.gotoOrderDetailsPage (order.id);
+        clonoSeqOrderDetail.isCorrectPage ();
         List <String> activeHistory = clonoSeqOrderDetail.getHistory ();
         String activateDateTime = activeHistory.get (2).split ("Activated by")[0].trim ();
         Order activeOrder = clonoSeqOrderDetail.parseOrder ();
         assertEquals (activeOrder.status, Active);
-        assertEquals (activeOrder.orderNumber, orderNum);
-        String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + orderNum;
+        assertEquals (activeOrder.orderNumber, order.orderNumber);
+        String expectedName = "Clinical-" + physician.firstName.charAt (0) + physician.lastName + "-" + order.orderNumber;
         assertEquals (activeOrder.name, expectedName);
-        String expectedDueDate = genDate (7, DateTimeFormatter.ofPattern ("M/d/uu"), pstZoneId);
+        String expectedDueDate = genDate (7, ofPattern ("M/d/uu"), utcZoneId);
         assertEquals (clonoSeqOrderDetail.getHeaderDueDate (), expectedDueDate);
         assertEquals (activeOrder.data_analysis_group, "Clinical");
 

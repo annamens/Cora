@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.billing.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
@@ -14,7 +17,6 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_insur
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_medicare;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_trial;
-import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.billing.BillingTestBase;
@@ -80,19 +83,50 @@ public class BillingTestSuite extends BillingTestBase {
      * Note:
      * - ABN Status is "Not Required" by default
      * 
-     * @sdlc.requirements SR-7907:R1
+     * @sdlc.requirements SR-7907:R1, SR-10644
      */
-    @Test (groups = "corgi")
+    @Test (groups = { "corgi", "fox-terrier" })
     public void medicare () {
         Patient patient = newMedicarePatient ();
         patient.abnStatusType = null;
-        diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_medicare),
-                                       patient,
-                                       null,
-                                       specimen.collectionDate.toString (),
-                                       COVID19_DX_IVD,
-                                       Active,
-                                       Tube);
+
+        Order order = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_medicare),
+                                                     patient,
+                                                     null,
+                                                     specimen.collectionDate.toString (),
+                                                     COVID19_DX_IVD);
+        shipment.createShipment (order.orderNumber, Vacutainer);
+        accession.completeAccession ();
+        diagnostic.isCorrectPage ();
+
+        String email = "foo@bar@gmail.com";
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo@gmail.";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.clickSaveAndActivate ();
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
+        testLog (format (emailErrLog1, email));
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
+        email = "foo@gmail.com";
+        diagnostic.closeToast ();
+        diagnostic.billing.enterPatientEmail (email);
+        diagnostic.activateOrder ();
+        testLog ("there was no patient email validation error");
         testLog (format (log, patient.billingType.label));
     }
 
@@ -149,21 +183,14 @@ public class BillingTestSuite extends BillingTestBase {
      */
     @Test (groups = "entlebucher")
     public void verifyNoChargeReasonIsRequired () {
-        String orderNum = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_all_payments),
-                                                         newTrialProtocolPatient (),
-                                                         null,
-                                                         specimen.collectionDate.toString (),
-                                                         COVID19_DX_IVD);
-        shipment.selectNewDiagnosticShipment ();
-        shipment.isDiagnostic ();
-        shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
-        shipment.selectDiagnosticSpecimenContainerType (Vacutainer);
-        shipment.clickSave ();
-        shipment.clickAccessionTab ();
+        Order order = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_all_payments),
+                                                     newTrialProtocolPatient (),
+                                                     null,
+                                                     specimen.collectionDate.toString (),
+                                                     COVID19_DX_IVD);
+        shipment.createShipment (order.orderNumber, Vacutainer);
         accession.completeAccession ();
         diagnostic.isCorrectPage ();
-        diagnostic.waitForSpecimenDelivery ();
         diagnostic.billing.selectBilling (Client);
         assertFalse (diagnostic.billing.isReasonVisible ());
         testLog ("Reason drop down is not visible when anything but No Charge is picked as billing option");
@@ -179,13 +206,14 @@ public class BillingTestSuite extends BillingTestBase {
 
         diagnostic.clickSaveAndActivate ();
         assertTrue (diagnostic.billing.isErrorForNoChargeReasonVisible ());
+        diagnostic.closeToast ();
         testLog ("Reason is required when No Charge is picked as billing option");
 
         diagnostic.billing.selectReason (IncompleteDocumentation);
         diagnostic.activateOrder ();
         testLog ("Order activated");
 
-        List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + orderNum + "'");
+        List <Map <String, Object>> queryResults = coraDb.executeSelect (noChargeReasonQuery + "'" + order.orderNumber + "'");
         assertEquals (queryResults.size (), 1);
         Map <String, Object> queryEmrData = queryResults.get (0);
         assertEquals (queryEmrData.get ("no_charge_reason").toString (), IncompleteDocumentation.label);

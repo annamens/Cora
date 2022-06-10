@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.hl7.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
@@ -50,12 +53,12 @@ import com.adaptivebiotech.cora.ui.task.TaskStatus;
  * @author Olha Tereshchuk
  *         <a href="mailto:otereshchuk@adaptivebiotech.com">otereshchuk@adaptivebiotech.com</a>
  */
-@Test (groups = { "regression", "akita" }, singleThreaded = true)
+@Test (groups = { "regression", "akita" })
 public class GatewayNotificationTestSuite extends HL7TestBase {
 
-    private final String        bcellIdTsv     = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.id.tsv.gz";
-    private final String        bcellMrdTsv    = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/above-loq.mrd.tsv.gz";
-    private final String        tcellTsv       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
+    private final String        bcellIdTsv     = azTsvPath + "/above-loq.id.tsv.gz";
+    private final String        bcellMrdTsv    = azTsvPath + "/above-loq.mrd.tsv.gz";
+    private final String        tcellTsv       = azTsvPath + "/HKJVGBGXC_0_CLINICAL-CLINICAL_68353-01MB.adap.txt.results.tsv.gz";
     private final String        lastFlowcellId = "HKJVGBGXC";
     private final String        gatewayJson    = "gatewayMessage.json";
     private Login               login          = new Login ();
@@ -109,7 +112,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.waitForFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.clickOrder ();
@@ -160,7 +163,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.waitForFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.clickOrder ();
@@ -216,7 +219,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.waitForFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.clickOrder ();
@@ -268,7 +271,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.isFilePresent (gatewayJson);
+        assertTrue (history.waitForFilePresent (gatewayJson));
         testLog ("gateway message sent");
 
         history.clickOrder ();

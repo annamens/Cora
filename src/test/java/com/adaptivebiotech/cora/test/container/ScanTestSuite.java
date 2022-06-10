@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Slide;
@@ -19,7 +22,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.ContainersList;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.BatchAccession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
 @Test (groups = "regression")
@@ -43,7 +46,7 @@ public class ScanTestSuite extends ContainerTestBase {
     private Containers   mytestContainers;
     private Containers   shipContainers;
 
-    @BeforeClass
+    @BeforeClass (alwaysRun = true)
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
         mytestContainers = coraApi.addContainers (new Containers (asList (container (Slide), container (SlideBox5))));
@@ -64,13 +67,13 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.clickSignOut ();
     }
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
     }
 
-    @AfterClass
+    @AfterClass (alwaysRun = true)
     public void afterClass () {
         coraApi.deactivateContainers (mytestContainers);
         coraApi.deactivateContainers (shipContainers);
@@ -140,9 +143,9 @@ public class ScanTestSuite extends ContainerTestBase {
         shipment.clickSave ();
         shipment.clickAccessionTab ();
 
-        Accession accession = new Accession ();
+        BatchAccession accession = new BatchAccession ();
         accession.isCorrectPage ();
-        accession.uploadIntakeManifest (getSystemResource ("intakemanifest_full_slidebox.xlsx").getPath ());
+        accession.uploadIntakeManifest (getSystemResource ("batch/intakemanifest_full_slidebox.xlsx").getPath ());
         accession.clickIntakeComplete ();
         accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();

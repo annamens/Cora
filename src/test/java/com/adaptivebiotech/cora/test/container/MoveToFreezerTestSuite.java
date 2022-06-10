@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Plate;
@@ -5,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.DryIce;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.ClassLoader.getSystemResource;
+import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -34,7 +38,7 @@ import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.container.History;
 import com.adaptivebiotech.cora.ui.container.MyCustody;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.BatchAccession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
 @Test (groups = "regression")
@@ -48,9 +52,9 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
     private History              history       = new History ();
     private MyCustody            myCustody     = new MyCustody ();
     private NewShipment          shipment      = new NewShipment ();
-    private Accession            accession     = new Accession ();
+    private BatchAccession       accession     = new BatchAccession ();
 
-    @BeforeMethod
+    @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
         login.doLogin ();
@@ -92,7 +96,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             detail.isCorrectPage ();
             Container actual = detail.parsePrimaryDetail ();
             actual.comment = comment;
-            assertTrue (primary.location.startsWith (freezer.name));
+            assertTrue (primary.location.startsWith (freezer.location));
             verifyDetails (actual, primary);
 
             // test: go to history page to verify location
@@ -120,7 +124,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
      */
     public void move_child_to_freezer () {
         String manifestName = "intakemanifest_holding_w_child";
-        String manifestTemplatePath = getSystemResource (manifestName + "_template.xlsx").getPath ();
+        String manifestTemplatePath = getSystemResource (format ("batch/%s_template.xlsx", manifestName)).getPath ();
         File manifestFileName = new File (join ("/", downloadDir.get (), manifestName + ".xlsx"));
         DateTimeFormatter fmt = ofPattern ("yyddhhmmss");
 
@@ -203,7 +207,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             detail.isCorrectPage ();
             Container actual = detail.parsePrimaryDetail ();
             actual.comment = child.comment;
-            assertTrue (actual.location.startsWith (freezer.name));
+            assertTrue (actual.location.startsWith (freezer.location));
             verifyDetails (actual, child);
 
             // test: go to child history page to verify location

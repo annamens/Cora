@@ -1,36 +1,27 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.CommercialInsurance;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 
 @Test (groups = "regression")
-public class NewOrderTestSuite extends CoraBaseBrowser {
+public class NewOrderTestSuite extends NewOrderTestBase {
 
-    private final List <String> headers          = asList ("Customer Instructions",
-                                                           "Order Notes",
-                                                           "Ordering Physician",
-                                                           "Patient Information",
-                                                           "Specimen",
-                                                           "Order Test",
-                                                           "Billing",
-                                                           "clonoSEQ Order Authorization",
-                                                           "Attachments",
-                                                           "History");
-    private Login               login            = new Login ();
-    private OrdersList          ordersList       = new OrdersList ();
-    private NewOrderClonoSeq    newOrderClonoSeq = new NewOrderClonoSeq ();
+    private Login            login            = new Login ();
+    private OrdersList       ordersList       = new OrdersList ();
+    private NewOrderClonoSeq newOrderClonoSeq = new NewOrderClonoSeq ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -62,4 +53,5 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
         assertFalse (newOrderClonoSeq.billing.isBillingQuestionsVisible ());
         testLog (format (log, Medicare.label));
     }
+
 }

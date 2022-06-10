@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
@@ -82,7 +85,7 @@ public class Detail extends CoraPage {
     public void uploadAttachments (String... files) {
         for (String file : files) {
             waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
-            pageLoading ();
+            transactionInProgress ();
         }
     }
 

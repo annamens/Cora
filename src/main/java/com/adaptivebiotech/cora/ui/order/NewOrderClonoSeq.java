@@ -1,19 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
-import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
+import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
@@ -23,7 +23,6 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
-import com.adaptivebiotech.cora.dto.UploadFile;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
@@ -51,6 +50,27 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
 
+    public void activateOrder () {
+        String orderNumber = getOrderNumber ();
+        clickSaveAndActivate ();
+        List <String> errors = getRequiredFieldMsgs ();
+        assertEquals (errors.size (), 0, "Order No: " + orderNumber + " failed to activate, Errors: " + errors);
+        checkOrderForErrors ();
+        confirmActivate ();
+        checkOrderForErrors ();
+        moduleLoading ();
+        waitUntilActivated ();
+    }
+
+    public void clickSaveAndActivate () {
+        assertTrue (click ("#order-entry-save-and-activate"));
+    }
+
+    public void confirmActivate () {
+        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
+        assertTrue (click ("//*[text()='Activate the Order']"));
+    }
+
     public void clickAssayTest (Assay assay) {
         String type = format ("//*[@class='test-type-selection']//*[text()='%s']/ancestor::label//input", assay.type);
         if (!waitForElement (type).isSelected ())
@@ -60,10 +80,7 @@ public class NewOrderClonoSeq extends NewOrder {
         if (isElementPresent (showTestMenu))
             assertTrue (click (showTestMenu));
 
-        clickSave ();
-        String test = format ("//*[text()='%s']/ancestor::li//input", assay.test);
-        if (!waitForElement (test).isSelected ())
-            assertTrue (click (test));
+        assertTrue (click (format ("//*[text()='%s']/ancestor::li//input", assay.test)));
     }
 
     public void findSpecimenId (String id) {
@@ -120,6 +137,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.arrivalDate = getShipmentArrivalDate ();
         order.tests = getSelectedTests ();
+        order.documentedByType = getOrderAuthorization ();
         order.orderAttachments = getCoraAttachments ();
         order.shipmentAttachments = getShipmentAttachments ();
         order.trf = getDoraTrf ();
@@ -128,90 +146,9 @@ public class NewOrderClonoSeq extends NewOrder {
         return order;
     }
 
-    public String getOrderName () {
-        // sometimes it's taking a while for the order detail page to load
-        String css = oEntry + " [ng-bind='ctrl.orderEntry.order.name']";
-        assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
-            public Boolean apply (WebDriver driver) {
-                return isTextInElement (css, "Clinical");
-            }
-        }));
-        return getText (css);
-    }
-
-    private String isTrfAttached () {
-        return getText ("[ng-bind*='ExternalTrf']");
-    }
-
-    public String getProviderName () {
-        return getText ("[ng-bind$='providerFullName']");
-    }
-
-    protected String getProviderAccount () {
-        return getText ("[ng-bind='ctrl.orderEntry.order.authorizingProvider.account.name']");
-    }
-
     public String getCollectionDate () {
         String css = "[ng-model^='ctrl.orderEntry.specimen.collectionDate']";
         return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
-    }
-
-    public List <UploadFile> getCoraAttachments () {
-        List <UploadFile> coraAttachments = new ArrayList <> ();
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isOrderAttachment'] .attachments-table-row";
-        if (isElementPresent (files))
-            for (WebElement element : waitForElements (files)) {
-                UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
-                attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
-                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
-                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
-                coraAttachments.add (attachment);
-            }
-        return coraAttachments;
-    }
-
-    private List <UploadFile> getShipmentAttachments () {
-        List <UploadFile> shipmentAttachments = new ArrayList <> ();
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter-by='CORA.SHIPMENTS'] .attachments-table-row";
-        if (isElementPresent (files))
-            for (WebElement element : waitForElements (files)) {
-                UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
-                attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
-                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
-                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
-                shipmentAttachments.add (attachment);
-            }
-        return shipmentAttachments;
-    }
-
-    private UploadFile getDoraTrf () {
-        UploadFile doraTrFile = new UploadFile ();
-        String doraTrf = "[ng-if='ctrl.orderEntry.hasDoraTrf']";
-        if (isElementPresent (doraTrf)) {
-            doraTrFile.fileName = getText (String.join (" ", doraTrf, ".btn-link"));
-            doraTrFile.fileUrl = getAttribute (String.join (" ", doraTrf, "a[href]"), "href");
-        }
-        return doraTrFile;
-    }
-
-    private List <UploadFile> getDoraAttachments () {
-        List <UploadFile> doraAttachments = new ArrayList <> ();
-        String files = "[attachments='ctrl.orderEntry.attachments'][filter='ctrl.isDoraAttachment'] .attachments-table-row";
-        if (isElementPresent (files))
-            for (WebElement element : waitForElements (files)) {
-                UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a [ng-bind='attachment.name']");
-                attachment.fileUrl = getAttribute (element, "a[href]", "href");
-                String createdDateTime = getText (element, "[ng-bind$='localDateTime']");
-                attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
-                attachment.createdBy = getText (element, "[ng-bind='attachment.createdBy']");
-                doraAttachments.add (attachment);
-            }
-        return doraAttachments;
     }
 
     public void addPatientICDCode (String icdCode) {
@@ -260,6 +197,10 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText (specimenSourceOther, source));
     }
 
+    public void enterCellCount (int count) {
+        assertTrue (setText ("#specimen-entry-cell-count", String.valueOf (count)));
+    }
+
     public void enterRetrievalDate (String date) {
         assertTrue (setText (retrievalDate, date));
     }
@@ -295,12 +236,11 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param specimen
      * @return
      */
-    public String createClonoSeqOrder (Physician physician,
-                                       Patient patient,
-                                       String[] icdCodes,
-                                       Assay assayTest,
-                                       Specimen specimen) {
-
+    public Order createClonoSeqOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      Assay assayTest,
+                                      Specimen specimen) {
         selectNewClonoSEQDiagnosticOrder ();
         isCorrectPage ();
 
@@ -339,14 +279,18 @@ public class NewOrderClonoSeq extends NewOrder {
             enterSpecimenSource (specimen.sampleSource);
         if (specimen.anticoagulant != null)
             enterAntiCoagulant (specimen.anticoagulant);
+        if (asList (CellPellet, CellSuspension).contains (specimen.sampleType))
+            enterCellCount (1000000);
 
         enterCollectionDate (specimen.collectionDate.toString ());
         clickAssayTest (assayTest);
         clickSave ();
 
-        String orderNum = getOrderNumber ();
-        info ("ClonoSeq Order Number: " + orderNum);
-        return orderNum;
+        Order order = new Order ();
+        order.orderNumber = getOrderNumber ();
+        order.id = getOrderId ();
+        info (format ("ClonoSeq Order Number: %s (%s)", order.orderNumber, order.id));
+        return order;
     }
 
     /**
@@ -363,18 +307,18 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param containerType
      * @return
      */
-    public String createClonoSeqOrder (Physician physician,
-                                       Patient patient,
-                                       String[] icdCodes,
-                                       Assay assayTest,
-                                       Specimen specimen,
-                                       OrderStatus orderStatus,
-                                       ContainerType containerType) {
+    public Order createClonoSeqOrder (Physician physician,
+                                      Patient patient,
+                                      String[] icdCodes,
+                                      Assay assayTest,
+                                      Specimen specimen,
+                                      OrderStatus orderStatus,
+                                      ContainerType containerType) {
         // create clonoSEQ diagnostic order
-        String orderNum = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
+        Order order = createClonoSeqOrder (physician, patient, icdCodes, assayTest, specimen);
 
         // add diagnostic shipment
-        new NewShipment ().createShipment (orderNum, containerType);
+        new NewShipment ().createShipment (order.orderNumber, containerType);
 
         // accession complete
         if (orderStatus.equals (Active)) {
@@ -383,11 +327,15 @@ public class NewOrderClonoSeq extends NewOrder {
             // activate order
             isCorrectPage ();
             activateOrder ();
+
+            // refreshing the page doesn't automatically take you to order detail
+            gotoOrderDetailsPage (order.id);
+            isCorrectPage ();
         } else {
             accession.clickOrderNumber ();
             isCorrectPage ();
         }
 
-        return orderNum;
+        return order;
     }
 }

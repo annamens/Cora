@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
@@ -90,6 +93,7 @@ public final class Orders {
         public Boolean             postToImmunoSEQ;
         public ChargeType          billingType;
         public DeliveryType        specimenDeliveryType;
+        public OrderAuthorization  documentedByType;
 
         // for /cora/api/v1/orders/search
         public String              category;
@@ -347,7 +351,7 @@ public final class Orders {
     }
 
     public enum OrderStatus {
-        All, Pending, Active, Completed, Cancelled, FailedActivation, PendingActivation
+        All, Pending, Active, Completed, Cancelled, Failed, FailedActivation, PendingActivation
     }
 
     public enum Assay {
@@ -366,7 +370,7 @@ public final class Orders {
         MRD_TCRG ("Tracking", "TCRG Tracking (CLIA)"),
         MRD_TCRG_IUO ("Tracking", "TCRG Tracking (IUO CLIA-extract)"),
         COVID19_DX_IVD ("Covid19", "T-Detect COVID"),
-        LYME_DX_IVD ("Lyme", "T-Detect Lyme");
+        LYME_DX ("Lyme", "T-Detect Lyme");
 
         public String type;
         public String test;
@@ -378,6 +382,24 @@ public final class Orders {
 
         public static Assay getAssay (String test) {
             return allOf (Assay.class).parallelStream ().filter (a -> a.test.equals (test)).findAny ().get ();
+        }
+    }
+
+    public enum OrderAuthorization {
+        TrfWetSig ("Physician wet signature on TRF"),
+        TrfESig ("Physician e-signature on TRF"),
+        ExternalTrf ("Internal requisition form with handwritten or electronic physician signature authorizing clonoSEQ order"),
+        SignatureBypass ("Electronically Authorized in Medical Record");
+
+        public String coraLabel;
+
+        private OrderAuthorization (String coraLabel) {
+            this.coraLabel = coraLabel;
+        }
+
+        public static OrderAuthorization getOrderAuthorization (String coraLabel) {
+            return allOf (OrderAuthorization.class).parallelStream ().filter (st -> st.coraLabel.equals (coraLabel))
+                                                   .findAny ().orElse (null);
         }
     }
 

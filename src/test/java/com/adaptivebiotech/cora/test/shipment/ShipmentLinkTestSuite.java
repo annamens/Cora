@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.shipment;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Slide;
@@ -15,6 +18,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -51,14 +55,14 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      */
     public void verifyClonoSeqShipmentLink () {
         // create clonoSEQ diagnostic order
-        String orderNum = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
-                                                                newNoChargePatient (),
-                                                                new String[] { "C90.00" },
-                                                                ID_BCell2_CLIA,
-                                                                bloodSpecimen ());
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
+                                                            newNoChargePatient (),
+                                                            new String[] { "C90.00" },
+                                                            ID_BCell2_CLIA,
+                                                            bloodSpecimen ());
 
         // add diagnostic shipment
-        shipment.createShipment (orderNum, SlideBox5);
+        shipment.createShipment (order.orderNumber, SlideBox5);
 
         // accession complete
         accession.isCorrectPage ();
@@ -80,8 +84,6 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         Containers expContainers = shipmentDetail.getPrimaryContainers (SlideBox5);
         shipmentDetail.clickOrderNumber ();
         newOrderClonoSeq.isCorrectPage ();
-        newOrderClonoSeq.expandShipment ();
-        newOrderClonoSeq.expandContainers ();
         assertEquals (newOrderClonoSeq.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (newOrderClonoSeq.getSpecimenId (), expSpecimenId);
         assertNotEquals (newOrderClonoSeq.getSpecimenContainerType (), expContainerType);
@@ -101,14 +103,14 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
      */
     public void verifyTDetectShipmentLink () {
         // create T-Detect diagnostic order
-        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
-                                                              newClientPatient (),
-                                                              null,
-                                                              genDate (-1),
-                                                              COVID19_DX_IVD);
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
+                                                          newClientPatient (),
+                                                          null,
+                                                          genDate (-1),
+                                                          COVID19_DX_IVD);
 
         // add diagnostic shipment
-        shipment.createShipment (orderNum, SlideBox5);
+        shipment.createShipment (order.orderNumber, SlideBox5);
 
         // accession complete
         accession.isCorrectPage ();
@@ -130,8 +132,6 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         Containers expContainers = shipmentDetail.getPrimaryContainers (SlideBox5);
         shipmentDetail.clickOrderNumber ();
         newOrderTDetect.isCorrectPage ();
-        newOrderTDetect.expandShipment ();
-        newOrderTDetect.expandContainers ();
         assertEquals (newOrderTDetect.getShipmentArrivalDate (), shipment.arrivalDate);
         assertEquals (newOrderTDetect.getSpecimenId (), expSpecimenId);
         assertNotEquals (newOrderTDetect.getSpecimenContainerType (), expContainerType);

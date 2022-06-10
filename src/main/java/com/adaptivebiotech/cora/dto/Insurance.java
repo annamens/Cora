@@ -1,9 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Harry Soehalim
@@ -20,9 +24,11 @@ public final class Insurance {
     public PatientStatus       hospitalizationStatus;
     public String              billingInstitution;
     public String              dischargeDate;
+    public String              priorAuthorizationNumber;
 
+    @JsonIgnore
     public boolean isEmpty () {
-        return provider == null && groupNumber == null && policyNumber == null && insuredRelationship == null && policyholder == null && hospitalizationStatus == null && billingInstitution == null && dischargeDate == null;
+        return provider == null && groupNumber == null && policyNumber == null && insuredRelationship == null && policyholder == null && hospitalizationStatus == null && billingInstitution == null && dischargeDate == null && priorAuthorizationNumber == null;
     }
 
     @Override

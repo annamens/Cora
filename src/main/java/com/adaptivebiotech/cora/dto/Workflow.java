@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
@@ -41,6 +44,7 @@ public final class Workflow {
         public Boolean ighvReportEnabled;
         public Boolean notifyGateway;
         public String  shmDataSourcePath;
+        public String  country;
     }
 
     public static final class Stage {

@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.patient.clonoseq;
 
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
@@ -54,13 +57,13 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         // check no error message for birthdate 01/01/1900
         patient.dateOfBirth = "01/01/1900";
         createNewPatient.fillPatientInfo (patient);
-        assertFalse (createNewPatient.isBirthDateErrorzVisible ());
+        assertFalse (createNewPatient.isBirthDateErrorVisible ());
         testLog ("Patient with dob starting from 01/01/1900 can be created");
 
         // check birthdate today's date
         patient.dateOfBirth = genDate (0);
         createNewPatient.fillPatientInfo (patient);
-        assertFalse (createNewPatient.isBirthDateErrorzVisible ());
+        assertFalse (createNewPatient.isBirthDateErrorVisible ());
         testLog ("Patient with dob today can be created");
 
         createNewPatient.clickSave ();

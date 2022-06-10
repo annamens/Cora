@@ -1,33 +1,55 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.report.tdetect;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
-import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
+import static com.adaptivebiotech.cora.utils.TestHelper.covidProperties;
+import static com.adaptivebiotech.cora.utils.TestHelper.sample_112770_SN_7929;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxAnalysis;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxContamination;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxReport;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
+import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_CONSULTANT;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.AutoPassedClinicalQC;
+import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.AutoReleasedReport;
+import static java.lang.String.format;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import java.lang.reflect.Method;
+import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
+import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
+import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
+import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportTDetect;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
@@ -39,11 +61,15 @@ import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 @Test (groups = "regression")
 public class ReportTcrbv4bTestSuite extends ReportTestBase {
 
-    private final String  reportData = "reportData.json";
-    private Login         login      = new Login ();
-    private OrcaHistory   history    = new OrcaHistory ();
-    private ReportTDetect report     = new ReportTDetect ();
-    private String        downloadDir;
+    private final String       reportData      = "reportData.json";
+    private Login              login           = new Login ();
+    private OrdersList         ordersList      = new OrdersList ();
+    private NewOrderTDetect    newOrderTDetect = new NewOrderTDetect ();
+    private OrderDetailTDetect orderDetail     = new OrderDetailTDetect ();
+    private OrcaHistory        history         = new OrcaHistory ();
+    private ReportTDetect      report          = new ReportTDetect ();
+    private Specimen           specimen        = bloodSpecimen ();
+    private String             downloadDir;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
@@ -51,38 +77,51 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
     }
 
     /**
-     * @sdlc.requirements SR-5671
+     * Note:
+     * - for Auto QC to work, you have to complete NorthQC stage
+     * 
+     * @sdlc.requirements SR-5671, SR-6487, SR-6488
      */
-    @Test (groups = "tatsumiya")
+    @Test (groups = { "tatsumiya", "fox-terrier" })
     public void verify_covid_report () {
-        CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
-        test.tsvPath = azPipelineFda + "/210205_NB501448_0761_AH752HBGXH/v3.1/20210207_0918/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev2/H752HBGXH_0_CLINICAL-CLINICAL_95352-SN-2230.adap.txt.results.tsv.gz";
-        test.workflowProperties = sample_95352_SN_2230 ();
-
-        ClassifierOutput covid = negativeCovidResult ();
-        Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_selfpay),
-                                                   patient,
-                                                   stage (DxReport, Ready),
-                                                   test,
-                                                   COVID19_DX_IVD);
-        diagnostic.dxResults = covid;
-        assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
-
-        OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
-        String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
-
         login.doLogin ();
-        history.gotoOrderDebug (orderTest.sampleName);
-        history.waitFor (DxReport, Awaiting, CLINICAL_QC);
-        history.clickOrderTest ();
-        report.clickReportTab (COVID19_DX_IVD);
-        assertEquals (report.parseFlags ().get (0).name, "COVID_UPPER_UPR_THRESHOLD");
-        testLog ("Flags section contained COVID_UPPER_UPR_THRESHOLD");
+        ordersList.isCorrectPage ();
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
+                                                          scenarioBuilderPatient (),
+                                                          null,
+                                                          specimen.collectionDate.toString (),
+                                                          COVID19_DX_IVD,
+                                                          Active,
+                                                          Tube);
+        testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);
 
-        report.releaseReport (COVID19_DX_IVD, Pass);
-        history.gotoOrderDebug (orderTest.sampleName);
+        String sample = orderDetail.getSampleName (COVID19_DX_IVD);
+        history.gotoOrderDebug (sample);
+        history.setWorkflowProperties (covidProperties ());
+        history.forceStatusUpdate (NorthQC, Ready);
+        history.waitFor (NorthQC, Finished);
+        history.waitFor (DxAnalysis, Finished);
+        history.waitFor (DxContamination, Finished);
+        history.waitFor (DxReport, Awaiting, CLINICAL_CONSULTANT);
 
+        String log = "the workflow showed a substatus code of '%s/%s/%s' and message of '%s'";
+        assertEquals (history.parseStatusHistory ().stream ()
+                             .filter (s -> DxReport.equals (s.stageName))
+                             .filter (s -> Awaiting.equals (s.stageStatus))
+                             .filter (s -> CLINICAL_QC.equals (s.stageSubstatus))
+                             .filter (s -> "Pass: AutoPass".equals (s.subStatusMessage)).count (),
+                      1);
+        testLog (format (log, DxReport, Awaiting, CLINICAL_QC, "Pass: AutoPass"));
+
+        history.waitFor (DxReport, Finished);
+        Map <String, String> properties = history.getWorkflowProperties ();
+        assertEquals (properties.get (AutoPassedClinicalQC.name ()), "true");
+        testLog (format ("workflow property: '%s' is set and has value: 'true'", AutoPassedClinicalQC));
+
+        assertEquals (properties.get (AutoReleasedReport.name ()), "true");
+        testLog (format ("workflow property: '%s' is set and has value: 'true'", AutoReleasedReport));
+
+        String reportDataJson = join ("/", downloadDir, sample, reportData);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
@@ -96,17 +135,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         assertNull (report.specimenInfo);
         assertNull (report.dataEncoded);
         assertNull (report.data);
-        assertEquals (report.dxResult.disease, covid.disease);
-        assertEquals (report.dxResult.dxStatus, covid.dxStatus);
-        assertEquals (report.dxResult.dxScore, covid.dxScore);
-        assertEquals (report.dxResult.containerVersion, covid.containerVersion);
-        assertEquals (report.dxResult.classifierVersion, covid.classifierVersion);
-        assertEquals (report.dxResult.pipelineVersion, covid.pipelineVersion);
-        assertEquals (report.dxResult.configVersion, covid.configVersion);
-        assertEquals (report.dxResult.qcFlags, covid.qcFlags);
-        assertEquals (report.dxResult.posteriorProbability, covid.posteriorProbability);
-        assertEquals (report.dxResult.countEnhancedSeq, covid.countEnhancedSeq);
-        assertEquals (report.dxResult.uniqueProductiveTemplates, covid.uniqueProductiveTemplates);
+        assertEquals (report.dxResult, sample_112770_SN_7929 ());
         testLog ("found the corrct DTO structure in the " + reportData);
     }
 
@@ -115,7 +144,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
      */
     @Test (groups = "akita")
     public void verify_lyme_report () {
-        CoraTest test = coraApi.getTDxTest (LYME_DX_IVD);
+        CoraTest test = coraApi.getTDxTest (LYME_DX);
         test.tsvPath = azPipelineNorth + "/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz";;
         test.workflowProperties = sample_860011348 ();
 
@@ -125,19 +154,19 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
                                                    patient,
                                                    stage (DxReport, Ready),
                                                    test,
-                                                   LYME_DX_IVD);
+                                                   LYME_DX);
         diagnostic.dxResults = lyme;
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
 
-        OrderTest orderTest = diagnostic.findOrderTest (LYME_DX_IVD);
+        OrderTest orderTest = diagnostic.findOrderTest (LYME_DX);
         String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
-        report.clickReportTab (LYME_DX_IVD);
-        report.releaseReport (LYME_DX_IVD, Pass);
+        report.clickReportTab (LYME_DX);
+        report.releaseReport (LYME_DX, Pass);
         history.gotoOrderDebug (orderTest.sampleName);
 
         coraDebugApi.login ();
@@ -164,14 +193,6 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         assertEquals (report.dxResult.countEnhancedSeq, lyme.countEnhancedSeq);
         assertEquals (report.dxResult.uniqueProductiveTemplates, lyme.uniqueProductiveTemplates);
         testLog ("found the corrct DTO structure in the " + reportData);
-    }
-
-    private WorkflowProperties sample_95352_SN_2230 () {
-        WorkflowProperties wProperties = new WorkflowProperties ();
-        wProperties.flowcell = "H752HBGXH";
-        wProperties.workspaceName = "CLINICAL-CLINICAL";
-        wProperties.sampleName = "95352-SN-2230";
-        return wProperties;
     }
 
     private WorkflowProperties sample_860011348 () {

@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
@@ -29,9 +32,8 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class OrcaHistory extends CoraPage {
 
-    private final long   millisDuration = 3000000l;                                                    // 50mins
-    private final long   millisPoll     = 60000l;                                                      // 60sec
-    private final String fileLocator    = "//h3[text()='Files']/following-sibling::ul//a[text()='%s']";
+    private final long millisDuration = 3000000l; // 50mins
+    private final long millisPoll     = 60000l;   // 60sec
 
     public OrcaHistory () {
         staticNavBarHeight = 200;
@@ -185,9 +187,12 @@ public class OrcaHistory extends CoraPage {
         return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
     }
 
+    public String getOrderId () {
+        return substringAfterLast (getAttribute ("a[href*='/cora/order/auto?id=']", "href"), "id=");
+    }
+
     public String getOrderTestId () {
-        String url = getAttribute ("a[href*='/cora/order/status']", "href");
-        return substringAfterLast (url, "ordertestid=");
+        return substringAfterLast (getAttribute ("a[href*='/cora/order/status']", "href"), "ordertestid=");
     }
 
     public void clickOrder () {
@@ -305,9 +310,14 @@ public class OrcaHistory extends CoraPage {
     }
 
     public boolean isFilePresent (String fileName) {
+        String fileLocator = "//h3[text()='Files']/following-sibling::ul//a[text()='%s']";
+        return isElementPresent (format (fileLocator, fileName));
+    }
+
+    public boolean waitForFilePresent (String fileName) {
         Function <WebDriver, Boolean> func = new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {
-                if (isElementPresent (format (fileLocator, fileName)))
+                if (isFilePresent (fileName))
                     return true;
                 else {
                     refresh ();

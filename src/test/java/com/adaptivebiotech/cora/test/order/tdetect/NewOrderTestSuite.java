@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.order.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5CS;
@@ -12,16 +15,15 @@ import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
@@ -33,24 +35,13 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  * - ICD codes and patient billing address are not required
  */
 @Test (groups = "regression")
-public class NewOrderTestSuite extends CoraBaseBrowser {
+public class NewOrderTestSuite extends NewOrderTestBase {
 
-    private final List <String> headers         = asList ("Customer Instructions",
-                                                          "Order Notes",
-                                                          "Ordering Physician",
-                                                          "Patient",
-                                                          "Specimen",
-                                                          "Order Test",
-                                                          "Billing",
-                                                          "Order Authorization",
-                                                          "Attachments",
-                                                          "Messages",
-                                                          "History");
-    private Login               login           = new Login ();
-    private OrdersList          ordersList      = new OrdersList ();
-    private NewOrderTDetect     newOrderTDetect = new NewOrderTDetect ();
-    private NewShipment         shipment        = new NewShipment ();
-    private Accession           accession       = new Accession ();
+    private Login           login           = new Login ();
+    private OrdersList      ordersList      = new OrdersList ();
+    private NewOrderTDetect newOrderTDetect = new NewOrderTDetect ();
+    private NewShipment     shipment        = new NewShipment ();
+    private Accession       accession       = new Accession ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -100,17 +91,17 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
      */
     public void order_activation () {
         // create T-Detect diagnostic order
-        String orderNum = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
-                                                              newClientPatient (),
-                                                              null,
-                                                              bloodSpecimen ().collectionDate.toString (),
-                                                              COVID19_DX_IVD);
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
+                                                          newClientPatient (),
+                                                          null,
+                                                          bloodSpecimen ().collectionDate.toString (),
+                                                          COVID19_DX_IVD);
 
         // add diagnostic shipment
         shipment.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
         shipment.enterShippingCondition (Ambient);
-        shipment.enterOrderNumber (orderNum);
+        shipment.enterOrderNumber (order.orderNumber);
         shipment.selectDiagnosticSpecimenContainerType (SlideBox5CS);
         shipment.clickAddSlide ();
         shipment.clickAddSlide ();
@@ -137,4 +128,5 @@ public class NewOrderTestSuite extends CoraBaseBrowser {
         newOrderTDetect.activateOrder ();
         testLog ("STEP 2 - Order is Active.");
     }
+
 }

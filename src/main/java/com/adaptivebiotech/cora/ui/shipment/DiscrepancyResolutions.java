@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static org.testng.Assert.assertTrue;
@@ -5,6 +8,16 @@ import java.util.List;
 import org.openqa.selenium.WebElement;
 
 public class DiscrepancyResolutions extends ShipmentHeader {
+
+    public DiscrepancyResolutions () {
+        staticNavBarHeight = 195;
+    }
+
+    @Override
+    public void isCorrectPage () {
+        assertTrue (isTextInElement ("[role='tablist'] .active:nth-child(3)", "DISCREPANCY RESOLUTIONS"));
+        pageLoading ();
+    }
 
     public int getNumberOfDiscrepancies () {
         String css = "[ng-bind=\"ctrl.entry.discrepancies.length\"]";

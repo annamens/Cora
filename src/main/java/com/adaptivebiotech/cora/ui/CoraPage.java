@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
@@ -7,6 +10,7 @@ import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import static org.testng.util.Strings.isNullOrEmpty;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -21,10 +25,11 @@ import com.seleniumfy.test.utils.BasePage;
  */
 public class CoraPage extends BasePage {
 
-    private final String   newmenu    = "li:nth-child(1) .new-order #navNewDropdown";
-    private final String   utilities  = "li:nth-child(9) .new-order #navNewDropdown";
-    protected final String popupTitle = ".modal-header .modal-title";
-    protected final String tabBase    = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
+    private final String   newmenu     = "li:nth-child(1) .new-order #navNewDropdown";
+    private final String   utilities   = "li:nth-child(9) .new-order #navNewDropdown";
+    protected final String popupTitle  = ".modal-header .modal-title";
+    protected final String tabBase     = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
+    protected final String requiredMsg = ".text-danger";
 
     public CoraPage () {
         staticNavBarHeight = 35;
@@ -182,7 +187,7 @@ public class CoraPage extends BasePage {
     }
 
     public void gotoOrderEntry (String orderId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/order/dx/" + orderId));
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/auto?id=" + orderId));
         pageLoading ();
     }
 
@@ -268,6 +273,12 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
+    public void gotoAccession (String shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=accession"));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
     // click on (X) icon
     public void closePopup () {
         assertTrue (click ("[ng-click='ctrl.cancel()'] .glyphicon-remove"));
@@ -306,6 +317,7 @@ public class CoraPage extends BasePage {
 
     public void clickFilter () {
         assertTrue (click ("//*[text()='Filter list']"));
+        pageLoading ();
     }
 
     public void gotoTaskById (String id) {
@@ -327,5 +339,17 @@ public class CoraPage extends BasePage {
 
     public void navigateToTab (int tabIndex) {
         getDriver ().switchTo ().window (new ArrayList <> (getDriver ().getWindowHandles ()).get (tabIndex));
+    }
+
+    public List <String> getUnauthorizedMsgs () {
+        waitForElementVisible ("#unauthorized");
+        List <String> elements = new LinkedList <> ();
+        elements.add (getText (".unauthorized h2"));
+        elements.add (getText (".unauthorized p"));
+        return elements;
+    }
+
+    public List <String> getTabList () {
+        return getTextList (".nav-tabs li:not([class*='ng-hide']) a:not([target='_blank'])");
     }
 }

@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
@@ -93,6 +96,8 @@ public final class Physician {
         TDetect_selfpay ("T-Detect", "Patient Self-Pay", "SEA_QA T-Detect Patient Self-Pay"),
         TDetect_all_payments ("T-Detect", "All Payments", "SEA_QA T-Detect All Payments"),
         TDetect_int_order_upload ("T-Detect", "Internal Order Upload", "SEA_QA T-Detect All Payments"),
+        TDetect_lomn ("T-Detect", "LOMN", "SEA_QA T-Detect All Payments"),
+        TDetect_canada ("T-Detect", "Canada", "SEA_QA T-Detect Canada"),
         non_CLEP_clonoseq ("Seattle", "ClonoSEQ", "SEA_QA Test"),
         non_CLEP_tdetect_all_tests ("Seattle", "T-Detect-All", "SEA_QA Test"),
         non_CLEP_tdetect_no_tests ("Seattle", "T-Detect", "SEA_QA Test"),

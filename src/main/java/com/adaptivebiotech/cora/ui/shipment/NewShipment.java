@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
@@ -292,14 +295,25 @@ public class NewShipment extends ShipmentHeader {
         assertTrue (click ("//table//a[text()='" + containerNo + "']"));
     }
 
-    public void createShipment (String orderNumber, ContainerType containerType) {
+    public String createShipment (String orderNumber, ContainerType containerType) {
         selectNewDiagnosticShipment ();
         isDiagnostic ();
         enterShippingCondition (Ambient);
         enterOrderNumber (orderNumber);
         selectDiagnosticSpecimenContainerType (containerType);
         clickSave ();
+        String shipmentNumber = getShipmentNumber ();
         clickAccessionTab ();
+        return shipmentNumber;
+    }
+
+    public void createShipment (ContainerType containerType, String initialFreezer) {
+        selectNewDiagnosticShipment ();
+        isDiagnostic ();
+        enterShippingCondition (Ambient);
+        selectDiagnosticSpecimenContainerType (containerType);
+        enterInitialStorageLocation (initialFreezer);
+        clickSave ();
     }
 
     public void createShipment (ShippingCondition shippingCondition,
@@ -316,5 +330,15 @@ public class NewShipment extends ShipmentHeader {
         selectDiagnosticSpecimenContainerType (containerType);
         enterInitialStorageLocation (initialFreezer);
         clickSave ();
+    }
+
+    public String createBatchShipment (LinkShipment linkShipment) {
+        selectNewBatchShipment ();
+        isBatchOrGeneral ();
+        enterShippingCondition (Ambient);
+        clickSave ();
+        String shipmentNumber = getShipmentNumber ();
+        clickAccessionTab ();
+        return shipmentNumber;
     }
 }

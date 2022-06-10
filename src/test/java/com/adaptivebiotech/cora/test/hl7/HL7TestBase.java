@@ -1,5 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.hl7;
 
+import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.COVID19;
+import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.LYME;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.POSITIVE;
 import java.util.ArrayList;
@@ -19,7 +24,7 @@ public class HL7TestBase extends CoraBaseBrowser {
 
     protected ClassifierOutput negativeCovidResult () {
         ClassifierOutput dxResult = new ClassifierOutput ();
-        dxResult.disease = "COVID19";
+        dxResult.disease = COVID19;
         dxResult.classifierVersion = "v1.0";
         dxResult.dxScore = -6.2313718717738125d;
         dxResult.posteriorProbability = 0.0019628913932077255d;
@@ -35,7 +40,7 @@ public class HL7TestBase extends CoraBaseBrowser {
 
     protected ClassifierOutput positiveLymeResult () {
         ClassifierOutput dxResult = new ClassifierOutput ();
-        dxResult.disease = "LYME";
+        dxResult.disease = LYME;
         dxResult.classifierVersion = "v2.0";
         dxResult.dxScore = 105.83867731819977d;
         dxResult.countEnhancedSeq = 71;

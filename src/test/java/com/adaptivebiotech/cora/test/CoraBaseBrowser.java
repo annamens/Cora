@@ -1,8 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test;
 
 import static com.adaptivebiotech.cora.test.CoraEnvironment.coraDbInfo;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.initialization;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.jumpbox;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
+import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.isIVD;
+import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.portalTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.gitcommitId;
 import static com.adaptivebiotech.test.BaseEnvironment.version;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -16,17 +23,20 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.api.CoraDebugApi;
+import com.adaptivebiotech.cora.db.CoraDb;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.test.TestBase;
-import com.adaptivebiotech.test.utils.DbClientHelper;
 
 public class CoraBaseBrowser extends TestBase {
 
-    protected static CoraApi        coraApi;
-    protected static CoraDebugApi   coraDebugApi;
-    protected static DbClientHelper coraDb;
+    protected final String        azTsvPath       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
+    protected final String        azPipelineNorth = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
+    protected final String        azPipelineFda   = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
+    protected static CoraApi      coraApi;
+    protected static CoraDebugApi coraDebugApi;
+    protected static CoraDb       coraDb;
 
     static {
         initialization ();
@@ -35,7 +45,7 @@ public class CoraBaseBrowser extends TestBase {
         coraApi = new CoraApi ();
         coraApi.getAuthToken ();
         coraDebugApi = new CoraDebugApi ();
-        coraDb = new DbClientHelper (coraDbInfo, jumpbox);
+        coraDb = new CoraDb (coraDbInfo, jumpbox);
         coraDb.openConnection ();
     }
 
@@ -56,6 +66,16 @@ public class CoraBaseBrowser extends TestBase {
         MDC.put (jobId, testName);
         coraApi.addTokenAndUsername ();
         info (format ("running: %s()", testName));
+    }
+
+    protected void prepPipelineApi (boolean isClia) {
+        if (isClia) {
+            isIVD = false;
+            portalTestUrl = portalCliaTestUrl;
+        } else {
+            isIVD = true;
+            portalTestUrl = portalIvdTestUrl;
+        }
     }
 
     protected String artifacts (String... paths) {
