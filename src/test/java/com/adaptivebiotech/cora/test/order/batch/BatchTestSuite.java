@@ -10,6 +10,7 @@ import static java.lang.String.join;
 import static java.lang.System.nanoTime;
 import static java.util.Collections.singletonMap;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -40,7 +41,9 @@ public class BatchTestSuite extends BatchTestBase {
     }
 
     public void happypath () {
-        Map <String, String> sample = singletonMap ("SAMPLE_NAME", "selenium-batch-eos-" + nanoTime ());
+        Map <String, Map <String, String>> sample = new HashMap <> ();
+        sample.put ("SAMPLE_NAME", singletonMap ("workflow", "selenium-batch-eos-" + nanoTime ()));
+
         String intakeManifest = join ("/", downloadDir.get (), "eos-intakemanifest.xlsx");
         String preManifest = join ("/", downloadDir.get (), "eos-premanifest.xlsx");
         prepManifestFile (getSystemResource ("batch/eos-intakemanifest.xlsx").getPath (), intakeManifest, sample);

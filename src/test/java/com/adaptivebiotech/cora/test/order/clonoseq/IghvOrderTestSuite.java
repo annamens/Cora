@@ -1008,7 +1008,6 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
 
         // get file using get request
         history.gotoOrderDebug (sampleName);
-        history.isCorrectPage ();
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileUrl (reportData), localFile);
 

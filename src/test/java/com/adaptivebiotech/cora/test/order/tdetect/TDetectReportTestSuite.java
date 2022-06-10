@@ -127,7 +127,6 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         order = orderDetailTDetect.parseOrder ();
         String sample = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sample);
-        history.isCorrectPage ();
         order.orderTestId = history.getOrderTestId ();
 
         history.setWorkflowProperties (covidProperties ());
