@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
+import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.TestSkus;
@@ -27,13 +28,17 @@ public final class Specimen {
     public SpecimenType       sampleType;
     @JsonAlias ("sourceType")
     public SpecimenSource     sampleSource;
+    // TODO This might be a mistake, I don't see we have specimen arrivalDate
+    // Keep as it is. Remove refactor later
+    public String             approvedDate;
     public String             arrivalDate;
     public String             sampleTypeDisplayName;
     public String             approvalStatus;
     public List <Sample>      samples;
-    public String             compartment;
+    public Compartment        compartment;
     public Object             collectionDate;
     public Object             reconciliationDate;
+    public Object             retrievalDate;
     public SpecimenProperties properties;
     public Anticoagulant      anticoagulant;
     public ProjectProperties  projectProperties;
@@ -57,6 +62,8 @@ public final class Specimen {
     public static final class SpecimenProperties {
 
         public String         ArrivalDate;
+        // TODO remove above
+        public String         ApprovedDate;
         public SpecimenSource SourceType;
         public String         ApprovalStatus;
         public String         SampleTypeDisplayName;

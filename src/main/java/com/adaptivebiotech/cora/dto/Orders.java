@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Alerts.Alert;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Reminders.Reminder;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.utils.PageHelper.FriendlyOrderStatus;
@@ -94,6 +95,11 @@ public final class Orders {
         public ChargeType          billingType;
         public DeliveryType        specimenDeliveryType;
         public OrderAuthorization  documentedByType;
+        public String              externalOrderCode;
+        public Object              intakeCompletedDate;
+        public ContainerType       specimenDisplayContainerType;
+        public Integer             specimenDisplayContainerCount;
+        public Object              specimenDisplayArrivalDate;
 
         // for /cora/api/v1/orders/search
         public String              category;
