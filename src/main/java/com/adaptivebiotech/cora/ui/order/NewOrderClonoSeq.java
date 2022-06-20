@@ -164,11 +164,6 @@ public class NewOrderClonoSeq extends NewOrder {
         return order;
     }
 
-    public String getCollectionDate () {
-        String css = "[ng-model^='ctrl.orderEntry.specimen.collectionDate']";
-        return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
-    }
-
     public void addPatientICDCode (String icdCode) {
         String expectedModalTitle = "Test Selection Warning";
         this.enterPatientICD_Codes (icdCode);

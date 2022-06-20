@@ -53,6 +53,7 @@ public abstract class NewOrder extends OrderHeader {
     private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
     private final String   orderNotes       = "#order-notes";
     private final String   patientMrn       = "[formcontrolname='mrn']";
+    private final String   collectionDate   = "[formcontrolname='collectionDate']";
     private final String   patientNotes     = ".patient-note";
     private final String   orderAuth        = "order-documentation .row span";
     private final String   attachmentC      = "//h3[contains(text(),'%s')]/ancestor::div[@class='row']";
@@ -64,6 +65,7 @@ public abstract class NewOrder extends OrderHeader {
     protected final String toastError       = ".toast-error";
     protected final String toastSuccess     = ".toast-success";
     protected final String toastMessage     = ".toast-message";
+    protected final String textDanger       = ".text-danger";
 
     public NewOrder () {
         staticNavBarHeight = 200;
@@ -446,7 +448,16 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterCollectionDate (String date) {
-        assertTrue (setText ("//*[text()='Collection Date']/..//input", date));
+        assertTrue (setText (collectionDate, date));
+    }
+
+    public String getCollectionDate () {
+        return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
+    }
+
+    public String getCollectionDateErrorMsg () {
+        String locator = join (" + ", collectionDate, textDanger);
+        return isElementVisible (locator) ? getText (locator) : null;
     }
 
     public String getPhlebotomySelection () {

@@ -26,38 +26,39 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
  */
 public class NewOrderTestBase extends CoraBaseBrowser {
 
-    protected final List <String> headers             = asList ("Customer Instructions",
-                                                                "Order Notes",
-                                                                "Ordering Physician",
-                                                                "Patient",
-                                                                "Specimen",
-                                                                "Order Test",
-                                                                "Billing",
-                                                                "Order Authorization",
-                                                                "Attachments",
-                                                                "Messages",
-                                                                "History");
-    protected final List <String> previewFiles        = Arrays.asList ("gifBelow15MB.gif",
-                                                                       "jpgBelow15MB.jpg",
-                                                                       "pdfBelow15MB.pdf",
-                                                                       "pngBelow15MB.png");
-    protected final List <String> uploadPreviewFiles  = previewFiles.stream ().map (e -> "uploadFiles/" + e)
-                                                                    .collect (Collectors.toList ());
-    protected final String        orderDetailsTab     = "ORDER DETAILS";
-    protected final String        orderStatusTab      = "ORDER STATUS";
-    protected final String        shipmentTab         = "SHIPMENT";
-    protected final String        accessionTab        = "ACCESSION";
-    protected final String        discrepancyTab      = "DISCREPANCY RESOLUTIONS";
-    protected final String        validateErrorMsg    = "Please enter a valid date.";
-    protected final String        validdateSuccessMsg = "order saved";
-    protected final String        trackingNumber      = "12345678";
+    protected final List <String> headers                = asList ("Customer Instructions",
+                                                                   "Order Notes",
+                                                                   "Ordering Physician",
+                                                                   "Patient",
+                                                                   "Specimen",
+                                                                   "Order Test",
+                                                                   "Billing",
+                                                                   "Order Authorization",
+                                                                   "Attachments",
+                                                                   "Messages",
+                                                                   "History");
+    protected final List <String> previewFiles           = Arrays.asList ("gifBelow15MB.gif",
+                                                                          "jpgBelow15MB.jpg",
+                                                                          "pdfBelow15MB.pdf",
+                                                                          "pngBelow15MB.png");
+    protected final List <String> uploadPreviewFiles     = previewFiles.stream ().map (e -> "uploadFiles/" + e)
+                                                                       .collect (Collectors.toList ());
+    protected final String        orderDetailsTab        = "ORDER DETAILS";
+    protected final String        orderStatusTab         = "ORDER STATUS";
+    protected final String        shipmentTab            = "SHIPMENT";
+    protected final String        accessionTab           = "ACCESSION";
+    protected final String        discrepancyTab         = "DISCREPANCY RESOLUTIONS";
+    protected final String        validateToastErrorMsg  = "Please fix errors in the form";
+    protected final String        collectionDateErrorMsg = "Please enter a valid date";
+    protected final String        validdateSuccessMsg    = "order saved";
+    protected final String        trackingNumber         = "12345678";
 
-    protected final String[]      icdCodes            = { "C90.00" };
+    protected final String[]      icdCodes               = { "C90.00" };
 
-    protected final List <String> orderDiscrepTabList = asList (orderDetailsTab, accessionTab, discrepancyTab);
-    protected final List <String> orderDetailsTabList = asList (orderDetailsTab, accessionTab);
-    protected final List <String> discrepancyTabList  = asList (shipmentTab, accessionTab, discrepancyTab);
-    protected final List <String> accessionTabList    = asList (shipmentTab, accessionTab);
+    protected final List <String> orderDiscrepTabList    = asList (orderDetailsTab, accessionTab, discrepancyTab);
+    protected final List <String> orderDetailsTabList    = asList (orderDetailsTab, accessionTab);
+    protected final List <String> discrepancyTabList     = asList (shipmentTab, accessionTab, discrepancyTab);
+    protected final List <String> accessionTabList       = asList (shipmentTab, accessionTab);
 
     protected void validateAttachments (List <UploadFile> actualAttachments, List <String> expFiles,
                                         OrderStatus status) {

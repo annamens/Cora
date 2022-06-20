@@ -241,5 +241,4 @@ public class BillingTestSuite extends BillingTestBase {
         assertEquals (queryEmrData.get ("no_charge_reason").toString (), TimelinessOfBilling.label);
         testLog ("No charge reason is saved in DB");
     }
-
 }

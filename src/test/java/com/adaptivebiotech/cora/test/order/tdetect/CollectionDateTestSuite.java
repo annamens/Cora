@@ -6,7 +6,7 @@ package com.adaptivebiotech.cora.test.order.tdetect;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
-import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_trial;
 import static com.adaptivebiotech.cora.utils.PageHelper.Carrier.COURIER;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
@@ -59,7 +59,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
         createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, COURIER, trackingNumber);
 
         newOrderTDetect.clickSaveAndActivate ();
-        assertEquals (newOrderTDetect.getToastError (), validateErrorMsg);
+        assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order activation failed with Toast Error");
     }
 
@@ -74,7 +75,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
         createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, COURIER, trackingNumber);
 
         newOrderTDetect.clickSaveAndActivate ();
-        assertEquals (newOrderTDetect.getToastError (), validateErrorMsg);
+        assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order activation failed with Toast Error");
     }
 
@@ -122,7 +124,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
         createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, null, null);
 
         newOrderTDetect.clickSaveAndActivate ();
-        assertEquals (newOrderTDetect.getToastError (), validateErrorMsg);
+        assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order activation failed with Toast Error");
     }
 
@@ -154,7 +157,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
         createOrderAndCompleteAccession (patient, collectionDate, null, null);
         newOrderTDetect.enterCollectionDate (genDate (-1));
         newOrderTDetect.clickSave ();
-        assertEquals (newOrderTDetect.getToastError (), validateErrorMsg);
+        assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on Order Save, Collection Date is less than Patient DOB");
 
         newOrderTDetect.enterCollectionDate (genDate (0));
@@ -164,7 +168,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
 
         newOrderTDetect.enterCollectionDate (genDate (-1));
         newOrderTDetect.clickSaveAndActivate ();
-        assertEquals (newOrderTDetect.getToastError (), validateErrorMsg);
+        assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on Order Save and Activate, Collection Date is less than Patient DOB");
 
         newOrderTDetect.enterCollectionDate (genDate (0));
@@ -193,7 +198,7 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
 
     private void createOrderAndCompleteAccession (Patient patient, String collectionDate, Carrier carrier,
                                                   String trackingNumber) {
-        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (clonoSEQ_trial),
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_trial),
                                                           patient,
                                                           icdCodes,
                                                           collectionDate.toString (),

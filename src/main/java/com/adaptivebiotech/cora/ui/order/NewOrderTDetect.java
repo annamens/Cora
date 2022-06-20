@@ -29,10 +29,9 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  */
 public class NewOrderTDetect extends NewOrder {
 
-    public BillingNewOrderTDetect billing        = new BillingNewOrderTDetect (staticNavBarHeight);
-    public PickPatientModule      pickPatient    = new PickPatientModule ();
-    private Accession             accession      = new Accession ();
-    private final String          collectionDate = "[formcontrolname='collectionDate']";
+    public BillingNewOrderTDetect billing     = new BillingNewOrderTDetect (staticNavBarHeight);
+    public PickPatientModule      pickPatient = new PickPatientModule ();
+    private Accession             accession   = new Accession ();
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -119,10 +118,6 @@ public class NewOrderTDetect extends NewOrder {
     private void verifyICDCodeAdded (String code) {
         String xpath = "//label[text()='ICD Codes']/..";
         assertTrue (isTextInElement (xpath, code));
-    }
-
-    public String getCollectionDate () {
-        return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
     }
 
     /**

@@ -62,7 +62,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
         createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, COURIER, trackingNumber);
 
         newOrderClonoSeq.clickSaveAndActivate ();
-        assertEquals (newOrderClonoSeq.getToastError (), validateErrorMsg);
+        assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order activation failed with Toast Error");
     }
 
@@ -78,7 +79,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
         createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, COURIER, trackingNumber);
 
         newOrderClonoSeq.clickSaveAndActivate ();
-        assertEquals (newOrderClonoSeq.getToastError (), validateErrorMsg);
+        assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order activation failed with Toast Error");
     }
 
@@ -129,7 +131,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
         createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, null, null);
 
         newOrderClonoSeq.clickSaveAndActivate ();
-        assertEquals (newOrderClonoSeq.getToastError (), validateErrorMsg);
+        assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order activation failed with Toast Error");
     }
 
@@ -163,7 +166,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
         createOrderAndCompleteAccession (patient, specimenDto, null, null);
         newOrderClonoSeq.enterCollectionDate (genDate (-1));
         newOrderClonoSeq.clickSave ();
-        assertEquals (newOrderClonoSeq.getToastError (), validateErrorMsg);
+        assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on Order Save, Collection Date is less than Patient DOB");
 
         newOrderClonoSeq.enterCollectionDate (genDate (0));
@@ -173,7 +177,8 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
 
         newOrderClonoSeq.enterCollectionDate (genDate (-1));
         newOrderClonoSeq.clickSaveAndActivate ();
-        assertEquals (newOrderClonoSeq.getToastError (), validateErrorMsg);
+        assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on Order Save and Activate, Collection Date is less than Patient DOB");
 
         newOrderClonoSeq.enterCollectionDate (genDate (0));
