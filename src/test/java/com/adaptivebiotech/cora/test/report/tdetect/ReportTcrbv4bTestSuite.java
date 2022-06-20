@@ -11,6 +11,7 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfp
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.covidProperties;
+import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatientTDx;
 import static com.adaptivebiotech.cora.utils.TestHelper.sample_112770_SN_7929;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
@@ -87,7 +88,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         login.doLogin ();
         ordersList.isCorrectPage ();
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
-                                                          scenarioBuilderPatient (),
+                                                          newSelfPayPatientTDx (),
                                                           null,
                                                           specimen.collectionDate.toString (),
                                                           COVID19_DX_IVD,

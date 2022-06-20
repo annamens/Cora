@@ -13,6 +13,7 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfp
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.covidProperties;
+import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatientTDx;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
@@ -68,7 +69,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         login.doLogin ();
         ordersList.isCorrectPage ();
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
-                                                          scenarioBuilderPatient (),
+                                                          newSelfPayPatientTDx (),
                                                           null,
                                                           specimen.collectionDate.toString (),
                                                           COVID19_DX_IVD,
@@ -102,7 +103,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
      */
     @Test (groups = "fox-terrier")
     public void verifyCovidCanadaGatewayMessage () {
-        Patient patient = scenarioBuilderPatient ();
+        Patient patient = newSelfPayPatientTDx ();
         patient.address = "120 South Town Centre Boulevard";
         patient.locality = "Markham";
         patient.region = "ON";
