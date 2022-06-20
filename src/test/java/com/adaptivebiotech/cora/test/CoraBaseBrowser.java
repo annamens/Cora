@@ -31,9 +31,9 @@ import com.adaptivebiotech.test.TestBase;
 
 public class CoraBaseBrowser extends TestBase {
 
-    protected final String        azTsvPath       = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
-    protected final String        azPipelineNorth = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
-    protected final String        azPipelineFda   = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
+    protected final String        azTsvPath      = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
+    protected final String        azPipelineClia = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
+    protected final String        azPipelineFda  = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
     protected static CoraApi      coraApi;
     protected static CoraDebugApi coraDebugApi;
     protected static CoraDb       coraDb;

@@ -145,7 +145,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
     @Test (groups = "akita")
     public void verify_lyme_report () {
         CoraTest test = coraApi.getTDxTest (LYME_DX);
-        test.tsvPath = azPipelineNorth + "/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz";;
+        test.tsvPath = azPipelineClia + "/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz";
         test.workflowProperties = sample_860011348 ();
 
         ClassifierOutput lyme = positiveLymeResult ();

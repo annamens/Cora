@@ -99,7 +99,7 @@ public class ShipmentDetail extends CoraPage {
                                                                                                        displayNameCss) : null;
             String integrityCss = "[data-ng-bind='container.integrity']";
             c.integrity = isElementPresent (integrityCss) && isElementVisible (integrityCss) ? getText (el,
-                                                                                                        integrityCss) : null;;
+                                                                                                        integrityCss) : null;
             c.shipmentNumber = shipmentNum;
 
             if (isElementPresent (el, ".container-table")) {

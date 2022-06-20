@@ -93,7 +93,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
     private final String       reviewSignStr       = "RELEASED BY DATE & TIME";
     private final String       approvedSignStr     = "APPROVED BY SIGNATURE DATE";
     private final String       reasonCorrectionStr = "REASON FOR CORRECTION";
-    private final Assay        assayTest           = COVID19_DX_IVD;;
+    private final Assay        assayTest           = COVID19_DX_IVD;
     private String             downloadDir;
 
     @BeforeMethod (alwaysRun = true)

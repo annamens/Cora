@@ -77,7 +77,7 @@ public class IghvBatchTestSuite extends BatchTestBase {
      */
     @Test (groups = "golden-retriever")
     public void happypath () {
-        String tsvCliafmt = azPipelineNorth + "/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_%s.adap.txt.results.tsv.gz";
+        String tsvCliafmt = azPipelineClia + "/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_%s.adap.txt.results.tsv.gz";
         String IvdFmt = azPipelineFda + "/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0746/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3CH7BGXJ_0_CLINICAL-CLINICAL_%s.adap.txt.results.tsv.gz";
         Map <String, Map <String, String>> samples = new HashedMap <> ();
         samples.put ("SAMPLE_NAME1",
