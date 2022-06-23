@@ -49,29 +49,30 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public abstract class NewOrder extends OrderHeader {
 
-    private final String   orderType        = "//*[@label='Order Type']//span";
-    private final String   orderNumber      = "//*[@label='Order #']//span";
-    private final String   dateSigned       = "[formcontrolname='dateSigned']";
-    private final String   dueDate          = "labeled-value[label='Due Date'] span";
-    private final String   instructions     = "[formcontrolname='specialInstructions']";
-    private final String   patientMrdStatus = ".patient-status";
-    private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
-    private final String   orderNotes       = "#order-notes";
-    private final String   patientMrn       = "[formcontrolname='mrn']";
-    private final String   collectionDate   = "[formcontrolname='collectionDate']";
-    private final String   patientNotes     = ".patient-note";
-    private final String   orderAuth        = "order-documentation .row span";
-    private final String   attachmentC      = "//h3[contains(text(),'%s')]/ancestor::div[@class='row']";
-    private final String   attachments      = attachmentC + "//attachments//*[contains(@class,'row')]";
-    private final String   fileLoc          = "//a[contains(text(),'%s')]";
-    private final String   fileLocInC       = attachmentC + fileLoc;
-    private final String   fileUpload       = ".attachment-upload-input";
-    protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
-    protected final String toastContainer   = "#toast-container";
-    protected final String toastError       = ".toast-error";
-    protected final String toastSuccess     = ".toast-success";
-    protected final String toastMessage     = ".toast-message";
-    protected final String textDanger       = ".text-danger";
+    private final String   orderType           = "//*[@label='Order Type']//span";
+    private final String   orderNumber         = "//*[@label='Order #']//span";
+    private final String   dateSigned          = "[formcontrolname='dateSigned']";
+    private final String   dueDate             = "labeled-value[label='Due Date'] span";
+    private final String   instructions        = "[formcontrolname='specialInstructions']";
+    private final String   patientMrdStatus    = ".patient-status";
+    private final String   specimenDelivery    = "[formcontrolname='specimenDeliveryType']";
+    private final String   orderNotes          = "#order-notes";
+    private final String   patientMrn          = "[formcontrolname='mrn']";
+    private final String   collectionDate      = "[formcontrolname='collectionDate']";
+    private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
+    private final String   patientNotes        = ".patient-note";
+    private final String   orderAuth           = "order-documentation .row span";
+    private final String   attachmentC         = "//h3[contains(text(),'%s')]/ancestor::div[@class='row']";
+    private final String   attachments         = attachmentC + "//attachments//*[contains(@class,'row')]";
+    private final String   fileLoc             = "//a[contains(text(),'%s')]";
+    private final String   fileLocInC          = attachmentC + fileLoc;
+    private final String   fileUpload          = ".attachment-upload-input";
+    protected final String specimenNumber      = "//*[text()='Adaptive Specimen ID']/..//div";
+    protected final String toastContainer      = "#toast-container";
+    protected final String toastError          = ".toast-error";
+    protected final String toastSuccess        = ".toast-success";
+    protected final String toastMessage        = ".toast-message";
+    protected final String textDanger          = ".text-danger";
 
     public NewOrder () {
         staticNavBarHeight = 200;
@@ -459,6 +460,13 @@ public abstract class NewOrder extends OrderHeader {
         if (isElementPresent (labelPath))
             orderTest.selected = findElement (labelPath + "/../input").isSelected ();
         return orderTest;
+    }
+
+    public void clearCollectionDate () {
+        assertTrue (clear (collectionDate));
+        // after entering date, it keeps year selected, so next sendKeys enter date in year part,
+        // below click will remove year selection
+        assertTrue (click (collectionDateLabel));
     }
 
     public void enterCollectionDate (String date) {

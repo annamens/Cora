@@ -12,6 +12,7 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,6 +59,21 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
 
         createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, COURIER, trackingNumber);
 
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on Collection Date change, when collection Date > Arrival Date, carrier = courier");
+
+        newOrderTDetect.clearCollectionDate ();
+        newOrderTDetect.enterCollectionDate (genDate (0));
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on Collection Date change, when collection Date = Arrival Date, carrier = courier");
+
+        newOrderTDetect.clearCollectionDate ();
+        newOrderTDetect.enterCollectionDate (genDate (-1));
+        assertNull (newOrderTDetect.getCollectionDateErrorMsg ());
+        testLog ("No Error on Collection Date change, when collection Date < Arrival Date, carrier = courier");
+
+        newOrderTDetect.clearCollectionDate ();
+        newOrderTDetect.enterCollectionDate (genDate (1));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
@@ -120,6 +136,16 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
 
         createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, null, null);
 
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on collection Date Change, when collection Date > Arrival Date");
+
+        newOrderTDetect.clearCollectionDate ();
+        newOrderTDetect.enterCollectionDate (genDate (0));
+        assertNull (newOrderTDetect.getCollectionDateErrorMsg ());
+        testLog ("No Error on collection Date Change, when collection Date = Arrival Date");
+
+        newOrderTDetect.clearCollectionDate ();
+        newOrderTDetect.enterCollectionDate (genDate (1));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
@@ -151,6 +177,22 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
         patient.dateOfBirth = genDate (0);
 
         createOrderAndCompleteAccession (patient, collectionDate, null, null);
+
+        newOrderTDetect.clearCollectionDate ();
+        newOrderTDetect.enterCollectionDate (genDate (-1));
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on collection Date Change, Collection Date < Patient DOB");
+
+        newOrderTDetect.clearCollectionDate ();
+        newOrderTDetect.enterCollectionDate (genDate (0));
+        assertNull (newOrderTDetect.getCollectionDateErrorMsg ());
+        testLog ("No Error on collection Date Change, Collection Date = Patient DOB");
+
+        newOrderTDetect.clearCollectionDate ();
+        newOrderTDetect.enterCollectionDate (genDate (1));
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on collection Date Change, Collection Date > Shipment Arrival Date");
+
         newOrderTDetect.enterCollectionDate (genDate (-1));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
@@ -208,8 +250,10 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
                                      order.orderNumber,
                                      Tube,
                                      "");
+            testLog ("Shipment created with carrier: " + carrier);
         } else {
             shipment.createShipment (order.orderNumber, Tube);
+            testLog ("Shipment created without carrier");
         }
 
         shipment.clickAccessionTab ();

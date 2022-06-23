@@ -13,6 +13,7 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,6 +62,21 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
 
         createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, COURIER, trackingNumber);
 
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on Collection Date change, when collection Date > Arrival Date, carrier = courier");
+
+        newOrderClonoSeq.clearCollectionDate ();
+        newOrderClonoSeq.enterCollectionDate (genDate (0));
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on Collection Date change, when collection Date = Arrival Date, carrier = courier");
+
+        newOrderClonoSeq.clearCollectionDate ();
+        newOrderClonoSeq.enterCollectionDate (genDate (-1));
+        assertNull (newOrderClonoSeq.getCollectionDateErrorMsg ());
+        testLog ("No Error on Collection Date change, when collection Date < Arrival Date, carrier = courier");
+
+        newOrderClonoSeq.clearCollectionDate ();
+        newOrderClonoSeq.enterCollectionDate (genDate (1));
         newOrderClonoSeq.clickSave ();
         assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
@@ -125,6 +141,16 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
 
         createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, null, null);
 
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on collection Date Change, when collection Date > Arrival Date");
+
+        newOrderClonoSeq.clearCollectionDate ();
+        newOrderClonoSeq.enterCollectionDate (genDate (0));
+        assertNull (newOrderClonoSeq.getCollectionDateErrorMsg ());
+        testLog ("No Error on collection Date Change, when collection Date = Arrival Date");
+
+        newOrderClonoSeq.clearCollectionDate ();
+        newOrderClonoSeq.enterCollectionDate (genDate (1));
         newOrderClonoSeq.clickSave ();
         assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
@@ -148,7 +174,7 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
     /**
      * NOTE: SR-T4206
      * 
-     * @sdlc.requirements SR-4420:R2
+     * @sdlc.requirements SR-4420:R1, R2
      */
     public void collectionDateLessThanOrEqualsPatientDOB () {
         Specimen specimenDto = bloodSpecimen ();
@@ -157,6 +183,22 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
         patient.dateOfBirth = genDate (0);
 
         createOrderAndCompleteAccession (patient, specimenDto, null, null);
+
+        newOrderClonoSeq.clearCollectionDate ();
+        newOrderClonoSeq.enterCollectionDate (genDate (-1));
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on collection Date Change, Collection Date < Patient DOB");
+
+        newOrderClonoSeq.clearCollectionDate ();
+        newOrderClonoSeq.enterCollectionDate (genDate (0));
+        assertNull (newOrderClonoSeq.getCollectionDateErrorMsg ());
+        testLog ("No Error on collection Date Change, Collection Date = Patient DOB");
+
+        newOrderClonoSeq.clearCollectionDate ();
+        newOrderClonoSeq.enterCollectionDate (genDate (1));
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Error on collection Date Change, Collection Date > Shipment Arrival Date");
+
         newOrderClonoSeq.enterCollectionDate (genDate (-1));
         newOrderClonoSeq.clickSave ();
         assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
