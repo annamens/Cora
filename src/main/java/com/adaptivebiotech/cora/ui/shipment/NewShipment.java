@@ -219,10 +219,6 @@ public class NewShipment extends ShipmentHeader {
         }
     }
 
-    public String getUploadAttachmentError () {
-        return getText ("[ng-show='ctrl.errorPattern']");
-    }
-
     public void enterCarrier (Carrier coraCarrier) {
         assertTrue (clickAndSelectValue (cssCarrier, "string:" + coraCarrier.text));
     }

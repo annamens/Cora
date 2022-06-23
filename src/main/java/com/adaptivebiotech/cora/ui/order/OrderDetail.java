@@ -5,6 +5,8 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
@@ -12,8 +14,11 @@ import static java.time.LocalDateTime.parse;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -33,7 +38,7 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
-import com.adaptivebiotech.cora.dto.Specimen.SpecimenProperties;
+import com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus;
 import com.adaptivebiotech.cora.dto.UploadFile;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
@@ -50,6 +55,9 @@ public class OrderDetail extends OrderHeader {
     private final String      patientMrdStatus     = ".patient-status";
     private final String      specimenNumber       = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
     private final String      specimenArrivalDate  = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
+    private final String      intakeCompletedDate  = "[ng-bind^='ctrl.orderEntry.intakeCompletedDate']";
+    private final String      approvedDate         = "[ng-bind^='ctrl.orderEntry.specimen.approvedDate']";
+    private final String      approvalStatus       = "[ng-bind='ctrl.orderEntry.specimen.approvalStatus']";
     private final String      messagesLabel        = "//h2[text()='Messages']";
     private final String      attachmentPreName    = "a[ng-show='ctrl.showPreview(attachment.name)'] [ng-bind='attachment.name']";
     private final String      attachmentNonPreName = "span[ng-show='!ctrl.showPreview(attachment.name)'] [ng-bind='attachment.name']";
@@ -60,6 +68,7 @@ public class OrderDetail extends OrderHeader {
     private final String      attachments          = "[attachments='ctrl.orderEntry.attachments']%s .attachments-table-row";
     private final String      fileLoc              = "//a//span[contains(text(),'%s')]";
     private final String      fileLocInC           = "//h3[contains(text(),'%s')]/parent::div" + fileLoc;
+    private final String      dateSigned           = "[ng-bind='ctrl.originalDate']";
 
     public OrderDetail () {
         staticNavBarHeight = 200;
@@ -122,7 +131,7 @@ public class OrderDetail extends OrderHeader {
         order.orderNumber = getOrderNumber ();
         order.data_analysis_group = getDataAnalysisGroup ();
         order.isTrfAttached = toBoolean (isTrfAttached ());
-        order.date_signed = getDateSigned ();
+        order.dateSigned = getDateSigned ();
         order.customerInstructions = getInstructions ();
         order.physician = new Physician ();
         order.physician.providerFullName = getProviderName ();
@@ -148,20 +157,16 @@ public class OrderDetail extends OrderHeader {
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
-        order.specimenDto.arrivalDate = getShipmentArrivalDate ();
-        // TODO remove above
+        order.specimenDto.approvedDate = getSpecimenApprovalDate ();
+        order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
         order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
         order.intakeCompletedDate = getIntakeCompleteDate ();
-        SpecimenProperties specimenProperties = new SpecimenProperties ();
-        specimenProperties.ApprovedDate = getSpecimenApprovalDate ();
-        specimenProperties.ApprovalStatus = getSpecimenApprovalStatus ();
-        order.specimenDto.properties = specimenProperties;
         order.specimenDisplayContainerType = getSpecimenContainerType ();
         order.specimenDisplayContainerCount = getSpecimenContainerQuantity ();
 
         order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ()).parallelStream ()
                                          .filter (t -> t.selected).collect (toList ());
-        String dueDate = getDueDate ();
+        LocalDateTime dueDate = getDueDate ();
         for (int i = 0; i < order.tests.size (); i++) {
             order.tests.get (i).dueDate = dueDate;
         }
@@ -246,14 +251,13 @@ public class OrderDetail extends OrderHeader {
         return getText ("[ng-bind^='ctrl.orderEntry.order.documentedByType']");
     }
 
-    public String getDateSigned () {
-        String css = "[ng-bind^='ctrl.orderEntry.order.dateSigned']";
-        return isElementVisible (css) ? readInput (css) : null;
+    public LocalDate getDateSigned () {
+        return isElementVisible (dateSigned) ? LocalDate.parse (getText (dateSigned), formatDt2) : null;
     }
 
-    public String getDueDate () {
+    public LocalDateTime getDueDate () {
         String css = "[ng-bind^='ctrl.orderEntry.orderTests[0].dueDate'][ng-bind*='MM/dd/yyyy']";
-        return isElementVisible (css) ? readInput (css) : null;
+        return isElementVisible (css) ? LocalDate.parse (getText (css), formatDt1).atStartOfDay () : null;
     }
 
     private String getInstructions () {
@@ -358,24 +362,28 @@ public class OrderDetail extends OrderHeader {
         return isElementVisible (rDate) ? getText (rDate) : null;
     }
 
-    public String getShipmentArrivalDate () {
-        return isElementVisible (specimenArrivalDate) ? getText (specimenArrivalDate) : null;
+    public LocalDateTime getShipmentArrivalDate () {
+        return isElementVisible (specimenArrivalDate) ? LocalDateTime.parse (getText (specimenArrivalDate),
+                                                                             formatDt7) : null;
     }
 
     public void clickShipmentArrivalDate () {
         assertTrue (click (specimenArrivalDate));
     }
 
-    public String getIntakeCompleteDate () {
-        return getText ("[ng-bind^='ctrl.orderEntry.intakeCompletedDate']");
+    public LocalDateTime getIntakeCompleteDate () {
+        String data = isElementVisible (intakeCompletedDate) ? getText (intakeCompletedDate) : null;
+        return isNoneBlank (data) && !data.equals ("N/A") ? LocalDateTime.parse (data, formatDt7) : null;
     }
 
-    public String getSpecimenApprovalDate () {
-        return getText ("[ng-bind^='ctrl.orderEntry.specimen.approvedDate']");
+    public LocalDateTime getSpecimenApprovalDate () {
+        String data = isElementVisible (approvedDate) ? getText (approvedDate) : null;
+        return isNoneBlank (data) && !data.equals ("N/A") ? LocalDateTime.parse (data, formatDt7) : null;
     }
 
-    public String getSpecimenApprovalStatus () {
-        return getText ("[ng-bind='ctrl.orderEntry.specimen.approvalStatus']");
+    public SpecimenStatus getSpecimenApprovalStatus () {
+        String data = isElementVisible (approvalStatus) ? getText (approvalStatus) : null;
+        return isNoneBlank (data) ? SpecimenStatus.valueOf (data) : null;
     }
 
     public ContainerType getSpecimenContainerType () {

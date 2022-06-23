@@ -1,7 +1,7 @@
 /**
 * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
 */
-package com.adaptivebiotech.cora.test.order.clonoseq;
+package com.adaptivebiotech.cora.test.attachment.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
@@ -14,7 +14,7 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import java.util.List;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Order;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.attachment.AttachmentTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
@@ -27,7 +27,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  *
  */
 @Test (groups = { "clonoSeq", "regression", "golden-retriever" })
-public class PreviewAttachmentTestSuite extends NewOrderTestBase {
+public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
     private Login               login               = new Login ();
     private OrdersList          ordersList          = new OrdersList ();

@@ -15,7 +15,6 @@ public class OrderDetailTDetect extends OrderDetail {
 
     public BillingOrderDetail billing    = new BillingOrderDetail ();
 
-    private final String      dateSigned = "[ng-bind='ctrl.originalDate']";
     private final String      orderNotes = "[ng-bind='ctrl.originalNotes']";
 
     public String getSpecimenDeliverySelectedOption () {
@@ -24,11 +23,6 @@ public class OrderDetailTDetect extends OrderDetail {
             return getText (css);
         }
         return null;
-    }
-
-    @Override
-    public String getDateSigned () {
-        return isElementPresent (dateSigned) && isElementVisible (dateSigned) ? getText (dateSigned) : null;
     }
 
     @Override

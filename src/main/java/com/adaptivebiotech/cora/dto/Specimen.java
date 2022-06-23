@@ -4,6 +4,7 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
@@ -28,17 +29,14 @@ public final class Specimen {
     public SpecimenType       sampleType;
     @JsonAlias ("sourceType")
     public SpecimenSource     sampleSource;
-    // TODO This might be a mistake, I don't see we have specimen arrivalDate
-    // Keep as it is. Remove refactor later
-    public String             approvedDate;
-    public String             arrivalDate;
+    public LocalDateTime      approvedDate;
     public String             sampleTypeDisplayName;
-    public String             approvalStatus;
+    public SpecimenStatus     approvalStatus;
     public List <Sample>      samples;
     public Compartment        compartment;
     public Object             collectionDate;
     public Object             reconciliationDate;
-    public Object             retrievalDate;
+    public LocalDateTime      retrievalDate;
     public SpecimenProperties properties;
     public Anticoagulant      anticoagulant;
     public ProjectProperties  projectProperties;
@@ -61,11 +59,13 @@ public final class Specimen {
 
     public static final class SpecimenProperties {
 
+        // /cora/api/v1/test/scenarios/createPortalJob
         public String         ArrivalDate;
-        // TODO remove above
-        public String         ApprovedDate;
+
+        // cora/api/v1/orders/{order_id}/entry
+        public LocalDateTime  ApprovedDate;
         public SpecimenSource SourceType;
-        public String         ApprovalStatus;
+        public SpecimenStatus ApprovalStatus;
         public String         SampleTypeDisplayName;
         public String         Treatment;
         public Anticoagulant  Anticoagulant;
@@ -96,5 +96,9 @@ public final class Specimen {
 
     public enum Anticoagulant {
         EDTA, CfdRoche, Other
+    }
+
+    public enum SpecimenStatus {
+        PASS, FAIL
     }
 }

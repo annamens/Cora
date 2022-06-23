@@ -1,7 +1,7 @@
 /**
 * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
 */
-package com.adaptivebiotech.cora.test.order.clonoseq;
+package com.adaptivebiotech.cora.test.specimen.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
@@ -23,7 +23,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Shipment.ShippingCondition;
 import com.adaptivebiotech.cora.dto.Specimen;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.specimen.SpecimenTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
@@ -36,7 +36,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.Carrier;
  *
  */
 @Test (groups = { "clonoSeq", "regression", "golden-retriever" })
-public class CollectionDateTestSuite extends NewOrderTestBase {
+public class CollectionDateTestSuite extends SpecimenTestBase {
 
     private Login            login            = new Login ();
     private OrdersList       ordersList       = new OrdersList ();
@@ -55,49 +55,44 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-4420:R1
      */
-    public void courierCollectionDateGreaterThanShipmentArrival () {
+    public void courierCollectionDateShipmentArrival () {
         Specimen specimenDto = bloodSpecimen ();
         specimenDto.collectionDate = genDate (1);
 
         createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, COURIER, trackingNumber);
 
+        newOrderClonoSeq.clickSave ();
+        assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Order save failed, when collection Date > Arrival Date, carrier = courier");
+
+        newOrderClonoSeq.enterCollectionDate (genDate (0));
+        newOrderClonoSeq.clickSave ();
+        assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Order save failed, when collection Date = Arrival Date, carrier = courier");
+
+        newOrderClonoSeq.enterCollectionDate (genDate (-1));
+        newOrderClonoSeq.clickSave ();
+        assertEquals (newOrderClonoSeq.getToastSuccess (), validateSuccessMsg);
+        testLog ("Order saved, when collection Date < Arrival Date, carrier = courier");
+
+        newOrderClonoSeq.enterCollectionDate (genDate (1));
         newOrderClonoSeq.clickSaveAndActivate ();
         assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
-        testLog ("Order activation failed with Toast Error");
-    }
+        testLog ("Order activation failed, when collection Date > Arrival Date, carrier = courier");
 
-    /**
-     * NOTE: SR-T4202
-     * 
-     * @sdlc.requirements SR-4420:R1
-     */
-    public void courierCollectionDateEqualsShipmentArrival () {
-        Specimen specimenDto = bloodSpecimen ();
-        specimenDto.collectionDate = genDate (0);
-
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, COURIER, trackingNumber);
-
+        newOrderClonoSeq.enterCollectionDate (genDate (0));
         newOrderClonoSeq.clickSaveAndActivate ();
         assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
-        testLog ("Order activation failed with Toast Error");
-    }
+        testLog ("Order activation failed, when collection Date = Arrival Date, carrier = courier");
 
-    /**
-     * NOTE: SR-T4202
-     * 
-     * @sdlc.requirements SR-4420:R1
-     */
-    public void courierCollectionDateLessThanShipmentArrival () {
-        Specimen specimenDto = bloodSpecimen ();
-        specimenDto.collectionDate = genDate (-1);
-
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, COURIER, trackingNumber);
-
+        newOrderClonoSeq.enterCollectionDate (genDate (-1));
         newOrderClonoSeq.activateOrder ();
         assertEquals (newOrderClonoSeq.getOrderStatus (), Active);
-        testLog ("Order activation successful without error");
+        testLog ("Order activated successfully, when collection Date < Arrival Date, carrier = courier");
     }
 
     /**
@@ -124,32 +119,30 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-4420:R1
      */
-    public void collectionDateGreaterThanShipmentArrival () {
+    public void collectionDateShipmentArrival () {
         Specimen specimenDto = bloodSpecimen ();
         specimenDto.collectionDate = genDate (1);
 
         createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, null, null);
 
+        newOrderClonoSeq.clickSave ();
+        assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Order save failed, when collection Date > Arrival Date");
+
         newOrderClonoSeq.clickSaveAndActivate ();
         assertEquals (newOrderClonoSeq.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderClonoSeq.getCollectionDateErrorMsg (), collectionDateErrorMsg);
-        testLog ("Order activation failed with Toast Error");
-    }
+        testLog ("Order activation failed, when collection Date > Arrival Date");
 
-    /**
-     * NOTE: SR-T4202
-     * 
-     * @sdlc.requirements SR-4420:R1
-     */
-    public void collectionDateEqualsShipmentArrival () {
-        Specimen specimenDto = bloodSpecimen ();
-        specimenDto.collectionDate = genDate (0);
-
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, null, null);
+        newOrderClonoSeq.enterCollectionDate (genDate (0));
+        newOrderClonoSeq.clickSave ();
+        assertEquals (newOrderClonoSeq.getToastSuccess (), validateSuccessMsg);
+        testLog ("Order saved, when collection Date = Arrival Date");
 
         newOrderClonoSeq.activateOrder ();
         assertEquals (newOrderClonoSeq.getOrderStatus (), Active);
-        testLog ("Order activation successful without error");
+        testLog ("Order activated successfully, when collection Date = Arrival Date");
     }
 
     /**
@@ -172,7 +165,7 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
 
         newOrderClonoSeq.enterCollectionDate (genDate (0));
         newOrderClonoSeq.clickSave ();
-        assertEquals (newOrderClonoSeq.getToastSuccess (), validdateSuccessMsg);
+        assertEquals (newOrderClonoSeq.getToastSuccess (), validateSuccessMsg);
         testLog ("Successful order saved, Collection Date is equal to Patient DOB");
 
         newOrderClonoSeq.enterCollectionDate (genDate (-1));

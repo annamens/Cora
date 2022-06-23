@@ -5,15 +5,18 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -24,7 +27,6 @@ import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
-import com.adaptivebiotech.cora.dto.Specimen.SpecimenProperties;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
@@ -115,7 +117,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.orderNumber = getOrderNumber ();
         order.data_analysis_group = null;
         order.isTrfAttached = toBoolean (isTrfAttached ());
-        order.date_signed = getDateSigned ();
+        order.dateSigned = getDateSigned ();
         order.customerInstructions = getInstructions ();
         order.physician = new Physician ();
         order.physician.providerFullName = getProviderName ();
@@ -125,8 +127,8 @@ public class NewOrderClonoSeq extends NewOrder {
         order.patient.fullname = getPatientName ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode ());
-        order.patient.externalPatientCode = Integer.valueOf (getBillingPatientCode ());
+        order.patient.patientCode = getPatientCode ();
+        order.patient.externalPatientCode = getBillingPatientCode ();
         order.patient.testStatus = getPatientMRDStatusCode ();
         order.patient.race = getPatientRace ();
         order.patient.ethnicity = getPatientEthnicity ();
@@ -144,17 +146,17 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.retrievalDate = getRetrievalDate ();
-        order.specimenDto.arrivalDate = getSpecimenApprovalDate ();
-        // TODO remove above
+        order.specimenDto.approvedDate = getSpecimenApprovalDate ();
+        order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
         order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
         order.intakeCompletedDate = getIntakeCompleteDate ();
-        SpecimenProperties specimenProperties = new SpecimenProperties ();
-        specimenProperties.ApprovedDate = getSpecimenApprovalDate ();
-        specimenProperties.ApprovalStatus = getSpecimenApprovalStatus ();
-        order.specimenDto.properties = specimenProperties;
         order.specimenDisplayContainerType = getSpecimenContainerType ();
         order.specimenDisplayContainerCount = getSpecimenContainerQuantity ();
         order.tests = getSelectedTests ();
+        LocalDateTime dueDate = getDueDate ();
+        for (int i = 0; i < order.tests.size (); i++) {
+            order.tests.get (i).dueDate = dueDate;
+        }
         order.documentedByType = getOrderAuthorization ();
         order.orderAttachments = getCoraAttachments ();
         order.shipmentAttachments = getShipmentAttachments ();
@@ -223,8 +225,9 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText (retrievalDate, date));
     }
 
-    public String getRetrievalDate () {
-        return isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
+    public LocalDateTime getRetrievalDate () {
+        String data = isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
+        return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt1) : null;
     }
 
     public void closeTestSelectionWarningModal () {

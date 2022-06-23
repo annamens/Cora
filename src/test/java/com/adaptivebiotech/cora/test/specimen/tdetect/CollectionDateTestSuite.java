@@ -1,7 +1,7 @@
 /**
 * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
 */
-package com.adaptivebiotech.cora.test.order.tdetect;
+package com.adaptivebiotech.cora.test.specimen.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
@@ -21,7 +21,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Shipment.ShippingCondition;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.specimen.SpecimenTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
@@ -34,7 +34,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.Carrier;
  *
  */
 @Test (groups = { "tDetect", "regression", "golden-retriever" })
-public class CollectionDateTestSuite extends NewOrderTestBase {
+public class CollectionDateTestSuite extends SpecimenTestBase {
 
     private Login           login           = new Login ();
     private OrdersList      ordersList      = new OrdersList ();
@@ -53,46 +53,43 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-4420:R1
      */
-    public void courierCollectionDateGreaterThanShipmentArrival () {
+    public void courierCollectionDateShipmentArrival () {
         String collectionDate = genDate (1);
 
         createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, COURIER, trackingNumber);
 
+        newOrderTDetect.clickSave ();
+        assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Order save failed, when collection Date > Arrival Date, carrier = courier");
+
+        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.clickSave ();
+        assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Order save failed, when collection Date = Arrival Date, carrier = courier");
+
+        newOrderTDetect.enterCollectionDate (genDate (-1));
+        newOrderTDetect.clickSave ();
+        assertEquals (newOrderTDetect.getToastSuccess (), validateSuccessMsg);
+        testLog ("Order saved, when collection Date < Arrival Date, carrier = courier");
+
+        newOrderTDetect.enterCollectionDate (genDate (1));
         newOrderTDetect.clickSaveAndActivate ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
-        testLog ("Order activation failed with Toast Error");
-    }
+        testLog ("Order activation failed, when collection Date > Arrival Date, carrier = courier");
 
-    /**
-     * NOTE: SR-T4202
-     * 
-     * @sdlc.requirements SR-4420:R1
-     */
-    public void courierCollectionDateEqualsShipmentArrival () {
-        String collectionDate = genDate (0);
-
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, COURIER, trackingNumber);
-
+        newOrderTDetect.enterCollectionDate (genDate (0));
         newOrderTDetect.clickSaveAndActivate ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
-        testLog ("Order activation failed with Toast Error");
-    }
+        testLog ("Order activation failed, when collection Date = Arrival Date, carrier = courier");
 
-    /**
-     * NOTE: SR-T4202
-     * 
-     * @sdlc.requirements SR-4420:R1
-     */
-    public void courierCollectionDateLessThanShipmentArrival () {
-        String collectionDate = genDate (-1);
-
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, COURIER, trackingNumber);
-
+        newOrderTDetect.enterCollectionDate (genDate (-1));
         newOrderTDetect.activateOrder ();
         assertEquals (newOrderTDetect.getOrderStatus (), Active);
-        testLog ("Order activation successful without error");
+        testLog ("Order activated successfully, when collection Date < Arrival Date, carrier = courier");
     }
 
     /**
@@ -123,25 +120,24 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
 
         createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, null, null);
 
+        newOrderTDetect.clickSave ();
+        assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
+        assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
+        testLog ("Order save failed, when collection Date > Arrival Date");
+
         newOrderTDetect.clickSaveAndActivate ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
-        testLog ("Order activation failed with Toast Error");
-    }
+        testLog ("Order activation failed, when collection Date > Arrival Date");
 
-    /**
-     * NOTE: SR-T4202
-     * 
-     * @sdlc.requirements SR-4420:R1
-     */
-    public void collectionDateEqualsShipmentArrival () {
-        String collectionDate = genDate (0);
-
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, null, null);
+        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.clickSave ();
+        assertEquals (newOrderTDetect.getToastSuccess (), validateSuccessMsg);
+        testLog ("Order saved, when collection Date = Arrival Date");
 
         newOrderTDetect.activateOrder ();
         assertEquals (newOrderTDetect.getOrderStatus (), Active);
-        testLog ("Order activation successful without error");
+        testLog ("Order activated successfully, when collection Date = Arrival Date");
     }
 
     /**
@@ -163,7 +159,7 @@ public class CollectionDateTestSuite extends NewOrderTestBase {
 
         newOrderTDetect.enterCollectionDate (genDate (0));
         newOrderTDetect.clickSave ();
-        assertEquals (newOrderTDetect.getToastSuccess (), validdateSuccessMsg);
+        assertEquals (newOrderTDetect.getToastSuccess (), validateSuccessMsg);
         testLog ("Successful order saved, Collection Date is equal to Patient DOB");
 
         newOrderTDetect.enterCollectionDate (genDate (-1));

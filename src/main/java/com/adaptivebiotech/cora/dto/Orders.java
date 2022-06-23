@@ -7,6 +7,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +72,7 @@ public final class Orders {
         public String              data_analysis_group;
         public String              trf_file_name;
         public String              calibrated_receptors;
-        public String              date_signed;
+        public LocalDate           dateSigned;
         public String              project_id;
         public String              orderEntryType;
         public Boolean             isTrfAttached;
@@ -96,10 +97,10 @@ public final class Orders {
         public DeliveryType        specimenDeliveryType;
         public OrderAuthorization  documentedByType;
         public String              externalOrderCode;
-        public Object              intakeCompletedDate;
+        public LocalDateTime       intakeCompletedDate;
         public ContainerType       specimenDisplayContainerType;
         public Integer             specimenDisplayContainerCount;
-        public Object              specimenDisplayArrivalDate;
+        public LocalDateTime       specimenDisplayArrivalDate;
 
         // for /cora/api/v1/orders/search
         public String              category;
@@ -179,7 +180,7 @@ public final class Orders {
         public Specimen        specimen;
         public String          sampleName;
         public OrderStatus     status;
-        public String          dueDate;
+        public LocalDateTime   dueDate;
         public String          qcType;
         public String          tags;
         public String          sampleWellLocation;

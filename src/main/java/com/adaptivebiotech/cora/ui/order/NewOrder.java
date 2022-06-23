@@ -4,17 +4,20 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,7 @@ import com.adaptivebiotech.cora.dto.Orders.OrderAuthorization;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
+import com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus;
 import com.adaptivebiotech.cora.dto.UploadFile;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
@@ -48,6 +52,7 @@ public abstract class NewOrder extends OrderHeader {
     private final String   orderType        = "//*[@label='Order Type']//span";
     private final String   orderNumber      = "//*[@label='Order #']//span";
     private final String   dateSigned       = "[formcontrolname='dateSigned']";
+    private final String   dueDate          = "labeled-value[label='Due Date'] span";
     private final String   instructions     = "[formcontrolname='specialInstructions']";
     private final String   patientMrdStatus = ".patient-status";
     private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
@@ -60,6 +65,7 @@ public abstract class NewOrder extends OrderHeader {
     private final String   attachments      = attachmentC + "//attachments//*[contains(@class,'row')]";
     private final String   fileLoc          = "//a[contains(text(),'%s')]";
     private final String   fileLocInC       = attachmentC + fileLoc;
+    private final String   fileUpload       = ".attachment-upload-input";
     protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
     protected final String toastContainer   = "#toast-container";
     protected final String toastError       = ".toast-error";
@@ -105,8 +111,13 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (setText (dateSigned, date));
     }
 
-    public String getDateSigned () {
-        return isElementVisible (dateSigned) ? readInput (dateSigned) : null;
+    public LocalDate getDateSigned () {
+        String data = isElementVisible (dateSigned) ? readInput (dateSigned) : null;
+        return isNoneBlank (data) ? LocalDate.parse (data, formatDt1) : null;
+    }
+
+    public LocalDateTime getDueDate () {
+        return isElementVisible (dueDate) ? LocalDate.parse (readInput (dueDate), formatDt1).atStartOfDay () : null;
     }
 
     public String getPatientName () {
@@ -210,12 +221,14 @@ public abstract class NewOrder extends OrderHeader {
 
     public String getToastError () {
         String message = getText (toastError);
+        closeToast ();
         waitForElementInvisible (toastError);
         return message;
     }
 
     public String getToastSuccess () {
         String message = getText (toastSuccess);
+        closeToast ();
         waitForElementInvisible (toastSuccess);
         return message;
     }
@@ -342,14 +355,14 @@ public abstract class NewOrder extends OrderHeader {
         navigateToTab (1);
     }
 
-    public String getPatientCode () {
+    public Integer getPatientCode () {
         String xpath = "//*[text()='Patient Code']/..//a[1]/span";
-        return getText (xpath);
+        return isElementVisible (xpath) ? Integer.valueOf (getText (xpath)) : null;
     }
 
-    public String getBillingPatientCode () {
+    public Integer getBillingPatientCode () {
         String xpath = "//*[text()='Billing Patient Code']/../div[1]";
-        return getText (xpath);
+        return isElementVisible (xpath) ? Integer.valueOf (getText (xpath)) : null;
     }
 
     public String getPatientMRDStatusCode () {
@@ -412,9 +425,10 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (rDate) ? getText (rDate) : null;
     }
 
-    public String getShipmentArrivalDate () {
+    public LocalDateTime getShipmentArrivalDate () {
         String shipmentArrival = "//*[*[text()='Shipment Arrival']]//span";
-        return isElementVisible (shipmentArrival) ? getText (shipmentArrival) : null;
+        return isElementVisible (shipmentArrival) ? LocalDateTime.parse (getText (shipmentArrival),
+                                                                         formatDt7) : null;
     }
 
     public String getSpecimenStabilizationWindow () {
@@ -466,39 +480,31 @@ public abstract class NewOrder extends OrderHeader {
 
     public void uploadAttachments (List <String> files) {
         for (String file : files) {
-            waitForElement (".attachment-upload-input").sendKeys (getSystemResource (file).getPath ());
+            waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
             transactionInProgress ();
-            waitForElement (".attachment-upload-input").clear ();
+            waitForElement (fileUpload).clear ();
         }
-    }
-
-    public String getUploadAttachmentError () {
-        String uploadError = null;
-        try {
-            uploadError = getText (".attachment-btn-icon [class='text-danger']");
-        } catch (Exception e) {
-            System.out.println ("exception, uploadError: " + uploadError);
-        }
-        return uploadError;
     }
 
     public List <String> getHistory () {
         return getTextList ("//*[text()='History']/..//li");
     }
 
-    public String getIntakeCompleteDate () {
+    public LocalDateTime getIntakeCompleteDate () {
         String intakeCompleteDate = "//*[text()='Intake Complete']/..//div";
-        return isElementVisible (intakeCompleteDate) ? getText (intakeCompleteDate) : null;
+        return isElementVisible (intakeCompleteDate) ? LocalDateTime.parse (getText (intakeCompleteDate),
+                                                                            formatDt7) : null;
     }
 
-    public String getSpecimenApprovalDate () {
+    public LocalDateTime getSpecimenApprovalDate () {
         String specimenApprovalDate = "//*[text()='Specimen Approval']/..//span[2]";
-        return isElementVisible (specimenApprovalDate) ? getText (specimenApprovalDate) : null;
+        return isElementVisible (specimenApprovalDate) ? LocalDateTime.parse (getText (specimenApprovalDate),
+                                                                              formatDt7) : null;
     }
 
-    public String getSpecimenApprovalStatus () {
+    public SpecimenStatus getSpecimenApprovalStatus () {
         String specimenApprovalStatus = "//*[text()='Specimen Approval']/..//span[1]";
-        return isElementVisible (specimenApprovalStatus) ? getText (specimenApprovalStatus) : null;
+        return isElementVisible (specimenApprovalStatus) ? SpecimenStatus.valueOf (getText (specimenApprovalStatus)) : null;
     }
 
     public void waitForSpecimenDelivery () {
