@@ -3,15 +3,10 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.test.report.tdetect;
 
-import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfpay;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
-import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
-import static com.adaptivebiotech.cora.utils.TestHelper.covidProperties;
-import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatientTDx;
 import static com.adaptivebiotech.cora.utils.TestHelper.sample_112770_SN_7929;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
@@ -40,17 +35,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
-import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Specimen;
-import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
-import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
-import com.adaptivebiotech.cora.ui.order.OrderDetailTDetect;
-import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportTDetect;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
@@ -62,15 +51,11 @@ import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 @Test (groups = "regression")
 public class ReportTcrbv4bTestSuite extends ReportTestBase {
 
-    private final String       reportData      = "reportData.json";
-    private Login              login           = new Login ();
-    private OrdersList         ordersList      = new OrdersList ();
-    private NewOrderTDetect    newOrderTDetect = new NewOrderTDetect ();
-    private OrderDetailTDetect orderDetail     = new OrderDetailTDetect ();
-    private OrcaHistory        history         = new OrcaHistory ();
-    private ReportTDetect      report          = new ReportTDetect ();
-    private Specimen           specimen        = bloodSpecimen ();
-    private String             downloadDir;
+    private final String  reportData = "reportData.json";
+    private Login         login      = new Login ();
+    private OrcaHistory   history    = new OrcaHistory ();
+    private ReportTDetect report     = new ReportTDetect ();
+    private String        downloadDir;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
@@ -85,21 +70,26 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
      */
     @Test (groups = { "tatsumiya", "fox-terrier" })
     public void verify_covid_report () {
-        login.doLogin ();
-        ordersList.isCorrectPage ();
-        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
-                                                          newSelfPayPatientTDx (),
-                                                          null,
-                                                          specimen.collectionDate.toString (),
-                                                          COVID19_DX_IVD,
-                                                          Active,
-                                                          Tube);
-        testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);
+        CoraTest test = getTDxTest (COVID19_DX_IVD);
+        test.workflowProperties.lastAcceptedTsvPath = azE2EPath + "/HCYJNBGXJ_0_CLINICAL-CLINICAL_112770-SN-7929.adap.txt.results.tsv.gz";
+        test.workflowProperties.sampleName = "112770-SN-7929";
+        test.workflowProperties.workspaceName = "CLINICAL-CLINICAL";
+        test.workflowProperties.lastFlowcellId = "HCYJNBGXJ";
+        test.workflowProperties.lastFinishedPipelineJobId = "8a7a958877a26e74017a213f79fe6d45";
 
-        String sample = orderDetail.getSampleName (COVID19_DX_IVD);
-        history.gotoOrderDebug (sample);
-        history.setWorkflowProperties (covidProperties ());
-        history.forceStatusUpdate (NorthQC, Ready);
+        Patient patient = scenarioBuilderPatient ();
+        Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_selfpay),
+                                                   patient,
+                                                   stage (NorthQC, Ready),
+                                                   test,
+                                                   COVID19_DX_IVD);
+        assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
+
+        OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
+        String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
+
+        login.doLogin ();
+        history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (NorthQC, Finished);
         history.waitFor (DxAnalysis, Finished);
         history.waitFor (DxContamination, Finished);
@@ -122,7 +112,6 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         assertEquals (properties.get (AutoReleasedReport.name ()), "true");
         testLog (format ("workflow property: '%s' is set and has value: 'true'", AutoReleasedReport));
 
-        String reportDataJson = join ("/", downloadDir, sample, reportData);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
@@ -145,9 +134,11 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
      */
     @Test (groups = "akita")
     public void verify_lyme_report () {
-        CoraTest test = coraApi.getTDxTest (LYME_DX);
+        CoraTest test = getTDxTest (LYME_DX);
         test.tsvPath = azPipelineClia + "/200613_NB551725_0151_AHM7N7BGXF/v3.1/20200615_1438/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HM7N7BGXF_0_Hospital12deOctubre-MartinezLopez_860011348.adap.txt.results.tsv.gz";
-        test.workflowProperties = sample_860011348 ();
+        test.workflowProperties.flowcell = "HM7N7BGXF";
+        test.workflowProperties.workspaceName = "Hospital12deOctubre-MartinezLopez";
+        test.workflowProperties.sampleName = "860011348";
 
         ClassifierOutput lyme = positiveLymeResult ();
         Patient patient = scenarioBuilderPatient ();
@@ -194,13 +185,5 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         assertEquals (report.dxResult.countEnhancedSeq, lyme.countEnhancedSeq);
         assertEquals (report.dxResult.uniqueProductiveTemplates, lyme.uniqueProductiveTemplates);
         testLog ("found the corrct DTO structure in the " + reportData);
-    }
-
-    private WorkflowProperties sample_860011348 () {
-        WorkflowProperties wProperties = new WorkflowProperties ();
-        wProperties.flowcell = "HM7N7BGXF";
-        wProperties.workspaceName = "Hospital12deOctubre-MartinezLopez";
-        wProperties.sampleName = "860011348";
-        return wProperties;
     }
 }

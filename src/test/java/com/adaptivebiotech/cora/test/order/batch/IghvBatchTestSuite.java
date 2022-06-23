@@ -158,7 +158,7 @@ public class IghvBatchTestSuite extends BatchTestBase {
                 testLog (format ("[%s] there is no ShmAnalysis performed for regression", sample));
 
                 List <StageName> stages = asList (Clarity, NorthPipeline, NorthQC, SecondaryAnalysis);
-                assertEquals (history.getWorkflowConfig (), stages);
+                assertEquals (history.getWorkflowStages (), stages);
                 testLog (format ("[%s] found this workflow config: %s", sample, stages));
             } else {
                 history.waitFor (ShmAnalysis, Finished);
@@ -172,7 +172,7 @@ public class IghvBatchTestSuite extends BatchTestBase {
                 testLog (format ("[%s] there is ShmAnalysis performed for regression sample: ", sample));
 
                 List <StageName> stages = asList (Clarity, NorthPipeline, NorthQC, SecondaryAnalysis, ShmAnalysis);
-                assertEquals (history.getWorkflowConfig (), stages);
+                assertEquals (history.getWorkflowStages (), stages);
                 testLog (format ("[%s] found this workflow config: %s", sample, stages));
             }
         });

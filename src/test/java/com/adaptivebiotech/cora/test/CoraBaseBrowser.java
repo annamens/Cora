@@ -32,6 +32,7 @@ import com.adaptivebiotech.test.TestBase;
 public class CoraBaseBrowser extends TestBase {
 
     protected final String        azTsvPath      = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
+    protected final String        azE2EPath      = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e";
     protected final String        azPipelineClia = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
     protected final String        azPipelineFda  = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
     protected static CoraApi      coraApi;
@@ -102,6 +103,14 @@ public class CoraBaseBrowser extends TestBase {
         test.flowcell = flowcell;
         test.pipelineConfigOverride = "classic.calib";
         test.tsvPath = tsvPath;
+        return test;
+    }
+
+    protected CoraTest getTDxTest (Assay assay) {
+        CoraTest test = coraApi.getTDxTest (assay);
+        test.workflowProperties = new WorkflowProperties ();
+        test.workflowProperties.disableHiFreqSave = true;
+        test.workflowProperties.disableHiFreqSharing = true;
         return test;
     }
 }

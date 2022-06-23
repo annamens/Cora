@@ -103,16 +103,10 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
      */
     @Test (groups = "fox-terrier")
     public void verifyCovidCanadaGatewayMessage () {
-        Patient patient = newSelfPayPatientTDx ();
-        patient.address = "120 South Town Centre Boulevard";
-        patient.locality = "Markham";
-        patient.region = "ON";
-        patient.postCode = "L6G 1C3";
-
         login.doLogin ();
         ordersList.isCorrectPage ();
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_canada),
-                                                          patient,
+                                                          newSelfPayPatientTDx (),
                                                           null,
                                                           specimen.collectionDate.toString (),
                                                           COVID19_DX_IVD,
@@ -143,9 +137,11 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
     @Test (groups = "dingo")
     public void verifyLymeGatewayMessage () {
-        CoraTest test = coraApi.getTDxTest (LYME_DX);
+        CoraTest test = getTDxTest (LYME_DX);
         test.tsvPath = lymeTsv;
-        test.workflowProperties = sample_95268_SN_2205 ();
+        test.workflowProperties.flowcell = "H752HBGXH";
+        test.workflowProperties.workspaceName = "CLINICAL-CLINICAL";
+        test.workflowProperties.sampleName = "95268-SN-2205";
 
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),
