@@ -223,14 +223,12 @@ public abstract class NewOrder extends OrderHeader {
     public String getToastError () {
         String message = getText (toastError);
         closeToast ();
-        waitForElementInvisible (toastError);
         return message;
     }
 
     public String getToastSuccess () {
         String message = getText (toastSuccess);
         closeToast ();
-        waitForElementInvisible (toastSuccess);
         return message;
     }
 
