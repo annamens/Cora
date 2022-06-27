@@ -166,7 +166,7 @@ public class OrderDetail extends OrderHeader {
 
         order.tests = allOf (Assay.class).stream ().map (a -> getTestState (a)).collect (toList ()).parallelStream ()
                                          .filter (t -> t.selected).collect (toList ());
-        LocalDateTime dueDate = getDueDate ();
+        LocalDate dueDate = getDueDate ();
         for (int i = 0; i < order.tests.size (); i++) {
             order.tests.get (i).dueDate = dueDate;
         }
@@ -255,9 +255,9 @@ public class OrderDetail extends OrderHeader {
         return isElementVisible (dateSigned) ? LocalDate.parse (getText (dateSigned), formatDt2) : null;
     }
 
-    public LocalDateTime getDueDate () {
+    public LocalDate getDueDate () {
         String css = "[ng-bind^='ctrl.orderEntry.orderTests[0].dueDate'][ng-bind*='MM/dd/yyyy']";
-        return isElementVisible (css) ? LocalDate.parse (getText (css), formatDt1).atStartOfDay () : null;
+        return isElementVisible (css) ? LocalDate.parse (getText (css), formatDt1) : null;
     }
 
     private String getInstructions () {

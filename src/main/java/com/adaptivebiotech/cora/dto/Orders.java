@@ -180,7 +180,7 @@ public final class Orders {
         public Specimen        specimen;
         public String          sampleName;
         public OrderStatus     status;
-        public LocalDateTime   dueDate;
+        public LocalDate       dueDate;
         public String          qcType;
         public String          tags;
         public String          sampleWellLocation;

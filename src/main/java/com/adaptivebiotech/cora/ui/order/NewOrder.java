@@ -117,8 +117,8 @@ public abstract class NewOrder extends OrderHeader {
         return isNoneBlank (data) ? LocalDate.parse (data, formatDt1) : null;
     }
 
-    public LocalDateTime getDueDate () {
-        return isElementVisible (dueDate) ? LocalDate.parse (readInput (dueDate), formatDt1).atStartOfDay () : null;
+    public LocalDate getDueDate () {
+        return isElementVisible (dueDate) ? LocalDate.parse (readInput (dueDate), formatDt1) : null;
     }
 
     public String getPatientName () {

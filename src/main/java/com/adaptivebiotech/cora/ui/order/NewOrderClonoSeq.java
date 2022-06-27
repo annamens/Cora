@@ -16,6 +16,7 @@ import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -153,7 +154,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDisplayContainerType = getSpecimenContainerType ();
         order.specimenDisplayContainerCount = getSpecimenContainerQuantity ();
         order.tests = getSelectedTests ();
-        LocalDateTime dueDate = getDueDate ();
+        LocalDate dueDate = getDueDate ();
         for (int i = 0; i < order.tests.size (); i++) {
             order.tests.get (i).dueDate = dueDate;
         }

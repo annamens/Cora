@@ -10,7 +10,7 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -99,7 +99,7 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDisplayContainerType = getSpecimenContainerType ();
         order.specimenDisplayContainerCount = getSpecimenContainerQuantity ();
         order.tests = getSelectedTests ();
-        LocalDateTime dueDate = getDueDate ();
+        LocalDate dueDate = getDueDate ();
         for (int i = 0; i < order.tests.size (); i++) {
             order.tests.get (i).dueDate = dueDate;
         }
