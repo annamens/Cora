@@ -32,6 +32,7 @@ public class NewShipment extends ShipmentHeader {
     private final String cssCarrier        = "#carrierType";
     private final String cssTrackingNumber = "#trackingNumber";
     private final String cssNotes          = "#shipment-notes";
+    private final String fileLoc           = "//a//span[contains(text(),'%s')]";
 
     public NewShipment () {
         staticNavBarHeight = 195;
@@ -206,10 +207,15 @@ public class NewShipment extends ShipmentHeader {
         assertTrue (waitUntilVisible (format (".expected-record-summary[data-ng-show*='%s']", link)));
     }
 
-    public void uploadAttachments (String... files) {
+    public void uploadAttachments (List <String> files) {
         for (String file : files) {
             waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
-            pageLoading ();
+            transactionInProgress ();
+            // This is work around, else it attaches the same file multiple times
+            // e.g., if list of 3 (1, 2, 3) files, then loop 1: upload 1, loop 2: upload 1,2, loop
+            // 3: upload 1,2,3
+            refresh ();
+            isDiagnostic ();
         }
     }
 
@@ -293,6 +299,11 @@ public class NewShipment extends ShipmentHeader {
 
     public void clickContainerNo (String containerNo) {
         assertTrue (click ("//table//a[text()='" + containerNo + "']"));
+    }
+
+    public void clickFilePreviewLink (String fileName) {
+        assertTrue (click (format (fileLoc, fileName)));
+        assertTrue (isTextInElement (popupTitle, fileName));
     }
 
     public String createShipment (String orderNumber, ContainerType containerType) {

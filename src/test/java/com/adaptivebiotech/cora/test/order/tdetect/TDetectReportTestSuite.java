@@ -294,7 +294,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
                                          "MM/dd/yyyy",
                                          "yyyy-MM-dd"));
         assertEquals (reportDataJson.patientInfo.reportSpecimenArrivalDate.toString (),
-                      convertDateFormat (order.specimenDto.arrivalDate.split ("\\s+")[0],
+                      convertDateFormat (order.specimenDto.approvedDate.toString ().split ("\\s+")[0],
                                          "MM/dd/yyyy",
                                          "yyyy-MM-dd"));
         assertEquals (order.orderTestId, reportDataJson.patientInfo.reportSampleOrderTestId);
@@ -346,7 +346,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
                             join (" ",
                                   SpecimenType.Blood + " / " + SpecimenSource.Blood,
                                   order.specimenDto.collectionDate.toString (),
-                                  order.specimenDto.arrivalDate.split ("\\s+")[0],
+                                  order.specimenDto.approvedDate.toString ().split ("\\s+")[0],
                                   order.specimenDto.specimenNumber));
 
         validatePdfContent (fileContent, "ICD CODE(S)");

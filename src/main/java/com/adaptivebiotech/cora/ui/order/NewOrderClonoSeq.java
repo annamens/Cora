@@ -5,14 +5,19 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -113,16 +118,21 @@ public class NewOrderClonoSeq extends NewOrder {
         order.orderNumber = getOrderNumber ();
         order.data_analysis_group = null;
         order.isTrfAttached = toBoolean (isTrfAttached ());
-        order.date_signed = getDateSigned ();
+        order.dateSigned = getDateSigned ();
         order.customerInstructions = getInstructions ();
         order.physician = new Physician ();
         order.physician.providerFullName = getProviderName ();
         order.physician.accountName = getProviderAccount ();
+        order.physician.medicareEnrolled = getProviderMedicareEnrolled ();
         order.patient = new Patient ();
         order.patient.fullname = getPatientName ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode ());
+        order.patient.patientCode = getPatientCode ();
+        order.patient.externalPatientCode = getBillingPatientCode ();
+        order.patient.testStatus = getPatientMRDStatusCode ();
+        order.patient.race = getPatientRace ();
+        order.patient.ethnicity = getPatientEthnicity ();
         order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
         order.patient = billing.getPatientBilling (order.patient);
@@ -132,11 +142,22 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.specimenNumber = getSpecimenId ();
         order.specimenDto.sampleType = getSpecimenType ();
         order.specimenDto.sampleSource = getSpecimenSource ();
+        order.specimenDto.compartment = getCompartment ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
-        order.specimenDto.arrivalDate = getShipmentArrivalDate ();
+        order.specimenDto.retrievalDate = getRetrievalDate ();
+        order.specimenDto.approvedDate = getSpecimenApprovalDate ();
+        order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
+        order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
+        order.intakeCompletedDate = getIntakeCompleteDate ();
+        order.specimenDisplayContainerType = getSpecimenContainerType ();
+        order.specimenDisplayContainerCount = getSpecimenContainerQuantity ();
         order.tests = getSelectedTests ();
+        LocalDate dueDate = getDueDate ();
+        for (int i = 0; i < order.tests.size (); i++) {
+            order.tests.get (i).dueDate = dueDate;
+        }
         order.documentedByType = getOrderAuthorization ();
         order.orderAttachments = getCoraAttachments ();
         order.shipmentAttachments = getShipmentAttachments ();
@@ -144,11 +165,6 @@ public class NewOrderClonoSeq extends NewOrder {
         order.doraAttachments = getDoraAttachments ();
         order.notes = getOrderNotes ();
         return order;
-    }
-
-    public String getCollectionDate () {
-        String css = "[ng-model^='ctrl.orderEntry.specimen.collectionDate']";
-        return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
     }
 
     public void addPatientICDCode (String icdCode) {
@@ -181,6 +197,11 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectValue (compartment, compartmentEnum.name ()));
     }
 
+    public Compartment getCompartment () {
+        String compartmentVal = isElementVisible (compartment) ? getFirstSelectedText (compartment) : null;
+        return isNotBlank (compartmentVal) ? Compartment.getCompartment (compartmentVal) : null;
+    }
+
     public void enterAntiCoagulant (Anticoagulant anticoagulantEnum) {
         assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
     }
@@ -205,8 +226,9 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText (retrievalDate, date));
     }
 
-    public String getRetrievalDate () {
-        return isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
+    public LocalDateTime getRetrievalDate () {
+        String data = isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
+        return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt1) : null;
     }
 
     public void closeTestSelectionWarningModal () {

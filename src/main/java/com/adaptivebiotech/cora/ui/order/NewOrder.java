@@ -4,16 +4,20 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,7 @@ import com.adaptivebiotech.cora.dto.Orders.OrderAuthorization;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
+import com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus;
 import com.adaptivebiotech.cora.dto.UploadFile;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
@@ -44,21 +49,30 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public abstract class NewOrder extends OrderHeader {
 
-    private final String   orderNumber      = "//*[@label='Order #']//span";
-    private final String   dateSigned       = "[formcontrolname='dateSigned']";
-    private final String   instructions     = "[formcontrolname='specialInstructions']";
-    private final String   patientMrdStatus = ".patient-status";
-    private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
-    private final String   orderNotes       = "#order-notes";
-    private final String   patientMrn       = "[formcontrolname='mrn']";
-    private final String   patientNotes     = ".patient-note";
-    private final String   orderAuth        = "order-documentation .row span";
-    private final String   attachments      = "//h3[contains(text(),'%s')]/ancestor::div[@class='row']//attachments//*[contains(@class,'row')]";
-    private final String   fileLoc          = "//a[contains(text(),'%s')]";
-    protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
-    protected final String toastContainer   = "#toast-container";
-    protected final String toastError       = ".toast-error";
-    protected final String toastMessage     = ".toast-message";
+    private final String   orderType           = "//*[@label='Order Type']//span";
+    private final String   orderNumber         = "//*[@label='Order #']//span";
+    private final String   dateSigned          = "[formcontrolname='dateSigned']";
+    private final String   dueDate             = "labeled-value[label='Due Date'] span";
+    private final String   instructions        = "[formcontrolname='specialInstructions']";
+    private final String   patientMrdStatus    = ".patient-status";
+    private final String   specimenDelivery    = "[formcontrolname='specimenDeliveryType']";
+    private final String   orderNotes          = "#order-notes";
+    private final String   patientMrn          = "[formcontrolname='mrn']";
+    private final String   collectionDate      = "[formcontrolname='collectionDate']";
+    private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
+    private final String   patientNotes        = ".patient-note";
+    private final String   orderAuth           = "order-documentation .row span";
+    private final String   attachmentC         = "//h3[contains(text(),'%s')]/ancestor::div[@class='row']";
+    private final String   attachments         = attachmentC + "//attachments//*[contains(@class,'row')]";
+    private final String   fileLoc             = "//a[contains(text(),'%s')]";
+    private final String   fileLocInC          = attachmentC + fileLoc;
+    private final String   fileUpload          = ".attachment-upload-input";
+    protected final String specimenNumber      = "//*[text()='Adaptive Specimen ID']/..//div";
+    protected final String toastContainer      = "#toast-container";
+    protected final String toastError          = ".toast-error";
+    protected final String toastSuccess        = ".toast-success";
+    protected final String toastMessage        = ".toast-message";
+    protected final String textDanger          = ".text-danger";
 
     public NewOrder () {
         staticNavBarHeight = 200;
@@ -98,8 +112,13 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (setText (dateSigned, date));
     }
 
-    public String getDateSigned () {
-        return isElementVisible (dateSigned) ? readInput (dateSigned) : null;
+    public LocalDate getDateSigned () {
+        String data = isElementVisible (dateSigned) ? readInput (dateSigned) : null;
+        return isNoneBlank (data) ? LocalDate.parse (data, formatDt1) : null;
+    }
+
+    public LocalDate getDueDate () {
+        return isElementVisible (dueDate) ? LocalDate.parse (readInput (dueDate), formatDt1) : null;
     }
 
     public String getPatientName () {
@@ -202,7 +221,15 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getToastError () {
-        return getText (toastError);
+        String message = getText (toastError);
+        closeToast ();
+        return message;
+    }
+
+    public String getToastSuccess () {
+        String message = getText (toastSuccess);
+        closeToast ();
+        return message;
     }
 
     public void clickSeeOriginal () {
@@ -211,8 +238,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     protected String getOrderType () {
-        String css = "[ng-bind='ctrl.orderEntry.order.category.name']";
-        return isElementPresent (css) ? getText (css) : null;
+        return isElementPresent (orderType) ? getText (orderType) : null;
     }
 
     public String getOrderNumber () {
@@ -296,6 +322,11 @@ public abstract class NewOrder extends OrderHeader {
         return getText ("//*[@formcontrolname='providerForm']//label[text()='Account']/parent::div//span");
     }
 
+    public Boolean getProviderMedicareEnrolled () {
+        String medicareEnrolled = getText ("//*[@formcontrolname='providerForm']//label[text()='Medicare Enrolled']/parent::div//span");
+        return isNotBlank (medicareEnrolled) && medicareEnrolled.equals ("Yes") ? true : false;
+    }
+
     public void clickPickPatient () {
         assertTrue (click ("//button[text()='Pick Patient...']"));
         assertTrue (isTextInElement (popupTitle, "Pick Patient"));
@@ -323,8 +354,18 @@ public abstract class NewOrder extends OrderHeader {
         navigateToTab (1);
     }
 
-    public String getPatientCode () {
+    public Integer getPatientCode () {
         String xpath = "//*[text()='Patient Code']/..//a[1]/span";
+        return isElementVisible (xpath) ? Integer.valueOf (getText (xpath)) : null;
+    }
+
+    public Integer getBillingPatientCode () {
+        String xpath = "//*[text()='Billing Patient Code']/../div[1]";
+        return isElementVisible (xpath) ? Integer.valueOf (getText (xpath)) : null;
+    }
+
+    public String getPatientMRDStatusCode () {
+        String xpath = "//*[text()='Patient MRD Status']/..//span";
         return getText (xpath);
     }
 
@@ -355,9 +396,8 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public List <String> getPatientICD_Codes () {
-        String searchBox = "[ng-show='ctrl.searchBoxVisible'] input";
-        String css = "[ng-model*='ctrl.orderEntry.icdCodes'] span";
-        return isElementVisible (searchBox) ? null : isElementPresent (css) ? getTextList (css) : null;
+        String css = "[formcontrolname='mrnIcdForm'] .row";
+        return isElementVisible (css) ? getTextList (css) : null;
     }
 
     public String getSpecimenId () {
@@ -384,17 +424,25 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (rDate) ? getText (rDate) : null;
     }
 
-    public String getShipmentArrivalDate () {
+    public LocalDateTime getShipmentArrivalDate () {
         String shipmentArrival = "//*[*[text()='Shipment Arrival']]//span";
-        return isElementVisible (shipmentArrival) ? getText (shipmentArrival) : null;
+        return isElementVisible (shipmentArrival) ? LocalDateTime.parse (getText (shipmentArrival),
+                                                                         formatDt7) : null;
+    }
+
+    public String getSpecimenStabilizationWindow () {
+        String stabilizationWindow = "specimen-stabilization-window";
+        return isElementVisible (stabilizationWindow) ? getText (stabilizationWindow).split (":")[1] : null;
     }
 
     public ContainerType getSpecimenContainerType () {
-        return getContainerType (getText ("//*[*[text()='Specimen Container Type']]/div"));
+        String containerType = "//*[*[text()='Specimen Container Type']]/div";
+        return isElementVisible (containerType) ? getContainerType (getText (containerType)) : null;
     }
 
-    public String getSpecimenContainerQuantity () {
-        return getText ("//*[*[text()='Quantity']]/div");
+    public Integer getSpecimenContainerQuantity () {
+        String quantity = "//*[*[text()='Quantity']]/div";
+        return isElementVisible (quantity) ? Integer.valueOf (getText (quantity)) : null;
     }
 
     public List <OrderTest> getSelectedTests () {
@@ -412,18 +460,35 @@ public abstract class NewOrder extends OrderHeader {
         return orderTest;
     }
 
+    public void clearCollectionDate () {
+        assertTrue (clear (collectionDate));
+        // after entering date, it keeps year selected, so next sendKeys enter date in year part,
+        // below click will remove year selection
+        assertTrue (click (collectionDateLabel));
+    }
+
     public void enterCollectionDate (String date) {
-        assertTrue (setText ("//*[text()='Collection Date']/..//input", date));
+        assertTrue (setText (collectionDate, date));
+    }
+
+    public String getCollectionDate () {
+        return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
+    }
+
+    public String getCollectionDateErrorMsg () {
+        String locator = join (" + ", collectionDate, textDanger);
+        return isElementVisible (locator) ? getText (locator) : null;
     }
 
     public String getPhlebotomySelection () {
         return getText ("//*[text()='Phlebotomy Selection']/../div");
     }
 
-    public void uploadAttachments (String... files) {
+    public void uploadAttachments (List <String> files) {
         for (String file : files) {
-            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
             transactionInProgress ();
+            waitForElement (fileUpload).clear ();
         }
     }
 
@@ -431,16 +496,21 @@ public abstract class NewOrder extends OrderHeader {
         return getTextList ("//*[text()='History']/..//li");
     }
 
-    public String getIntakeCompleteDate () {
-        return getText ("//*[text()='Intake Complete']/..//div");
+    public LocalDateTime getIntakeCompleteDate () {
+        String intakeCompleteDate = "//*[text()='Intake Complete']/..//div";
+        return isElementVisible (intakeCompleteDate) ? LocalDateTime.parse (getText (intakeCompleteDate),
+                                                                            formatDt7) : null;
     }
 
-    public String getSpecimenApprovalDate () {
-        return getText ("//*[text()='Specimen Approval']/..//span[2]");
+    public LocalDateTime getSpecimenApprovalDate () {
+        String specimenApprovalDate = "//*[text()='Specimen Approval']/..//span[2]";
+        return isElementVisible (specimenApprovalDate) ? LocalDateTime.parse (getText (specimenApprovalDate),
+                                                                              formatDt7) : null;
     }
 
-    public String getSpecimenApprovalStatus () {
-        return getText ("//*[text()='Specimen Approval']/..//span[1]");
+    public SpecimenStatus getSpecimenApprovalStatus () {
+        String specimenApprovalStatus = "//*[text()='Specimen Approval']/..//span[1]";
+        return isElementVisible (specimenApprovalStatus) ? SpecimenStatus.valueOf (getText (specimenApprovalStatus)) : null;
     }
 
     public void waitForSpecimenDelivery () {
@@ -508,8 +578,14 @@ public abstract class NewOrder extends OrderHeader {
         if (isElementPresent (attachmentLoc))
             for (WebElement element : waitForElements (attachmentLoc)) {
                 UploadFile attachment = new UploadFile ();
-                attachment.fileName = getText (element, "a[title]");
-                attachment.fileNameTitle = getAttribute (element, "a[title]", "title");
+                if (isElementPresent (element, ".//div[1]//span")) {
+                    attachment.fileName = getText (element, ".//div[1]//span");
+                    attachment.canFilePreview = false;
+                } else if (isElementPresent (element, "a[title]")) {
+                    attachment.fileName = getText (element, "a[title]");
+                    attachment.fileNameTitle = getAttribute (element, "a[title]", "title");
+                    attachment.canFilePreview = getAttribute (element, "a[title]", "class").contains ("btn-link");
+                }
                 attachment.fileUrl = getAttribute (element, "a[href]", "href");
                 String createdDateTime = getText (element, ".//div[3]");
                 attachment.createdDateTime = LocalDateTime.parse (createdDateTime, formatDt7);
@@ -542,13 +618,13 @@ public abstract class NewOrder extends OrderHeader {
         return getOrderAttachments (format (attachments, "Dora"));
     }
 
-    public void closeFilePreview () {
-        assertTrue (click (".modal-header button.close"));
-        moduleLoading ();
-    }
-
     public void clickFilePreviewLink (String fileName) {
         assertTrue (click (format (fileLoc, fileName)));
+        assertTrue (isTextInElement (popupTitle, fileName));
+    }
+
+    public void clickFilePreviewLink (String containerName, String fileName) {
+        assertTrue (click (format (fileLocInC, containerName, fileName)));
         assertTrue (isTextInElement (popupTitle, fileName));
     }
 }

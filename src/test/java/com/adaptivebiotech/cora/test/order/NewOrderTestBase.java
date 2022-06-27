@@ -29,8 +29,10 @@ public class NewOrderTestBase extends CoraBaseBrowser {
     protected final String        shipmentTab         = "SHIPMENT";
     protected final String        accessionTab        = "ACCESSION";
     protected final String        discrepancyTab      = "DISCREPANCY RESOLUTIONS";
+
     protected final List <String> orderDiscrepTabList = asList (orderDetailsTab, accessionTab, discrepancyTab);
     protected final List <String> orderDetailsTabList = asList (orderDetailsTab, accessionTab);
     protected final List <String> discrepancyTabList  = asList (shipmentTab, accessionTab, discrepancyTab);
     protected final List <String> accessionTabList    = asList (shipmentTab, accessionTab);
+
 }

@@ -10,6 +10,7 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDate;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -29,10 +30,9 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  */
 public class NewOrderTDetect extends NewOrder {
 
-    public BillingNewOrderTDetect billing        = new BillingNewOrderTDetect (staticNavBarHeight);
-    public PickPatientModule      pickPatient    = new PickPatientModule ();
-    private Accession             accession      = new Accession ();
-    private final String          collectionDate = "[formcontrolname='collectionDate']";
+    public BillingNewOrderTDetect billing     = new BillingNewOrderTDetect (staticNavBarHeight);
+    public PickPatientModule      pickPatient = new PickPatientModule ();
+    private Accession             accession   = new Accession ();
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -66,7 +66,7 @@ public class NewOrderTDetect extends NewOrder {
         order.orderNumber = getOrderNumber ();
         order.data_analysis_group = null;
         order.isTrfAttached = toBoolean (isTrfAttached ());
-        order.date_signed = getDateSigned ();
+        order.dateSigned = getDateSigned ();
         order.customerInstructions = getInstructions ();
         order.physician = new Physician ();
         order.physician.providerFullName = getProviderName ();
@@ -75,10 +75,12 @@ public class NewOrderTDetect extends NewOrder {
         order.patient.fullname = getPatientName ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode ());
+        order.patient.patientCode = getPatientCode ();
+        order.patient.externalPatientCode = getBillingPatientCode ();
         order.patient.mrn = getPatientMRN ();
         order.patient.race = getPatientRace ();
         order.patient.ethnicity = getPatientEthnicity ();
+        order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
         order.patient = billing.getPatientBilling (order.patient);
         order.icdcodes = getPatientICD_Codes ();
@@ -90,8 +92,18 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
-        order.specimenDto.arrivalDate = getShipmentArrivalDate ();
+        order.specimenDto.approvedDate = getSpecimenApprovalDate ();
+        order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
+        order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
+        order.intakeCompletedDate = getIntakeCompleteDate ();
+        order.specimenDisplayContainerType = getSpecimenContainerType ();
+        order.specimenDisplayContainerCount = getSpecimenContainerQuantity ();
         order.tests = getSelectedTests ();
+        LocalDate dueDate = getDueDate ();
+        for (int i = 0; i < order.tests.size (); i++) {
+            order.tests.get (i).dueDate = dueDate;
+        }
+        order.documentedByType = getOrderAuthorization ();
         order.orderAttachments = getCoraAttachments ();
         order.shipmentAttachments = getShipmentAttachments ();
         order.trf = getDoraTrf ();
@@ -119,10 +131,6 @@ public class NewOrderTDetect extends NewOrder {
     private void verifyICDCodeAdded (String code) {
         String xpath = "//label[text()='ICD Codes']/..";
         assertTrue (isTextInElement (xpath, code));
-    }
-
-    public String getCollectionDate () {
-        return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
     }
 
     /**
