@@ -46,7 +46,7 @@ public class Batch extends OrderHeader {
     public void searchOrder (String ordernum) {
         assertTrue (setText ("[ng-model='ctrl.salesforceId']", ordernum));
         assertTrue (pressKey (ENTER));
-        pageLoading ();
+        assertTrue (waitUntilVisible ("[ng-show='ctrl.products.length']"));
     }
 
     public List <Shipment> getShipments () {
@@ -60,6 +60,7 @@ public class Batch extends OrderHeader {
     public void addShipment (String shipmentNumber) {
         assertTrue (setText ("[ng-model='ctrl.shipmentNumber']", shipmentNumber));
         assertTrue (pressKey (ENTER));
+        assertTrue (waitUntilVisible ("[batch-shipment='shipmentEntry']"));
     }
 
     public void selectLimsProjectType (LimsProjectType limsProjectType) {
@@ -72,6 +73,11 @@ public class Batch extends OrderHeader {
         transactionInProgress ();
     }
 
+    public void waitForReminder () {
+        assertTrue (waitUntilVisible (".salesforce-container .ab-alert-body"));
+        assertTrue (waitUntilVisible ("[ng-show='ctrl.manifestPreview'] .ab-alert-body"));
+    }
+
     public void createBatchOrder (String sfdcOrder, String shipmentNumber, String preManifest) {
         selectNewBatchOrder ();
         isCorrectPage ();
@@ -79,6 +85,7 @@ public class Batch extends OrderHeader {
         addShipment (shipmentNumber);
         selectLimsProjectType (Testing);
         uploadPreManifest (preManifest);
+        waitForReminder ();
         clickSaveAndActivate ();
     }
 }

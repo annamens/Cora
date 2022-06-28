@@ -53,7 +53,6 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -93,7 +92,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
     private final String       reviewSignStr       = "RELEASED BY DATE & TIME";
     private final String       approvedSignStr     = "APPROVED BY SIGNATURE DATE";
     private final String       reasonCorrectionStr = "REASON FOR CORRECTION";
-    private final Assay        assayTest           = COVID19_DX_IVD;;
+    private final Assay        assayTest           = COVID19_DX_IVD;
     private String             downloadDir;
 
     @BeforeMethod (alwaysRun = true)
@@ -127,7 +126,6 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         order = orderDetailTDetect.parseOrder ();
         String sample = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sample);
-        history.isCorrectPage ();
         order.orderTestId = history.getOrderTestId ();
 
         history.setWorkflowProperties (covidProperties ());
@@ -237,13 +235,10 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
      * NOTE: SR-T3070
      */
     public void validateFailedTDetectReportData () {
-        WorkflowProperties sample_112770_SN_7929 = new WorkflowProperties ();
-        sample_112770_SN_7929.flowcell = "HCYJNBGXJ";
-        sample_112770_SN_7929.workspaceName = "CLINICAL-CLINICAL";
-        sample_112770_SN_7929.sampleName = "112770-SN-7929";
-
-        CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
-        test.workflowProperties = sample_112770_SN_7929;
+        CoraTest test = getTDxTest (COVID19_DX_IVD);
+        test.workflowProperties.flowcell = "HCYJNBGXJ";
+        test.workflowProperties.workspaceName = "CLINICAL-CLINICAL";
+        test.workflowProperties.sampleName = "112770-SN-7929";
 
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),

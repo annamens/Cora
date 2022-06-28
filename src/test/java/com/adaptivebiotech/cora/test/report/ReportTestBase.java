@@ -11,9 +11,7 @@ import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.diagnosticOrder
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.order;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.shipment;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.specimen;
-import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.COVID19;
 import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.LYME;
-import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.POSITIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.BCell;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
@@ -28,7 +26,6 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.time.LocalDate.parse;
 import static java.time.LocalDateTime.now;
-import static java.util.Arrays.asList;
 import static java.util.logging.Level.OFF;
 import static javax.imageio.ImageIO.read;
 import static org.apache.commons.lang3.StringUtils.countMatches;
@@ -101,22 +98,6 @@ public class ReportTestBase extends CoraBaseBrowser {
         diagnostic.fastForwardStatus = stage;
         diagnostic.task = null;
         return diagnostic;
-    }
-
-    protected ClassifierOutput negativeCovidResult () {
-        ClassifierOutput dxResult = new ClassifierOutput ();
-        dxResult.disease = COVID19;
-        dxResult.classifierVersion = "v1.0";
-        dxResult.dxScore = -7.854542620239307d;
-        dxResult.posteriorProbability = 0.00038783501397754916d;
-        dxResult.countEnhancedSeq = 69;
-        dxResult.containerVersion = "dx-classifiers/covid-19:d23228f";
-        dxResult.pipelineVersion = "v3.1-385-g1340003";
-        dxResult.dxStatus = NEGATIVE;
-        dxResult.configVersion = "dx.covid19.rev1";
-        dxResult.uniqueProductiveTemplates = 858682;
-        dxResult.qcFlags = asList ("COVID_UPPER_UPR_THRESHOLD");
-        return dxResult;
     }
 
     protected ClassifierOutput positiveLymeResult () {

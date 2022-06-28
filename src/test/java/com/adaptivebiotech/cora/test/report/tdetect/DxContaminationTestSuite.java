@@ -40,7 +40,6 @@ import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
-import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -71,15 +70,12 @@ public class DxContaminationTestSuite extends ReportTestBase {
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
 
-        WorkflowProperties wProperties = new WorkflowProperties ();
-        wProperties.flowcell = "HV5JNBGXG";
-        wProperties.workspaceName = "CLINICAL-CLINICAL";
-        wProperties.sampleName = "95224-SN-2193";
-        wProperties.lastAcceptedTsvPath = tsvPath;
-        wProperties.lastFinishedPipelineJobId = "8a7a958875d3e9d801775471b10666b2";
-
-        CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
-        test.workflowProperties = wProperties;
+        CoraTest test = getTDxTest (COVID19_DX_IVD);
+        test.workflowProperties.flowcell = "HV5JNBGXG";
+        test.workflowProperties.workspaceName = "CLINICAL-CLINICAL";
+        test.workflowProperties.sampleName = "95224-SN-2193";
+        test.workflowProperties.lastAcceptedTsvPath = tsvPath;
+        test.workflowProperties.lastFinishedPipelineJobId = "8a7a958875d3e9d801775471b10666b2";
 
         diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                         patient,

@@ -109,15 +109,15 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
     private final String         c83_00                           = "C83.00";
     private final String         c90_00                           = "C90.00";
 
-    private final String         tsvOverridePathO1O2              = azPipelineNorth + "/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathO1O2              = azPipelineClia + "/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
     private final String         tsvOverridePathO3O4              = azPipelineFda + "/210615_NB551732_0294_AH3G53BGXJ/v3.1/20210617_0828/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/H3G53BGXJ_0_CLINICAL-CLINICAL_96633-08MC-UA001BM.adap.txt.results.tsv.gz";
     private final String         tsvOverridePathO5O6O7O8          = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
-    private final String         tsvOverridePathOrcaIgHVO1O8      = azPipelineNorth + "/210605_NB552488_0035_AHFFJ2BGXJ/v3.1/20210607_1834/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/HFFJ2BGXJ_0_CLINICAL-CLINICAL_01159-11MC.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathOrcaIgHVO1O8      = azPipelineClia + "/210605_NB552488_0035_AHFFJ2BGXJ/v3.1/20210607_1834/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/HFFJ2BGXJ_0_CLINICAL-CLINICAL_01159-11MC.adap.txt.results.tsv.gz";
     private final String         tsvOverridePathOrcaIgHVO2O6O7    = azPipelineFda + "/210603_NB552480_0036_AH2C2LBGXJ/v3.1/20210605_1317/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H2C2LBGXJ_0_CLINICAL-CLINICAL_111034-01LC.adap.txt.results.tsv.gz";
     private final String         tsvOverridePathOrcaIgHVO3        = azPipelineFda + "/210608_NB500953_0936_AH3G3KBGXJ/v3.1/20210610_0431/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3G3KBGXJ_0_CLINICAL-CLINICAL_111730-01MC-2115301589D.adap.txt.results.tsv.gz";
-    private final String         tsvOverridePathOrcaIgHVO4        = azPipelineNorth + "/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_2027/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3GK5BGXJ_0_CLINICAL-CLINICAL_102589-01MC-B20-229.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathOrcaIgHVO4        = azPipelineClia + "/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_2027/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3GK5BGXJ_0_CLINICAL-CLINICAL_102589-01MC-B20-229.adap.txt.results.tsv.gz";
     private final String         tsvOverridePathOrcaIgHVO5        = azPipelineFda + "/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_1958/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev23/H3GK5BGXJ_0_CLINICAL-CLINICAL_109306-01MC-jb20-67.adap.txt.results.tsv.gz";
-    private final String         tsvOverridePathOrcaIgHVO9        = azPipelineNorth + "/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev4/H3KF2BGX5_0_MDAnderson-Thompson_PH-5N.adap.txt.results.tsv.gz";
+    private final String         tsvOverridePathOrcaIgHVO9        = azPipelineClia + "/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev4/H3KF2BGX5_0_MDAnderson-Thompson_PH-5N.adap.txt.results.tsv.gz";
     private final String         lastFinishedPipelineJobIdO1O2    = "8a7a94db77a26ee1017a01c874c67394";
     private final String         lastFinishedPipelineJobIdO3O4    = "8a7a958877a26e74017a176ecd2b1b45";
     private final String         lastFinishedPipelineOrcaIgHVO1O8 = "8a7a94db77a26ee10179dfbd004f5955";
@@ -134,7 +134,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
     private final String         sampleNameOrcaIgHVO4             = "102589-01MC-B20-229";
     private final String         sampleNameOrcaIgHVO5             = "109306-01MC-jb20-67";
     private final String         sampleNameOrcaIgHVO9             = "PH-5N";
-    private final String         shmDataSourcePathOrcaIgHVO9      = azPipelineNorth + "/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229";
+    private final String         shmDataSourcePathOrcaIgHVO9      = azPipelineClia + "/180122_NB501661_0323_AH3KF2BGX5/v3.0/20180124_1229";
     private final String         workSpaceNameOrcaIgHVO9          = "MDAnderson-Thompson";
 
     private final String         noResultsAvailable               = "No result available";
@@ -1008,7 +1008,6 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
 
         // get file using get request
         history.gotoOrderDebug (sampleName);
-        history.isCorrectPage ();
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileUrl (reportData), localFile);
 

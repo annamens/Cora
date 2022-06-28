@@ -48,8 +48,8 @@ import com.adaptivebiotech.pipeline.dto.mrd.ClinicalJson.SampleInfo;
 @Test (groups = "regression")
 public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
-    private final String   tsvPathTCRB        = azPipelineNorth + "/160426_NB501172_0103_AH5CJ7BGXY/v3.0/20160428_0818/packaged/rd.Human.Beta.nextseq.156x9x0.readThrough.ultralight.rev2/H5CJ7BGXY_0_CLINICAL-CLINICAL_00456-01BB.adap.txt.results.tsv.gz";
-    private final String   tsvPathTCRG        = azPipelineNorth + "/160429_SN432_1257_AHJTK5BCXX/v3.0/20160501_1430/packaged/rd.Human.Gamma.hiseq.156x15x0.readThrough.ultralight.rev3/HJTK5BCXX_0_CLINICAL-CLINICAL_00456-01BG.adap.txt.results.tsv.gz";
+    private final String   tsvPathTCRB        = azPipelineClia + "/160426_NB501172_0103_AH5CJ7BGXY/v3.0/20160428_0818/packaged/rd.Human.Beta.nextseq.156x9x0.readThrough.ultralight.rev2/H5CJ7BGXY_0_CLINICAL-CLINICAL_00456-01BB.adap.txt.results.tsv.gz";
+    private final String   tsvPathTCRG        = azPipelineClia + "/160429_SN432_1257_AHJTK5BCXX/v3.0/20160501_1430/packaged/rd.Human.Gamma.hiseq.156x15x0.readThrough.ultralight.rev3/HJTK5BCXX_0_CLINICAL-CLINICAL_00456-01BG.adap.txt.results.tsv.gz";
     private final String   lastFlowcellIdTCRB = "H5CJ7BGXY";
     private final String   lastFlowcellIdTCRG = "HJTK5BCXX";
     private final String   report             = "reportData.json";
