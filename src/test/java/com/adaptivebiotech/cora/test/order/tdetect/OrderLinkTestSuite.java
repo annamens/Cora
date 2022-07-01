@@ -60,8 +60,8 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                           patient,
                                                           null,
-                                                          bloodSpecimen ().collectionDate.toString (),
-                                                          COVID19_DX_IVD);
+                                                          COVID19_DX_IVD,
+                                                          bloodSpecimen ());
         assertEquals (newOrderTDetect.getTabList (), asList (orderDetailsTab));
 
         shipment.createShipment (order.orderNumber, Tube);
@@ -128,8 +128,8 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                           patient,
                                                           null,
-                                                          bloodSpecimen ().collectionDate.toString (),
-                                                          COVID19_DX_IVD);
+                                                          COVID19_DX_IVD,
+                                                          bloodSpecimen ());
         assertEquals (newOrderTDetect.getTabList (), asList (orderDetailsTab));
 
         shipment.createShipment (order.orderNumber, Tube);

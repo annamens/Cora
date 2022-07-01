@@ -49,17 +49,30 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public abstract class NewOrder extends OrderHeader {
 
-    private final String   dateSigned       = "[formcontrolname='dateSigned']";
-    private final String   instructions     = "[formcontrolname='specialInstructions']";
-    private final String   specimenDelivery = "[formcontrolname='specimenDeliveryType']";
-    private final String   orderNotes       = "#order-notes";
-    private final String   collectionDate   = "[formcontrolname='collectionDate']";
-    private final String   attachmentC      = "//h3[contains(text(),'%s')]/ancestor::div[@class='row']";
-    private final String   attachments      = attachmentC + "//attachments//*[contains(@class,'row')]";
-    private final String   fileLoc          = "//a[contains(text(),'%s')]";
-    private final String   toastContainer   = "#toast-container";
-    private final String   toastError       = ".toast-error";
-    protected final String specimenNumber   = "//*[text()='Adaptive Specimen ID']/..//div";
+    private final String   orderType           = "//*[@label='Order Type']//span";
+    private final String   orderNumber         = "//*[@label='Order #']//span";
+    private final String   dateSigned          = "[formcontrolname='dateSigned']";
+    private final String   dueDate             = "labeled-value[label='Due Date'] span";
+    private final String   instructions        = "[formcontrolname='specialInstructions']";
+    private final String   patientMrdStatus    = ".patient-status";
+    private final String   specimenDelivery    = "[formcontrolname='specimenDeliveryType']";
+    private final String   orderNotes          = "#order-notes";
+    private final String   patientMrn          = "[formcontrolname='mrn']";
+    private final String   collectionDate      = "[formcontrolname='collectionDate']";
+    private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
+    private final String   patientNotes        = ".patient-note";
+    private final String   orderAuth           = "order-documentation .row span";
+    private final String   attachmentC         = "//h3[contains(text(),'%s')]/ancestor::div[@class='row']";
+    private final String   attachments         = attachmentC + "//attachments//*[contains(@class,'row')]";
+    private final String   fileLoc             = "//a[contains(text(),'%s')]";
+    private final String   fileLocInC          = attachmentC + fileLoc;
+    private final String   fileUpload          = ".attachment-upload-input";
+    protected final String specimenNumber      = "//*[text()='Adaptive Specimen ID']/..//div";
+    protected final String toastContainer      = "#toast-container";
+    protected final String toastError          = ".toast-error";
+    protected final String toastSuccess        = ".toast-success";
+    protected final String toastMessage        = ".toast-message";
+    protected final String textDanger          = ".text-danger";
 
     public NewOrder () {
         staticNavBarHeight = 200;
@@ -105,7 +118,6 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public LocalDate getDueDate () {
-        String dueDate = "labeled-value[label='Due Date'] span";
         return isElementVisible (dueDate) ? LocalDate.parse (readInput (dueDate), formatDt1) : null;
     }
 
@@ -130,7 +142,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getPatientMRDStatus () {
-        return getText (".patient-status");
+        return getText (patientMrdStatus);
     }
 
     public List <String> getPatientICDCodes () {
@@ -196,13 +208,13 @@ public abstract class NewOrder extends OrderHeader {
         if (isElementPresent (toastContainer)) {
             WebElement toastEle = findElement (toastContainer);
             if (isElementPresent (toastEle, toastError)) {
-                fail (getText (toastEle, join (" ", toastError, ".toast-message")));
+                fail (getText (toastEle, join (" ", toastError, toastMessage)));
             }
         }
     }
 
     public void closeToast () {
-        if (isElementVisible (toastContainer)) {
+        if (isElementPresent (toastContainer)) {
             assertTrue (click (toastContainer));
             assertTrue (waitForElementInvisible (toastContainer));
         }
@@ -215,7 +227,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getToastSuccess () {
-        String message = getText (".toast-success");
+        String message = getText (toastSuccess);
         closeToast ();
         return message;
     }
@@ -226,12 +238,11 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     protected String getOrderType () {
-        String orderType = "//*[@label='Order Type']//span";
         return isElementPresent (orderType) ? getText (orderType) : null;
     }
 
     public String getOrderNumber () {
-        return getText ("//*[@label='Order #']//span");
+        return getText (orderNumber);
     }
 
     public void enterOrderNotes (String notes) {
@@ -359,7 +370,6 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getPatientMRN () {
-        String patientMrn = "[formcontrolname='mrn']";
         return isElementVisible (patientMrn) ? readInput (patientMrn) : null;
     }
 
@@ -368,7 +378,6 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public String getPatientNotes () {
-        String patientNotes = ".patient-note";
         return isElementPresent (patientNotes) ? readInput (patientNotes) : null;
     }
 
@@ -455,19 +464,19 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (clear (collectionDate));
         // after entering date, it keeps year selected, so next sendKeys enter date in year part,
         // below click will remove year selection
-        assertTrue (click ("//label[contains(text(),'Collection Date')]"));
+        assertTrue (click (collectionDateLabel));
     }
 
-    public void enterCollectionDate (String date) {
-        assertTrue (setText (collectionDate, date));
+    public void enterCollectionDate (LocalDate date) {
+        assertTrue (setText (collectionDate, formatDt1.format (date)));
     }
 
-    public String getCollectionDate () {
-        return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
+    public LocalDate getCollectionDate () {
+        return isElementVisible (collectionDate) ? LocalDate.parse (readInput (collectionDate), formatDt1) : null;
     }
 
     public String getCollectionDateErrorMsg () {
-        String locator = join (" + ", collectionDate, ".text-danger");
+        String locator = join (" + ", collectionDate, textDanger);
         return isElementVisible (locator) ? getText (locator) : null;
     }
 
@@ -476,11 +485,10 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void uploadAttachments (List <String> files) {
-        String fileUpload = ".attachment-upload-input";
         for (String file : files) {
             waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
             transactionInProgress ();
-            assertTrue (clear (fileUpload));
+            waitForElement (fileUpload).clear ();
         }
     }
 
@@ -560,7 +568,6 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public OrderAuthorization getOrderAuthorization () {
-        String orderAuth = "order-documentation .row span";
         return isElementVisible (orderAuth) ? OrderAuthorization.getOrderAuthorization (getText (orderAuth)) : null;
     }
 
@@ -615,7 +622,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void clickFilePreviewLink (String containerName, String fileName) {
-        assertTrue (click (format (attachmentC + fileLoc, containerName, fileName)));
+        assertTrue (click (format (fileLocInC, containerName, fileName)));
         assertTrue (isTextInElement (popupTitle, fileName));
     }
 }

@@ -9,6 +9,7 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.covidProperties;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.sample_112770_SN_7929;
@@ -113,12 +114,11 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         patient.lastName = randomString (5);
         patient.mrn = randomString (10);
         String icdCode1 = "C90.00", icdCode2 = "C91.00";
-        String collectionDate = genDate (-1);
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                           patient,
                                                           new String[] { icdCode1, icdCode2 },
-                                                          collectionDate,
                                                           assayTest,
+                                                          bloodSpecimen (),
                                                           Active,
                                                           SlideBox5CS);
         testLog ("T-Detect Order created: " + order.orderNumber);

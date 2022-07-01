@@ -8,8 +8,8 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Pending;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
-import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import java.util.List;
 import org.testng.annotations.Test;
@@ -48,8 +48,8 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (clonoSEQ_trial),
                                                           newTrialProtocolPatient (),
                                                           icdCodes,
-                                                          genDate (-3).toString (),
-                                                          COVID19_DX_IVD);
+                                                          COVID19_DX_IVD,
+                                                          bloodSpecimen ());
         testLog ("Order created: " + order.orderNumber);
 
         shipment.createShipment (order.orderNumber, Tube);

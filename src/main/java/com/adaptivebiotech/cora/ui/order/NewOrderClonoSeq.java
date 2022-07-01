@@ -249,6 +249,7 @@ public class NewOrderClonoSeq extends NewOrder {
     /**
      * Create ClonoSeq Pending Order by filling out all the required fields and passed arguments on
      * New Order ClonoSeq page, and returns order no.
+     * 
      * NOTE: Keep updating this method, and try to always use these methods to create ClonoSeq Order
      * 
      * @param physician
@@ -284,6 +285,8 @@ public class NewOrderClonoSeq extends NewOrder {
             break;
         case Client:
         case PatientSelfPay:
+            billing.selectBilling (patient.billingType);
+            billing.enterInsurance1PatientStatus (patient.insurance1.hospitalizationStatus);
         default:
             billing.selectBilling (patient.billingType);
             billing.enterInsurance1PatientStatus (patient.insurance1.hospitalizationStatus);
@@ -305,7 +308,7 @@ public class NewOrderClonoSeq extends NewOrder {
         if (asList (CellPellet, CellSuspension).contains (specimen.sampleType))
             enterCellCount (1000000);
 
-        enterCollectionDate (specimen.collectionDate.toString ());
+        enterCollectionDate ((LocalDate) specimen.collectionDate);
         clickAssayTest (assayTest);
         clickSave ();
 
@@ -319,6 +322,7 @@ public class NewOrderClonoSeq extends NewOrder {
     /**
      * Create ClonoSeq Pending (differs from above method as this method creates shipment as well)
      * or Active Order by passing orderStatus argument. Returns order no.
+     * 
      * NOTE: Keep updating this method, and try to always use these methods to create ClonoSeq
      * Pending Or Active Order
      * 
@@ -326,6 +330,7 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param patient
      * @param icdCodes
      * @param assayTest
+     * @param specimen
      * @param orderStatus
      * @param containerType
      * @return

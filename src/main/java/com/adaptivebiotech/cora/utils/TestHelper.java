@@ -314,7 +314,7 @@ public class TestHelper {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
-        specimen.collectionDate = genDate (-3);
+        specimen.collectionDate = LocalDate.parse (genDate (-3), formatDt1);
         return specimen;
     }
 
