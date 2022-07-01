@@ -71,8 +71,8 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                                           newSelfPayPatientTDx (),
                                                           null,
-                                                          specimen.collectionDate.toString (),
                                                           COVID19_DX_IVD,
+                                                          specimen,
                                                           Active,
                                                           Tube);
         testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);
@@ -108,8 +108,8 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_canada),
                                                           newSelfPayPatientTDx (),
                                                           null,
-                                                          specimen.collectionDate.toString (),
                                                           COVID19_DX_IVD,
+                                                          specimen,
                                                           Active,
                                                           Tube);
         testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);

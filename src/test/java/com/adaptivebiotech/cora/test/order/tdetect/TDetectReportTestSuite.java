@@ -9,6 +9,7 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.covidProperties;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.sample_112770_SN_7929;
@@ -45,6 +46,7 @@ import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -112,12 +114,11 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         patient.lastName = randomString (5);
         patient.mrn = randomString (10);
         String icdCode1 = "C90.00", icdCode2 = "C91.00";
-        String collectionDate = genDate (-1);
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                           patient,
                                                           new String[] { icdCode1, icdCode2 },
-                                                          collectionDate,
                                                           assayTest,
+                                                          bloodSpecimen (),
                                                           Active,
                                                           SlideBox5CS);
         testLog ("T-Detect Order created: " + order.orderNumber);
@@ -284,14 +285,9 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         assertEquals (reportDataJson.patientInfo.reportSpecimenCompartment, "Cellular");
         assertEquals (reportDataJson.patientInfo.reportSpecimenId, order.specimenDto.specimenNumber);
         assertEquals (reportDataJson.patientInfo.reportLocus, TCRB_v4b);
-        assertEquals (reportDataJson.patientInfo.reportSpecimenCollectionDate.toString (),
-                      convertDateFormat (order.specimenDto.collectionDate.toString (),
-                                         "MM/dd/yyyy",
-                                         "yyyy-MM-dd"));
-        assertEquals (reportDataJson.patientInfo.reportSpecimenArrivalDate.toString (),
-                      convertDateFormat (order.specimenDto.approvedDate.toString ().split ("\\s+")[0],
-                                         "MM/dd/yyyy",
-                                         "yyyy-MM-dd"));
+        assertEquals (reportDataJson.patientInfo.reportSpecimenCollectionDate, order.specimenDto.collectionDate);
+        assertEquals (reportDataJson.patientInfo.reportSpecimenArrivalDate,
+                      order.specimenDto.approvedDate.toLocalDate ());
         assertEquals (order.orderTestId, reportDataJson.patientInfo.reportSampleOrderTestId);
         assertEquals (reportDataJson.patientInfo.orderNumber, order.orderNumber);
         assertEquals (reportDataJson.patientInfo.institutionName, order.physician.accountName);
@@ -340,8 +336,8 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         validatePdfContent (fileContent,
                             join (" ",
                                   SpecimenType.Blood + " / " + SpecimenSource.Blood,
-                                  order.specimenDto.collectionDate.toString (),
-                                  order.specimenDto.approvedDate.toString ().split ("\\s+")[0],
+                                  formatDt1.format ((LocalDate) order.specimenDto.collectionDate),
+                                  formatDt1.format (order.specimenDto.approvedDate),
                                   order.specimenDto.specimenNumber));
 
         validatePdfContent (fileContent, "ICD CODE(S)");

@@ -94,8 +94,8 @@ public class NewOrderTestSuite extends NewOrderTestBase {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                           newClientPatient (),
                                                           null,
-                                                          bloodSpecimen ().collectionDate.toString (),
-                                                          COVID19_DX_IVD);
+                                                          COVID19_DX_IVD,
+                                                          bloodSpecimen ());
 
         // add diagnostic shipment
         shipment.selectNewDiagnosticShipment ();

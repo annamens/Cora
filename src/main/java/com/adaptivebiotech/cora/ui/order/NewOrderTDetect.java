@@ -142,15 +142,15 @@ public class NewOrderTDetect extends NewOrder {
      * @param physician
      * @param patient
      * @param icdCodes
-     * @param collectionDate
      * @param assayTest
-     * @return Cora order number
+     * @param specimen
+     * @return
      */
     public Order createTDetectOrder (Physician physician,
                                      Patient patient,
                                      String[] icdCodes,
-                                     String collectionDate,
-                                     Assay assayTest) {
+                                     Assay assayTest,
+                                     Specimen specimen) {
         selectNewTDetectDiagnosticOrder ();
         isCorrectPage ();
 
@@ -159,7 +159,7 @@ public class NewOrderTDetect extends NewOrder {
         boolean matchFound = pickPatient.searchOrCreatePatient (patient);
         if (icdCodes != null)
             enterPatientICD_Codes (icdCodes);
-        enterCollectionDate (collectionDate);
+        enterCollectionDate ((LocalDate) specimen.collectionDate);
         clickAssayTest (assayTest);
 
         switch (patient.billingType) {
@@ -202,21 +202,21 @@ public class NewOrderTDetect extends NewOrder {
      * @param physician
      * @param patient
      * @param icdCodes
-     * @param collectionDate
      * @param assayTest
+     * @param specimen
      * @param orderStatus
      * @param containerType
-     * @return Cora order number
+     * @return
      */
     public Order createTDetectOrder (Physician physician,
                                      Patient patient,
                                      String[] icdCodes,
-                                     String collectionDate,
                                      Assay assayTest,
+                                     Specimen specimen,
                                      OrderStatus orderStatus,
                                      ContainerType containerType) {
         // create T-Detect order
-        Order order = createTDetectOrder (physician, patient, icdCodes, collectionDate, assayTest);
+        Order order = createTDetectOrder (physician, patient, icdCodes, assayTest, specimen);
 
         // add diagnostic shipment
         new NewShipment ().createShipment (order.orderNumber, containerType);

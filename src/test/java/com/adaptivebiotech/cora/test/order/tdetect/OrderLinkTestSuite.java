@@ -60,8 +60,8 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                           patient,
                                                           null,
-                                                          bloodSpecimen ().collectionDate.toString (),
-                                                          COVID19_DX_IVD);
+                                                          COVID19_DX_IVD,
+                                                          bloodSpecimen ());
         assertEquals (newOrderTDetect.getTabList (), asList (orderDetailsTab));
 
         shipment.createShipment (order.orderNumber, Tube);
@@ -97,7 +97,7 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         validateTabsOrderPage (order, orderDiscrepTabList);
         newOrderTDetect.clickAccessionTab ();
         accession.isCorrectPage ();
-        assertEquals (accession.getSpecimenApprovedDate ().split (",")[1].trim (), coraTestUser);
+        assertEquals (accession.getSpecimenApprovedBy (), coraTestUser);
         testLog ("Validate Accession Tab Data loads and opens in same window");
 
         newOrderTDetect.clickDiscrepancyResolutionsTab ();
@@ -128,8 +128,8 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                           patient,
                                                           null,
-                                                          bloodSpecimen ().collectionDate.toString (),
-                                                          COVID19_DX_IVD);
+                                                          COVID19_DX_IVD,
+                                                          bloodSpecimen ());
         assertEquals (newOrderTDetect.getTabList (), asList (orderDetailsTab));
 
         shipment.createShipment (order.orderNumber, Tube);
@@ -150,7 +150,7 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         validateTabsOrderPage (order, orderDetailsTabList);
         newOrderTDetect.clickAccessionTab ();
         accession.isCorrectPage ();
-        assertEquals (accession.getSpecimenApprovedDate ().split (",")[1].trim (), coraTestUser);
+        assertEquals (accession.getSpecimenApprovedBy (), coraTestUser);
         testLog ("Validate Accession Tab Data loads and opens in same window");
 
         newOrderTDetect.clickOrderDetailsTab ();
