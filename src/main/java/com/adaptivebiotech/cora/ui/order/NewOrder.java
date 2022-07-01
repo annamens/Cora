@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
@@ -55,11 +56,8 @@ public abstract class NewOrder extends OrderHeader {
     private final String   dueDate             = "labeled-value[label='Due Date'] span";
     private final String   instructions        = "[formcontrolname='specialInstructions']";
     private final String   patientMrdStatus    = ".patient-status";
-    private final String   specimenDelivery    = "[formcontrolname='specimenDeliveryType']";
     private final String   orderNotes          = "#order-notes";
     private final String   patientMrn          = "[formcontrolname='mrn']";
-    private final String   collectionDate      = "[formcontrolname='collectionDate']";
-    private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
     private final String   patientNotes        = ".patient-note";
     private final String   orderAuth           = "order-documentation .row span";
     private final String   attachmentC         = "//h3[contains(text(),'%s')]/ancestor::div[@class='row']";
@@ -67,6 +65,15 @@ public abstract class NewOrder extends OrderHeader {
     private final String   fileLoc             = "//a[contains(text(),'%s')]";
     private final String   fileLocInC          = attachmentC + fileLoc;
     private final String   fileUpload          = ".attachment-upload-input";
+    private final String   specimenDelivery    = "[formcontrolname='specimenDeliveryType']";
+    private final String   collectionDate      = "[formcontrolname='collectionDate']";
+    private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
+    protected final String specimenType        = "[formcontrolname='sampleType']";
+    protected final String option              = "option";
+    protected final String specimenSource      = "[formcontrolname='source']";
+    protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
+    protected final String compartment         = "[formcontrolname='compartment']";
+    protected final String anticoagulantOther  = "[formcontrolname='anticoagulantOther']";
     protected final String specimenNumber      = "//*[text()='Adaptive Specimen ID']/..//div";
     protected final String toastContainer      = "#toast-container";
     protected final String toastError          = ".toast-error";
@@ -114,7 +121,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public LocalDate getDateSigned () {
         String data = isElementVisible (dateSigned) ? readInput (dateSigned) : null;
-        return isNoneBlank (data) ? LocalDate.parse (data, formatDt1) : null;
+        return isNoneBlank (data) ? LocalDate.parse (data, formatDt2) : null;
     }
 
     public LocalDate getDueDate () {
@@ -400,23 +407,29 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (css) ? getTextList (css) : null;
     }
 
+    public void deleteICDCode (String code) {
+        assertTrue (click ("//*[contains(text(),'" + code + "')]/following-sibling::div//a"));
+    }
+
     public String getSpecimenId () {
         return isElementVisible (specimenNumber) ? getText (specimenNumber) : null;
     }
 
     public SpecimenType getSpecimenType () {
-        String css = "[ng-model^='ctrl.orderEntry.specimen.sampleType']";
-        return isElementVisible (css) ? SpecimenType.getSpecimenType (getFirstSelectedText (css)) : null;
+        return isElementVisible (specimenType) ? SpecimenType.getSpecimenType (getFirstSelectedText (specimenType)) : null;
     }
 
     public SpecimenSource getSpecimenSource () {
-        String css = "[ng-model^='ctrl.orderEntry.specimen.sourceType']";
-        return isElementVisible (css) ? SpecimenSource.getSpecimenSource (getFirstSelectedText (css)) : null;
+        if (isElementVisible (specimenSource)) {
+            String source = waitForElement (specimenSource).getTagName ()
+                                                           .equalsIgnoreCase ("input") ? readInput (specimenSource) : getFirstSelectedText (specimenSource);
+            return SpecimenSource.getSpecimenSource (source);
+        }
+        return null;
     }
 
     public Anticoagulant getAnticoagulant () {
-        String css = "[ng-model^='ctrl.orderEntry.specimen | specimenAnticoagulant']";
-        return isElementVisible (css) ? Anticoagulant.valueOf (getFirstSelectedText (css)) : null;
+        return isElementVisible (anticoagulant) ? Anticoagulant.valueOf (getFirstSelectedText (anticoagulant)) : null;
     }
 
     protected String getReconciliationDate () {

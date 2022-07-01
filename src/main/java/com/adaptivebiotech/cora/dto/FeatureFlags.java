@@ -16,6 +16,7 @@ public final class FeatureFlags {
     public boolean dingoDiagUploadPathologyOrder;
     @JsonProperty ("Entlebucher-lomnDocusign")
     public boolean lomnDocusign;
+    public boolean cfDNA;
 
     @Override
     public String toString () {
