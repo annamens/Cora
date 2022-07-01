@@ -208,14 +208,11 @@ public class NewShipment extends ShipmentHeader {
     }
 
     public void uploadAttachments (List <String> files) {
+        String fileUpload = "input[ngf-select*='ctrl.onUpload'][ng-bind='ctrl.btnText']";
         for (String file : files) {
-            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
             transactionInProgress ();
-            // This is work around, else it attaches the same file multiple times
-            // e.g., if list of 3 (1, 2, 3) files, then loop 1: upload 1, loop 2: upload 1,2, loop
-            // 3: upload 1,2,3
-            refresh ();
-            isDiagnostic ();
+            assertTrue (clear (fileUpload));
         }
     }
 
