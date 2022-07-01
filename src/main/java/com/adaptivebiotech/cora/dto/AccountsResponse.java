@@ -3,7 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.adaptivebiotech.cora.dto.HttpResponse.Meta;
@@ -19,10 +19,6 @@ public final class AccountsResponse {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 }

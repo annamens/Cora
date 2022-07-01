@@ -1,7 +1,7 @@
 /**
 * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
 */
-package com.adaptivebiotech.cora.test.attachment.clonoseq.tdetect;
+package com.adaptivebiotech.cora.test.attachment.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
