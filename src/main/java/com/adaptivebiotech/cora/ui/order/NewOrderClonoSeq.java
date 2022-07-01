@@ -289,7 +289,6 @@ public class NewOrderClonoSeq extends NewOrder {
             billing.enterInsurance1PatientStatus (patient.insurance1.hospitalizationStatus);
         default:
             billing.selectBilling (patient.billingType);
-            billing.enterInsurance1PatientStatus (patient.insurance1.hospitalizationStatus);
             break;
         }
 
