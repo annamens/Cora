@@ -14,12 +14,14 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
+import java.time.LocalDateTime;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Shipment;
+import com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -70,7 +72,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         accession.clickLabelingComplete ();
         accession.clickLabelVerificationComplete ();
         accession.clickPass ();
-        String expIntakeComplete = accession.getIntakeCompleteDate ();
+        LocalDateTime expIntakeComplete = accession.getIntakeCompleteDate ();
 
         accession.clickShipmentTab ();
         shipmentDetail.isCorrectPage ();
@@ -78,9 +80,9 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         Shipment shipment = shipmentDetail.getShipmentDetails ();
         String expSpecimenId = shipmentDetail.getSpecimenId ();
         ContainerType expContainerType = shipmentDetail.getContainerType ();
-        String expContainerQuantity = shipmentDetail.getContainerQuantity ();
-        String expSpecimenApprovalStatus = shipmentDetail.getSpecimenApprovalStatus ();
-        String expSpecimenApprovalDateTime = shipmentDetail.getSpecimenApprovalDateTime ();
+        int expContainerQuantity = shipmentDetail.getContainerQuantity ();
+        SpecimenStatus expSpecimenApprovalStatus = shipmentDetail.getSpecimenApprovalStatus ();
+        LocalDateTime expSpecimenApprovalDateTime = shipmentDetail.getSpecimenApprovalDateTime ();
         Containers expContainers = shipmentDetail.getPrimaryContainers (SlideBox5);
         shipmentDetail.clickOrderNumber ();
         newOrderClonoSeq.isCorrectPage ();
@@ -89,8 +91,8 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         assertNotEquals (newOrderClonoSeq.getSpecimenContainerType (), expContainerType);
         assertEquals (newOrderClonoSeq.getSpecimenContainerType (), Slide);
         assertEquals (newOrderClonoSeq.getSpecimenContainerQuantity (), expContainerQuantity);
-        assertEquals (newOrderClonoSeq.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
-        assertEquals (newOrderClonoSeq.getSpecimenApprovalStatus (), expSpecimenApprovalStatus.toUpperCase ());
+        assertEquals (newOrderClonoSeq.getIntakeCompleteDate (), expIntakeComplete);
+        assertEquals (newOrderClonoSeq.getSpecimenApprovalStatus (), expSpecimenApprovalStatus);
         assertEquals (newOrderClonoSeq.getSpecimenApprovalDate (), expSpecimenApprovalDateTime);
 
         Containers actualContainers = newOrderClonoSeq.getContainers ();
@@ -118,7 +120,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         accession.clickLabelingComplete ();
         accession.clickLabelVerificationComplete ();
         accession.clickPass ();
-        String expIntakeComplete = accession.getIntakeCompleteDate ();
+        LocalDateTime expIntakeComplete = accession.getIntakeCompleteDate ();
 
         accession.clickShipmentTab ();
         shipmentDetail.isCorrectPage ();
@@ -126,9 +128,9 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         Shipment shipment = shipmentDetail.getShipmentDetails ();
         String expSpecimenId = shipmentDetail.getSpecimenId ();
         ContainerType expContainerType = shipmentDetail.getContainerType ();
-        String expContainerQuantity = shipmentDetail.getContainerQuantity ();
-        String expSpecimenApprovalStatus = shipmentDetail.getSpecimenApprovalStatus ();
-        String expSpecimenApprovalDateTime = shipmentDetail.getSpecimenApprovalDateTime ();
+        int expContainerQuantity = shipmentDetail.getContainerQuantity ();
+        SpecimenStatus expSpecimenApprovalStatus = shipmentDetail.getSpecimenApprovalStatus ();
+        LocalDateTime expSpecimenApprovalDateTime = shipmentDetail.getSpecimenApprovalDateTime ();
         Containers expContainers = shipmentDetail.getPrimaryContainers (SlideBox5);
         shipmentDetail.clickOrderNumber ();
         newOrderTDetect.isCorrectPage ();
@@ -137,8 +139,8 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         assertNotEquals (newOrderTDetect.getSpecimenContainerType (), expContainerType);
         assertEquals (newOrderTDetect.getSpecimenContainerType (), Slide);
         assertEquals (newOrderTDetect.getSpecimenContainerQuantity (), expContainerQuantity);
-        assertEquals (newOrderTDetect.getIntakeCompleteDate (), expIntakeComplete.split (",")[0]);
-        assertEquals (newOrderTDetect.getSpecimenApprovalStatus (), expSpecimenApprovalStatus.toUpperCase ());
+        assertEquals (newOrderTDetect.getIntakeCompleteDate (), expIntakeComplete);
+        assertEquals (newOrderTDetect.getSpecimenApprovalStatus (), expSpecimenApprovalStatus);
         assertEquals (newOrderTDetect.getSpecimenApprovalDate (), expSpecimenApprovalDateTime);
 
         Containers actualContainers = newOrderTDetect.getContainers ();

@@ -45,6 +45,7 @@ import static org.testng.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -284,14 +285,9 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         assertEquals (reportDataJson.patientInfo.reportSpecimenCompartment, "Cellular");
         assertEquals (reportDataJson.patientInfo.reportSpecimenId, order.specimenDto.specimenNumber);
         assertEquals (reportDataJson.patientInfo.reportLocus, TCRB_v4b);
-        assertEquals (reportDataJson.patientInfo.reportSpecimenCollectionDate.toString (),
-                      convertDateFormat (order.specimenDto.collectionDate.toString (),
-                                         "MM/dd/yyyy",
-                                         "yyyy-MM-dd"));
-        assertEquals (reportDataJson.patientInfo.reportSpecimenArrivalDate.toString (),
-                      convertDateFormat (order.specimenDto.approvedDate.toString ().split ("\\s+")[0],
-                                         "MM/dd/yyyy",
-                                         "yyyy-MM-dd"));
+        assertEquals (reportDataJson.patientInfo.reportSpecimenCollectionDate, order.specimenDto.collectionDate);
+        assertEquals (reportDataJson.patientInfo.reportSpecimenArrivalDate,
+                      order.specimenDto.approvedDate.toLocalDate ());
         assertEquals (order.orderTestId, reportDataJson.patientInfo.reportSampleOrderTestId);
         assertEquals (reportDataJson.patientInfo.orderNumber, order.orderNumber);
         assertEquals (reportDataJson.patientInfo.institutionName, order.physician.accountName);
@@ -340,8 +336,8 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         validatePdfContent (fileContent,
                             join (" ",
                                   SpecimenType.Blood + " / " + SpecimenSource.Blood,
-                                  order.specimenDto.collectionDate.toString (),
-                                  order.specimenDto.approvedDate.toString ().split ("\\s+")[0],
+                                  formatDt1.format ((LocalDate) order.specimenDto.collectionDate),
+                                  formatDt1.format (order.specimenDto.approvedDate),
                                   order.specimenDto.specimenNumber));
 
         validatePdfContent (fileContent, "ICD CODE(S)");

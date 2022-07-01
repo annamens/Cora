@@ -55,8 +55,6 @@ public class OrderDetail extends OrderHeader {
     private final String      patientMrdStatus     = ".patient-status";
     private final String      specimenNumber       = "[ng-bind='ctrl.orderEntry.specimen.specimenNumber']";
     private final String      specimenArrivalDate  = "[ng-bind^='ctrl.orderEntry.specimenDisplayArrivalDate']";
-    private final String      intakeCompletedDate  = "[ng-bind^='ctrl.orderEntry.intakeCompletedDate']";
-    private final String      approvedDate         = "[ng-bind^='ctrl.orderEntry.specimen.approvedDate']";
     private final String      approvalStatus       = "[ng-bind='ctrl.orderEntry.specimen.approvalStatus']";
     private final String      messagesLabel        = "//h2[text()='Messages']";
     private final String      attachmentPreName    = "a[ng-show='ctrl.showPreview(attachment.name)'] [ng-bind='attachment.name']";
@@ -68,7 +66,6 @@ public class OrderDetail extends OrderHeader {
     private final String      attachments          = "[attachments='ctrl.orderEntry.attachments']%s .attachments-table-row";
     private final String      fileLoc              = "//a//span[contains(text(),'%s')]";
     private final String      fileLocInC           = "//h3[contains(text(),'%s')]/parent::div" + fileLoc;
-    private final String      dateSigned           = "[ng-bind='ctrl.originalDate']";
 
     public OrderDetail () {
         staticNavBarHeight = 200;
@@ -252,6 +249,7 @@ public class OrderDetail extends OrderHeader {
     }
 
     public LocalDate getDateSigned () {
+        String dateSigned = "[ng-bind='ctrl.originalDate']";
         return isElementVisible (dateSigned) ? LocalDate.parse (getText (dateSigned), formatDt2) : null;
     }
 
@@ -352,9 +350,9 @@ public class OrderDetail extends OrderHeader {
         return isElementVisible (css) ? Anticoagulant.valueOf (getText (css)) : null;
     }
 
-    public String getCollectionDate () {
+    public LocalDate getCollectionDate () {
         String css = "[ng-bind^='ctrl.orderEntry.specimen.collectionDate']";
-        return isElementVisible (css) ? getText (css) : null;
+        return isElementVisible (css) ? LocalDate.parse (getText (css), formatDt1) : null;
     }
 
     private String getReconciliationDate () {
@@ -372,11 +370,13 @@ public class OrderDetail extends OrderHeader {
     }
 
     public LocalDateTime getIntakeCompleteDate () {
+        String intakeCompletedDate = "[ng-bind^='ctrl.orderEntry.intakeCompletedDate']";
         String data = isElementVisible (intakeCompletedDate) ? getText (intakeCompletedDate) : null;
         return isNoneBlank (data) && !data.equals ("N/A") ? LocalDateTime.parse (data, formatDt7) : null;
     }
 
     public LocalDateTime getSpecimenApprovalDate () {
+        String approvedDate = "[ng-bind^='ctrl.orderEntry.specimen.approvedDate']";
         String data = isElementVisible (approvedDate) ? getText (approvedDate) : null;
         return isNoneBlank (data) && !data.equals ("N/A") ? LocalDateTime.parse (data, formatDt7) : null;
     }

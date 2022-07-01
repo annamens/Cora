@@ -286,6 +286,7 @@ public class NewOrderClonoSeq extends NewOrder {
         case PatientSelfPay:
         default:
             billing.selectBilling (patient.billingType);
+            billing.enterInsurance1PatientStatus (patient.insurance1.hospitalizationStatus);
             break;
         }
 

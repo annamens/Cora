@@ -267,7 +267,7 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         validateTabsOrderPage (order, orderDiscrepTabList);
         newOrderClonoSeq.clickAccessionTab ();
         accession.isCorrectPage ();
-        assertEquals (accession.getSpecimenApprovedDate ().split (",")[1].trim (), coraTestUser);
+        assertEquals (accession.getSpecimenApprovedBy (), coraTestUser);
         testLog ("Validate Accession Tab Data loads and opens in same window");
 
         newOrderClonoSeq.clickDiscrepancyResolutionsTab ();
@@ -320,7 +320,7 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         validateTabsOrderPage (order, orderDetailsTabList);
         newOrderClonoSeq.clickAccessionTab ();
         accession.isCorrectPage ();
-        assertEquals (accession.getSpecimenApprovedDate ().split (",")[1].trim (), coraTestUser);
+        assertEquals (accession.getSpecimenApprovedBy (), coraTestUser);
         testLog ("Validate Accession Tab Data loads and opens in same window");
 
         newOrderClonoSeq.clickOrderDetailsTab ();

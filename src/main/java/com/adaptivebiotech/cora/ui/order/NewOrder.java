@@ -440,7 +440,7 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (containerType) ? getContainerType (getText (containerType)) : null;
     }
 
-    public Integer getSpecimenContainerQuantity () {
+    public int getSpecimenContainerQuantity () {
         String quantity = "//*[*[text()='Quantity']]/div";
         return isElementVisible (quantity) ? Integer.valueOf (getText (quantity)) : null;
     }
@@ -497,15 +497,13 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public LocalDateTime getIntakeCompleteDate () {
-        String intakeCompleteDate = "//*[text()='Intake Complete']/..//div";
-        return isElementVisible (intakeCompleteDate) ? LocalDateTime.parse (getText (intakeCompleteDate),
-                                                                            formatDt7) : null;
+        String css = "//*[text()='Intake Complete']/..//div";
+        return isElementVisible (css) ? LocalDateTime.parse (getText (css), formatDt7) : null;
     }
 
     public LocalDateTime getSpecimenApprovalDate () {
-        String specimenApprovalDate = "//*[text()='Specimen Approval']/..//span[2]";
-        return isElementVisible (specimenApprovalDate) ? LocalDateTime.parse (getText (specimenApprovalDate),
-                                                                              formatDt7) : null;
+        String css = "//*[text()='Specimen Approval']/..//span[2]";
+        return isElementVisible (css) ? LocalDateTime.parse (getText (css), formatDt7) : null;
     }
 
     public SpecimenStatus getSpecimenApprovalStatus () {

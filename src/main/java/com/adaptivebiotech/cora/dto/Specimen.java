@@ -4,6 +4,7 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import static java.util.EnumSet.allOf;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
@@ -99,6 +100,17 @@ public final class Specimen {
     }
 
     public enum SpecimenStatus {
-        PASS, FAIL
+        PASS ("Pass"), FAIL ("Fail");
+
+        public String shipmentLabel;
+
+        private SpecimenStatus (String shipmentLabel) {
+            this.shipmentLabel = shipmentLabel;
+        }
+
+        public static SpecimenStatus getShipmentSpecimenStatus (String shipmentLabel) {
+            return allOf (SpecimenStatus.class).parallelStream ().filter (st -> st.shipmentLabel.equals (shipmentLabel))
+                                               .findAny ().orElse (null);
+        }
     }
 }
