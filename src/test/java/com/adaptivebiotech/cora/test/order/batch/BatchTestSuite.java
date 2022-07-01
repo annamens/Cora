@@ -9,9 +9,11 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
 import static java.lang.System.nanoTime;
 import static java.util.Collections.singletonMap;
+import static org.testng.util.Strings.isNullOrEmpty;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.ui.Login;
@@ -34,10 +36,17 @@ public class BatchTestSuite extends BatchTestBase {
     private BatchAccession       accession   = new BatchAccession ();
     private Batch                batch       = new Batch ();
     private ThreadLocal <String> downloadDir = new ThreadLocal <> ();
+    private ThreadLocal <String> orderNumber = new ThreadLocal <> ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
+    }
+
+    @AfterMethod (alwaysRun = true)
+    public void afterMethod (Method test) {
+        if (!isNullOrEmpty (orderNumber.get ()))
+            resetBatchOrder (orderNumber.get ());
     }
 
     public void happypath () {
@@ -58,8 +67,7 @@ public class BatchTestSuite extends BatchTestBase {
         testLog ("completed the batch accession");
 
         batch.createBatchOrder (sfdcOrder, shipmentNumber, preManifest);
+        orderNumber.set (batch.getOrderNumber ());
         testLog ("activated the batch order");
-
-        resetBatchOrder (batch.getOrderNumber ());
     }
 }
