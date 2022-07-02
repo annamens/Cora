@@ -18,7 +18,7 @@ import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.NO_
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.QC_FAILURE;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.UNMUTATED;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
-import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BCells;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
@@ -853,7 +853,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
         specimen.sampleType = specimenType;
         specimen.sampleSource = specimenSource;
         specimen.anticoagulant = Blood.equals (specimen.sampleType) ? EDTA : null;
-        specimen.collectionDate = genDate (-3);
+        specimen.collectionDate = genLocalDate (-3);
         Order order = diagnostic.createClonoSeqOrder (physician,
                                                       TestHelper.newInternalPharmaPatient (),
                                                       icdCodes,

@@ -23,6 +23,7 @@ import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.C
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.disableHiFreqSave;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.disableHiFreqSharing;
@@ -314,7 +315,7 @@ public class TestHelper {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
-        specimen.collectionDate = LocalDate.parse (genDate (-3), formatDt1);
+        specimen.collectionDate = genLocalDate (-3);
         return specimen;
     }
 
