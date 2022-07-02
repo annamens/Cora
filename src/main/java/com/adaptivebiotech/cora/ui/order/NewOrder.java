@@ -420,12 +420,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public SpecimenSource getSpecimenSource () {
-        if (isElementVisible (specimenSource)) {
-            String source = waitForElement (specimenSource).getTagName ()
-                                                           .equalsIgnoreCase ("input") ? readInput (specimenSource) : getFirstSelectedText (specimenSource);
-            return SpecimenSource.getSpecimenSource (source);
-        }
-        return null;
+        return isElementVisible (specimenSource) ? SpecimenSource.valueOf (readInput (specimenSource)) : null;
     }
 
     public Anticoagulant getAnticoagulant () {
