@@ -90,7 +90,6 @@ public class BillingTestSuite extends BillingTestBase {
         testLog (format (emailErrLog1, email));
 
         email = "foo@gmail.";
-        diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
         testLog (format (emailErrLog2, diagnostic.getToastError ()));
@@ -99,7 +98,6 @@ public class BillingTestSuite extends BillingTestBase {
         testLog (format (emailErrLog1, email));
 
         email = "foo";
-        diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
         testLog (format (emailErrLog2, diagnostic.getToastError ()));
@@ -108,7 +106,6 @@ public class BillingTestSuite extends BillingTestBase {
         testLog (format (emailErrLog1, email));
 
         email = "foo@gmail.com";
-        diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.activateOrder ();
         testLog ("there was no patient email validation error");

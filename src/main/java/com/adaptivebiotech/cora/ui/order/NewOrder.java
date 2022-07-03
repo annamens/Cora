@@ -205,7 +205,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     protected void checkOrderForErrors () {
-        if (isElementPresent (toastContainer)) {
+        if (isElementVisible (toastContainer)) {
             WebElement toastEle = findElement (toastContainer);
             if (isElementPresent (toastEle, toastError)) {
                 fail (getText (toastEle, join (" ", toastError, toastMessage)));
@@ -214,7 +214,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void closeToast () {
-        if (isElementPresent (toastContainer)) {
+        if (isElementVisible (toastContainer)) {
             assertTrue (click (toastContainer));
             assertTrue (waitForElementInvisible (toastContainer));
         }
