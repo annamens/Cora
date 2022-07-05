@@ -50,6 +50,9 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
     private final String           uniqueSpecimenId    = "[formcontrolname='uniqueSpecimenId']";
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
+    private final String           option              = "option";
+    private final String           compartment         = "[formcontrolname='compartment']";
+    private final String           anticoagulantOther  = "[formcontrolname='anticoagulantOther']";
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();

@@ -69,11 +69,8 @@ public abstract class NewOrder extends OrderHeader {
     private final String   collectionDate      = "[formcontrolname='collectionDate']";
     private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
     protected final String specimenType        = "[formcontrolname='sampleType']";
-    protected final String option              = "option";
     protected final String specimenSource      = "[formcontrolname='source']";
     protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
-    protected final String compartment         = "[formcontrolname='compartment']";
-    protected final String anticoagulantOther  = "[formcontrolname='anticoagulantOther']";
     protected final String specimenNumber      = "//*[text()='Adaptive Specimen ID']/..//div";
     protected final String toastContainer      = "#toast-container";
     protected final String toastError          = ".toast-error";
