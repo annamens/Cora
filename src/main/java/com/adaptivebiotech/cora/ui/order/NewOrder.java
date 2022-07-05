@@ -445,7 +445,7 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (containerType) ? getContainerType (getText (containerType)) : null;
     }
 
-    public int getSpecimenContainerQuantity () {
+    public Integer getSpecimenContainerQuantity () {
         String quantity = "//*[*[text()='Quantity']]/div";
         return isElementVisible (quantity) ? Integer.valueOf (getText (quantity)) : null;
     }
