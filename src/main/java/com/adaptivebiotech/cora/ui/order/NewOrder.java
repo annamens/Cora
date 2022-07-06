@@ -108,8 +108,8 @@ public abstract class NewOrder extends OrderHeader {
         return getText ("labeled-value[label='Internal TRF Attached'] span");
     }
 
-    public void enterDateSigned (String date) {
-        assertTrue (setText (dateSigned, date));
+    public void enterDateSigned (LocalDate date) {
+        assertTrue (setText (dateSigned, formatDt1.format (date)));
     }
 
     public LocalDate getDateSigned () {
