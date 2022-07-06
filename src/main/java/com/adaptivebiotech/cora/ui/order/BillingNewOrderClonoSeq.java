@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.NonHospital;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
@@ -23,6 +24,10 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
 
     public BillingNewOrderClonoSeq (int staticNavBarHeight) {
         super.staticNavBarHeight = staticNavBarHeight;
+    }
+
+    public boolean isAbnStatusNotRequired () {
+        return (isTextInElement ("//label[text()='ABN Status']/..//div[1]", NotRequired.label));
     }
 
     public BillingSurvey parseBillingQuestions () {

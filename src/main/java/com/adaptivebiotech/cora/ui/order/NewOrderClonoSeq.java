@@ -10,6 +10,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
@@ -44,16 +45,14 @@ public class NewOrderClonoSeq extends NewOrder {
     public BillingNewOrderClonoSeq billing             = new BillingNewOrderClonoSeq (staticNavBarHeight);
     public PickPatientModule       pickPatient         = new PickPatientModule ();
     private Accession              accession           = new Accession ();
-    private final String           orderNotes          = "#order-notes";
     private final String           specimenDetails     = "#specimen-details";
-    private final String           specimenType        = "#specimen-entry-specimen-type";
     private final String           specimenTypeOther   = "#specimen-entry-other-specimen-type";
-    private final String           compartment         = "#specimen-entry-compartment";
-    private final String           anticoagulant       = "#specimen-entry-anticoagulant-tube";
-    private final String           anticoagulantOther  = "#specimen-entry-anticoagulant-tube-other";
-    private final String           specimenSource      = "[formcontrolname='source']";
     private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
+    private final String           uniqueSpecimenId    = "[formcontrolname='uniqueSpecimenId']";
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
+    private final String           option              = "option";
+    private final String           compartment         = "[formcontrolname='compartment']";
+    private final String           anticoagulantOther  = "[formcontrolname='anticoagulantOther']";
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -206,6 +205,10 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
     }
 
+    public List <String> getAntiCoagulantTypeList () {
+        return readInputList (join (" ", anticoagulant, option));
+    }
+
     public void enterAntiCoagulantOther (String anticoagulant) {
         assertTrue (setText (anticoagulantOther, anticoagulant));
     }
@@ -222,6 +225,14 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText ("#specimen-entry-cell-count", String.valueOf (count)));
     }
 
+    public void enterUniqueSpecimenId (String specimenId) {
+        assertTrue (setText (uniqueSpecimenId, specimenId));
+    }
+
+    public String getUniqueSpecimenId () {
+        return isElementVisible (uniqueSpecimenId) ? readInput (uniqueSpecimenId) : null;
+    }
+
     public void enterRetrievalDate (String date) {
         assertTrue (setText (retrievalDate, date));
     }
@@ -236,14 +247,6 @@ public class NewOrderClonoSeq extends NewOrder {
         String modalHeader = "[ng-bind-html=\"ctrl.dialogOptions.headerText\"]";
         assertTrue (isTextInElement (modalHeader, expectedModalTitle));
         clickPopupOK ();
-    }
-
-    public void enterOrderNotes (String notes) {
-        assertTrue (setText (orderNotes, notes));
-    }
-
-    public String getOrderNotes () {
-        return readInput (orderNotes);
     }
 
     /**

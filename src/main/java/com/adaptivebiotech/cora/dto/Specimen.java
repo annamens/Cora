@@ -96,7 +96,7 @@ public final class Specimen {
     }
 
     public enum Anticoagulant {
-        EDTA, CfdRoche, Other
+        EDTA, CfdRoche, Other, Streck
     }
 
     public enum SpecimenStatus {

@@ -90,7 +90,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         assertEquals (newOrderClonoSeq.getSpecimenId (), expSpecimenId);
         assertNotEquals (newOrderClonoSeq.getSpecimenContainerType (), expContainerType);
         assertEquals (newOrderClonoSeq.getSpecimenContainerType (), Slide);
-        assertEquals (newOrderClonoSeq.getSpecimenContainerQuantity (), expContainerQuantity);
+        assertEquals (newOrderClonoSeq.getSpecimenContainerQuantity ().intValue (), expContainerQuantity);
         assertEquals (newOrderClonoSeq.getIntakeCompleteDate (), expIntakeComplete);
         assertEquals (newOrderClonoSeq.getSpecimenApprovalStatus (), expSpecimenApprovalStatus);
         assertEquals (newOrderClonoSeq.getSpecimenApprovalDate (), expSpecimenApprovalDateTime);
@@ -138,7 +138,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         assertEquals (newOrderTDetect.getSpecimenId (), expSpecimenId);
         assertNotEquals (newOrderTDetect.getSpecimenContainerType (), expContainerType);
         assertEquals (newOrderTDetect.getSpecimenContainerType (), Slide);
-        assertEquals (newOrderTDetect.getSpecimenContainerQuantity (), expContainerQuantity);
+        assertEquals (newOrderTDetect.getSpecimenContainerQuantity ().intValue (), expContainerQuantity);
         assertEquals (newOrderTDetect.getIntakeCompleteDate (), expIntakeComplete);
         assertEquals (newOrderTDetect.getSpecimenApprovalStatus (), expSpecimenApprovalStatus);
         assertEquals (newOrderTDetect.getSpecimenApprovalDate (), expSpecimenApprovalDateTime);
