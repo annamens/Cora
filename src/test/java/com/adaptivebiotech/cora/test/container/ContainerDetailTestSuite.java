@@ -25,12 +25,12 @@ import com.adaptivebiotech.cora.ui.order.OrdersList;
 @Test (groups = "regression")
 public class ContainerDetailTestSuite extends ContainerTestBase {
 
-    private final String             error1     = "Only '.pdf,.jpg,.jpeg,.png,.gif,.xlsx' files allowed";
-    private Login                    login      = new Login ();
-    private OrdersList               ordersList = new OrdersList ();
-    private Detail                   detail     = new Detail ();
-    private MyCustody                myCustody  = new MyCustody ();
-    private ThreadLocal <Containers> containers = new ThreadLocal <> ();
+    private final String             fileexterror = "Only '.pdf,.jpg,.png,.gif,.xlsx' files allowed";
+    private Login                    login        = new Login ();
+    private OrdersList               ordersList   = new OrdersList ();
+    private Detail                   detail       = new Detail ();
+    private MyCustody                myCustody    = new MyCustody ();
+    private ThreadLocal <Containers> containers   = new ThreadLocal <> ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -54,7 +54,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         // test: unsupported file ext
         detail.isCorrectPage ();
         detail.uploadAttachments ("attachment.tiff");
-        assertEquals (detail.getFileExtErr (), error1);
+        assertEquals (detail.getFileExtErr (), fileexterror);
     }
 
     /**

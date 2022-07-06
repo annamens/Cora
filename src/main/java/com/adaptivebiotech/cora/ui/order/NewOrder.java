@@ -209,7 +209,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     protected void checkOrderForErrors () {
-        if (isElementPresent (toastContainer)) {
+        if (isElementVisible (toastContainer)) {
             WebElement toastEle = findElement (toastContainer);
             if (isElementPresent (toastEle, toastError)) {
                 fail (getText (toastEle, join (" ", toastError, toastMessage)));
@@ -218,7 +218,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void closeToast () {
-        if (isElementPresent (toastContainer)) {
+        if (isElementVisible (toastContainer)) {
             assertTrue (click (toastContainer));
             assertTrue (waitForElementInvisible (toastContainer));
         }
@@ -472,12 +472,12 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (click (collectionDateLabel));
     }
 
-    public void enterCollectionDate (String date) {
-        assertTrue (setText (collectionDate, date));
+    public void enterCollectionDate (LocalDate date) {
+        assertTrue (setText (collectionDate, formatDt1.format (date)));
     }
 
-    public String getCollectionDate () {
-        return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
+    public LocalDate getCollectionDate () {
+        return isElementVisible (collectionDate) ? LocalDate.parse (readInput (collectionDate), formatDt1) : null;
     }
 
     public String getCollectionDateErrorMsg () {

@@ -84,28 +84,28 @@ public class BillingTestSuite extends BillingTestBase {
         String email = "foo@bar@gmail.com";
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
         assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
         testLog (format (emailErrLog1, email));
-        testLog (format (emailErrLog2, diagnostic.getToastError ()));
 
         email = "foo@gmail.";
-        diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
         assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
         testLog (format (emailErrLog1, email));
-        testLog (format (emailErrLog2, diagnostic.getToastError ()));
 
         email = "foo";
-        diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
-        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
-        testLog (format (emailErrLog1, email));
         testLog (format (emailErrLog2, diagnostic.getToastError ()));
 
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
+        testLog (format (emailErrLog1, email));
+
         email = "foo@gmail.com";
-        diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.activateOrder ();
         testLog ("there was no patient email validation error");

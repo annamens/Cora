@@ -8,8 +8,10 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_trial;
 import static com.adaptivebiotech.cora.utils.PageHelper.Carrier.COURIER;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -22,6 +24,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Shipment.ShippingCondition;
+import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.specimen.SpecimenTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
@@ -55,54 +58,55 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
      * @sdlc.requirements SR-4420:R1
      */
     public void courierCollectionDateShipmentArrival () {
-        String collectionDate = genDate (1);
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.collectionDate = genLocalDate (1);
 
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, COURIER, trackingNumber);
+        createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, COURIER, trackingNumber);
 
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on Collection Date change, when collection Date > Arrival Date, carrier = courier");
 
         newOrderTDetect.clearCollectionDate ();
-        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.enterCollectionDate (genLocalDate (0));
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on Collection Date change, when collection Date = Arrival Date, carrier = courier");
 
         newOrderTDetect.clearCollectionDate ();
-        newOrderTDetect.enterCollectionDate (genDate (-1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (-1));
         assertNull (newOrderTDetect.getCollectionDateErrorMsg ());
         testLog ("No Error on Collection Date change, when collection Date < Arrival Date, carrier = courier");
 
         newOrderTDetect.clearCollectionDate ();
-        newOrderTDetect.enterCollectionDate (genDate (1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (1));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order save failed, when collection Date > Arrival Date, carrier = courier");
 
-        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.enterCollectionDate (genLocalDate (0));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order save failed, when collection Date = Arrival Date, carrier = courier");
 
-        newOrderTDetect.enterCollectionDate (genDate (-1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (-1));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastSuccess (), validateSuccessMsg);
         testLog ("Order saved, when collection Date < Arrival Date, carrier = courier");
 
-        newOrderTDetect.enterCollectionDate (genDate (1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (1));
         newOrderTDetect.clickSaveAndActivate ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order activation failed, when collection Date > Arrival Date, carrier = courier");
 
-        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.enterCollectionDate (genLocalDate (0));
         newOrderTDetect.clickSaveAndActivate ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order activation failed, when collection Date = Arrival Date, carrier = courier");
 
-        newOrderTDetect.enterCollectionDate (genDate (-1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (-1));
         newOrderTDetect.activateOrder ();
         assertEquals (newOrderTDetect.getOrderStatus (), Active);
         testLog ("Order activated successfully, when collection Date < Arrival Date, carrier = courier");
@@ -114,12 +118,13 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
      * @sdlc.requirements SR-4420:R1
      */
     public void otherCollectionDateEqualsShipmentArrival () {
-        String collectionDate = genDate (0);
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.collectionDate = genLocalDate (0);
         List <Carrier> carriers = new ArrayList <Carrier> (Arrays.asList (Carrier.values ()));
         carriers.remove (COURIER);
         Carrier randomCarrier = carriers.get (new Random ().nextInt (carriers.size ()));
 
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, randomCarrier, trackingNumber);
+        createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, randomCarrier, trackingNumber);
 
         newOrderTDetect.activateOrder ();
         assertEquals (newOrderTDetect.getOrderStatus (), Active);
@@ -132,20 +137,21 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
      * @sdlc.requirements SR-4420:R1
      */
     public void collectionDateGreaterThanShipmentArrival () {
-        String collectionDate = genDate (1);
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.collectionDate = genLocalDate (1);
 
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), collectionDate, null, null);
+        createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, null, null);
 
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on collection Date Change, when collection Date > Arrival Date");
 
         newOrderTDetect.clearCollectionDate ();
-        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.enterCollectionDate (genLocalDate (0));
         assertNull (newOrderTDetect.getCollectionDateErrorMsg ());
         testLog ("No Error on collection Date Change, when collection Date = Arrival Date");
 
         newOrderTDetect.clearCollectionDate ();
-        newOrderTDetect.enterCollectionDate (genDate (1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (1));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
@@ -156,7 +162,7 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Order activation failed, when collection Date > Arrival Date");
 
-        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.enterCollectionDate (genLocalDate (0));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastSuccess (), validateSuccessMsg);
         testLog ("Order saved, when collection Date = Arrival Date");
@@ -172,45 +178,46 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
      * @sdlc.requirements SR-4420:R2
      */
     public void collectionDateLessThanOrEqualsPatientDOB () {
-        String collectionDate = genDate (0);
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.collectionDate = genLocalDate (0);
         Patient patient = newTrialProtocolPatient ();
         patient.dateOfBirth = genDate (0);
 
-        createOrderAndCompleteAccession (patient, collectionDate, null, null);
+        createOrderAndCompleteAccession (patient, specimenDto, null, null);
 
         newOrderTDetect.clearCollectionDate ();
-        newOrderTDetect.enterCollectionDate (genDate (-1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (-1));
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on collection Date Change, Collection Date < Patient DOB");
 
         newOrderTDetect.clearCollectionDate ();
-        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.enterCollectionDate (genLocalDate (0));
         assertNull (newOrderTDetect.getCollectionDateErrorMsg ());
         testLog ("No Error on collection Date Change, Collection Date = Patient DOB");
 
         newOrderTDetect.clearCollectionDate ();
-        newOrderTDetect.enterCollectionDate (genDate (1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (1));
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on collection Date Change, Collection Date > Shipment Arrival Date");
 
-        newOrderTDetect.enterCollectionDate (genDate (-1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (-1));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on Order Save, Collection Date is less than Patient DOB");
 
-        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.enterCollectionDate (genLocalDate (0));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastSuccess (), validateSuccessMsg);
         testLog ("Successful order saved, Collection Date is equal to Patient DOB");
 
-        newOrderTDetect.enterCollectionDate (genDate (-1));
+        newOrderTDetect.enterCollectionDate (genLocalDate (-1));
         newOrderTDetect.clickSaveAndActivate ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on Order Save and Activate, Collection Date is less than Patient DOB");
 
-        newOrderTDetect.enterCollectionDate (genDate (0));
+        newOrderTDetect.enterCollectionDate (genLocalDate (0));
         newOrderTDetect.activateOrder ();
         assertEquals (newOrderTDetect.getOrderStatus (), Active);
         testLog ("Order Activated, Collection Date is equal to Patient DOB");
@@ -222,11 +229,12 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
      * @sdlc.requirements SR-4420:R2
      */
     public void collectionDateGreaterThanPatientDOB () {
-        String collectionDate = genDate (0);
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.collectionDate = genLocalDate (0);
         Patient patient = newTrialProtocolPatient ();
         patient.dateOfBirth = genDate (-1);
 
-        createOrderAndCompleteAccession (patient, collectionDate, null, null);
+        createOrderAndCompleteAccession (patient, specimenDto, null, null);
         testLog ("Successful order saved, Collection Date is greater than Patient DOB");
 
         newOrderTDetect.activateOrder ();
@@ -234,13 +242,15 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
         testLog ("Order Activated, Collection Date is greater than Patient DOB");
     }
 
-    private void createOrderAndCompleteAccession (Patient patient, String collectionDate, Carrier carrier,
+    private void createOrderAndCompleteAccession (Patient patient,
+                                                  Specimen specimenDto,
+                                                  Carrier carrier,
                                                   String trackingNumber) {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_trial),
                                                           patient,
                                                           icdCodes,
-                                                          collectionDate.toString (),
-                                                          COVID19_DX_IVD);
+                                                          COVID19_DX_IVD,
+                                                          specimenDto);
         testLog ("Order created: " + order.orderNumber);
 
         if (carrier != null && trackingNumber != null) {

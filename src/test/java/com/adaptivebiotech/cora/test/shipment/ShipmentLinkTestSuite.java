@@ -11,7 +11,6 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clon
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
-import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 import java.time.LocalDateTime;
@@ -108,8 +107,8 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (non_CLEP_clonoseq),
                                                           newClientPatient (),
                                                           null,
-                                                          genDate (-1),
-                                                          COVID19_DX_IVD);
+                                                          COVID19_DX_IVD,
+                                                          bloodSpecimen ());
 
         // add diagnostic shipment
         shipment.createShipment (order.orderNumber, SlideBox5);
