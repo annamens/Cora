@@ -477,7 +477,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public LocalDate getCollectionDate () {
-        return isElementVisible (collectionDate) ? LocalDate.parse (readInput (collectionDate), formatDt1) : null;
+        return isElementVisible (collectionDate) ? LocalDate.parse (readInput (collectionDate), formatDt2) : null;
     }
 
     public String getCollectionDateErrorMsg () {
