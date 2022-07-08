@@ -75,9 +75,13 @@ public class ReportTestBase extends CoraBaseBrowser {
     protected final String saResult = "secondaryAnalysisResult.json";
 
     protected Diagnostic buildCdxOrder (Patient patient, Stage stage, CoraTest... tests) {
+        return buildCdxOrder (patient, "C91.00", stage, tests);
+    }
+
+    protected Diagnostic buildCdxOrder (Patient patient, String icdcodes, Stage stage, CoraTest... tests) {
         Physician physician = coraApi.getPhysician (clonoSEQ_selfpay);
         Diagnostic diagnostic = diagnosticOrder (physician, patient, specimen (), shipment ());
-        diagnostic.order = order (new OrderProperties (patient.billingType, CustomerShipment, "C91.00"), tests);
+        diagnostic.order = order (new OrderProperties (patient.billingType, CustomerShipment, icdcodes), tests);
         diagnostic.order.mrn = patient.mrn;
         diagnostic.specimen.collectionDate = new int[] { 2019, 4, 1, 18, 6, 59, 639 };
         diagnostic.specimen.reconciliationDate = new int[] { 2019, 5, 10, 18, 6, 59, 639 };

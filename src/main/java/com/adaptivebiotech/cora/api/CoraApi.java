@@ -390,6 +390,13 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (params)), Alert[].class);
     }
 
+    public Alert[] getAlertsForPatientId (String patientId) {
+        String url = coraTestUrl + "/cora/api/v2/alerts/searchUnpaged";
+        Map <String, List <String>> params = new HashMap <> ();
+        params.put ("referencedEntityIds", Arrays.asList (patientId));
+        return mapper.readValue (post (url, body (params)), Alert[].class);
+    }
+
     public void dismissAlert (String userName, String alertId) {
         String url = coraTestUrl + "/cora/api/v1/external/alerts/" + alertId + "/dismiss";
         Map <String, String> params = new HashMap <> ();

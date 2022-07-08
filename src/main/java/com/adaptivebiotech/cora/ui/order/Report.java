@@ -111,13 +111,16 @@ public class Report extends OrderHeader {
         clickPopupOK ();
     }
 
+    public void generateReport (Assay assay) {
+        assertTrue (click ("//*[text()='Generate Report']"));
+        pageLoading ();
+    }
+
     public void releaseReport (Assay assay, QC qc) {
         // for TCell
         if (!COVID19_DX_IVD.equals (assay) && !LYME_DX.equals (assay) && isElementVisible (".report-blocked-msg")) {
-            assertTrue (click ("//*[text()='Generate Report']"));
-            pageLoading ();
+            generateReport (assay);
         }
-
         setQCstatus (qc);
         clickReleaseReport ();
     }

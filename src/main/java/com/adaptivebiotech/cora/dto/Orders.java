@@ -356,7 +356,9 @@ public final class Orders {
 
     public enum Assay {
         ID_BCell2_IVD ("B cell Clonality", "B-cell 2.0 Clonality (IVD)"),
-        ID_BCell2_IUO ("B cell Clonality", "B-cell 2.0 Clonality (IUO CLIA-extract)"),
+        ID_BCell2_IUO_CLIA ("B cell Clonality", "B-cell 2.0 Clonality (IUO CLIA-extract)"),
+        ID_BCell2_IUO_FLEX ("B cell Clonality", "B-cell 2.0 Clonality (IUO flex-extract)"),
+        ID_BCell2_IUO_IVD ("B cell Clonality", "B-cell 2.0 Clonality (IUO IVD-extract)"),
         ID_BCell2_CLIA ("B cell Clonality", "B-cell 2.0 Clonality (CLIA)"),
         ID_TCRB ("T cell Clonality", "TCRB Clonality (CLIA)"),
         ID_TCRB_IUO ("T cell Clonality", "TCRB Clonality (IUO CLIA-extract)"),

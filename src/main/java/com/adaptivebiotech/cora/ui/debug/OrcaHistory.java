@@ -187,6 +187,12 @@ public class OrcaHistory extends CoraPage {
         return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
     }
 
+    public boolean isTopLevelStagePresent (StageName stage, StageStatus status, StageSubstatus substatus,
+                                           String message) {
+        String xpath = "//table[@class='genoTable']//tr[td[text()='%s']][1]/td[text()='%s']/../td[contains (text(),'%s')]/../td/span[text()='%s']";
+        return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name (), message));
+    }
+
     public String getOrderId () {
         return substringAfterLast (getAttribute ("a[href*='/cora/order/auto?id=']", "href"), "id=");
     }
