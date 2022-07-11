@@ -139,12 +139,13 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
      */
     public void collectionDatePatientDOB () {
         Specimen specimenDto = bloodSpecimen ();
-        specimenDto.collectionDate = genLocalDate (-3);
+        specimenDto.collectionDate = genLocalDate (-2);
         Patient patient = newTrialProtocolPatient ();
         patient.dateOfBirth = genDate (-2);
 
         createOrderAndCompleteAccession (patient, specimenDto, null, null);
 
+        newOrderTDetect.enterCollectionDate (genLocalDate (-3));
         newOrderTDetect.clickSave ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
