@@ -75,6 +75,11 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (click ("//*[text()='Activate the Order']"));
     }
 
+    public void cancelActivate () {
+        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
+        assertTrue (click ("//*[text()='Cancel']"));
+    }
+
     public void clickAssayTest (Assay assay) {
         String type = format ("//*[@class='test-type-selection']//*[text()='%s']/ancestor::label//input", assay.type);
         if (!waitForElement (type).isSelected ())
