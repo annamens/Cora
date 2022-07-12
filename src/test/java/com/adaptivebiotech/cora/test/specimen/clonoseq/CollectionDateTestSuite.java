@@ -175,7 +175,7 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
         newOrderClonoSeq.enterCollectionDate (genLocalDate (-2));
         newOrderClonoSeq.clickSaveAndActivate ();
         newOrderClonoSeq.cancelActivate ();
-        testLog ("Order activaltion allowed, Collection Date = Patient DOB");
+        testLog ("Order activation allowed, Collection Date = Patient DOB");
 
         newOrderClonoSeq.enterCollectionDate (genLocalDate (-1));
         newOrderClonoSeq.activateOrder ();
