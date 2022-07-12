@@ -8,16 +8,13 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_trial;
 import static com.adaptivebiotech.cora.utils.PageHelper.Carrier.COURIER;
+import static com.adaptivebiotech.cora.utils.PageHelper.Carrier.OTHER;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Order;
@@ -81,11 +78,8 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
     public void otherCollectionDateShipmentArrival () {
         Specimen specimenDto = bloodSpecimen ();
         specimenDto.collectionDate = genLocalDate (1);
-        List <Carrier> carriers = new ArrayList <Carrier> (Arrays.asList (Carrier.values ()));
-        carriers.remove (COURIER);
-        Carrier randomCarrier = carriers.get (new Random ().nextInt (carriers.size ()));
 
-        createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, randomCarrier, trackingNumber);
+        createOrderAndCompleteAccession (newTrialProtocolPatient (), specimenDto, OTHER, trackingNumber);
 
         newOrderTDetect.clickSaveAndActivate ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
