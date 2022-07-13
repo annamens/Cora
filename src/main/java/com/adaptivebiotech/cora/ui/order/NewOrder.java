@@ -219,7 +219,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public void closeToast () {
         if (isElementVisible (toastContainer)) {
-            assertTrue (click (toastContainer));
+            findElement (toastContainer).click ();
             assertTrue (waitForElementInvisible (toastContainer));
         }
     }

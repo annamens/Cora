@@ -33,7 +33,7 @@ public abstract class BillingNewOrder extends CoraPage {
     private final String   billingMismatchWarning       = "[ng-if='ctrl.showBillingMismatchWarning()']";
     private final String   billing                      = "#billing-type";
     private final String   reason                       = "#no-charge-reason-type";
-    private final String   abnStatus                    = "#abn-status-type";
+    protected final String abnStatus                    = "//label[text()='ABN Status']/..//div[1]";
     private final String   insuranceProvider            = "[formcontrolname='insuranceProvider']";
     private final String   groupNumber                  = "[formcontrolname='groupNumber']";
     private final String   policyNumber                 = "[formcontrolname='policyNumber']";
@@ -116,10 +116,6 @@ public abstract class BillingNewOrder extends CoraPage {
 
     public void enterABNstatus (AbnStatus status) {
         assertTrue (clickAndSelectValue (abnStatus, status.name ()));
-    }
-
-    protected AbnStatus getAbnStatus () {
-        return getEnum (AbnStatus.class, getFirstSelectedValue (abnStatus));
     }
 
     public void enterInsurance1Provider (String provider) {
