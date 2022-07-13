@@ -7,6 +7,7 @@ import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.NonHospital;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.adaptivebiotech.cora.dto.BillingSurvey;
 import com.adaptivebiotech.cora.dto.BillingSurvey.Questionnaire;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 
 /**
  * @author jpatel
@@ -22,12 +24,14 @@ import com.adaptivebiotech.cora.dto.Patient;
  */
 public class BillingNewOrderClonoSeq extends BillingNewOrder {
 
+    private final String abnStatusSelect = "#abn-status-type";
+
     public BillingNewOrderClonoSeq (int staticNavBarHeight) {
         super.staticNavBarHeight = staticNavBarHeight;
     }
 
     public boolean isAbnStatusNotRequired () {
-        return (isTextInElement ("//label[text()='ABN Status']/..//div[1]", NotRequired.label));
+        return (isTextInElement (abnStatus, NotRequired.label));
     }
 
     public BillingSurvey parseBillingQuestions () {
@@ -47,6 +51,16 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
             questionnaires.add (q);
         }
         return new BillingSurvey (questionnaires);
+    }
+
+    public AbnStatus getAbnStatus () {
+        if (isElementVisible (abnStatusSelect)) {
+            return getEnum (AbnStatus.class, getFirstSelectedValue (abnStatusSelect));
+        } else if (isElementVisible (abnStatus)) {
+            return AbnStatus.getAbnStatus (getText (abnStatus));
+        } else {
+            return null;
+        }
     }
 
     public Patient getPatientBilling () {
