@@ -46,24 +46,26 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
     }
 
     /**
+     * Note: unsupported file ext
+     * 
      * @sdlc.requirements 126.ContainerDetailsPage
      */
     public void extensionCheck () {
         ordersList.gotoContainerDetail (containers.get ().list.get (0));
-
-        // test: unsupported file ext
         detail.isCorrectPage ();
         detail.uploadAttachments ("attachment.tiff");
         assertEquals (detail.getFileExtErr (), fileexterror);
     }
 
     /**
+     * Note: view attachment
+     * 
      * @sdlc.requirements 126.ContainerDetailsPage
      */
     public void happyPath () {
         ordersList.gotoContainerDetail (containers.get ().list.get (0));
+        detail.isCorrectPage ();
 
-        // test: view attachment
         String[] files = new String[] { "attachment.gif", "attachment.jpg", "attachment.pdf", "attachment.png" };
         detail.uploadAttachments (files);
         detail.deleteAttachment (2);
@@ -74,6 +76,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
      */
     public void history () {
         ordersList.gotoMyCustody ();
+        myCustody.isCorrectPage ();
 
         // test: history section of container detail
         Container testContainer = containers.get ().list.get (0);
@@ -97,11 +100,11 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
 
         // test: change modified time
         history.gotoMyCustody ();
-        MyCustody my = new MyCustody ();
-        my.moveToFreezer (testContainer, freezerAB039003);
+        myCustody.isCorrectPage ();
+        myCustody.moveToFreezer (testContainer, freezerAB039003);
 
         // test: check history section of container detail one more time
-        my.gotoContainerDetail (testContainer);
+        myCustody.gotoContainerDetail (testContainer);
         detail.isCorrectPage ();
         List <String> detailHistories2 = detail.getDetailHistory ();
         assertTrue (detailHistories2.get (1).contains ("Last modified by " + coraTestUser));

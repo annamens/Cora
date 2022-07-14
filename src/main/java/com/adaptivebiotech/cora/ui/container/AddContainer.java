@@ -56,7 +56,7 @@ public class AddContainer extends CoraPage {
     public void clickSave () {
         assertTrue (click ("[data-ng-click='ctrl.save()']"));
         assertTrue (isTextInElement (popupTitle, "New Container Confirmation"));
-        assertTrue (click ("[data-ng-click='ctrl.ok();']"));
+        clickPopupOK ();
     }
 
     public void isFailedValidation (String error) {
@@ -126,6 +126,8 @@ public class AddContainer extends CoraPage {
 
     public Containers getContainers () {
         return new Containers (waitForElements (lines).stream ().map (el -> {
+            scrollTo (findElement (el, ".row"));
+
             Container c = new Container ();
             String href = getAttribute (el, "[data-ng-bind*='containerNumber']", "href");
             c.id = href != null ? getConId (href) : null;
