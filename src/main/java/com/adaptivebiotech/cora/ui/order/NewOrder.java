@@ -178,9 +178,13 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void clickSave () {
-        assertTrue (click ("#order-entry-save"));
+        clickOrderSave ();
         hasPageLoaded ();
         pageLoading ();
+    }
+
+    public void clickOrderSave () {
+        assertTrue (click ("#order-entry-save"));
     }
 
     public List <String> getRequiredFieldMsgs () {
@@ -218,21 +222,19 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void closeToast () {
-        if (isElementVisible (toastContainer)) {
-            findElement (toastContainer).click ();
-            assertTrue (waitForElementInvisible (toastContainer));
-        }
+        assertTrue (click (toastContainer));
+        assertTrue (waitForElementInvisible (toastContainer));
     }
 
     public String getToastError () {
         String message = getText (toastError);
-        closeToast ();
+        assertTrue (waitForElementInvisible (toastContainer));
         return message;
     }
 
     public String getToastSuccess () {
         String message = getText (toastSuccess);
-        closeToast ();
+        assertTrue (waitForElementInvisible (toastContainer));
         return message;
     }
 
