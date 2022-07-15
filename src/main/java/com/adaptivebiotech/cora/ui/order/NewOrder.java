@@ -222,10 +222,8 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void closeToast () {
-        if (isElementVisible (toastContainer)) {
-            findElement (toastContainer).click ();
-            assertTrue (waitForElementInvisible (toastContainer));
-        }
+        assertTrue (click (toastContainer));
+        assertTrue (waitForElementInvisible (toastContainer));
     }
 
     public String getToastError () {
