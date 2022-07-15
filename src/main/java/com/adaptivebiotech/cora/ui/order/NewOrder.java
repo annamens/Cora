@@ -228,13 +228,13 @@ public abstract class NewOrder extends OrderHeader {
 
     public String getToastError () {
         String message = getText (toastError);
-        closeToast ();
+        assertTrue (waitForElementInvisible (toastContainer));
         return message;
     }
 
     public String getToastSuccess () {
         String message = getText (toastSuccess);
-        closeToast ();
+        assertTrue (waitForElementInvisible (toastContainer));
         return message;
     }
 
