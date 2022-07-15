@@ -178,9 +178,13 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void clickSave () {
-        assertTrue (click ("#order-entry-save"));
+        clickOrderSave ();
         hasPageLoaded ();
         pageLoading ();
+    }
+
+    public void clickOrderSave () {
+        assertTrue (click ("#order-entry-save"));
     }
 
     public List <String> getRequiredFieldMsgs () {

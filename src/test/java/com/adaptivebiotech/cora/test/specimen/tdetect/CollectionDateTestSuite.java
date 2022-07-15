@@ -140,18 +140,18 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
         createOrderAndCompleteAccession (patient, specimenDto, null, null);
 
         newOrderTDetect.enterCollectionDate (genLocalDate (-3));
-        newOrderTDetect.clickSave ();
+        newOrderTDetect.clickOrderSave ();
         assertEquals (newOrderTDetect.getToastError (), validateToastErrorMsg);
         assertEquals (newOrderTDetect.getCollectionDateErrorMsg (), collectionDateErrorMsg);
         testLog ("Error on Order Save, Collection Date < Patient DOB");
 
         newOrderTDetect.enterCollectionDate (genLocalDate (-2));
-        newOrderTDetect.clickSave ();
+        newOrderTDetect.clickOrderSave ();
         assertEquals (newOrderTDetect.getToastSuccess (), validateSuccessMsg);
         testLog ("Successful order saved, Collection Date = Patient DOB");
 
         newOrderTDetect.enterCollectionDate (genLocalDate (-1));
-        newOrderTDetect.clickSave ();
+        newOrderTDetect.clickOrderSave ();
         assertEquals (newOrderTDetect.getToastSuccess (), validateSuccessMsg);
         testLog ("Successful order saved, Collection Date > Patient DOB");
 
