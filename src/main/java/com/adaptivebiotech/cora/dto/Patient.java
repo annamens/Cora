@@ -44,6 +44,7 @@ public final class Patient {
     public String        address2;
     public String        locality;
     public String        region;
+    @JsonAlias ("postalCode")
     public String        postCode;
     public String        country;
     public String        phone;

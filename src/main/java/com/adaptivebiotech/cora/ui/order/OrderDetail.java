@@ -156,6 +156,7 @@ public class OrderDetail extends OrderHeader {
         order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.approvedDate = getSpecimenApprovalDate ();
         order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
+        order.specimenDto.activationDate = getSpecimenActivationDate ();
         order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
         order.intakeCompletedDate = getIntakeCompleteDate ();
         order.specimenDisplayContainerType = getSpecimenContainerType ();
@@ -384,6 +385,12 @@ public class OrderDetail extends OrderHeader {
     public SpecimenStatus getSpecimenApprovalStatus () {
         String data = isElementVisible (approvalStatus) ? getText (approvalStatus) : null;
         return isNoneBlank (data) ? SpecimenStatus.valueOf (data) : null;
+    }
+
+    public LocalDateTime getSpecimenActivationDate () {
+        String activationDate = "[ng-bind^='ctrl.orderEntry.specimen.activationDate']";
+        String data = isElementVisible (activationDate) ? getText (activationDate) : null;
+        return isNoneBlank (data) && !data.equals ("N/A") ? LocalDateTime.parse (data, formatDt7) : null;
     }
 
     public ContainerType getSpecimenContainerType () {

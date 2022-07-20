@@ -59,7 +59,7 @@ public class PickPatientModule extends CoraPage {
         clickCreateNewPatient ();
         fillPatientInfo (patient);
         clickSave ();
-        assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
+        enterPatientMrn (patient.mrn);
     }
 
     public void searchPatient (Patient patient) {
@@ -83,8 +83,25 @@ public class PickPatientModule extends CoraPage {
             assertTrue (click ("#select-patient"));
             moduleLoading ();
             matchFound = true;
-            assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
+            enterPatientMrn (patient.mrn);
         }
         return matchFound;
+    }
+
+    public void enterPatientMrn (String mrn) {
+        assertTrue (setText ("[formcontrolname='mrn']", mrn));
+    }
+
+    public boolean isDuplicateFoundPopUpVisible () {
+        return isTextInElement (join (" ", ".findDialog", popupTitle), "Duplicates Found");
+    }
+
+    public void clickContinueAndSaveAnyway () {
+        assertTrue (click ("//button[text()='Continue and Save Anyway']"));
+    }
+
+    public void saveDuplicatePatient () {
+        assertTrue (isDuplicateFoundPopUpVisible ());
+        clickContinueAndSaveAnyway ();
     }
 }

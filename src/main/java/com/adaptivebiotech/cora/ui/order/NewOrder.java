@@ -518,6 +518,12 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (specimenApprovalStatus) ? SpecimenStatus.valueOf (getText (specimenApprovalStatus)) : null;
     }
 
+    public LocalDateTime getSpecimenActivationDate () {
+        String css = "//*[text()='Specimen Activation']/..//div";
+        String data = isElementVisible (css) ? getText (css) : null;
+        return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt7) : null;
+    }
+
     public void waitForSpecimenDelivery () {
         assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {

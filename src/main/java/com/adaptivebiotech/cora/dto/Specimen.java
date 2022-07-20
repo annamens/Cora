@@ -31,6 +31,7 @@ public final class Specimen {
     @JsonAlias ("sourceType")
     public SpecimenSource     sampleSource;
     public LocalDateTime      approvedDate;
+    public LocalDateTime      activationDate;
     public String             sampleTypeDisplayName;
     public SpecimenStatus     approvalStatus;
     public List <Sample>      samples;

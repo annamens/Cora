@@ -339,7 +339,7 @@ public class TestHelper {
         survey.questionnaires.add (new Questionnaire ("treatmentOrTherapyV1", asList ("Yes")));
         survey.questionnaires.add (new Questionnaire ("treatmentOrTherapyDateV1", asList (genDate (-3))));
         survey.questionnaires.add (new Questionnaire ("diseaseClinicalEvidenceV1", asList ("Yes")));
-        survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Ambulatory Surgery Center")));
+        survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Yes")));
         return survey;
     }
