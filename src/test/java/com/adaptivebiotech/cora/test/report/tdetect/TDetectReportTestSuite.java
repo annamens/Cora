@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
  *******************************************************************************/
-package com.adaptivebiotech.cora.test.order.tdetect;
+package com.adaptivebiotech.cora.test.report.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5CS;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
