@@ -5,10 +5,12 @@ package com.adaptivebiotech.cora.ui.shipment;
 
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -41,13 +43,13 @@ public class Accession extends ShipmentHeader {
     }
 
     @Override
-    public void gotoAccession (String shipmentId) {
+    public void gotoAccession (UUID shipmentId) {
         super.gotoAccession (shipmentId);
         isCorrectPage ();
     }
 
-    public String getShipmentId () {
-        return substringBetween (getCurrentUrl (), "cora/shipment/entry/", "?p=accession");
+    public UUID getShipmentId () {
+        return fromString (substringBetween (getCurrentUrl (), "cora/shipment/entry/", "?p=accession"));
     }
 
     public void clickOrderNumber () {

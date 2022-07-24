@@ -4,7 +4,7 @@
 package com.adaptivebiotech.cora.dto;
 
 import java.time.LocalDateTime;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.UUID;
 
 /**
  * @author Harry Soehalim
@@ -12,11 +12,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public final class AlertType {
 
-    public String        id;
+    public UUID          id;
     public int           version;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime created;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime modified;
     public String        createdBy;
     public String        modifiedBy;

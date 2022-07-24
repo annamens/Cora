@@ -6,10 +6,10 @@ package com.adaptivebiotech.cora.dto;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.lang.String.format;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author Harry Soehalim
@@ -18,11 +18,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public final class Physician {
 
     @JsonAlias ({ "emrId", "ID" })
-    public String        id;
+    public UUID          id;
     public Integer       version;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime created;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime modified;
     public String        createdBy;
     public String        modifiedBy;
@@ -55,7 +53,7 @@ public final class Physician {
 
     public Physician () {}
 
-    public Physician (String id) {
+    public Physician (UUID id) {
         this.id = id;
     }
 

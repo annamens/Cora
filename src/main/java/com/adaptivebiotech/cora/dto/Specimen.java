@@ -7,6 +7,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
@@ -20,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 public final class Specimen {
 
     public String             id;
-    public String             key;
+    public UUID               key;
     public String             specimenNumber;
     public String             name;
     public Integer            subjectCode;

@@ -10,12 +10,12 @@ import static java.util.EnumSet.allOf;
 import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public final class Patient {
 
     @JsonAlias ("emrId")
-    public String        id;
+    public UUID          id;
     public String        firstName;
     public String        middleName;
     public String        lastName;
@@ -56,10 +56,8 @@ public final class Patient {
     public ChargeType    billingType;
     public AbnStatus     abnStatusType;
     public Physician     requestingPhysician;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime modified;
     public String        modifiedBy;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime created;
     public String        createdBy;
     public String        testStatus;

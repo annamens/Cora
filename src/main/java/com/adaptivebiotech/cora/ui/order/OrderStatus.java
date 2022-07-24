@@ -5,11 +5,13 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
@@ -132,8 +134,8 @@ public class OrderStatus extends OrderHeader {
         return waitUntilVisible (css);
     }
 
-    public String getOrderTestIdFromUrl () {
-        return substringAfterLast (getCurrentUrl (), "ordertestid=");
+    public UUID getOrderTestIdFromUrl () {
+        return fromString (substringAfterLast (getCurrentUrl (), "ordertestid="));
     }
 
     public void failWorkflow (String sampleName, String message) {

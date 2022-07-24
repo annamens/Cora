@@ -5,7 +5,6 @@ package com.adaptivebiotech.cora.dto.emr;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.time.LocalDateTime;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -16,9 +15,7 @@ public final class Config {
 
     public String        id;
     public int           version;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime created;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime modified;
     public String        createdBy;
     public String        modifiedBy;

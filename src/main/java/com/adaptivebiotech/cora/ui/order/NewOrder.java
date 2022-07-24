@@ -11,6 +11,7 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -89,13 +91,13 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     @Override
-    public void gotoOrderEntry (String orderId) {
+    public void gotoOrderEntry (UUID orderId) {
         super.gotoOrderEntry (orderId);
         isCorrectPage ();
     }
 
-    public String getOrderId () {
-        return substringBetween (getCurrentUrl (), "cora/order/dx/", "/details");
+    public UUID getOrderId () {
+        return fromString (substringBetween (getCurrentUrl (), "cora/order/dx/", "/details"));
     }
 
     public List <String> getSectionHeaders () {

@@ -7,6 +7,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Harry Soehalim
@@ -35,7 +36,7 @@ public final class Containers {
     public static final class Container implements Serializable {
 
         private static final long serialVersionUID = 1L;
-        public String             id;
+        public UUID               id;
         public String             containerNumber;
         public ContainerType      containerType;
         public String             contents;
@@ -43,7 +44,7 @@ public final class Containers {
         public String             name;
         public String             externalId;
         public String             arrivalDate;
-        public String             orderId;
+        public UUID               orderId;
         public Boolean            isActive;
         public Boolean            contentsLocked;
         public Boolean            depleted;

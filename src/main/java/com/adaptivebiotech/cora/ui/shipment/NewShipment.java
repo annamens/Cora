@@ -7,6 +7,7 @@ import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.openqa.selenium.Keys.ENTER;
@@ -14,6 +15,7 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -57,8 +59,8 @@ public class NewShipment extends ShipmentHeader {
         transactionInProgress ();
     }
 
-    public String getShipmentId () {
-        return substringAfterLast (getCurrentUrl (), "cora/shipment/entry/");
+    public UUID getShipmentId () {
+        return fromString (substringAfterLast (getCurrentUrl (), "cora/shipment/entry/"));
     }
 
     public String getArrivalDate () {
