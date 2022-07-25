@@ -16,7 +16,6 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.String.join;
-import static java.util.Arrays.asList;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
@@ -68,20 +67,16 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
      * @sdlc.requirements 126.MoveMetadata
      */
     public void holding_containers () {
-        Containers topContainers = coraApi.addContainers (new Containers (asList (container (Plate))));
-        Container child = topContainers.list.get (0);
-
         ordersList.selectNewContainer ();
         allOf (ContainerType.class).stream ().filter (ct -> ct.isHolding && !Freezer.equals (ct) && !Plate.equals (ct))
                                    .forEach (ct -> addContainer.addContainer (ct, 1));
         addContainer.clickSave ();
-        topContainers = addContainer.getContainers ();
+        Containers topContainers = addContainer.getContainers ();
+        containers.get ().list.addAll (topContainers.list);
 
         // test: holding containers don't have Holding Container btn and no depleted dropdown
         addContainer.gotoMyCustody ();
         topContainers.list.stream ().forEach (c -> myCustody.isHoldingContainer (c));
-        coraApi.deactivateContainers (topContainers);
-        containers.get ().list.add (child);
     }
 
     /**

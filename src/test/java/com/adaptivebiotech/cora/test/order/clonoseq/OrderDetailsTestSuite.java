@@ -13,7 +13,7 @@ import static com.adaptivebiotech.cora.test.CoraEnvironment.limsTestUrl;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.DateHelper.utcZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -25,6 +25,7 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -97,11 +98,11 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
 
         // accession complete
         accession.clickIntakeComplete ();
-        String intakeCompleteDate = accession.getIntakeCompleteDate ();
+        LocalDateTime intakeCompleteDate = accession.getIntakeCompleteDate ();
         accession.clickLabelingComplete ();
         accession.clickLabelVerificationComplete ();
         accession.clickPass ();
-        String specimenApprovalDate = accession.getSpecimenApprovedDate ();
+        LocalDateTime specimenApprovalDate = accession.getSpecimenApprovedDate ();
 
         accession.clickShipmentTab ();
         shipmentDetail.isCorrectPage ();
@@ -139,11 +140,9 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
         assertEquals (activeOrder.specimenDto.collectionDate, specimen.collectionDate);
 
         assertEquals (clonoSeqOrderDetail.getShipmentArrivalDate (),
-                      convertDateFormat (shipmentArrivalDate + " " + shipmentArrivalTime,
-                                         "MM/dd/uuuu h:mm a",
-                                         "MM/dd/uuuu hh:mm a"));
-        assertEquals (clonoSeqOrderDetail.getIntakeCompleteDate (), intakeCompleteDate.split (",")[0]);
-        assertEquals (clonoSeqOrderDetail.getSpecimenApprovalDate (), specimenApprovalDate.split (",")[0]);
+                      LocalDateTime.parse (shipmentArrivalDate + " " + shipmentArrivalTime, formatDt7));
+        assertEquals (clonoSeqOrderDetail.getIntakeCompleteDate (), intakeCompleteDate);
+        assertEquals (clonoSeqOrderDetail.getSpecimenApprovalDate (), specimenApprovalDate);
         assertEquals (activeOrder.specimenDto.specimenNumber, specimenId);
         assertEquals (clonoSeqOrderDetail.getSpecimenContainerType (), containerType);
         assertEquals (activeOrder.tests.get (0).assay, orderTest);

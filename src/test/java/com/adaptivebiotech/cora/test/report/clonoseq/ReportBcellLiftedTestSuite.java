@@ -44,7 +44,7 @@ import com.adaptivebiotech.pipeline.dto.mrd.ClinicalJson.SampleInfo;
 @Test (groups = "regression")
 public class ReportBcellLiftedTestSuite extends ReportTestBase {
 
-    private final String   tsvPath     = azPipelineNorth + "/190608_NB501743_0470_AHTJHJBGX9/v3.0/20190611_0043/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev7/HTJHJBGX9_0_CLINICAL-CLINICAL_02064-08BC.adap.txt.results.tsv.gz";
+    private final String   tsvPath     = azPipelineClia + "/190608_NB501743_0470_AHTJHJBGX9/v3.0/20190611_0043/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev7/HTJHJBGX9_0_CLINICAL-CLINICAL_02064-08BC.adap.txt.results.tsv.gz";
     private final String   downloadDir = artifacts (this.getClass ().getName ());
     private Login          login       = new Login ();
     private OrcaHistory    history     = new OrcaHistory ();

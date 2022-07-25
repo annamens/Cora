@@ -32,6 +32,7 @@ public class NewShipment extends ShipmentHeader {
     private final String cssCarrier        = "#carrierType";
     private final String cssTrackingNumber = "#trackingNumber";
     private final String cssNotes          = "#shipment-notes";
+    private final String fileLoc           = "//a//span[contains(text(),'%s')]";
 
     public NewShipment () {
         staticNavBarHeight = 195;
@@ -206,10 +207,12 @@ public class NewShipment extends ShipmentHeader {
         assertTrue (waitUntilVisible (format (".expected-record-summary[data-ng-show*='%s']", link)));
     }
 
-    public void uploadAttachments (String... files) {
+    public void uploadAttachments (List <String> files) {
+        String fileUpload = "input[ngf-select*='ctrl.onUpload'][ng-bind='ctrl.btnText']";
         for (String file : files) {
-            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
-            pageLoading ();
+            waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
+            transactionInProgress ();
+            assertTrue (clear (fileUpload));
         }
     }
 
@@ -293,6 +296,11 @@ public class NewShipment extends ShipmentHeader {
 
     public void clickContainerNo (String containerNo) {
         assertTrue (click ("//table//a[text()='" + containerNo + "']"));
+    }
+
+    public void clickFilePreviewLink (String fileName) {
+        assertTrue (click (format (fileLoc, fileName)));
+        assertTrue (isTextInElement (popupTitle, fileName));
     }
 
     public String createShipment (String orderNumber, ContainerType containerType) {

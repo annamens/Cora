@@ -16,6 +16,7 @@ public final class UploadFile {
 
     public String        fileName;
     public String        fileNameTitle;
+    public boolean       canFilePreview;
     public String        fileUrl;
     public String        reportName;
     public String        createdBy;

@@ -27,7 +27,9 @@ public class BatchTestBase extends CoraBaseBrowser {
         coraDb.executeUpdate (format (query, orderNumber));
     }
 
-    protected void prepManifestFile (String template, String manifestFile, Map <String, String> sampleName) {
+    protected void prepManifestFile (String template,
+                                     String manifestFile,
+                                     Map <String, Map <String, String>> sampleName) {
         int maxRow = 20;
         int maxCell = 78;
         try (FileInputStream inputStream = new FileInputStream (template);
@@ -42,7 +44,7 @@ public class BatchTestBase extends CoraBaseBrowser {
                         sampleName.entrySet ().forEach (m -> {
                             if (cell != null && cell.getCellType ().equals (STRING) && m.getKey ()
                                                                                         .equals (cell.getStringCellValue ()))
-                                cell.setCellValue (m.getValue ());
+                                cell.setCellValue (m.getValue ().get ("workflow"));
                         });
                     }
 

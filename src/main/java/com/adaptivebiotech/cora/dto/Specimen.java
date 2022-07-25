@@ -4,7 +4,10 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import static java.util.EnumSet.allOf;
+import java.time.LocalDateTime;
 import java.util.List;
+import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.TestSkus;
@@ -27,13 +30,14 @@ public final class Specimen {
     public SpecimenType       sampleType;
     @JsonAlias ("sourceType")
     public SpecimenSource     sampleSource;
-    public String             arrivalDate;
+    public LocalDateTime      approvedDate;
     public String             sampleTypeDisplayName;
-    public String             approvalStatus;
+    public SpecimenStatus     approvalStatus;
     public List <Sample>      samples;
-    public String             compartment;
+    public Compartment        compartment;
     public Object             collectionDate;
     public Object             reconciliationDate;
+    public LocalDateTime      retrievalDate;
     public SpecimenProperties properties;
     public Anticoagulant      anticoagulant;
     public ProjectProperties  projectProperties;
@@ -56,9 +60,13 @@ public final class Specimen {
 
     public static final class SpecimenProperties {
 
+        // /cora/api/v1/test/scenarios/createPortalJob
         public String         ArrivalDate;
+
+        // cora/api/v1/orders/{order_id}/entry
+        public LocalDateTime  ApprovedDate;
         public SpecimenSource SourceType;
-        public String         ApprovalStatus;
+        public SpecimenStatus ApprovalStatus;
         public String         SampleTypeDisplayName;
         public String         Treatment;
         public Anticoagulant  Anticoagulant;
@@ -88,6 +96,21 @@ public final class Specimen {
     }
 
     public enum Anticoagulant {
-        EDTA, CfdRoche, Other
+        EDTA, CfdRoche, Other, Streck
+    }
+
+    public enum SpecimenStatus {
+        PASS ("Pass"), FAIL ("Fail");
+
+        public String shipmentLabel;
+
+        private SpecimenStatus (String shipmentLabel) {
+            this.shipmentLabel = shipmentLabel;
+        }
+
+        public static SpecimenStatus getShipmentSpecimenStatus (String shipmentLabel) {
+            return allOf (SpecimenStatus.class).parallelStream ().filter (st -> st.shipmentLabel.equals (shipmentLabel))
+                                               .findAny ().orElse (null);
+        }
     }
 }

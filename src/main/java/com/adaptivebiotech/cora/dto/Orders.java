@@ -7,11 +7,13 @@ import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Alerts.Alert;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Reminders.Reminder;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.utils.PageHelper.FriendlyOrderStatus;
@@ -70,7 +72,7 @@ public final class Orders {
         public String              data_analysis_group;
         public String              trf_file_name;
         public String              calibrated_receptors;
-        public String              date_signed;
+        public LocalDate           dateSigned;
         public String              project_id;
         public String              orderEntryType;
         public Boolean             isTrfAttached;
@@ -94,6 +96,11 @@ public final class Orders {
         public ChargeType          billingType;
         public DeliveryType        specimenDeliveryType;
         public OrderAuthorization  documentedByType;
+        public String              externalOrderCode;
+        public LocalDateTime       intakeCompletedDate;
+        public ContainerType       specimenDisplayContainerType;
+        public Integer             specimenDisplayContainerCount;
+        public LocalDateTime       specimenDisplayArrivalDate;
 
         // for /cora/api/v1/orders/search
         public String              category;
@@ -173,7 +180,7 @@ public final class Orders {
         public Specimen        specimen;
         public String          sampleName;
         public OrderStatus     status;
-        public String          dueDate;
+        public LocalDate       dueDate;
         public String          qcType;
         public String          tags;
         public String          sampleWellLocation;

@@ -259,6 +259,13 @@ public class OrcaHistory extends CoraPage {
         return files;
     }
 
+    public List <StageName> getWorkflowStages () {
+        List <StageName> stages = new ArrayList <> ();
+        for (String stage : getText ("//*[*[text()='Stages:']]/td").split ("\\s*,\\s*"))
+            stages.add (StageName.valueOf (stage));
+        return stages;
+    }
+
     public List <Stage> parseStatusHistory () {
         List <Stage> histories = new ArrayList <> ();
         for (WebElement tr : waitForElements (".genoTable tr")) {

@@ -10,6 +10,7 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDate;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -29,10 +30,9 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  */
 public class NewOrderTDetect extends NewOrder {
 
-    public BillingNewOrderTDetect billing        = new BillingNewOrderTDetect (staticNavBarHeight);
-    public PickPatientModule      pickPatient    = new PickPatientModule ();
-    private Accession             accession      = new Accession ();
-    private final String          collectionDate = "[formcontrolname='collectionDate']";
+    public BillingNewOrderTDetect billing     = new BillingNewOrderTDetect (staticNavBarHeight);
+    public PickPatientModule      pickPatient = new PickPatientModule ();
+    private Accession             accession   = new Accession ();
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -66,7 +66,7 @@ public class NewOrderTDetect extends NewOrder {
         order.orderNumber = getOrderNumber ();
         order.data_analysis_group = null;
         order.isTrfAttached = toBoolean (isTrfAttached ());
-        order.date_signed = getDateSigned ();
+        order.dateSigned = getDateSigned ();
         order.customerInstructions = getInstructions ();
         order.physician = new Physician ();
         order.physician.providerFullName = getProviderName ();
@@ -75,10 +75,12 @@ public class NewOrderTDetect extends NewOrder {
         order.patient.fullname = getPatientName ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode ());
+        order.patient.patientCode = getPatientCode ();
+        order.patient.externalPatientCode = getBillingPatientCode ();
         order.patient.mrn = getPatientMRN ();
         order.patient.race = getPatientRace ();
         order.patient.ethnicity = getPatientEthnicity ();
+        order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
         order.patient = billing.getPatientBilling (order.patient);
         order.icdcodes = getPatientICD_Codes ();
@@ -90,8 +92,18 @@ public class NewOrderTDetect extends NewOrder {
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
-        order.specimenDto.arrivalDate = getShipmentArrivalDate ();
+        order.specimenDto.approvedDate = getSpecimenApprovalDate ();
+        order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
+        order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
+        order.intakeCompletedDate = getIntakeCompleteDate ();
+        order.specimenDisplayContainerType = getSpecimenContainerType ();
+        order.specimenDisplayContainerCount = getSpecimenContainerQuantity ();
         order.tests = getSelectedTests ();
+        LocalDate dueDate = getDueDate ();
+        for (int i = 0; i < order.tests.size (); i++) {
+            order.tests.get (i).dueDate = dueDate;
+        }
+        order.documentedByType = getOrderAuthorization ();
         order.orderAttachments = getCoraAttachments ();
         order.shipmentAttachments = getShipmentAttachments ();
         order.trf = getDoraTrf ();
@@ -121,10 +133,6 @@ public class NewOrderTDetect extends NewOrder {
         assertTrue (isTextInElement (xpath, code));
     }
 
-    public String getCollectionDate () {
-        return isElementVisible (collectionDate) ? readInput (collectionDate) : null;
-    }
-
     /**
      * Create TDetect Pending Order by filling out all the required fields and passed arguments on
      * New Order TDetect page, and returns order no.
@@ -134,15 +142,15 @@ public class NewOrderTDetect extends NewOrder {
      * @param physician
      * @param patient
      * @param icdCodes
-     * @param collectionDate
      * @param assayTest
-     * @return Cora order number
+     * @param specimen
+     * @return
      */
     public Order createTDetectOrder (Physician physician,
                                      Patient patient,
                                      String[] icdCodes,
-                                     String collectionDate,
-                                     Assay assayTest) {
+                                     Assay assayTest,
+                                     Specimen specimen) {
         selectNewTDetectDiagnosticOrder ();
         isCorrectPage ();
 
@@ -151,7 +159,7 @@ public class NewOrderTDetect extends NewOrder {
         boolean matchFound = pickPatient.searchOrCreatePatient (patient);
         if (icdCodes != null)
             enterPatientICD_Codes (icdCodes);
-        enterCollectionDate (collectionDate);
+        enterCollectionDate ((LocalDate) specimen.collectionDate);
         clickAssayTest (assayTest);
 
         switch (patient.billingType) {
@@ -194,21 +202,21 @@ public class NewOrderTDetect extends NewOrder {
      * @param physician
      * @param patient
      * @param icdCodes
-     * @param collectionDate
      * @param assayTest
+     * @param specimen
      * @param orderStatus
      * @param containerType
-     * @return Cora order number
+     * @return
      */
     public Order createTDetectOrder (Physician physician,
                                      Patient patient,
                                      String[] icdCodes,
-                                     String collectionDate,
                                      Assay assayTest,
+                                     Specimen specimen,
                                      OrderStatus orderStatus,
                                      ContainerType containerType) {
         // create T-Detect order
-        Order order = createTDetectOrder (physician, patient, icdCodes, collectionDate, assayTest);
+        Order order = createTDetectOrder (physician, patient, icdCodes, assayTest, specimen);
 
         // add diagnostic shipment
         new NewShipment ().createShipment (order.orderNumber, containerType);

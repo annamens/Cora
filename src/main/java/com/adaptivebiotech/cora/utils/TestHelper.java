@@ -23,6 +23,7 @@ import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.C
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.disableHiFreqSave;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.disableHiFreqSharing;
@@ -314,7 +315,7 @@ public class TestHelper {
         Specimen specimen = new Specimen ();
         specimen.sampleType = Blood;
         specimen.anticoagulant = EDTA;
-        specimen.collectionDate = genDate (-3);
+        specimen.collectionDate = genLocalDate (-3);
         return specimen;
     }
 
@@ -334,11 +335,11 @@ public class TestHelper {
     public static BillingSurvey cdxSurvey () {
         BillingSurvey survey = new BillingSurvey ();
         survey.questionnaires = new ArrayList <> ();
-        survey.questionnaires.add (new Questionnaire ("hadTransplantV1", asList ("Yes, a bone marrow transplant")));
-        survey.questionnaires.add (new Questionnaire ("transplantDateV1", asList (genDate (-3))));
-        survey.questionnaires.add (new Questionnaire ("haveDiseaseClinicalEvidenceV1", asList ("Yes")));
-        survey.questionnaires.add (new Questionnaire ("haveCourseOfTherapyV1", asList ("No")));
-        survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
+        survey.questionnaires.add (new Questionnaire ("treatmentStateV1", asList ("Post Transplant")));
+        survey.questionnaires.add (new Questionnaire ("treatmentOrTherapyV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("treatmentOrTherapyDateV1", asList (genDate (-3))));
+        survey.questionnaires.add (new Questionnaire ("diseaseClinicalEvidenceV1", asList ("Yes")));
+        survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Ambulatory Surgery Center")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Yes")));
         return survey;
     }

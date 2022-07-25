@@ -13,6 +13,7 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_selfp
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.covidProperties;
+import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatientTDx;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildTdetectOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
@@ -49,7 +50,7 @@ import com.adaptivebiotech.cora.ui.order.ReportTDetect;
 @Test (groups = { "regression", "akita" }, singleThreaded = true)
 public class GatewayNotificationTestSuite extends HL7TestBase {
 
-    private final String       lymeTsv         = azPipelineNorth + "/200522_NB501172_0808_AHMHTHBGXF/v3.1/20200524_1354/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HMHTHBGXF_0_BALFLDB-Horn_LD011378_0001-reflex.adap.txt.results.tsv.gz";
+    private final String       lymeTsv         = azPipelineClia + "/200522_NB501172_0808_AHMHTHBGXF/v3.1/20200524_1354/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev1/HMHTHBGXF_0_BALFLDB-Horn_LD011378_0001-reflex.adap.txt.results.tsv.gz";
     private final String       gatewayJson     = "gatewayMessage.json";
     private Login              login           = new Login ();
     private OrdersList         ordersList      = new OrdersList ();
@@ -68,10 +69,10 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         login.doLogin ();
         ordersList.isCorrectPage ();
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
-                                                          scenarioBuilderPatient (),
+                                                          newSelfPayPatientTDx (),
                                                           null,
-                                                          specimen.collectionDate.toString (),
                                                           COVID19_DX_IVD,
+                                                          specimen,
                                                           Active,
                                                           Tube);
         testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);
@@ -102,19 +103,13 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
      */
     @Test (groups = "fox-terrier")
     public void verifyCovidCanadaGatewayMessage () {
-        Patient patient = scenarioBuilderPatient ();
-        patient.address = "120 South Town Centre Boulevard";
-        patient.locality = "Markham";
-        patient.region = "ON";
-        patient.postCode = "L6G 1C3";
-
         login.doLogin ();
         ordersList.isCorrectPage ();
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_canada),
-                                                          patient,
+                                                          newSelfPayPatientTDx (),
                                                           null,
-                                                          specimen.collectionDate.toString (),
                                                           COVID19_DX_IVD,
+                                                          specimen,
                                                           Active,
                                                           Tube);
         testLog ("submitted a new Covid19 order in Cora: " + order.orderNumber);
@@ -142,9 +137,11 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
     @Test (groups = "dingo")
     public void verifyLymeGatewayMessage () {
-        CoraTest test = coraApi.getTDxTest (LYME_DX);
+        CoraTest test = getTDxTest (LYME_DX);
         test.tsvPath = lymeTsv;
-        test.workflowProperties = sample_95268_SN_2205 ();
+        test.workflowProperties.flowcell = "H752HBGXH";
+        test.workflowProperties.workspaceName = "CLINICAL-CLINICAL";
+        test.workflowProperties.sampleName = "95268-SN-2205";
 
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),

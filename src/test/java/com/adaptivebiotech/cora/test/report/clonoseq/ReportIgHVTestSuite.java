@@ -76,7 +76,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
         test.workflowProperties.ighvAnalysisEnabled = true;
         test.workflowProperties.ighvReportEnabled = true;
         test.workflowProperties.lastFinishedPipelineJobId = "8a7a94db77a26ee10179d44fe3f0410c";
-        test.workflowProperties.lastAcceptedTsvPath = azPipelineNorth + "/210603_NB552480_0036_AH2C2LBGXJ/v3.1/20210605_1334/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H2C2LBGXJ_0_CLINICAL-CLINICAL_105508-01MC-3902649.adap.txt.results.tsv.gz";
+        test.workflowProperties.lastAcceptedTsvPath = azPipelineClia + "/210603_NB552480_0036_AH2C2LBGXJ/v3.1/20210605_1334/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H2C2LBGXJ_0_CLINICAL-CLINICAL_105508-01MC-3902649.adap.txt.results.tsv.gz";
         test.workflowProperties.sampleName = "105508-01MC-3902649";
 
         diagnostic = buildCdxOrder (patient, stage (SecondaryAnalysis, Ready), test);

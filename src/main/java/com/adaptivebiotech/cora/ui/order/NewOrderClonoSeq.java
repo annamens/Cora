@@ -5,14 +5,20 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -39,16 +45,14 @@ public class NewOrderClonoSeq extends NewOrder {
     public BillingNewOrderClonoSeq billing             = new BillingNewOrderClonoSeq (staticNavBarHeight);
     public PickPatientModule       pickPatient         = new PickPatientModule ();
     private Accession              accession           = new Accession ();
-    private final String           orderNotes          = "#order-notes";
     private final String           specimenDetails     = "#specimen-details";
-    private final String           specimenType        = "#specimen-entry-specimen-type";
     private final String           specimenTypeOther   = "#specimen-entry-other-specimen-type";
-    private final String           compartment         = "#specimen-entry-compartment";
-    private final String           anticoagulant       = "#specimen-entry-anticoagulant-tube";
-    private final String           anticoagulantOther  = "#specimen-entry-anticoagulant-tube-other";
-    private final String           specimenSource      = "[formcontrolname='source']";
     private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
+    private final String           uniqueSpecimenId    = "[formcontrolname='uniqueSpecimenId']";
     private final String           retrievalDate       = "#specimen-entry-retrieval-date";
+    private final String           option              = "option";
+    private final String           compartment         = "[formcontrolname='compartment']";
+    private final String           anticoagulantOther  = "[formcontrolname='anticoagulantOther']";
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -69,6 +73,11 @@ public class NewOrderClonoSeq extends NewOrder {
     public void confirmActivate () {
         assertTrue (isTextInElement (popupTitle, "Confirm Order"));
         assertTrue (click ("//*[text()='Activate the Order']"));
+    }
+
+    public void cancelActivate () {
+        assertTrue (isTextInElement (popupTitle, "Confirm Order"));
+        assertTrue (click ("//*[text()='Cancel']"));
     }
 
     public void clickAssayTest (Assay assay) {
@@ -113,16 +122,21 @@ public class NewOrderClonoSeq extends NewOrder {
         order.orderNumber = getOrderNumber ();
         order.data_analysis_group = null;
         order.isTrfAttached = toBoolean (isTrfAttached ());
-        order.date_signed = getDateSigned ();
+        order.dateSigned = getDateSigned ();
         order.customerInstructions = getInstructions ();
         order.physician = new Physician ();
         order.physician.providerFullName = getProviderName ();
         order.physician.accountName = getProviderAccount ();
+        order.physician.medicareEnrolled = getProviderMedicareEnrolled ();
         order.patient = new Patient ();
         order.patient.fullname = getPatientName ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode ());
+        order.patient.patientCode = getPatientCode ();
+        order.patient.externalPatientCode = getBillingPatientCode ();
+        order.patient.testStatus = getPatientMRDStatusCode ();
+        order.patient.race = getPatientRace ();
+        order.patient.ethnicity = getPatientEthnicity ();
         order.patient.mrn = getPatientMRN ();
         order.patient.notes = getPatientNotes ();
         order.patient = billing.getPatientBilling (order.patient);
@@ -132,11 +146,22 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.specimenNumber = getSpecimenId ();
         order.specimenDto.sampleType = getSpecimenType ();
         order.specimenDto.sampleSource = getSpecimenSource ();
+        order.specimenDto.compartment = getCompartment ();
         order.specimenDto.anticoagulant = getAnticoagulant ();
         order.specimenDto.collectionDate = getCollectionDate ();
         order.specimenDto.reconciliationDate = getReconciliationDate ();
-        order.specimenDto.arrivalDate = getShipmentArrivalDate ();
+        order.specimenDto.retrievalDate = getRetrievalDate ();
+        order.specimenDto.approvedDate = getSpecimenApprovalDate ();
+        order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
+        order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
+        order.intakeCompletedDate = getIntakeCompleteDate ();
+        order.specimenDisplayContainerType = getSpecimenContainerType ();
+        order.specimenDisplayContainerCount = getSpecimenContainerQuantity ();
         order.tests = getSelectedTests ();
+        LocalDate dueDate = getDueDate ();
+        for (int i = 0; i < order.tests.size (); i++) {
+            order.tests.get (i).dueDate = dueDate;
+        }
         order.documentedByType = getOrderAuthorization ();
         order.orderAttachments = getCoraAttachments ();
         order.shipmentAttachments = getShipmentAttachments ();
@@ -144,11 +169,6 @@ public class NewOrderClonoSeq extends NewOrder {
         order.doraAttachments = getDoraAttachments ();
         order.notes = getOrderNotes ();
         return order;
-    }
-
-    public String getCollectionDate () {
-        String css = "[ng-model^='ctrl.orderEntry.specimen.collectionDate']";
-        return isElementPresent (css) && isElementVisible (css) ? readInput (css) : null;
     }
 
     public void addPatientICDCode (String icdCode) {
@@ -181,8 +201,17 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectValue (compartment, compartmentEnum.name ()));
     }
 
+    public Compartment getCompartment () {
+        String compartmentVal = isElementVisible (compartment) ? getFirstSelectedText (compartment) : null;
+        return isNotBlank (compartmentVal) ? Compartment.getCompartment (compartmentVal) : null;
+    }
+
     public void enterAntiCoagulant (Anticoagulant anticoagulantEnum) {
         assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
+    }
+
+    public List <String> getAntiCoagulantTypeList () {
+        return readInputList (join (" ", anticoagulant, option));
     }
 
     public void enterAntiCoagulantOther (String anticoagulant) {
@@ -201,12 +230,21 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (setText ("#specimen-entry-cell-count", String.valueOf (count)));
     }
 
+    public void enterUniqueSpecimenId (String specimenId) {
+        assertTrue (setText (uniqueSpecimenId, specimenId));
+    }
+
+    public String getUniqueSpecimenId () {
+        return isElementVisible (uniqueSpecimenId) ? readInput (uniqueSpecimenId) : null;
+    }
+
     public void enterRetrievalDate (String date) {
         assertTrue (setText (retrievalDate, date));
     }
 
-    public String getRetrievalDate () {
-        return isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
+    public LocalDateTime getRetrievalDate () {
+        String data = isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
+        return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt1) : null;
     }
 
     public void closeTestSelectionWarningModal () {
@@ -216,17 +254,10 @@ public class NewOrderClonoSeq extends NewOrder {
         clickPopupOK ();
     }
 
-    public void enterOrderNotes (String notes) {
-        assertTrue (setText (orderNotes, notes));
-    }
-
-    public String getOrderNotes () {
-        return readInput (orderNotes);
-    }
-
     /**
      * Create ClonoSeq Pending Order by filling out all the required fields and passed arguments on
      * New Order ClonoSeq page, and returns order no.
+     * 
      * NOTE: Keep updating this method, and try to always use these methods to create ClonoSeq Order
      * 
      * @param physician
@@ -262,6 +293,8 @@ public class NewOrderClonoSeq extends NewOrder {
             break;
         case Client:
         case PatientSelfPay:
+            billing.selectBilling (patient.billingType);
+            billing.enterInsurance1PatientStatus (patient.insurance1.hospitalizationStatus);
         default:
             billing.selectBilling (patient.billingType);
             break;
@@ -282,7 +315,7 @@ public class NewOrderClonoSeq extends NewOrder {
         if (asList (CellPellet, CellSuspension).contains (specimen.sampleType))
             enterCellCount (1000000);
 
-        enterCollectionDate (specimen.collectionDate.toString ());
+        enterCollectionDate ((LocalDate) specimen.collectionDate);
         clickAssayTest (assayTest);
         clickSave ();
 
@@ -296,6 +329,7 @@ public class NewOrderClonoSeq extends NewOrder {
     /**
      * Create ClonoSeq Pending (differs from above method as this method creates shipment as well)
      * or Active Order by passing orderStatus argument. Returns order no.
+     * 
      * NOTE: Keep updating this method, and try to always use these methods to create ClonoSeq
      * Pending Or Active Order
      * 
@@ -303,6 +337,7 @@ public class NewOrderClonoSeq extends NewOrder {
      * @param patient
      * @param icdCodes
      * @param assayTest
+     * @param specimen
      * @param orderStatus
      * @param containerType
      * @return
