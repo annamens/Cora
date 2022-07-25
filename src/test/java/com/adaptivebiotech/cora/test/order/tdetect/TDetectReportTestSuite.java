@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -123,7 +124,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
                                                           SlideBox5CS);
         testLog ("T-Detect Order created: " + order.orderNumber);
 
-        String patientId = orderDetailTDetect.getPatientId ();
+        UUID patientId = orderDetailTDetect.getPatientId ();
         order = orderDetailTDetect.parseOrder ();
         String sample = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sample);
@@ -270,7 +271,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         testLog ("STEP 11 - validate reportData.json displays isFailure as true");
     }
 
-    private void validateReportDataJson (ReportRender reportDataJson, Order order, String patientId) {
+    private void validateReportDataJson (ReportRender reportDataJson, Order order, UUID patientId) {
         assertEquals (reportDataJson.klass, "com.adaptive.clonoseqreport.dtos.ReportRenderDto");
         assertEquals (reportDataJson.version.intValue (), 1);
         assertEquals (reportDataJson.patientInfo.id, patientId);

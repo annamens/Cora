@@ -40,7 +40,7 @@ public final class Alerts {
         public String        color;
         @JsonAlias ("orderSummary")
         public Order         order;
-        public String        referencedEntityId;
+        public UUID          referencedEntityId;
 
         // end-point /cora/api/v2/alerts/create
         public String        alertTypeName;

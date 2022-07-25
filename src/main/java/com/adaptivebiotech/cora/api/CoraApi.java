@@ -249,7 +249,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), Order[].class);
     }
 
-    public OrderTest[] searchOrderTests (String term) {
+    public OrderTest[] searchOrderTests (Object term) {
         return searchOrderTests (asList ("search=" + term));
     }
 
@@ -416,7 +416,7 @@ public class CoraApi extends HttpClientHelper {
         }
     }
 
-    public Order[] getOrderAttachments (String orderIdOrNo) {
+    public Order[] getOrderAttachments (Object orderIdOrNo) {
         String url = coraTestUrl + "/cora/api/v1/attachments/orders/" + orderIdOrNo;
         return mapper.readValue (get (url), Order[].class);
     }

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
-import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -174,9 +173,9 @@ public abstract class NewOrder extends OrderHeader {
         assertEquals (waitForElementVisible ("[uisref='main.patient.orders']").getText (), "Patient Order History");
     }
 
-    public String getPatientId () {
+    public UUID getPatientId () {
         String patientUrl = getAttribute ("//*[contains(text(),'Patient Order History')]", "href");
-        return StringUtils.substringBetween (patientUrl, "patient/", "/orders");
+        return fromString (substringBetween (patientUrl, "patient/", "/orders"));
     }
 
     public void clickSave () {
