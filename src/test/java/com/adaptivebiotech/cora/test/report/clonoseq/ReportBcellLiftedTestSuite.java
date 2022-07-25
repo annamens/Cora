@@ -21,6 +21,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -52,7 +53,7 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
 
     public void verify_tracking_report () {
         Patient patient = new Patient ();
-        patient.id = "dc8a6bd2-0e68-41c2-aece-7e9d0e43f58c";
+        patient.id = fromString ("dc8a6bd2-0e68-41c2-aece-7e9d0e43f58c");
         patient.mrn = "1111111111";
         patient.insurance1 = null;
         patient.insurance2 = null;

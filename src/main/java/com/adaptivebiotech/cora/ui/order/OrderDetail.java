@@ -12,6 +12,7 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.time.LocalDateTime.parse;
 import static java.util.EnumSet.allOf;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -78,13 +80,13 @@ public class OrderDetail extends OrderHeader {
     }
 
     @Override
-    public void gotoOrderDetailsPage (String orderId) {
+    public void gotoOrderDetailsPage (UUID orderId) {
         super.gotoOrderDetailsPage (orderId);
         isCorrectPage ();
     }
 
-    public String getOrderId () {
-        return substringAfterLast (getCurrentUrl (), "cora/order/details/");
+    public UUID getOrderId () {
+        return fromString (substringAfterLast (getCurrentUrl (), "cora/order/details/"));
     }
 
     public String getSalesforceOrderId () {
@@ -120,7 +122,7 @@ public class OrderDetail extends OrderHeader {
     public Order parseOrder () {
         Order order = new Order ();
         order.id = getOrderId ();
-        order.salesforceOrderId = getOrderId ();
+        order.salesforceOrderId = getSalesforceOrderId ();
         order.salesforceOrderNumber = getSalesforceOrderNumber ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();

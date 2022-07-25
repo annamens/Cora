@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 
 /**
@@ -52,8 +53,8 @@ public final class Research {
 
     public static final class Project {
 
-        public String  id;
-        public String  accountId;
+        public UUID    id;
+        public UUID    accountId;
         public String  name;
         public String  stage;
         public String  customerTrialNumber;

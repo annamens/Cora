@@ -7,6 +7,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.Comparator.comparing;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
@@ -19,7 +20,6 @@ import com.adaptivebiotech.cora.utils.PageHelper.OrderType;
 import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author Harry Soehalim
@@ -54,15 +54,13 @@ public final class Diagnostic {
 
     public static final class Account {
 
-        public String        id;
+        public UUID          id;
         public Integer       version;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime created;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime modified;
         public String        createdBy;
         public String        modifiedBy;
-        public String        parent_id;
+        public UUID          parent_id;
         public Account       parent;
         public String        name;
         public String        description;
@@ -81,7 +79,7 @@ public final class Diagnostic {
 
         public Account () {}
 
-        public Account (String id) {
+        public Account (UUID id) {
             this.id = id;
         }
 
@@ -116,17 +114,17 @@ public final class Diagnostic {
         public OrderStatus status;
         public StageName   stageName;
         public StageStatus stageStatus;
-        public String      configId;
+        public UUID        configId;
         public String      configName;
     }
 
     public static final class Panel {
 
-        public String id;
+        public UUID id;
 
         public Panel () {}
 
-        public Panel (String id) {
+        public Panel (UUID id) {
             this.id = id;
         }
     }

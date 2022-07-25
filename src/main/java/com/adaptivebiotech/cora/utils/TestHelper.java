@@ -36,6 +36,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
+import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class TestHelper {
 
     public static Container freezerDestroyed () {
         Container container = new Container ();
-        container.id = testdata ().get ("freezerDestroyed_id");
+        container.id = fromString (testdata ().get ("freezerDestroyed_id"));
         container.containerNumber = testdata ().get ("freezerDestroyed_num");
         container.name = "[Destroyed]";
         container.location = "[Destroyed]";
@@ -67,7 +68,7 @@ public class TestHelper {
 
     public static Container dumbwaiter () {
         Container container = new Container ();
-        container.id = testdata ().get ("dumbwaiter_id");
+        container.id = fromString (testdata ().get ("dumbwaiter_id"));
         container.containerNumber = testdata ().get ("dumbwaiter_num");
         container.name = "1165 Dumbwaiter";
         container.location = "1165 Dumbwaiter";
@@ -76,7 +77,7 @@ public class TestHelper {
 
     public static Container freezerAB018055 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB018055_id");
+        container.id = fromString (testdata ().get ("AB018055_id"));
         container.containerNumber = testdata ().get ("AB018055_num");
         container.name = "AB018055 (4C)";
         container.location = "1551 : RM 258 : AB018055 (4C)";
@@ -85,7 +86,7 @@ public class TestHelper {
 
     public static Container freezerAB018078 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB018078_id");
+        container.id = fromString (testdata ().get ("AB018078_id"));
         container.containerNumber = testdata ().get ("AB018078_num");
         container.name = "AB018078 (4C) Right";
         container.location = "1551 : RM 258 : AB018078 (4C) Right";
@@ -94,7 +95,7 @@ public class TestHelper {
 
     public static Container freezerAB039003 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB039003_id");
+        container.id = fromString (testdata ().get ("AB039003_id"));
         container.containerNumber = testdata ().get ("AB039003_num");
         container.name = "AB039003 (Ambient)";
         container.location = "RM 255 : AB039003 (Ambient)";
@@ -103,7 +104,7 @@ public class TestHelper {
 
     public static Container freezerAB018018 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB018018_id");
+        container.id = fromString (testdata ().get ("AB018018_id"));
         container.containerNumber = testdata ().get ("AB018018_num");
         container.name = "AB018018 (-20C)";
         container.location = "RM 243 : AB018018 (-20C)";
@@ -112,7 +113,7 @@ public class TestHelper {
 
     public static Container freezerAB018056 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB018056_id");
+        container.id = fromString (testdata ().get ("AB018056_id"));
         container.containerNumber = testdata ().get ("AB018056_num");
         container.name = "AB018056 : Validation (-20C)";
         container.location = "1551 : RM 258 : AB018056 : Validation (-20C)";
@@ -207,7 +208,7 @@ public class TestHelper {
 
     public static Patient scenarioBuilderPatient () {
         Patient patient = new Patient ();
-        patient.id = randomUUID ().toString ();
+        patient.id = randomUUID ();
         patient.firstName = "Jane";
         patient.middleName = "Selenium";
         patient.lastName = "ClonoSeq";

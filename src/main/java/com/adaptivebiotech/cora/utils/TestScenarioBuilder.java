@@ -18,6 +18,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
+import static java.util.UUID.fromString;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -103,7 +104,7 @@ public class TestScenarioBuilder {
         task.status = Active;
         task.stageName = ClonoSeq2_WorkflowNanny;
         task.stageStatus = Ready;
-        task.configId = "04d48793-c0c7-4b76-ab2d-53e2ef65891e";
+        task.configId = fromString ("04d48793-c0c7-4b76-ab2d-53e2ef65891e");
         task.configName = "ReportScenarioTestHelper";
         return task;
     }
@@ -164,8 +165,6 @@ public class TestScenarioBuilder {
                                                 Stage stage,
                                                 CoraTest test,
                                                 Assay assay) {
-        String covidPanel = "132d9440-8f75-46b8-b084-efe06346dfd4";
-        String lymePanel = "21c3d625-4c5a-4e0b-896b-0d4f3e817d23";
         Diagnostic diagnostic = diagnosticOrder (physician, patient, null, shipment ());
         diagnostic.order = order (null, test);
         diagnostic.order.orderType = TDx;
@@ -177,9 +176,9 @@ public class TestScenarioBuilder {
         diagnostic.order.specimenDto.properties = null;
 
         if (assay.equals (LYME_DX)) {
-            diagnostic.order.panels = asList (new Panel (lymePanel));
+            diagnostic.order.panels = asList (new Panel (fromString ("21c3d625-4c5a-4e0b-896b-0d4f3e817d23")));
         } else if (assay.equals (COVID19_DX_IVD)) {
-            diagnostic.order.panels = asList (new Panel (covidPanel));
+            diagnostic.order.panels = asList (new Panel (fromString ("132d9440-8f75-46b8-b084-efe06346dfd4")));
         }
 
         diagnostic.fastForwardStatus = stage;
