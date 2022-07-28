@@ -153,6 +153,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.retrievalDate = getRetrievalDate ();
         order.specimenDto.approvedDate = getSpecimenApprovalDate ();
         order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
+        order.specimenDto.activationDate = getSpecimenActivationDate ();
         order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
         order.intakeCompletedDate = getIntakeCompleteDate ();
         order.specimenDisplayContainerType = getSpecimenContainerType ();
@@ -310,6 +311,8 @@ public class NewOrderClonoSeq extends NewOrder {
 
         if (specimen.sampleSource != null)
             enterSpecimenSource (specimen.sampleSource);
+        if (specimen.compartment != null)
+            enterCompartment (specimen.compartment);
         if (specimen.anticoagulant != null)
             enterAntiCoagulant (specimen.anticoagulant);
         if (asList (CellPellet, CellSuspension).contains (specimen.sampleType))

@@ -36,15 +36,12 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.join;
 import static java.util.Locale.US;
-import static org.apache.commons.lang3.StringUtils.substringAfterLast;
-import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.text.WordUtils.capitalize;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -68,8 +65,6 @@ import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 /**
  * @author jpatel
@@ -159,7 +154,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         orderStatus.clickReportTab (assayTest);
         reportTDetect.isCorrectPage ();
 
-        String fileContent = getTextFromPDF (reportTDetect.getReleasedReportPdfUrl (), 1);
+        String fileContent = getTextFromPDF (downloadDir, reportTDetect.getReleasedReportPdfUrl (), 1);
         validateReportContent (fileContent, order);
         validatePdfContent (fileContent, result);
         validatePdfContent (fileContent, expTestResult);
@@ -200,13 +195,13 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         reportTDetect.releaseReportWithSignatureRequired ();
 
         String correctedPreviewPdfUrl = reportTDetect.getReleasedReportPdfUrl ();
-        String correctedReleasePdfContent = getTextFromPDF (correctedPreviewPdfUrl, 1);
+        String correctedReleasePdfContent = getTextFromPDF (downloadDir, correctedPreviewPdfUrl, 1);
         validateReportContent (correctedReleasePdfContent, order);
         validatePdfContent (correctedReleasePdfContent, reasonCorrectionStr);
         validatePdfContent (correctedReleasePdfContent, correctedReason);
         testLog ("STEP 7.1 - The report pdf Page 1 contains values for the following fields as listed below");
 
-        correctedReleasePdfContent = getTextFromPDF (correctedPreviewPdfUrl, 2);
+        correctedReleasePdfContent = getTextFromPDF (downloadDir, correctedPreviewPdfUrl, 2);
         validateReportContent (correctedReleasePdfContent, order);
         validatePdfContent (correctedReleasePdfContent, result);
         validatePdfContent (correctedReleasePdfContent, expTestResult);
@@ -349,27 +344,6 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         validatePdfContent (fileContent, "ORDERING PHYSICIAN INSTITUTION");
         validatePdfContent (fileContent, order.physician.accountName);
         validatePdfContent (fileContent, order.physician.providerFullName);
-    }
-
-    private String getTextFromPDF (String url, int pageNumber) {
-        String pdfFileLocation = join ("/", downloadDir, substringBefore (substringAfterLast (url, "/"), "?"));
-        info ("PDF File Location: " + pdfFileLocation);
-
-        // get file from URL and save it
-        coraApi.get (url, pdfFileLocation);
-
-        // read PDF and extract text
-        PdfReader reader = null;
-        String fileContent = null;
-        try {
-            reader = new PdfReader (pdfFileLocation);
-            fileContent = PdfTextExtractor.getTextFromPage (reader, pageNumber);
-        } catch (IOException e) {
-            throw new RuntimeException (e);
-        } finally {
-            reader.close ();
-        }
-        return fileContent;
     }
 
     /**
