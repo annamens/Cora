@@ -93,15 +93,11 @@ public class PickPatientModule extends CoraPage {
     }
 
     public boolean isDuplicateFoundPopUpVisible () {
-        return isTextInElement (join (" ", ".findDialog", popupTitle), "Duplicates Found");
+        return isElementVisible (join (" ", ".findDialog", popupTitle));
     }
 
     public void clickContinueAndSaveAnyway () {
         assertTrue (click ("//button[text()='Continue and Save Anyway']"));
     }
 
-    public void saveDuplicatePatient () {
-        assertTrue (isDuplicateFoundPopUpVisible ());
-        clickContinueAndSaveAnyway ();
-    }
 }
