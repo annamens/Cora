@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
@@ -12,6 +13,7 @@ import static org.testng.util.Strings.isNullOrEmpty;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -180,13 +182,7 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//a[text()='Barcode Comparison Tool']"));
     }
 
-    // TODO remove this once newCdxOrderPage is set to true in Prod
-    public void gotoCDxOrderEntry (String orderId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/order/entry/diagnostic/" + orderId));
-        pageLoading ();
-    }
-
-    public void gotoOrderEntry (String orderId) {
+    public void gotoOrderEntry (UUID orderId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/order/auto?id=" + orderId));
         pageLoading ();
     }
@@ -234,7 +230,7 @@ public class CoraPage extends BasePage {
         assertTrue (navigateTo (coraTestUrl + "/cora/containers/custody"));
     }
 
-    public void gotoShipmentEntry (String shipmentId) {
+    public void gotoShipmentEntry (UUID shipmentId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId));
         pageLoading ();
     }
@@ -249,31 +245,31 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
-    public void gotoOrderDetailsPage (String orderId) {
+    public void gotoOrderDetailsPage (UUID orderId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/order/details/" + orderId));
         assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
-    public void gotoOrderStatusPage (String orderId) {
+    public void gotoOrderStatusPage (UUID orderId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/order/status/" + orderId));
         assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
-    public void gotoTaskDetail (String taskId) {
+    public void gotoTaskDetail (UUID taskId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId));
         assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
-    public void gotoTaskStatus (String taskId) {
+    public void gotoTaskStatus (UUID taskId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId + "?p=status"));
         assertTrue (hasPageLoaded ());
         pageLoading ();
     }
 
-    public void gotoAccession (String shipmentId) {
+    public void gotoAccession (UUID shipmentId) {
         assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=accession"));
         assertTrue (hasPageLoaded ());
         pageLoading ();
@@ -301,8 +297,8 @@ public class CoraPage extends BasePage {
         hasPageLoaded ();
     }
 
-    protected String getConId (String href) {
-        return href.replaceFirst (".*container/details/", "");
+    protected UUID getConId (String href) {
+        return fromString (href.replaceFirst (".*container/details/", ""));
     }
 
     protected void clickPopupOK () {
@@ -320,7 +316,7 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
-    public void gotoTaskById (String id) {
+    public void gotoTaskById (UUID id) {
         String url = coraTestUrl + "/cora/task/" + id + "?p=status";
         assertTrue (navigateTo (url));
     }

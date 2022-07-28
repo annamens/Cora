@@ -7,6 +7,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
 
@@ -16,7 +17,7 @@ import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
  */
 public final class Shipment {
 
-    public String            id;
+    public UUID              id;
     public String            shipmentNumber;
     public String            link;
     public OrderCategory     category;

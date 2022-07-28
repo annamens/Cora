@@ -12,6 +12,7 @@ import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import java.util.List;
+import java.util.UUID;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.test.attachment.AttachmentTestBase;
@@ -54,7 +55,7 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
         shipment.createShipment (order.orderNumber, Tube);
         shipment.clickShipmentTab ();
-        String shipmentId = shipment.getShipmentId ();
+        UUID shipmentId = shipment.getShipmentId ();
         shipment.uploadAttachments (uploadPreviewFiles);
 
         for (String file : previewFiles) {

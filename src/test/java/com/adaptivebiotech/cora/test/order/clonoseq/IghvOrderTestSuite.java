@@ -45,6 +45,7 @@ import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.join;
+import static java.util.UUID.randomUUID;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
@@ -1062,7 +1063,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
      * @param orderTestId
      * @param mutationStatus
      */
-    private void validateShmResultReportType (String orderTestId, ShmMutationStatus mutationStatus) {
+    private void validateShmResultReportType (UUID orderTestId, ShmMutationStatus mutationStatus) {
         validateShmResultReportType (orderTestId, mutationStatus, null);
     }
 
@@ -1074,7 +1075,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
      * @param mutationStatus
      * @param ericSampleCall
      */
-    private void validateShmResultReportType (String orderTestId,
+    private void validateShmResultReportType (UUID orderTestId,
                                               ShmMutationStatus mutationStatus,
                                               EricSampleCall ericSampleCall) {
         ShmResultData shmResultData = coraDb.getShmResult (orderTestId);
@@ -1094,7 +1095,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
      * @return
      */
     private String getTextFromPDF (String url, int pageNumber, String beginText, String endText) {
-        String pdfFileLocation = join ("/", downloadDir.get (), UUID.randomUUID () + ".pdf");
+        String pdfFileLocation = join ("/", downloadDir.get (), randomUUID () + ".pdf");
         info ("PDF File Location: " + pdfFileLocation);
 
         // get file from URL and save it
