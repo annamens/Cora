@@ -20,18 +20,15 @@ import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.time.format.DateTimeFormatter.ofPattern;
-import static org.apache.commons.lang3.StringUtils.substringAfterLast;
-import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -50,15 +47,13 @@ import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 /**
  * @author jpatel
  *
  */
 @Test (groups = { "clonoSeq", "regression", "golden-retriever" })
-public class cfDNATestSuite extends NewOrderTestBase {
+public class CfDNATestSuite extends NewOrderTestBase {
 
     private Login                   login                = new Login ();
     private OrdersList              ordersList           = new OrdersList ();
@@ -135,7 +130,7 @@ public class cfDNATestSuite extends NewOrderTestBase {
         testLog ("Order No: " + order.orderNumber);
 
         shipment.createShipment (order.orderNumber, Tube);
-        String shipmentId = accession.getShipmentId ();
+        UUID shipmentId = accession.getShipmentId ();
         accession.clickIntakeComplete ();
         accession.clickLabelingComplete ();
         accession.clickLabelVerificationComplete ();
@@ -184,7 +179,7 @@ public class cfDNATestSuite extends NewOrderTestBase {
         testLog ("Order No: " + order.orderNumber);
 
         shipment.createShipment (order.orderNumber, Tube);
-        String shipmentId = accession.getShipmentId ();
+        UUID shipmentId = accession.getShipmentId ();
         accession.clickIntakeComplete ();
         accession.clickLabelingComplete ();
         accession.clickLabelVerificationComplete ();
@@ -243,31 +238,10 @@ public class cfDNATestSuite extends NewOrderTestBase {
         orderDetailClonoSeq.clickReportTab (assayTest);
         String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
         info ("PDF File URL: " + pdfUrl);
-        String extractedText = getTextFromPDF (pdfUrl, 1);
+        String extractedText = getTextFromPDF (downloadDir, pdfUrl, 1);
         System.out.println ("Extracted Text:\n" + extractedText);
         assertTrue (extractedText.contains (noResultsAvailable));
         assertTrue (extractedText.contains (mrdResultDescription));
-    }
-
-    private String getTextFromPDF (String url, int pageNumber) {
-        String pdfFileLocation = join ("/", downloadDir, substringBefore (substringAfterLast (url, "/"), "?"));
-        info ("PDF File Location: " + pdfFileLocation);
-
-        // get file from URL and save it
-        coraApi.get (url, pdfFileLocation);
-
-        // read PDF and extract text
-        PdfReader reader = null;
-        String fileContent = null;
-        try {
-            reader = new PdfReader (pdfFileLocation);
-            fileContent = PdfTextExtractor.getTextFromPage (reader, pageNumber).replace ("\n", " ");
-        } catch (IOException e) {
-            throw new RuntimeException (e);
-        } finally {
-            reader.close ();
-        }
-        return fileContent;
     }
 
 }
