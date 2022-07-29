@@ -25,7 +25,9 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.time.LocalDateTime.parse;
 import static org.testng.Assert.assertEquals;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -45,11 +47,16 @@ import com.adaptivebiotech.pipeline.dto.mrd.ClinicalJson;
 @Test (groups = "regression")
 public class ReportEosTestSuite extends ReportTestBase {
 
-    private final String   downloadDir = artifacts (this.getClass ().getName ());
-    private final String   reportData  = "reportData.json";
-    private Login          login       = new Login ();
-    private OrcaHistory    history     = new OrcaHistory ();
-    private ReportClonoSeq report      = new ReportClonoSeq ();
+    private final String         reportData  = "reportData.json";
+    private Login                login       = new Login ();
+    private OrcaHistory          history     = new OrcaHistory ();
+    private ReportClonoSeq       report      = new ReportClonoSeq ();
+    private ThreadLocal <String> downloadDir = new ThreadLocal <> ();
+
+    @BeforeMethod (alwaysRun = true)
+    public void beforeMethod (Method test) {
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
+    }
 
     /**
      * @sdlc.requirements SR-633, SR-1017, SR-1016, SR-1014, SR-1012, SR-1011, SR-1009, SR-1007,
@@ -68,8 +75,8 @@ public class ReportEosTestSuite extends ReportTestBase {
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         String saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
-        String saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
-        String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
+        String saInputJson = join ("/", downloadDir.get (), orderTest.sampleName, saInput);
+        String reportDataJson = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
@@ -98,7 +105,7 @@ public class ReportEosTestSuite extends ReportTestBase {
         clonoseq.header.reportDt = releaseDt.toLocalDate ();
         clonoseq.appendix.sampleInfo = "0.81 70,977 IGH 60,049 2,671 IGK 64,371 4,749 IGL 2,108 1,700";
         clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        String actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
@@ -120,8 +127,8 @@ public class ReportEosTestSuite extends ReportTestBase {
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
-        saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
-        reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
+        saInputJson = join ("/", downloadDir.get (), orderTest.sampleName, saInput);
+        reportDataJson = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
 
         history.gotoOrderDebug (orderTest.sampleName);
         history.forceStatusUpdate (SecondaryAnalysis, Ready);
@@ -149,7 +156,7 @@ public class ReportEosTestSuite extends ReportTestBase {
         clonoseq.appendix.sampleInfo = "0.09 3,261,145 IGH 73,326 71,309 IGK 98,699 37,457 IGL 28,278 11,994";
         clonoseq.appendix.sequenceInfo = "IGH - Sequence A <1 <1 IGK - Sequence B <1 <1";
         clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
 
@@ -187,8 +194,8 @@ public class ReportEosTestSuite extends ReportTestBase {
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_IVD);
         String saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
-        String saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
-        String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
+        String saInputJson = join ("/", downloadDir.get (), orderTest.sampleName, saInput);
+        String reportDataJson = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
@@ -217,7 +224,7 @@ public class ReportEosTestSuite extends ReportTestBase {
         clonoseq.header.reportDt = releaseDt.toLocalDate ();
         clonoseq.appendix.sampleInfo = "0.81 70,977 IGH 60,049 2,671 IGK 64,371 4,749 IGL 2,108 1,700";
         clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        String actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
@@ -239,8 +246,8 @@ public class ReportEosTestSuite extends ReportTestBase {
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_IVD);
         saInput = format ("CLINICAL-CLINICAL.%s.json", orderTest.sampleName);
-        saInputJson = join ("/", downloadDir, orderTest.sampleName, saInput);
-        reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
+        saInputJson = join ("/", downloadDir.get (), orderTest.sampleName, saInput);
+        reportDataJson = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
 
         history.gotoOrderDebug (orderTest.sampleName);
         history.forceStatusUpdate (SecondaryAnalysis, Ready);
@@ -268,7 +275,7 @@ public class ReportEosTestSuite extends ReportTestBase {
         clonoseq.appendix.sampleInfo = "0.09 3,261,145 IGH 73,326 71,309 IGK 98,699 37,457 IGL 28,278 11,994";
         clonoseq.appendix.sequenceInfo = "IGH - Sequence A <1 <1 IGK - Sequence B <1 <1";
         clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
 
