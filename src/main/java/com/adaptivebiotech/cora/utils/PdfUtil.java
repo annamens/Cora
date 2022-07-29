@@ -7,6 +7,7 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.ClassLoader.getSystemResource;
 import static java.util.Arrays.asList;
 import static org.apache.commons.io.FileUtils.getFile;
+import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.fail;
 import java.io.IOException;
 import com.itextpdf.text.pdf.PdfReader;
@@ -94,25 +95,8 @@ public class PdfUtil {
      * @return The result of the text search
      */
     public static String getTextFromPDF (String pdfFileLocation, int pageNumber, String beginText, String endText) {
-
-        // read PDF and extract text
-        PdfReader reader = null;
-        String extractedText = null;
-        try {
-            reader = new PdfReader (pdfFileLocation);
-            String fileContent = PdfTextExtractor.getTextFromPage (reader, pageNumber);
-            info ("File Content: " + fileContent);
-
-            int beginIndex = fileContent.indexOf (beginText);
-            int endIndex = fileContent.indexOf (endText);
-            extractedText = fileContent.substring (beginIndex, endIndex);
-            info ("Extracted Text: " + extractedText);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        } finally {
-            reader.close ();
-        }
-        return extractedText;
+        String extractedText = getTextFromPDF (pdfFileLocation, pageNumber);
+        return substringBetween (extractedText, beginText, endText);
     }
 
     public static void compareTrfFiles (String actualTrfLoc, String expectedTrfLoc, Exclusion... exclusions) {
