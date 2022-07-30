@@ -6,10 +6,10 @@ package com.adaptivebiotech.cora.dto;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.lang.String.format;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import com.adaptivebiotech.cora.dto.Diagnostic.Account;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author Harry Soehalim
@@ -18,11 +18,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public final class Physician {
 
     @JsonAlias ({ "emrId", "ID" })
-    public String        id;
+    public UUID          id;
     public Integer       version;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime created;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
     public LocalDateTime modified;
     public String        createdBy;
     public String        modifiedBy;
@@ -55,7 +53,7 @@ public final class Physician {
 
     public Physician () {}
 
-    public Physician (String id) {
+    public Physician (UUID id) {
         this.id = id;
     }
 
@@ -89,6 +87,7 @@ public final class Physician {
         clonoSEQ_all_payments ("ClonoSEQ", "All Payments", "SEA_QA ClonoSEQ All Payments"),
         clonoSEQ_int_order_upload ("ClonoSEQ", "Internal Order Upload", "SEA_QA ClonoSEQ All Payments"),
         clonoSEQ_lomn ("ClonoSEQ", "LOMN", "SEA_QA ClonoSEQ All Payments"),
+        clonoSEQ_esign ("ClonoSEQ", "ESign", "SEA_QA ClonoSEQ All Payments"),
         TDetect_client ("T-Detect", "Bill My Institution", "SEA_QA T-Detect Bill My Institution"),
         TDetect_trial ("T-Detect", "Bill per Study Protocol", "SEA_QA T-Detect Bill per Study Protocol"),
         TDetect_insurance ("T-Detect", "Insurance", "SEA_QA T-Detect Insurance"),
@@ -96,8 +95,10 @@ public final class Physician {
         TDetect_selfpay ("T-Detect", "Patient Self-Pay", "SEA_QA T-Detect Patient Self-Pay"),
         TDetect_all_payments ("T-Detect", "All Payments", "SEA_QA T-Detect All Payments"),
         TDetect_int_order_upload ("T-Detect", "Internal Order Upload", "SEA_QA T-Detect All Payments"),
-        TDetect_lomn ("T-Detect", "LOMN", "SEA_QA T-Detect All Payments"),
         TDetect_canada ("T-Detect", "Canada", "SEA_QA T-Detect Canada"),
+        TDetect_lomn ("T-Detect", "LOMN", "SEA_QA T-Detect All Payments"),
+        covid_esign ("Covid", "ESign", "SEA_QA T-Detect All Payments"),
+        lyme_esign ("Lyme", "ESign", "SEA_QA T-Detect All Payments"),
         non_CLEP_clonoseq ("Seattle", "ClonoSEQ", "SEA_QA Test"),
         non_CLEP_tdetect_all_tests ("Seattle", "T-Detect-All", "SEA_QA Test"),
         non_CLEP_tdetect_no_tests ("Seattle", "T-Detect", "SEA_QA Test"),

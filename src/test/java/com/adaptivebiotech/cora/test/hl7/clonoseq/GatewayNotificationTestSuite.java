@@ -238,6 +238,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();
+        taskDetail.isCorrectPage ();
         assertTrue (taskDetail.taskFiles ().containsKey (gatewayJson));
         testLog ("gateway message with corrected report sent");
 
@@ -290,6 +291,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();
+        taskDetail.isCorrectPage ();
         assertTrue (taskDetail.taskFiles ().containsKey (gatewayJson));
         testLog ("gateway message with corrected report sent");
     }

@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.ui.debug;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -58,8 +60,8 @@ public class OrcaHistory extends CoraPage {
         return getText ("//*[th='Finished:']/td");
     }
 
-    public String getWorkflowId () {
-        return readInput ("#claimDiv [name='workflowId']");
+    public UUID getWorkflowId () {
+        return fromString (readInput ("#claimDiv [name='workflowId']"));
     }
 
     public String getFileLocation (String filename) {
@@ -213,8 +215,8 @@ public class OrcaHistory extends CoraPage {
         return substringAfterLast (getAttribute ("a[href*='/cora/order/auto?id=']", "href"), "id=");
     }
 
-    public String getOrderTestId () {
-        return substringAfterLast (getAttribute ("a[href*='/cora/order/status']", "href"), "ordertestid=");
+    public UUID getOrderTestId () {
+        return fromString (substringAfterLast (getAttribute ("a[href*='/cora/order/status']", "href"), "ordertestid="));
     }
 
     public void clickOrder () {
@@ -279,6 +281,13 @@ public class OrcaHistory extends CoraPage {
             files.put (getText (a), getAttribute (a, "href"));
         });
         return files;
+    }
+
+    public List <StageName> getWorkflowStages () {
+        List <StageName> stages = new ArrayList <> ();
+        for (String stage : getText ("//*[*[text()='Stages:']]/td").split ("\\s*,\\s*"))
+            stages.add (StageName.valueOf (stage));
+        return stages;
     }
 
     public List <Stage> parseStatusHistory () {

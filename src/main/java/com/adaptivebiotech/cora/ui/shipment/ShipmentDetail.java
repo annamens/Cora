@@ -3,8 +3,11 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -12,6 +15,7 @@ import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
 import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.dto.Shipment.ShippingCondition;
+import com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
@@ -20,20 +24,18 @@ import com.adaptivebiotech.cora.ui.CoraPage;
  */
 public class ShipmentDetail extends CoraPage {
 
-    private final String orderNumber              = "[data-ng-bind='ctrl.entry.order.orderNumber']";
-    private final String activeTab                = "[role='tablist'] .active a";
-    private final String arrivalDateTime          = "[data-ng-bind='ctrl.entry.shipment.arrivalDate | localDateTime']";
-    private final String category                 = "[data-ng-bind='ctrl.entry.shipment.category']";
-    private final String shipmentNo               = ".shipment-details [data-ng-bind='ctrl.entry.shipment.shipmentNumber']";
-    private final String shippingCondition        = "[data-ng-bind='ctrl.entry.shipment.condition']";
-    private final String carrier                  = "[data-ng-bind='ctrl.entry.shipment.carrier']";
-    private final String trackingNo               = "[data-ng-bind='ctrl.entry.shipment.trackingNumber']";
-    private final String status                   = "[ng-bind='ctrl.entry | shipmentEntryStatus']";
-    private final String specimenId               = "[data-ng-bind='ctrl.entry.specimen.specimenNumber']";
-    private final String containerType            = "[data-ng-bind$='containerTypeDisplayName']";
-    private final String containerQuantity        = "[data-ng-bind='ctrl.entry.containers.length']";
-    private final String specimenApprovalStatus   = "[data-ng-bind='ctrl.entry.specimen.approvalStatus']";
-    private final String specimenApprovalDateTime = "[data-ng-bind^='ctrl.entry.specimen.approvedDate']";
+    private final String orderNumber       = "[data-ng-bind='ctrl.entry.order.orderNumber']";
+    private final String activeTab         = "[role='tablist'] .active a";
+    private final String arrivalDateTime   = "[data-ng-bind='ctrl.entry.shipment.arrivalDate | localDateTime']";
+    private final String category          = "[data-ng-bind='ctrl.entry.shipment.category']";
+    private final String shipmentNo        = ".shipment-details [data-ng-bind='ctrl.entry.shipment.shipmentNumber']";
+    private final String shippingCondition = "[data-ng-bind='ctrl.entry.shipment.condition']";
+    private final String carrier           = "[data-ng-bind='ctrl.entry.shipment.carrier']";
+    private final String trackingNo        = "[data-ng-bind='ctrl.entry.shipment.trackingNumber']";
+    private final String status            = "[ng-bind='ctrl.entry | shipmentEntryStatus']";
+    private final String specimenId        = "[data-ng-bind='ctrl.entry.specimen.specimenNumber']";
+    private final String containerType     = "[data-ng-bind$='containerTypeDisplayName']";
+    private final String containerQuantity = "[data-ng-bind='ctrl.entry.containers.length']";
 
     @Override
     public void isCorrectPage () {
@@ -55,7 +57,7 @@ public class ShipmentDetail extends CoraPage {
 
     public Shipment getShipmentDetails () {
         Shipment shipment = new Shipment ();
-        shipment.arrivalDate = getText (arrivalDateTime);
+        shipment.arrivalDate = LocalDateTime.parse (getText (arrivalDateTime), formatDt7);
         shipment.category = OrderCategory.valueOf (getText (category).trim ());
         shipment.shipmentNumber = getText (shipmentNo);
         shipment.condition = getShippingCondition ();
@@ -73,16 +75,18 @@ public class ShipmentDetail extends CoraPage {
         return ContainerType.getContainerType (getText (containerType));
     }
 
-    public String getContainerQuantity () {
-        return getText (containerQuantity);
+    public int getContainerQuantity () {
+        return Integer.valueOf (getText (containerQuantity));
     }
 
-    public String getSpecimenApprovalStatus () {
-        return getText (specimenApprovalStatus);
+    public SpecimenStatus getSpecimenApprovalStatus () {
+        String css = "[data-ng-bind='ctrl.entry.specimen.approvalStatus']";
+        return getShipmentSpecimenStatus (getText (css));
     }
 
-    public String getSpecimenApprovalDateTime () {
-        return getText (specimenApprovalDateTime);
+    public LocalDateTime getSpecimenApprovalDateTime () {
+        String css = "[data-ng-bind^='ctrl.entry.specimen.approvedDate']";
+        return LocalDateTime.parse (getText (css), formatDt7);
     }
 
     public Containers getPrimaryContainers (ContainerType type) {
@@ -99,7 +103,7 @@ public class ShipmentDetail extends CoraPage {
                                                                                                        displayNameCss) : null;
             String integrityCss = "[data-ng-bind='container.integrity']";
             c.integrity = isElementPresent (integrityCss) && isElementVisible (integrityCss) ? getText (el,
-                                                                                                        integrityCss) : null;;
+                                                                                                        integrityCss) : null;
             c.shipmentNumber = shipmentNum;
 
             if (isElementPresent (el, ".container-table")) {

@@ -3,8 +3,9 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 
 /**
@@ -13,12 +14,12 @@ import com.adaptivebiotech.cora.dto.Containers.Container;
  */
 public final class HttpResponse {
 
-    public String           orderId;
-    public String           accountId;
-    public String           patientId;
-    public String           specimenId;
-    public String           providerId;
-    public String           projectId;
+    public UUID             orderId;
+    public UUID             accountId;
+    public UUID             patientId;
+    public UUID             specimenId;
+    public UUID             providerId;
+    public UUID             projectId;
     public boolean          received;
     public Errors           errors;
     public List <Container> containers;
@@ -26,11 +27,7 @@ public final class HttpResponse {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
     public static final class Errors {
@@ -47,11 +44,7 @@ public final class HttpResponse {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
     }
 }

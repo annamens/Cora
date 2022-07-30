@@ -72,8 +72,8 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_insurance),
                                        patient,
                                        null,
-                                       specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
+                                       specimen,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));
@@ -93,8 +93,8 @@ public class BillingTestSuite extends BillingTestBase {
         Order order = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_medicare),
                                                      patient,
                                                      null,
-                                                     specimen.collectionDate.toString (),
-                                                     COVID19_DX_IVD);
+                                                     COVID19_DX_IVD,
+                                                     specimen);
         shipment.createShipment (order.orderNumber, Vacutainer);
         accession.completeAccession ();
         diagnostic.isCorrectPage ();
@@ -102,28 +102,28 @@ public class BillingTestSuite extends BillingTestBase {
         String email = "foo@bar@gmail.com";
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
         assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
         testLog (format (emailErrLog1, email));
-        testLog (format (emailErrLog2, diagnostic.getToastError ()));
 
         email = "foo@gmail.";
-        diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
+        testLog (format (emailErrLog2, diagnostic.getToastError ()));
+
         assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
         testLog (format (emailErrLog1, email));
-        testLog (format (emailErrLog2, diagnostic.getToastError ()));
 
         email = "foo";
-        diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.clickSaveAndActivate ();
-        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
-        testLog (format (emailErrLog1, email));
         testLog (format (emailErrLog2, diagnostic.getToastError ()));
 
+        assertTrue (diagnostic.billing.isPatientEmailErrorVisible ());
+        testLog (format (emailErrLog1, email));
+
         email = "foo@gmail.com";
-        diagnostic.closeToast ();
         diagnostic.billing.enterPatientEmail (email);
         diagnostic.activateOrder ();
         testLog ("there was no patient email validation error");
@@ -139,8 +139,8 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_selfpay),
                                        patient,
                                        null,
-                                       specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
+                                       specimen,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));
@@ -155,8 +155,8 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                        patient,
                                        null,
-                                       specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
+                                       specimen,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));
@@ -171,8 +171,8 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_trial),
                                        patient,
                                        null,
-                                       specimen.collectionDate.toString (),
                                        COVID19_DX_IVD,
+                                       specimen,
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));
@@ -186,8 +186,8 @@ public class BillingTestSuite extends BillingTestBase {
         Order order = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_all_payments),
                                                      newTrialProtocolPatient (),
                                                      null,
-                                                     specimen.collectionDate.toString (),
-                                                     COVID19_DX_IVD);
+                                                     COVID19_DX_IVD,
+                                                     specimen);
         shipment.createShipment (order.orderNumber, Vacutainer);
         accession.completeAccession ();
         diagnostic.isCorrectPage ();

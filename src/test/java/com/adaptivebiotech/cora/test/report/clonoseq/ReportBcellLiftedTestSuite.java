@@ -21,6 +21,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -44,7 +45,7 @@ import com.adaptivebiotech.pipeline.dto.mrd.ClinicalJson.SampleInfo;
 @Test (groups = "regression")
 public class ReportBcellLiftedTestSuite extends ReportTestBase {
 
-    private final String   tsvPath     = azPipelineNorth + "/190608_NB501743_0470_AHTJHJBGX9/v3.0/20190611_0043/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev7/HTJHJBGX9_0_CLINICAL-CLINICAL_02064-08BC.adap.txt.results.tsv.gz";
+    private final String   tsvPath     = azPipelineClia + "/190608_NB501743_0470_AHTJHJBGX9/v3.0/20190611_0043/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev7/HTJHJBGX9_0_CLINICAL-CLINICAL_02064-08BC.adap.txt.results.tsv.gz";
     private final String   downloadDir = artifacts (this.getClass ().getName ());
     private Login          login       = new Login ();
     private OrcaHistory    history     = new OrcaHistory ();
@@ -52,7 +53,7 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
 
     public void verify_tracking_report () {
         Patient patient = new Patient ();
-        patient.id = "dc8a6bd2-0e68-41c2-aece-7e9d0e43f58c";
+        patient.id = fromString ("dc8a6bd2-0e68-41c2-aece-7e9d0e43f58c");
         patient.mrn = "1111111111";
         patient.insurance1 = null;
         patient.insurance2 = null;

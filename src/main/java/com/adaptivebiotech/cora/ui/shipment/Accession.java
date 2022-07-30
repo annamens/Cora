@@ -3,10 +3,14 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -39,13 +43,13 @@ public class Accession extends ShipmentHeader {
     }
 
     @Override
-    public void gotoAccession (String shipmentId) {
+    public void gotoAccession (UUID shipmentId) {
         super.gotoAccession (shipmentId);
         isCorrectPage ();
     }
 
-    public String getShipmentId () {
-        return substringBetween (getCurrentUrl (), "cora/shipment/entry/", "?p=accession");
+    public UUID getShipmentId () {
+        return fromString (substringBetween (getCurrentUrl (), "cora/shipment/entry/", "?p=accession"));
     }
 
     public void clickOrderNumber () {
@@ -56,12 +60,18 @@ public class Accession extends ShipmentHeader {
         return getText (orderNo);
     }
 
-    public String getIntakeCompleteDate () {
-        return getText ("[ng-bind='ctrl.entry.shipment.intakeCompleted | localDateTime']") + ", " + getText ("[ng-bind='ctrl.entry.shipment.intakeCompletedBy']");
+    public LocalDateTime getIntakeCompleteDate () {
+        String css = "[ng-bind='ctrl.entry.shipment.intakeCompleted | localDateTime']";
+        return LocalDateTime.parse (getText (css), formatDt7);
     }
 
-    public String getSpecimenApprovedDate () {
-        return getText ("[ng-bind='ctrl.entry.specimen.approvedDate | localDateTime']") + ", " + getText ("[ng-bind='ctrl.entry.specimen.approvedBy']");
+    public LocalDateTime getSpecimenApprovedDate () {
+        String css = "[ng-bind='ctrl.entry.specimen.approvedDate | localDateTime']";
+        return LocalDateTime.parse (getText (css), formatDt7);
+    }
+
+    public String getSpecimenApprovedBy () {
+        return getText ("[ng-bind='ctrl.entry.specimen.approvedBy']");
     }
 
     public void clickIntakeComplete () {

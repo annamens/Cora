@@ -7,8 +7,10 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.utils.PageHelper.CorrectionType;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
@@ -161,9 +163,9 @@ public class Report extends OrderHeader {
         assertTrue (setText (reasonTextArea, text));
     }
 
-    public String getCorrectedReportTaskId () {
+    public UUID getCorrectedReportTaskId () {
         String url = getAttribute ("//*[contains (@download, 'CORRECTED')]", "href");
-        return substringBetween (url, "cora-data/orca/", "/");
+        return fromString (substringBetween (url, "cora-data/orca/", "/"));
     }
 
     public boolean waitForCorrectedReportStatusFinished () {

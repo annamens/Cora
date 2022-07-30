@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.IntStream;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
@@ -221,12 +222,12 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), Specimen.class);
     }
 
-    public OrderTest[] getOrderTest (String orderId) {
+    public OrderTest[] getOrderTest (UUID orderId) {
         String url = coraTestUrl + "/cora/api/v1/orderTests/order/" + orderId;
         return mapper.readValue (get (url), OrderTest[].class);
     }
 
-    public Integer getPatientOrSubjectCode (String orderTestId) {
+    public Integer getPatientOrSubjectCode (UUID orderTestId) {
         String url = coraTestUrl + "/cora/api/v1/orderTests/patientOrSubjectCode/" + orderTestId;
         return mapper.readValue (get (url), Integer.class);
     }
@@ -248,7 +249,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), Order[].class);
     }
 
-    public OrderTest[] searchOrderTests (String term) {
+    public OrderTest[] searchOrderTests (Object term) {
         return searchOrderTests (asList ("search=" + term));
     }
 
@@ -264,7 +265,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), OrderTest[].class);
     }
 
-    public OrderTest[] waitForOrderReady (String orderId) {
+    public OrderTest[] waitForOrderReady (UUID orderId) {
         OrderTest[] tests = getOrderTest (orderId);
         Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.sampleName == null))) {
@@ -348,7 +349,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (put (url, body (patient)), Patient.class);
     }
 
-    public Order[] getOrdersForPatient (String patientId) {
+    public Order[] getOrdersForPatient (UUID patientId) {
         String url = coraTestUrl + "/cora/api/v2/patients/list/" + patientId + "/orders";
         return mapper.readValue (get (url), Order[].class);
     }
@@ -383,9 +384,9 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (params)), Alerts.class);
     }
 
-    public Alert[] getAlertsForOrderId (String orderId) {
+    public Alert[] getAlertsForOrderId (UUID orderId) {
         String url = coraTestUrl + "/cora/api/v2/alerts/searchUnpaged";
-        Map <String, List <String>> params = new HashMap <> ();
+        Map <String, List <UUID>> params = new HashMap <> ();
         params.put ("referencedEntityIds", Arrays.asList (orderId));
         return mapper.readValue (post (url, body (params)), Alert[].class);
     }
@@ -397,7 +398,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (params)), Alert[].class);
     }
 
-    public void dismissAlert (String userName, String alertId) {
+    public void dismissAlert (String userName, UUID alertId) {
         String url = coraTestUrl + "/cora/api/v1/external/alerts/" + alertId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
@@ -422,7 +423,7 @@ public class CoraApi extends HttpClientHelper {
         }
     }
 
-    public Order[] getOrderAttachments (String orderIdOrNo) {
+    public Order[] getOrderAttachments (Object orderIdOrNo) {
         String url = coraTestUrl + "/cora/api/v1/attachments/orders/" + orderIdOrNo;
         return mapper.readValue (get (url), Order[].class);
     }
@@ -434,7 +435,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (params)), Reminders.class);
     }
 
-    public void deleteReminder (String reminderId, String userName) {
+    public void deleteReminder (UUID reminderId, String userName) {
         String url = coraTestUrl + "/cora/api/v1/external/reminders/" + reminderId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);

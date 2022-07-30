@@ -3,7 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraPanel;
@@ -24,11 +24,7 @@ public final class Miras {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
     public static final class Mira {
@@ -45,11 +41,7 @@ public final class Miras {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
     }
 }

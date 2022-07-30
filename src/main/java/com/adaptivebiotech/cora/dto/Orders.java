@@ -7,11 +7,14 @@ import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import static java.util.stream.Collectors.toList;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Alerts.Alert;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Reminders.Reminder;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.utils.PageHelper.FriendlyOrderStatus;
@@ -20,7 +23,6 @@ import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author Harry Soehalim
@@ -54,8 +56,8 @@ public final class Orders {
     public static final class Order {
 
         @JsonAlias ("orderId")
-        public String              id;
-        public String              category_id;
+        public UUID                id;
+        public UUID                category_id;
         public String              name;
         @JsonAlias ("orderStatus")
         public OrderStatus         status;
@@ -70,8 +72,8 @@ public final class Orders {
         public String              data_analysis_group;
         public String              trf_file_name;
         public String              calibrated_receptors;
-        public String              date_signed;
-        public String              project_id;
+        public LocalDate           dateSigned;
+        public UUID                project_id;
         public String              orderEntryType;
         public Boolean             isTrfAttached;
         public String              customerInstructions;
@@ -94,19 +96,22 @@ public final class Orders {
         public ChargeType          billingType;
         public DeliveryType        specimenDeliveryType;
         public OrderAuthorization  documentedByType;
+        public String              externalOrderCode;
+        public LocalDateTime       intakeCompletedDate;
+        public ContainerType       specimenDisplayContainerType;
+        public Integer             specimenDisplayContainerCount;
+        public LocalDateTime       specimenDisplayArrivalDate;
 
         // for /cora/api/v1/orders/search
         public String              category;
         public String              customerName;
         public String              displayOrderNumber;
         public String              orderNumber;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime       created;
         public String              createdBy;
         public Integer             numTests;
         public Double              percentComplete;
         public OrderType           diagnosticOrderType;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime       lastActivity;
         public List <Stage>        stages;
         public String              patient_code;
@@ -119,9 +124,9 @@ public final class Orders {
         public String              orderTestStatusType;
         public String              collectionDate;
         public String              testName;
-        public String              orderTestId;
+        public UUID                orderTestId;
         public String              orderTestResultDisplayValue;
-        public String              workflowId;
+        public UUID                workflowId;
         public LocalDateTime       workflowFinishedTimeStamp;
         public String              reportFileName;
         public Object              reportAdditionalComments;
@@ -133,7 +138,7 @@ public final class Orders {
 
         // for /cora/api/v1/attachments/orders/:orderNumberOrId
         public String              modifiedBy;
-        public String              attachedToId;
+        public UUID                attachedToId;
         public String              attachedToTableName;
         public boolean             inactive;
         public String              fileName;
@@ -160,11 +165,9 @@ public final class Orders {
      */
     public static final class OrderTest {
 
-        public String          id;
+        public UUID            id;
         public Integer         version;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime   created;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime   modified;
         public String          createdBy;
         public String          modifiedBy;
@@ -173,7 +176,7 @@ public final class Orders {
         public Specimen        specimen;
         public String          sampleName;
         public OrderStatus     status;
-        public String          dueDate;
+        public LocalDate       dueDate;
         public String          qcType;
         public String          tags;
         public String          sampleWellLocation;
@@ -210,11 +213,11 @@ public final class Orders {
         public String          orderName;
 
         // for /cora/api/v1/orderTests/search
-        public String          orderId;
+        public UUID            orderId;
         public String          testCode;
         public String          testName;
         public String          workflowName;
-        public String          workflowId;
+        public UUID            workflowId;
         public OrderCategory   category;
         public String          customerName;
         public StageName       stage;

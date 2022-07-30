@@ -13,6 +13,7 @@ import com.adaptivebiotech.cora.dto.BillingSurvey;
 import com.adaptivebiotech.cora.dto.BillingSurvey.Questionnaire;
 import com.adaptivebiotech.cora.dto.Insurance;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 
 /**
  * @author jpatel
@@ -41,6 +42,10 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
         BillingSurvey survey = new BillingSurvey (questionnaires);
         survey.status = getText (container + " .insurance-alert");
         return survey;
+    }
+
+    public AbnStatus getAbnStatus () {
+        return AbnStatus.getAbnStatus (getText (abnStatus));
     }
 
     public Patient getPatientBilling () {

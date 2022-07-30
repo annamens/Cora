@@ -3,7 +3,8 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
+import java.util.UUID;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
@@ -15,17 +16,13 @@ import com.fasterxml.jackson.annotation.JsonAlias;
  */
 public final class Workflow {
 
-    public String             id;
+    public UUID               id;
     public String             name;
     public WorkflowProperties workflowProperties;
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
     public static final class WorkflowProperties {
@@ -50,8 +47,8 @@ public final class Workflow {
 
     public static final class Stage {
 
-        public String         id;
-        public String         workflowId;
+        public UUID           id;
+        public UUID           workflowId;
         @JsonAlias ("stage")
         public StageName      stageName;
         public StageStatus    stageStatus;
@@ -69,11 +66,7 @@ public final class Workflow {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
     }
 }

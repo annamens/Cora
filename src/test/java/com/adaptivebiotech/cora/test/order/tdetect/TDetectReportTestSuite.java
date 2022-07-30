@@ -9,6 +9,7 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.covidProperties;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.sample_112770_SN_7929;
@@ -35,16 +36,15 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.join;
 import static java.util.Locale.US;
-import static org.apache.commons.lang3.StringUtils.substringAfterLast;
-import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.text.WordUtils.capitalize;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -53,7 +53,6 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -66,8 +65,6 @@ import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 /**
  * @author jpatel
@@ -93,7 +90,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
     private final String       reviewSignStr       = "RELEASED BY DATE & TIME";
     private final String       approvedSignStr     = "APPROVED BY SIGNATURE DATE";
     private final String       reasonCorrectionStr = "REASON FOR CORRECTION";
-    private final Assay        assayTest           = COVID19_DX_IVD;;
+    private final Assay        assayTest           = COVID19_DX_IVD;
     private String             downloadDir;
 
     @BeforeMethod (alwaysRun = true)
@@ -113,21 +110,19 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         patient.lastName = randomString (5);
         patient.mrn = randomString (10);
         String icdCode1 = "C90.00", icdCode2 = "C91.00";
-        String collectionDate = genDate (-1);
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                           patient,
                                                           new String[] { icdCode1, icdCode2 },
-                                                          collectionDate,
                                                           assayTest,
+                                                          bloodSpecimen (),
                                                           Active,
                                                           SlideBox5CS);
         testLog ("T-Detect Order created: " + order.orderNumber);
 
-        String patientId = orderDetailTDetect.getPatientId ();
+        UUID patientId = orderDetailTDetect.getPatientId ();
         order = orderDetailTDetect.parseOrder ();
         String sample = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sample);
-        history.isCorrectPage ();
         order.orderTestId = history.getOrderTestId ();
 
         history.setWorkflowProperties (covidProperties ());
@@ -159,7 +154,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         orderStatus.clickReportTab (assayTest);
         reportTDetect.isCorrectPage ();
 
-        String fileContent = getTextFromPDF (reportTDetect.getReleasedReportPdfUrl (), 1);
+        String fileContent = getTextFromPDF (downloadDir, reportTDetect.getReleasedReportPdfUrl (), 1);
         validateReportContent (fileContent, order);
         validatePdfContent (fileContent, result);
         validatePdfContent (fileContent, expTestResult);
@@ -200,13 +195,13 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         reportTDetect.releaseReportWithSignatureRequired ();
 
         String correctedPreviewPdfUrl = reportTDetect.getReleasedReportPdfUrl ();
-        String correctedReleasePdfContent = getTextFromPDF (correctedPreviewPdfUrl, 1);
+        String correctedReleasePdfContent = getTextFromPDF (downloadDir, correctedPreviewPdfUrl, 1);
         validateReportContent (correctedReleasePdfContent, order);
         validatePdfContent (correctedReleasePdfContent, reasonCorrectionStr);
         validatePdfContent (correctedReleasePdfContent, correctedReason);
         testLog ("STEP 7.1 - The report pdf Page 1 contains values for the following fields as listed below");
 
-        correctedReleasePdfContent = getTextFromPDF (correctedPreviewPdfUrl, 2);
+        correctedReleasePdfContent = getTextFromPDF (downloadDir, correctedPreviewPdfUrl, 2);
         validateReportContent (correctedReleasePdfContent, order);
         validatePdfContent (correctedReleasePdfContent, result);
         validatePdfContent (correctedReleasePdfContent, expTestResult);
@@ -237,13 +232,10 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
      * NOTE: SR-T3070
      */
     public void validateFailedTDetectReportData () {
-        WorkflowProperties sample_112770_SN_7929 = new WorkflowProperties ();
-        sample_112770_SN_7929.flowcell = "HCYJNBGXJ";
-        sample_112770_SN_7929.workspaceName = "CLINICAL-CLINICAL";
-        sample_112770_SN_7929.sampleName = "112770-SN-7929";
-
-        CoraTest test = coraApi.getTDxTest (COVID19_DX_IVD);
-        test.workflowProperties = sample_112770_SN_7929;
+        CoraTest test = getTDxTest (COVID19_DX_IVD);
+        test.workflowProperties.flowcell = "HCYJNBGXJ";
+        test.workflowProperties.workspaceName = "CLINICAL-CLINICAL";
+        test.workflowProperties.sampleName = "112770-SN-7929";
 
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildTdetectOrder (coraApi.getPhysician (TDetect_client),
@@ -274,7 +266,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         testLog ("STEP 11 - validate reportData.json displays isFailure as true");
     }
 
-    private void validateReportDataJson (ReportRender reportDataJson, Order order, String patientId) {
+    private void validateReportDataJson (ReportRender reportDataJson, Order order, UUID patientId) {
         assertEquals (reportDataJson.klass, "com.adaptive.clonoseqreport.dtos.ReportRenderDto");
         assertEquals (reportDataJson.version.intValue (), 1);
         assertEquals (reportDataJson.patientInfo.id, patientId);
@@ -289,14 +281,9 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         assertEquals (reportDataJson.patientInfo.reportSpecimenCompartment, "Cellular");
         assertEquals (reportDataJson.patientInfo.reportSpecimenId, order.specimenDto.specimenNumber);
         assertEquals (reportDataJson.patientInfo.reportLocus, TCRB_v4b);
-        assertEquals (reportDataJson.patientInfo.reportSpecimenCollectionDate.toString (),
-                      convertDateFormat (order.specimenDto.collectionDate.toString (),
-                                         "MM/dd/yyyy",
-                                         "yyyy-MM-dd"));
-        assertEquals (reportDataJson.patientInfo.reportSpecimenArrivalDate.toString (),
-                      convertDateFormat (order.specimenDto.arrivalDate.split ("\\s+")[0],
-                                         "MM/dd/yyyy",
-                                         "yyyy-MM-dd"));
+        assertEquals (reportDataJson.patientInfo.reportSpecimenCollectionDate, order.specimenDto.collectionDate);
+        assertEquals (reportDataJson.patientInfo.reportSpecimenArrivalDate,
+                      order.specimenDto.approvedDate.toLocalDate ());
         assertEquals (order.orderTestId, reportDataJson.patientInfo.reportSampleOrderTestId);
         assertEquals (reportDataJson.patientInfo.orderNumber, order.orderNumber);
         assertEquals (reportDataJson.patientInfo.institutionName, order.physician.accountName);
@@ -345,8 +332,8 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         validatePdfContent (fileContent,
                             join (" ",
                                   SpecimenType.Blood + " / " + SpecimenSource.Blood,
-                                  order.specimenDto.collectionDate.toString (),
-                                  order.specimenDto.arrivalDate.split ("\\s+")[0],
+                                  formatDt1.format ((LocalDate) order.specimenDto.collectionDate),
+                                  formatDt1.format (order.specimenDto.approvedDate),
                                   order.specimenDto.specimenNumber));
 
         validatePdfContent (fileContent, "ICD CODE(S)");
@@ -357,27 +344,6 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         validatePdfContent (fileContent, "ORDERING PHYSICIAN INSTITUTION");
         validatePdfContent (fileContent, order.physician.accountName);
         validatePdfContent (fileContent, order.physician.providerFullName);
-    }
-
-    private String getTextFromPDF (String url, int pageNumber) {
-        String pdfFileLocation = join ("/", downloadDir, substringBefore (substringAfterLast (url, "/"), "?"));
-        info ("PDF File Location: " + pdfFileLocation);
-
-        // get file from URL and save it
-        coraApi.get (url, pdfFileLocation);
-
-        // read PDF and extract text
-        PdfReader reader = null;
-        String fileContent = null;
-        try {
-            reader = new PdfReader (pdfFileLocation);
-            fileContent = PdfTextExtractor.getTextFromPage (reader, pageNumber);
-        } catch (IOException e) {
-            throw new RuntimeException (e);
-        } finally {
-            reader.close ();
-        }
-        return fileContent;
     }
 
     /**

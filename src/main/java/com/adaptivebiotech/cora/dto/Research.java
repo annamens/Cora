@@ -3,8 +3,9 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
-import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 
 /**
@@ -26,11 +27,7 @@ public final class Research {
 
     @Override
     public String toString () {
-        try {
-            return mapper.writeValueAsString (this);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        }
+        return toStringOverride (this);
     }
 
     public static final class ScenarioConfig {
@@ -38,11 +35,7 @@ public final class Research {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
     }
 
@@ -54,18 +47,14 @@ public final class Research {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
     }
 
     public static final class Project {
 
-        public String  id;
-        public String  accountId;
+        public UUID    id;
+        public UUID    accountId;
         public String  name;
         public String  stage;
         public String  customerTrialNumber;
@@ -78,11 +67,7 @@ public final class Research {
 
         @Override
         public String toString () {
-            try {
-                return mapper.writeValueAsString (this);
-            } catch (Exception e) {
-                throw new RuntimeException (e);
-            }
+            return toStringOverride (this);
         }
     }
 }

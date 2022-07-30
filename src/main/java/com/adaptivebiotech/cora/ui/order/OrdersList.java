@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderCategory.Diagnostic;
 import static com.adaptivebiotech.cora.utils.PageHelper.DateRange.Last30;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
@@ -125,7 +126,9 @@ public class OrdersList extends CoraPage {
         return new Orders (waitForElements ("[ng-repeat-start='orderTest in ctrl.orderTests']").stream ().map (el -> {
             Order o = new Order ();
             o.name = getText (el, "[ng-bind='::orderTest.orderName']");
-            o.id = substringAfterLast (getAttribute (el, "[ng-bind='::orderTest.orderName']", "href"), "ordertestid=");
+
+            String href = getAttribute (el, "[ng-bind='::orderTest.orderName']", "href");
+            o.id = fromString (substringAfterLast (href, "ordertestid="));
             o.tests.add (new OrderTest (getAssay (getText (el, "[ng-bind='::orderTest.testName']"))));
 
             Patient patient = new Patient ();

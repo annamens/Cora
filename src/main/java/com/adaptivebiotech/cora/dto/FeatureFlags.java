@@ -12,10 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public final class FeatureFlags {
 
-    @JsonProperty ("Dingo-diagUploadPathologyOrder")
-    public boolean dingoDiagUploadPathologyOrder;
     @JsonProperty ("Entlebucher-lomnDocusign")
     public boolean lomnDocusign;
+    public boolean cfDNA;
 
     @Override
     public String toString () {
