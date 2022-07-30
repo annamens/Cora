@@ -11,16 +11,21 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRB;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRG;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
+import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
+import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.NorthQC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_CONSULTANT;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
+import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.RELEASED;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 import org.testng.annotations.BeforeMethod;
@@ -31,6 +36,7 @@ import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -39,7 +45,7 @@ import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
 
-@Test (groups = { "regression", "golden-retriever" }) // not golden-retriever anymore
+@Test (groups = { "regression", "havanese" })
 public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
 
     private Login          login       = new Login ();
@@ -66,12 +72,18 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         OrderTest trackingTest = createBCellOrderTest (MRD_BCell2_CLIA, patient);
 
         verifyAutoReleaseSuccess (ivdTest);
+        testLog ("SR-9504:R1: B-cell 2.0 Clonality (IVD) autoreleased");
         verifyAutoReleaseSuccess (cliaTest);
+        testLog ("SR-9504:R1: B-cell 2.0 Clonality (CLIA) autoreleased");
         verifyAutoReleaseSuccess (iuoCliaTest);
+        testLog ("SR-9504:R1: B-cell 2.0 Clonality (IUO CLIA-extract) autoreleased");
         verifyAutoReleaseSuccess (iuoFlexTest);
+        testLog ("SR-9504:R1: B-cell 2.0 Clonality (IUO flex-extract) autoreleased");
         verifyAutoReleaseSuccess (iuoIvdTest);
+        testLog ("SR-9504:R1: B-cell 2.0 Clonality (IUO IVD-extract) autoreleased");
         verifyAutoReleaseFailure (trackingTest,
                                   "Failed Auto Release Rules: Auto Release is not enabled for this SKU.");
+        testLog ("SR-9504:R1: B-cell 2.0 Tracking (CLIA) failed autorelease");
     }
 
     /**
@@ -81,8 +93,12 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         Diagnostic diagnostic = createTCellOrder ();
         OrderTest testTCRB = diagnostic.findOrderTest (ID_TCRB);
         OrderTest testTCRG = diagnostic.findOrderTest (ID_TCRG);
-        verifyNoAutoRelease (testTCRB);
-        verifyNoAutoRelease (testTCRG);
+        verifyAutoReleaseFailure (testTCRB,
+                                  "Failed Auto Release Rules: Auto Release is not enabled for this SKU.");
+        testLog ("SR-9504:R1: TCRB Clonality (CLIA) failed autorelease");
+        verifyAutoReleaseFailure (testTCRG,
+                                  "Failed Auto Release Rules: Auto Release is not enabled for this SKU.");
+        testLog ("SR-9504:R1: TCRG Clonality (CLIA) failed autorelease");
     }
 
     /**
@@ -94,73 +110,98 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         OrderTest lomnAlertTest = createBCellOrderTest ();
         OrderTest correctedReportAlertTest = createBCellOrderTest ();
 
-        // could probably handle this better
         setPatientAlert ("insurance_anomaly", patient);
         setOrderAlert ("lomn_required", lomnAlertTest);
-        setOrderAlert ("corrected_report_ready", correctedReportAlertTest); // is this right?
+        setOrderAlert ("corrected_report_ready", correctedReportAlertTest);
         verifyAutoReleaseSuccess (insuranceAlertTest);
+        testLog ("SR-9504:R3: Report with insurance anomaly patient alert autoreleased");
         verifyAutoReleaseSuccess (lomnAlertTest);
-        verifyAutoReleaseFailure (correctedReportAlertTest, "i dunno placeholder");
+        testLog ("SR-9504:R3: Report with LOMN required order alert autoreleased");
+        verifyAutoReleaseFailure (correctedReportAlertTest,
+                                  "Failed Auto Release Rules: HasNoAlerts expected AlertType to not contain one of [Risk Acknowledgement Letter,Corrected Report,Clinical Consultation,High Sharing,cfDNA report with prior gDNA,censored low uniqueness clones,Clonality (ID) Order Needed,Pathology report needed].");
+        testLog ("SR-9504:R2,R3: Report with corrected report order alert failed autoreleased");
     }
 
     /**
      * @sdlc.requirements SR-9504:R4
      */
     public void reportNotes () {
-        // boilerplate
-        CoraTest test = genCDxTest (ID_BCell2_CLIA, azTsvPath + "/above-loq.id.tsv.gz");
-        test.workflowProperties.reportNotes = "testnotes";
-        Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildCdxOrder (patient,
-                                               "C91.00",
-                                               stage (SecondaryAnalysis, Ready),
-                                               test);
-        assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
-        OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
-        verifyAutoReleaseFailure (orderTest,
-                                  "i dunno placeholder");
+        String reportNote = "testing report notes autorelease";
+        OrderTest test = createBCellOrderTest ();
+        waitForReportGeneration (test);
+        report.enterReportNotes (reportNote);
+        report.setQCstatus (QC.Pass);
+        assertEquals (report.getReportNotes (), reportNote);
+        history.gotoOrderDebug (test.sampleName);
+        history.waitForActorPickup (ClonoSEQReport, "svc_test_orca");
+        verifyAutoReleaseFailureMessage ("Failed Auto Release Rules: HasNoClinicalReportNotes expected clinicalReportNote to be blank.");
+        testLog ("SR-9504:R4: Report with report notes failed autorelease");
     }
 
     /**
      * @sdlc.requirements SR-9504:R5
      */
     public void validIcdCodes () {
+        String codes = "C90.00,C83.1,C82.9,C83.3,C90.1,C90.2";
         OrderTest test = createBCellOrderTest (ID_BCell2_CLIA,
                                                scenarioBuilderPatient (),
-                                               "C90.00,C83.1,C82.9,C83.3,C90.1,C90.2");
+                                               codes);
         verifyAutoReleaseSuccess (test);
+        testLog ("SR-9504:R5: Report autoreleased for order containing the following ICD codes: " + codes);
     }
 
     /**
      * @sdlc.requirements SR-9504:R5
      */
     public void invalidIcdCodes () {
-        OrderTest test = createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), "C90.00,W61.62XD");
-        verifyAutoReleaseFailure (test,
-                                  "i dunno placeholder");
+        String icdErrorMessage = "Failed Auto Release Rules: Rule IsAcceptedICDCodes expected Icd10Codes to match pattern ^C90\\\\.[012]|^C83\\\\.[13]|^C82\\\\.9(.*)$.";
+        String cPrefixCodes = "C90.0,C91.0";
+        OrderTest cPrefixCodesTest = createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), cPrefixCodes);
+        verifyAutoReleaseFailure (cPrefixCodesTest, icdErrorMessage);
+        testLog ("SR-9504:R5: Report failed autorelease for order containing the following ICD codes: " + cPrefixCodes);
     }
 
     /**
      * @sdlc.requirements SR-9504:R6
      */
-    public void multipleIDs () {
+    public void priorBCellID () {
         Patient patient = scenarioBuilderPatient ();
         OrderTest firstID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        waitForReportGeneration (firstID);
+        report.releaseReport (ID_BCell2_CLIA, Pass);
         OrderTest secondID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
-        verifyAutoReleaseSuccess (firstID);
-        // non-cancelled B-cell clonality ID order test with no results succeeds
-        verifyAutoReleaseFailure (secondID, "i dunno placeholder");
+        verifyAutoReleaseFailure (secondID,
+                                  "Failed Auto Release Rules: HasNoCompletedClonalityTests expects BCell to be false.");
+        testLog ("SR-9504:R6: Report failed autorelease for Bcell ID with prior completed Bcell ID");
     }
 
     /**
      * @sdlc.requirements SR-9504:R6
      */
-    public void priorCancelledID () {
-        OrderTest cancelledTest = createBCellOrderTest ();
-        OrderTest secondTest = createBCellOrderTest ();
-        orderDetail.gotoOrderDetailsPage (cancelledTest.orderId);
+    public void priorNoResultBCellID () {
+        Patient patient = scenarioBuilderPatient ();
+        OrderTest priorFailedID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        orderStatus.gotoOrderStatusPage (priorFailedID.orderId);
+        orderStatus.isCorrectPage ();
+        orderStatus.failWorkflow (priorFailedID.sampleName, "testing prior no result autorelease");
+        waitForReportGeneration (priorFailedID);
+        report.releaseReport (ID_BCell2_CLIA, Pass);
+        OrderTest secondID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        verifyAutoReleaseSuccess (secondID);
+        testLog ("SR-9504:R6: Report autoreleased for Bcell ID with prior Bcell ID that had no result");
+    }
+
+    /**
+     * @sdlc.requirements SR-9504:R6
+     */
+    public void priorCancelledBCellID () {
+        Patient patient = scenarioBuilderPatient ();
+        OrderTest priorCancelledID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        orderDetail.gotoOrderDetailsPage (priorCancelledID.orderId);
         orderDetail.clickCancelOrder ();
+        OrderTest secondTest = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
         verifyAutoReleaseSuccess (secondTest);
+        testLog ("SR-9504:R6: Report autoreleased for Bcell ID with prior cancelled Bcell ID");
     }
 
     /**
@@ -168,26 +209,53 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
      */
     public void priorTcellID () {
         Diagnostic diagnostic = createTCellOrder ();
-        OrderTest test = createBCellOrderTest (ID_BCell2_CLIA, diagnostic.patient, "C90.00");
-        verifyAutoReleaseSuccess (test);
+        waitForReportGeneration (diagnostic.findOrderTest (ID_TCRB));
+        report.releaseReport (ID_TCRB, Pass);
+        waitForReportGeneration (diagnostic.findOrderTest (ID_TCRG));
+        report.releaseReport (ID_TCRG, Pass);
+        OrderTest bCellTest = createBCellOrderTest (ID_BCell2_CLIA, diagnostic.patient, "C90.00");
+        verifyAutoReleaseSuccess (bCellTest);
+        testLog ("SR-9504:R6: Report autoreleased for Bcell ID with prior Tcell ID");
     }
 
-    /**
-     * @sdlc.requirements SR-9504:R7
-     */
-    public void noResult () {
-        OrderTest test = createBCellOrderTest ();
-        orderStatus.gotoOrderStatusPage (test.orderId);
-        orderStatus.isCorrectPage ();
-        orderStatus.failWorkflow (test.sampleName, "testing no result autorelease");
-        verifyAutoReleaseFailure (test, "placeholder i dunno");
+    private void waitForReportGeneration (OrderTest orderTest) {
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
+        history.clickOrderTest ();
+        Assay assay = Assay.getAssay (orderTest.test.name);
+        report.clickReportTab (assay);
+        if (orderTest.test.receptorFamily.equals ("TCell")) {
+            report.generateReport (assay);
+        }
     }
 
-    // public void polyclonal() {
-    // // maybe this one?
-    // s3://pipeline-north-production-archive:us-west-2/210602_NB552492_0027_AH3GK5BGXJ/v3.1/20210604_2027/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3GK5BGXJ_0_CLINICAL-CLINICAL_102589-01MC-B20-229.adap.txt.results.tsv.gz
-    //
-    // }
+    private void verifyAutoReleaseSuccess (OrderTest orderTest) {
+        waitForReportGeneration (orderTest);
+        report.setQCstatus (QC.Pass);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.waitForActorPickup (ClonoSEQReport, "svc_test_orca");
+        Stage autoreleasedStage = history.parseStatusHistory ().stream ()
+                                         .filter (stage -> stage.stageName == ClonoSEQReport && stage.stageStatus == Finished && stage.stageSubstatus == RELEASED && stage.actor.contains ("svc_test_orca"))
+                                         .findFirst ().orElse (null);
+        assertNotNull (autoreleasedStage, "Autorelease success not found");
+    }
+
+    private void verifyAutoReleaseFailure (OrderTest orderTest, String failureMessage) {
+        waitForReportGeneration (orderTest);
+        report.setQCstatus (QC.Pass);
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.waitForActorPickup (ClonoSEQReport, "svc_test_orca");
+        verifyAutoReleaseFailureMessage (failureMessage);
+    }
+
+    private void verifyAutoReleaseFailureMessage (String failureMessage) {
+        Stage failureStage = history.parseStatusHistory ().stream ()
+                                    .filter (stage -> stage.stageName == ClonoSEQReport && stage.stageStatus == Awaiting && stage.stageSubstatus == CLINICAL_CONSULTANT && stage.actor.contains ("svc_test_orca"))
+                                    .findFirst ().orElse (null);
+        assertNotNull (failureStage, "Autorelease failure not found");
+        assertEquals (failureStage.subStatusMessage,
+                      failureMessage);
+    }
 
     private void setPatientAlert (String alertTypeName, Patient patient) {
         Alert alert = new Alert ();
@@ -208,15 +276,15 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     }
 
     private OrderTest createBCellOrderTest () {
-        return createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), "C91.00");
+        return createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), "C90.0");
     }
 
     private OrderTest createBCellOrderTest (Assay sku) {
-        return createBCellOrderTest (sku, scenarioBuilderPatient (), "C91.00");
+        return createBCellOrderTest (sku, scenarioBuilderPatient (), "C90.0");
     }
 
     private OrderTest createBCellOrderTest (Assay sku, Patient patient) {
-        return createBCellOrderTest (sku, patient, "C91.00");
+        return createBCellOrderTest (sku, patient, "C90.0");
     }
 
     private OrderTest createBCellOrderTest (Assay sku, Patient patient, String icdCodes) {
@@ -242,41 +310,4 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         return diagnostic;
     }
 
-    private void verifyAutoReleaseSuccess (OrderTest orderTest) {
-        history.gotoOrderDebug (orderTest.sampleName);
-        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        history.clickOrderTest ();
-        report.clickReportTab (Assay.getAssay (orderTest.test.name));
-        report.setQCstatus (QC.Pass);
-        history.gotoOrderDebug (orderTest.sampleName);
-        // this doesn't work yet
-        // history.waitFor (ClonoSEQReport, Finished, RELEASED);
-    }
-
-    private void verifyAutoReleaseFailure (OrderTest orderTest, String failureMessage) {
-        history.gotoOrderDebug (orderTest.sampleName);
-        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        history.clickOrderTest ();
-        report.clickReportTab (Assay.getAssay (orderTest.test.name));
-        report.setQCstatus (QC.Pass);
-        // this doesn't work yet
-        // history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_CONSULTANT, failureMessage);
-    }
-
-    private void verifyNoAutoRelease (OrderTest orderTest) {
-        history.gotoOrderDebug (orderTest.sampleName);
-        history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        history.clickOrderTest ();
-        Assay assay = Assay.getAssay (orderTest.test.name);
-        report.clickReportTab (Assay.getAssay (orderTest.test.name));
-        report.generateReport (assay);
-        report.setQCstatus (QC.Pass);
-        // wait 30 seconds to see if workflow update occurs
-        doWait (30000);
-        history.gotoOrderDebug (orderTest.sampleName);
-        assertTrue (history.isTopLevelStagePresent (ClonoSEQReport,
-                                                    Awaiting,
-                                                    CLINICAL_CONSULTANT,
-                                                    "Waiting for report to be released."));
-    }
 }

@@ -129,6 +129,22 @@ public class OrcaHistory extends CoraPage {
             fail (format (fail, stage, status));
     }
 
+    public void waitForActorPickup (StageName stage, String actor) {
+        String fail = "unable to locate Stage: %s, Actor: %s";
+        String xpath = "//table[@class='genoTable']//td[text()='%s']/../td[contains(text(), '%s')]";
+        String check = format (xpath, stage, actor);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
+        boolean found = false;
+        String orcaHistoryUrl = getCurrentUrl ();
+        while (!timer.Timedout () && ! (found = isElementPresent (check))) {
+            doForceClaim (orcaHistoryUrl);
+            timer.Wait ();
+            refresh ();
+        }
+        if (!found)
+            fail (format (fail, stage, actor));
+    }
+
     public boolean isStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
         String xpath = "//table[@class='genoTable']//td[text()='%s']/../td[text()='%s']/../td[contains (text(),'%s')]";
         return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
