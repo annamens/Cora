@@ -207,6 +207,10 @@ public class NewOrderClonoSeq extends NewOrder {
         return isNotBlank (compartmentVal) ? Compartment.getCompartment (compartmentVal) : null;
     }
 
+    public boolean isCompartmentEnabled () {
+        return waitForElement (compartment).isEnabled ();
+    }
+
     public void enterAntiCoagulant (Anticoagulant anticoagulantEnum) {
         assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
     }
@@ -221,6 +225,12 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void enterSpecimenSource (SpecimenSource source) {
         assertTrue (clickAndSelectValue (specimenSource, source.name ()));
+    }
+
+    // TODO use isEnabled after SR-12204 is complete
+    public boolean isSpecimenSourceEnabled () {
+        String data = getAttribute (specimenSource, "readOnly");
+        return isNotBlank (data) ? !data.equals ("true") : false;
     }
 
     public void enterSpecimenSourceOther (String source) {
@@ -239,6 +249,10 @@ public class NewOrderClonoSeq extends NewOrder {
         return isElementVisible (uniqueSpecimenId) ? readInput (uniqueSpecimenId) : null;
     }
 
+    public boolean isUniqueSpecimenIdEnabled () {
+        return waitForElement (uniqueSpecimenId).isEnabled ();
+    }
+
     public void enterRetrievalDate (String date) {
         assertTrue (setText (retrievalDate, date));
     }
@@ -246,6 +260,10 @@ public class NewOrderClonoSeq extends NewOrder {
     public LocalDateTime getRetrievalDate () {
         String data = isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
         return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt1) : null;
+    }
+
+    public boolean isRetrievalDateEnabled () {
+        return waitForElement (uniqueSpecimenId).isEnabled ();
     }
 
     public void closeTestSelectionWarningModal () {
