@@ -9,6 +9,7 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -18,8 +19,8 @@ import static com.adaptivebiotech.test.utils.DateHelper.utcZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
-import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -63,6 +64,7 @@ public class CfDNATestSuite extends NewOrderTestBase {
     private OrderDetailClonoSeq     orderDetailClonoSeq  = new OrderDetailClonoSeq ();
     private ReportClonoSeq          reportClonoSeq       = new ReportClonoSeq ();
     private OrcaHistory             orcaHistory          = new OrcaHistory ();
+    private ThreadLocal <String>    downloadDir          = new ThreadLocal <> ();
 
     private final String            noResultsAvailable   = "No result available";
     private final String            mrdResultDescription = "This sample failed the quality control criteria despite multiple sequencing attempts, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
@@ -72,11 +74,9 @@ public class CfDNATestSuite extends NewOrderTestBase {
 
     private final String[]          icdCodes             = { "C90.00" };
 
-    private String                  downloadDir;
-
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
-        downloadDir = artifacts (this.getClass ().getName (), test.getName ());
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
         login.doLogin ();
         ordersList.isCorrectPage ();
     }
@@ -211,37 +211,27 @@ public class CfDNATestSuite extends NewOrderTestBase {
                                                             Active,
                                                             Tube);
         String sampleName = orderDetailClonoSeq.getSampleName (assayTest);
-
-        generateFailureReport (order.orderNumber, sampleName, assayTest);
-
-        validateReportDescription (assayTest);
-    }
-
-    private void generateFailureReport (String orderNumber, String sampleName, Assay assayTest) {
         orcaHistory.gotoOrderDebug (sampleName);
         orcaHistory.forceStatusUpdate (StageName.Clarity, StageStatus.Failed);
-        testLog ("Order No: " + orderNumber + ", forced status updated to Clarity -> Failed");
+        testLog ("Order No: " + order.orderNumber + ", forced status updated to Clarity -> Failed");
         orcaHistory.waitFor (StageName.ClonoSEQReport, StageStatus.Awaiting, StageSubstatus.CLINICAL_QC);
         orcaHistory.clickOrderTest ();
         orderDetailClonoSeq.clickReportTab (assayTest);
         reportClonoSeq.releaseReport (assayTest, QC.Pass);
-        testLog ("Order Number: " + orderNumber + ", Released Report, Failure Report Generated");
+        testLog ("Order Number: " + order.orderNumber + ", Released Report, Failure Report Generated");
 
         orcaHistory.gotoOrderDebug (sampleName);
         orcaHistory.waitFor (StageName.ReportDelivery, StageStatus.Finished, StageSubstatus.ALL_SUCCEEDED);
         testLog ("New Clonality (ID) order needed alert should be triggered");
+
         orcaHistory.clickOrderTest ();
-
-    }
-
-    private void validateReportDescription (Assay assayTest) {
         orderDetailClonoSeq.clickReportTab (assayTest);
-        String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
-        info ("PDF File URL: " + pdfUrl);
-        String extractedText = getTextFromPDF (downloadDir, pdfUrl, 1);
-        System.out.println ("Extracted Text:\n" + extractedText);
+
+        String pdfFileLocation = join ("/", downloadDir.get (), sampleName + ".pdf");
+        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
+
+        String extractedText = getTextFromPDF (pdfFileLocation, 1);
         assertTrue (extractedText.contains (noResultsAvailable));
         assertTrue (extractedText.contains (mrdResultDescription));
     }
-
 }
