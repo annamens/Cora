@@ -391,9 +391,9 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (params)), Alert[].class);
     }
 
-    public Alert[] getAlertsForPatientId (String patientId) {
+    public Alert[] getAlertsForPatientId (UUID patientId) {
         String url = coraTestUrl + "/cora/api/v2/alerts/searchUnpaged";
-        Map <String, List <String>> params = new HashMap <> ();
+        Map <String, List <UUID>> params = new HashMap <> ();
         params.put ("referencedEntityIds", Arrays.asList (patientId));
         return mapper.readValue (post (url, body (params)), Alert[].class);
     }
