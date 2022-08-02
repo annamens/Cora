@@ -21,7 +21,7 @@ public class CompareBillingModule extends CoraPage {
     }
 
     public void clickCancel () {
-        String css = ".modal-footer .btn.btn-link"; // ick
+        String css = ".modal-footer .btn.btn-link";
         assertTrue (click (css));
     }
 }

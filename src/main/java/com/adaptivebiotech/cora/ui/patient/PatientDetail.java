@@ -91,8 +91,6 @@ public class PatientDetail extends PatientHeader {
         return getText (xpath);
     }
 
-    // edit patient insurance popup
-
     public void setBillingType (String billingType) {
         String css = "#billingType";
         assertTrue (clickAndSelectText (css, billingType));
@@ -126,8 +124,6 @@ public class PatientDetail extends PatientHeader {
         assertTrue (click ("[type='submit']"));
         moduleLoading ();
     }
-
-    // edit patient contact information
 
     public void enterAddressLine1 (String address) {
         String css = "#address";
