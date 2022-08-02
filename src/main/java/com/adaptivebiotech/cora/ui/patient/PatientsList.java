@@ -43,9 +43,8 @@ public class PatientsList extends CoraPage {
         }).collect (toList ());
     }
 
-    public void clickFirstPatient () {
-        // ick
-        String css = "patient-list > div > table > tbody > tr > td:nth-child(1) > a";
+    public void clickPatient (int idx) {
+        String css = "patient-list tbody tr:nth-child(" + idx + ") td:nth-child(1) a";
         assertTrue (click (css));
         pageLoading ();
     }

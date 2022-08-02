@@ -665,7 +665,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
         reportClonoSeq.isCorrectPage ();
         reportClonoSeq.setQCstatus (Fail);
 
-        // we will jave multiple ClonoSEQReport/Awaiting/CLINICAL_QC stages, look for the last one
+        // we will have multiple ClonoSEQReport/Awaiting/CLINICAL_QC stages, look for the last one
         history.gotoOrderDebug (orderDetails.specimenDto.sampleName);
         history.waitForTopLevel (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
