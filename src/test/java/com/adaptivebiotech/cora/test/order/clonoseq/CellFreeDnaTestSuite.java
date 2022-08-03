@@ -54,7 +54,7 @@ import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
  *
  */
 @Test (groups = { "clonoSeq", "regression", "golden-retriever" })
-public class CfDNATestSuite extends NewOrderTestBase {
+public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
     private Login                   login                = new Login ();
     private OrdersList              ordersList           = new OrdersList ();
@@ -133,11 +133,15 @@ public class CfDNATestSuite extends NewOrderTestBase {
         UUID shipmentId = accession.getShipmentId ();
         accession.clickIntakeComplete ();
         accession.clickLabelingComplete ();
-        accession.clickLabelVerificationComplete ();
-        testLog ("Label verification Complete");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
+        validateSpecimenSectionFields (true, false);
         assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
+        testLog ("Validate Specimen fields are enabled before Specimen activation");
+
+        accession.gotoAccession (shipmentId);
+        accession.clickLabelVerificationComplete ();
+        testLog ("Label verification Complete");
 
         Instant instant = Instant.ofEpochMilli (System.currentTimeMillis ());
         String utcDateTime = LocalDateTime.ofInstant (instant, utcZoneId).format (formatDt8);
@@ -145,14 +149,19 @@ public class CfDNATestSuite extends NewOrderTestBase {
         int updateCount = coraDb.executeUpdate (format (updateQuery, utcDateTime, order.id));
         assertEquals (updateCount, 1);
         newOrderClonoSeq.gotoOrderEntry (order.id);
+        validateSpecimenSectionFields (false, false);
         assertEquals (newOrderClonoSeq.getSpecimenActivationDate ().format (formatDt7), pstDateTime);
-        testLog ("Specimen Activation Date is present");
+        testLog ("Specimen Activation Date is present and specimen fields are disabled");
 
         accession.gotoAccession (shipmentId);
         accession.clickPass ();
         testLog ("Specimen Pass");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
+        validateSpecimenSectionFields (false, false);
+        assertEquals (newOrderClonoSeq.getSpecimenActivationDate ().format (formatDt7), pstDateTime);
+        testLog ("Specimen Activation Date is present and specimen fields are disabled");
+
         newOrderClonoSeq.activateOrder ();
         testLog ("Activate Order");
 
@@ -182,18 +191,30 @@ public class CfDNATestSuite extends NewOrderTestBase {
         UUID shipmentId = accession.getShipmentId ();
         accession.clickIntakeComplete ();
         accession.clickLabelingComplete ();
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        validateSpecimenSectionFields (true, false);
+        assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
+        testLog ("Validate Specimen fields are enabled before Specimen activation");
+
+        accession.gotoAccession (shipmentId);
         accession.clickLabelVerificationComplete ();
         testLog ("Label verification Complete");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
+        validateSpecimenSectionFields (true, false);
         assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
-        testLog ("Specimen Activation Date is not present");
+        testLog ("Specimen Activation Date is not present and specimen fields are enabled");
 
         accession.gotoAccession (shipmentId);
         accession.clickPass ();
         testLog ("Specimen Pass");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
+        validateSpecimenSectionFields (true, false);
+        assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
+        testLog ("Specimen Activation Date is not present and specimen fields are enabled");
+
         newOrderClonoSeq.activateOrder ();
         testLog ("Activate Order");
 
@@ -234,4 +255,16 @@ public class CfDNATestSuite extends NewOrderTestBase {
         assertTrue (extractedText.contains (noResultsAvailable));
         assertTrue (extractedText.contains (mrdResultDescription));
     }
+
+    private void validateSpecimenSectionFields (boolean allFields, boolean specimenSource) {
+        assertEquals (newOrderClonoSeq.isSpecimenDeliveryEnabled (), allFields);
+        assertEquals (newOrderClonoSeq.isSpecimenTypeEnabled (), allFields);
+        assertEquals (newOrderClonoSeq.isCompartmentEnabled (), allFields);
+        assertEquals (newOrderClonoSeq.isAnticoagulantEnabled (), allFields);
+        assertEquals (newOrderClonoSeq.isCollectionDateEnabled (), allFields);
+        assertEquals (newOrderClonoSeq.isUniqueSpecimenIdEnabled (), allFields);
+        assertEquals (newOrderClonoSeq.isRetrievalDateEnabled (), allFields);
+        assertEquals (newOrderClonoSeq.isSpecimenSourceEnabled (), specimenSource);
+    }
+
 }

@@ -419,12 +419,20 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (specimenType) ? SpecimenType.getSpecimenType (getFirstSelectedText (specimenType)) : null;
     }
 
+    public boolean isSpecimenTypeEnabled () {
+        return waitForElement (specimenType).isEnabled ();
+    }
+
     public SpecimenSource getSpecimenSource () {
         return isElementVisible (specimenSource) ? SpecimenSource.valueOf (readInput (specimenSource)) : null;
     }
 
     public Anticoagulant getAnticoagulant () {
         return isElementVisible (anticoagulant) ? Anticoagulant.valueOf (getFirstSelectedText (anticoagulant)) : null;
+    }
+
+    public boolean isAnticoagulantEnabled () {
+        return waitForElement (anticoagulant).isEnabled ();
     }
 
     protected String getReconciliationDate () {
@@ -483,6 +491,10 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (collectionDate) ? LocalDate.parse (readInput (collectionDate), formatDt2) : null;
     }
 
+    public boolean isCollectionDateEnabled () {
+        return waitForElement (collectionDate).isEnabled ();
+    }
+
     public String getCollectionDateErrorMsg () {
         String locator = join (" + ", collectionDate, textDanger);
         return isElementVisible (locator) ? getText (locator) : null;
@@ -539,6 +551,10 @@ public abstract class NewOrder extends OrderHeader {
 
     public DeliveryType getSpecimenDelivery () {
         return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
+    }
+
+    public boolean isSpecimenDeliveryEnabled () {
+        return waitForElement (specimenDelivery).isEnabled ();
     }
 
     public List <String> getSpecimenDeliveryOptions () {
