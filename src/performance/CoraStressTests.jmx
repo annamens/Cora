@@ -26,12 +26,12 @@
           </elementProp>
           <elementProp name="apiUsername" elementType="Argument">
             <stringProp name="Argument.name">apiUsername</stringProp>
-            <stringProp name="Argument.value">svc_test_orca</stringProp>
+            <stringProp name="Argument.value">kesmith</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="apiPassword" elementType="Argument">
             <stringProp name="Argument.name">apiPassword</stringProp>
-            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.value">adaptEnter45!</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="protocol" elementType="Argument">
@@ -66,7 +66,7 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">10</stringProp>
+          <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
@@ -138,7 +138,7 @@ JMeterUtils.setProperty(&quot;apiToken&quot;, accessToken);</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
-        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
       </ThreadGroup>
       <hashTree>
         <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Get AccessToken" enabled="true">
