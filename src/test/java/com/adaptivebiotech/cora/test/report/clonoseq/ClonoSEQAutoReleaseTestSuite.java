@@ -87,21 +87,6 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     }
 
     /**
-     * @sdlc.requirements SR-9504:R1
-     */
-    public void tCellSKU () {
-        Diagnostic diagnostic = createTCellOrder ();
-        OrderTest testTCRB = diagnostic.findOrderTest (ID_TCRB);
-        OrderTest testTCRG = diagnostic.findOrderTest (ID_TCRG);
-        verifyAutoReleaseFailure (testTCRB,
-                                  "Failed Auto Release Rules: Auto Release is not enabled for this SKU.");
-        testLog ("SR-9504:R1: TCRB Clonality (CLIA) failed autorelease");
-        verifyAutoReleaseFailure (testTCRG,
-                                  "Failed Auto Release Rules: Auto Release is not enabled for this SKU.");
-        testLog ("SR-9504:R1: TCRG Clonality (CLIA) failed autorelease");
-    }
-
-    /**
      * @sdlc.requirements SR-9504:R2, SR-9504:R3
      */
     public void alerts () {
@@ -128,13 +113,9 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     public void reportNotes () {
         String reportNote = "testing report notes autorelease";
         OrderTest test = createBCellOrderTest ();
-        waitForReportGeneration (test);
-        report.enterReportNotes (reportNote);
-        report.setQCstatus (QC.Pass);
-        assertEquals (report.getReportNotes (), reportNote);
-        history.gotoOrderDebug (test.sampleName);
-        history.waitForActorPickup (ClonoSEQReport, "svc_test_orca");
-        verifyAutoReleaseFailureMessage ("Failed Auto Release Rules: HasNoClinicalReportNotes expected clinicalReportNote to be blank.");
+        verifyAutoReleaseFailure (test,
+                                  "Failed Auto Release Rules: HasNoClinicalReportNotes expected clinicalReportNote to be blank.",
+                                  reportNote);
         testLog ("SR-9504:R4: Report with report notes failed autorelease");
     }
 
@@ -154,7 +135,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
      * @sdlc.requirements SR-9504:R5
      */
     public void invalidIcdCodes () {
-        String icdErrorMessage = "Failed Auto Release Rules: Rule IsAcceptedICDCodes expected Icd10Codes to match pattern ^C90\\\\.[012]|^C83\\\\.[13]|^C82\\\\.9(.*)$.";
+        String icdErrorMessage = "Failed Auto Release Rules: Rule IsAcceptedICDCodes expected Icd10Codes to match pattern ^C90\\.[012]|^C83\\.[13]|^C82\\.9(.*)$.]";
         String cPrefixCodes = "C90.0,C91.0";
         OrderTest cPrefixCodesTest = createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), cPrefixCodes);
         verifyAutoReleaseFailure (cPrefixCodesTest, icdErrorMessage);
@@ -167,8 +148,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     public void priorBCellID () {
         Patient patient = scenarioBuilderPatient ();
         OrderTest firstID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
-        waitForReportGeneration (firstID);
-        report.releaseReport (ID_BCell2_CLIA, Pass);
+        verifyAutoReleaseSuccess (firstID);
         OrderTest secondID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
         verifyAutoReleaseFailure (secondID,
                                   "Failed Auto Release Rules: HasNoCompletedClonalityTests expects BCell to be false.");
@@ -205,14 +185,16 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     }
 
     /**
-     * @sdlc.requirements SR-9504:R6
+     * @sdlc.requirements SR-9504:R1, SR-9504:R6
      */
     public void priorTcellID () {
         Diagnostic diagnostic = createTCellOrder ();
-        waitForReportGeneration (diagnostic.findOrderTest (ID_TCRB));
-        report.releaseReport (ID_TCRB, Pass);
-        waitForReportGeneration (diagnostic.findOrderTest (ID_TCRG));
-        report.releaseReport (ID_TCRG, Pass);
+        verifyAutoReleaseFailure (diagnostic.findOrderTest (ID_TCRB),
+                                  "Failed Auto Release Rules: Auto Release is not enabled for this SKU.");
+        testLog ("SR-9504:R1: TCRB Clonality (CLIA) failed autorelease");
+        verifyAutoReleaseFailure (diagnostic.findOrderTest (ID_TCRG),
+                                  "Failed Auto Release Rules: Auto Release is not enabled for this SKU.");
+        testLog ("SR-9504:R1: TCRG Clonality (CLIA) failed autorelease");
         OrderTest bCellTest = createBCellOrderTest (ID_BCell2_CLIA, diagnostic.patient, "C90.00");
         verifyAutoReleaseSuccess (bCellTest);
         testLog ("SR-9504:R6: Report autoreleased for Bcell ID with prior Tcell ID");
@@ -241,14 +223,20 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     }
 
     private void verifyAutoReleaseFailure (OrderTest orderTest, String failureMessage) {
-        waitForReportGeneration (orderTest);
-        report.setQCstatus (QC.Pass);
-        history.gotoOrderDebug (orderTest.sampleName);
-        history.waitForActorPickup (ClonoSEQReport, "svc_test_orca");
-        verifyAutoReleaseFailureMessage (failureMessage);
+        verifyAutoReleaseFailure (orderTest, failureMessage, null);
     }
 
-    private void verifyAutoReleaseFailureMessage (String failureMessage) {
+    private void verifyAutoReleaseFailure (OrderTest orderTest, String failureMessage, String reportNote) {
+        waitForReportGeneration (orderTest);
+        if (reportNote != null) {
+            report.enterReportNotes (reportNote);
+            report.setQCstatus (QC.Pass);
+            assertEquals (report.getReportNotes (), reportNote);
+        } else {
+            report.setQCstatus (QC.Pass);
+        }
+        history.gotoOrderDebug (orderTest.sampleName);
+        history.waitForActorPickup (ClonoSEQReport, "svc_test_orca");
         Stage failureStage = history.parseStatusHistory ().stream ()
                                     .filter (stage -> stage.stageName == ClonoSEQReport && stage.stageStatus == Awaiting && stage.stageSubstatus == CLINICAL_CONSULTANT && stage.actor.contains ("svc_test_orca"))
                                     .findFirst ().orElse (null);
