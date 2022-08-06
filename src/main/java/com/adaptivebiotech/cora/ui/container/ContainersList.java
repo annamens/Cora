@@ -128,7 +128,7 @@ public class ContainersList extends CoraPage {
     public boolean containerIsDisplayed (Container container) {
         return containerRowsPresent () ? getContainers ().list.stream ()
                                                               .filter (parsedContainer -> parsedContainer.containerNumber.equals (container.containerNumber))
-                                                              .count () > 0 : false;
+                                                              .count () == 1 : false;
     }
 
     public Containers getContainers () {

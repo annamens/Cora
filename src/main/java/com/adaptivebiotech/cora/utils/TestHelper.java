@@ -71,7 +71,7 @@ public class TestHelper {
         container.id = fromString (testdata ().get ("dumbwaiter_id"));
         container.containerNumber = testdata ().get ("dumbwaiter_num");
         container.name = "1165 Dumbwaiter";
-        container.location = "1165 Dumbwaiter";
+        container.location = "1165 : 1165 Dumbwaiter";
         return container;
     }
 
@@ -89,16 +89,7 @@ public class TestHelper {
         container.id = fromString (testdata ().get ("AB018078_id"));
         container.containerNumber = testdata ().get ("AB018078_num");
         container.name = "AB018078 (4C) Right";
-        container.location = "1551 : RM 258 : AB018078 (4C) Right";
-        return container;
-    }
-
-    public static Container freezerAB039003 () {
-        Container container = new Container ();
-        container.id = fromString (testdata ().get ("AB039003_id"));
-        container.containerNumber = testdata ().get ("AB039003_num");
-        container.name = "AB039003 (Ambient)";
-        container.location = "RM 255 : AB039003 (Ambient)";
+        container.location = "1165 : RM 119 : AB018078 (4C) Right";
         return container;
     }
 
@@ -107,7 +98,7 @@ public class TestHelper {
         container.id = fromString (testdata ().get ("AB018018_id"));
         container.containerNumber = testdata ().get ("AB018018_num");
         container.name = "AB018018 (-20C)";
-        container.location = "RM 237 : AB018018 (-20C)";
+        container.location = "1551 : RM 237 : AB018018 (-20C)";
         return container;
     }
 
@@ -282,8 +273,6 @@ public class TestHelper {
         data.put ("AB018055_num", "CO-100001");
         data.put ("AB018078_id", "53ddaaf6-eeeb-46c5-8f58-4dfbfa83146e");
         data.put ("AB018078_num", "CO-297770");
-        data.put ("AB039003_id", "8fba58e9-6d78-4e0f-993a-63c7b9450494");
-        data.put ("AB039003_num", "CO-166946");
         data.put ("dumbwaiter_id", "eec8c896-0cbe-4531-83a6-da958c79c368");
         data.put ("dumbwaiter_num", "CO-724045");
         data.put ("AB018018_id", "2c37b67f-45c0-427d-8fa6-9d469d673fff");
