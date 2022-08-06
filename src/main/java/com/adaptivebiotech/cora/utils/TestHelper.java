@@ -107,7 +107,7 @@ public class TestHelper {
         container.id = fromString (testdata ().get ("AB018018_id"));
         container.containerNumber = testdata ().get ("AB018018_num");
         container.name = "AB018018 (-20C)";
-        container.location = "RM 243 : AB018018 (-20C)";
+        container.location = "RM 237 : AB018018 (-20C)";
         return container;
     }
 

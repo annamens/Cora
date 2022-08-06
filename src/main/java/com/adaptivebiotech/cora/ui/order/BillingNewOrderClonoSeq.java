@@ -5,7 +5,6 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Insurance.PatientStatus.NonHospital;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
-import static com.adaptivebiotech.cora.utils.PageHelper.AbnStatus.NotRequired;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
@@ -24,14 +23,8 @@ import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
  */
 public class BillingNewOrderClonoSeq extends BillingNewOrder {
 
-    private final String abnStatusSelect = "#abn-status-type";
-
     public BillingNewOrderClonoSeq (int staticNavBarHeight) {
         super.staticNavBarHeight = staticNavBarHeight;
-    }
-
-    public boolean isAbnStatusNotRequired () {
-        return (isTextInElement (abnStatus, NotRequired.label));
     }
 
     public BillingSurvey parseBillingQuestions () {
@@ -54,10 +47,11 @@ public class BillingNewOrderClonoSeq extends BillingNewOrder {
     }
 
     public AbnStatus getAbnStatus () {
-        if (isElementVisible (abnStatusSelect)) {
-            return getEnum (AbnStatus.class, getFirstSelectedValue (abnStatusSelect));
-        } else if (isElementVisible (abnStatus)) {
-            return AbnStatus.getAbnStatus (getText (abnStatus));
+        String css = "//label[text()='ABN Status']/..//div[1]";
+        if (isElementVisible (abnStatus)) {
+            return getEnum (AbnStatus.class, getFirstSelectedValue (abnStatus));
+        } else if (isElementVisible (css)) {
+            return AbnStatus.getAbnStatus (getText (css));
         } else {
             return null;
         }
