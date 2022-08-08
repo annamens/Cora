@@ -26,12 +26,12 @@
           </elementProp>
           <elementProp name="apiUsername" elementType="Argument">
             <stringProp name="Argument.name">apiUsername</stringProp>
-            <stringProp name="Argument.value">svc_test_orca</stringProp>
+            <stringProp name="Argument.value">kesmith</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="apiPassword" elementType="Argument">
             <stringProp name="Argument.name">apiPassword</stringProp>
-            <stringProp name="Argument.value"></stringProp>
+            <stringProp name="Argument.value">adaptEnter45!</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="protocol" elementType="Argument">
