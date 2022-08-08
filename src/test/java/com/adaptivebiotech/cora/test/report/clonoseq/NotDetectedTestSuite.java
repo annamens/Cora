@@ -20,6 +20,8 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
+import java.lang.reflect.Method;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -36,12 +38,17 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 @Test (groups = "regression")
 public class NotDetectedTestSuite extends ReportTestBase {
 
-    private final String   downloadDir = artifacts (this.getClass ().getName ());
-    private final String   analysisID  = getSystemResource ("SecondaryAnalysis/not-detected.id.json").getPath ();
-    private final String   analysisMRD = getSystemResource ("SecondaryAnalysis/not-detected.mrd.json").getPath ();
-    private Login          login       = new Login ();
-    private OrcaHistory    history     = new OrcaHistory ();
-    private ReportClonoSeq report      = new ReportClonoSeq ();
+    private final String         analysisID  = getSystemResource ("SecondaryAnalysis/not-detected.id.json").getPath ();
+    private final String         analysisMRD = getSystemResource ("SecondaryAnalysis/not-detected.mrd.json").getPath ();
+    private Login                login       = new Login ();
+    private OrcaHistory          history     = new OrcaHistory ();
+    private ReportClonoSeq       report      = new ReportClonoSeq ();
+    private ThreadLocal <String> downloadDir = new ThreadLocal <> ();
+
+    @BeforeMethod (alwaysRun = true)
+    public void beforeMethod (Method test) {
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
+    }
 
     public void verify_clia_report () {
         Patient patient = scenarioBuilderPatient ();
@@ -59,7 +66,7 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        String actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisID);
@@ -76,7 +83,7 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisMRD);
@@ -103,7 +110,7 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        String actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisID);
@@ -120,7 +127,7 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisMRD);

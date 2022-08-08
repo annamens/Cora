@@ -154,6 +154,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.retrievalDate = getRetrievalDate ();
         order.specimenDto.approvedDate = getSpecimenApprovalDate ();
         order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
+        order.specimenDto.activationDate = getSpecimenActivationDate ();
         order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
         order.intakeCompletedDate = getIntakeCompleteDate ();
         order.specimenDisplayContainerType = getSpecimenContainerType ();
@@ -211,6 +212,10 @@ public class NewOrderClonoSeq extends NewOrder {
         return isNotBlank (compartmentVal) ? Compartment.getCompartment (compartmentVal) : null;
     }
 
+    public boolean isCompartmentEnabled () {
+        return waitForElement (compartment).isEnabled ();
+    }
+
     public void enterAntiCoagulant (Anticoagulant anticoagulantEnum) {
         assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
     }
@@ -227,6 +232,12 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectValue (specimenSource, source.name ()));
     }
 
+    // TODO use isEnabled after SR-12204 is complete
+    public boolean isSpecimenSourceEnabled () {
+        String data = getAttribute (specimenSource, "readOnly");
+        return isNotBlank (data) ? !data.equals ("true") : false;
+    }
+
     public void enterSpecimenSourceOther (String source) {
         assertTrue (setText (specimenSourceOther, source));
     }
@@ -241,6 +252,10 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public String getUniqueSpecimenId () {
         return isElementVisible (uniqueSpecimenId) ? readInput (uniqueSpecimenId) : null;
+    }
+
+    public boolean isUniqueSpecimenIdEnabled () {
+        return waitForElement (uniqueSpecimenId).isEnabled ();
     }
 
     public void enterRetrievalDate (String date) {
@@ -262,6 +277,10 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public boolean isPathologyRetrievalSelected () {
         return findElement (specimenCoordination).isSelected ();
+    }
+
+    public boolean isRetrievalDateEnabled () {
+        return waitForElement (uniqueSpecimenId).isEnabled ();
     }
 
     public void closeTestSelectionWarningModal () {
@@ -327,6 +346,8 @@ public class NewOrderClonoSeq extends NewOrder {
 
         if (specimen.sampleSource != null)
             enterSpecimenSource (specimen.sampleSource);
+        if (specimen.compartment != null)
+            enterCompartment (specimen.compartment);
         if (specimen.anticoagulant != null)
             enterAntiCoagulant (specimen.anticoagulant);
         if (asList (CellPellet, CellSuspension).contains (specimen.sampleType))

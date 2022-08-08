@@ -6,12 +6,14 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.FailedActivation;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.ui.CoraPage;
@@ -74,23 +76,22 @@ public class OrderHeader extends CoraPage {
     }
 
     public void waitUntilActivated () {
-        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
+        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 5);
         OrderStatus orderStatus = getOrderStatus ();
         while (!timer.Timedout () && !orderStatus.equals (Active)) {
             if (orderStatus.equals (FailedActivation))
                 fail (format ("the order is '%s'", FailedActivation));
 
             timer.Wait ();
-            clickAccessionTab ();
-            clickOrderDetailsTab ();
+            refresh ();
             orderStatus = getOrderStatus ();
         }
         assertEquals (orderStatus, Active, "Order did not activated successfully");
     }
 
-    public String getPatientId () {
+    public UUID getPatientId () {
         String css = "//*[@class='summary']//a[*[@ng-bind='ctrl.orderEntry.order.patient.patientCode']]";
-        return substringAfterLast (getAttribute (css, "href"), "patient/");
+        return fromString (substringAfterLast (getAttribute (css, "href"), "patient/"));
     }
 
     public boolean isActiveAlertCountPresent () {

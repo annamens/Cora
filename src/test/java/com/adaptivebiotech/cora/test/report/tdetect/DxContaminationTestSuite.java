@@ -56,15 +56,15 @@ import net.lingala.zip4j.ZipFile;
 @Test (groups = "regression")
 public class DxContaminationTestSuite extends ReportTestBase {
 
-    private final String       tsvPath           = azPipelineFda + "/210129_NB551550_0234_AHV5JNBGXG/v3.1/20210131_0506/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev2/HV5JNBGXG_0_CLINICAL-CLINICAL_95224-SN-2193.adap.txt.results.tsv.gz";
-    private final String       contaminationFile = "contaminationResults.zip";
-    private final Patient      patient           = scenarioBuilderPatient ();
-    private Login              login             = new Login ();
-    private OrcaHistory        history           = new OrcaHistory ();
-    private OrderDetailTDetect order             = new OrderDetailTDetect ();
-    private ReportTDetect      report            = new ReportTDetect ();
-    private Diagnostic         diagnostic;
-    private String             downloadDir;
+    private final String         tsvPath           = azPipelineFda + "/210129_NB551550_0234_AHV5JNBGXG/v3.1/20210131_0506/packaged/rd.Human.TCRB-v4b.nextseq.156x12x0.vblocks.ultralight.rev2/HV5JNBGXG_0_CLINICAL-CLINICAL_95224-SN-2193.adap.txt.results.tsv.gz";
+    private final String         contaminationFile = "contaminationResults.zip";
+    private final Patient        patient           = scenarioBuilderPatient ();
+    private Login                login             = new Login ();
+    private OrcaHistory          history           = new OrcaHistory ();
+    private OrderDetailTDetect   order             = new OrderDetailTDetect ();
+    private ReportTDetect        report            = new ReportTDetect ();
+    private ThreadLocal <String> downloadDir       = new ThreadLocal <> ();
+    private Diagnostic           diagnostic;
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
@@ -87,7 +87,7 @@ public class DxContaminationTestSuite extends ReportTestBase {
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
-        downloadDir = artifacts (this.getClass ().getName (), test.getName ());
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
     }
 
     /**
@@ -127,7 +127,8 @@ public class DxContaminationTestSuite extends ReportTestBase {
         testLog (format ("workflow property '%s' is set to 'true'", found));
 
         coraDebugApi.login ();
-        coraDebugApi.get (history.getFileLocation (contaminationFile), join ("/", downloadDir, contaminationFile));
+        coraDebugApi.get (history.getFileLocation (contaminationFile),
+                          join ("/", downloadDir.get (), contaminationFile));
         testLog ("downloaded " + contaminationFile);
 
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
@@ -140,15 +141,15 @@ public class DxContaminationTestSuite extends ReportTestBase {
         testLog ("release the report");
 
         try {
-            new ZipFile (join ("/", downloadDir, contaminationFile)).extractAll (downloadDir);
+            new ZipFile (join ("/", downloadDir.get (), contaminationFile)).extractAll (downloadDir.get ());
             String[] dirs = { "Flowcell", "Plate", "ExtractionBatch" };
             String similarity = "similarity.tsv", splots = "scatterplots", xclones = "shared_clones";
             for (String dir : dirs) {
-                assertTrue (exists (Paths.get (downloadDir, dir)));
+                assertTrue (exists (Paths.get (downloadDir.get (), dir)));
                 compareTsv (join ("/", dir, similarity), Similarity.class, null);
                 testLog (format ("found %s/%s", dir, similarity));
 
-                String sFile = join ("/", downloadDir, dir, similarity);
+                String sFile = join ("/", downloadDir.get (), dir, similarity);
                 String[] h = {
                         "sample_a", "sample_b", "jaccard_index", "dx_score_a", "upr_a", "dx_score_b", "upr_b",
                         "fcid_a", "fcid_b", "run_date_a", "run_date_b" };
@@ -175,7 +176,7 @@ public class DxContaminationTestSuite extends ReportTestBase {
 
     private <T> void compareTsv (String path, Class <T> klazz, Comparator <T> comparator) {
         String expectedFile = getSystemResource (join ("/", "contamination", path)).getPath ();
-        String actualFile = join ("/", downloadDir, path);
+        String actualFile = join ("/", downloadDir.get (), path);
         assertEquals (parseTsv (actualFile, klazz, comparator),
                       parseTsv (expectedFile, klazz, comparator),
                       actualFile);
@@ -183,7 +184,7 @@ public class DxContaminationTestSuite extends ReportTestBase {
 
     private void compareImages (String path) {
         String expectedFile = getSystemResource (join ("/", "contamination", path)).getPath ();
-        String actualFile = join ("/", downloadDir, path);
+        String actualFile = join ("/", downloadDir.get (), path);
         assertEquals (getDifferencePercent (actualFile, expectedFile), 0.0d, path);
     }
 }

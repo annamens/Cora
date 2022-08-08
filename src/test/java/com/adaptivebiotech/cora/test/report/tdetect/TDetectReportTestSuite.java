@@ -9,6 +9,7 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.utils.PageHelper.CorrectionType.Updated;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.covidProperties;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
@@ -36,17 +37,15 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.join;
 import static java.util.Locale.US;
-import static org.apache.commons.lang3.StringUtils.substringAfterLast;
-import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.apache.commons.text.WordUtils.capitalize;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -55,7 +54,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
@@ -67,39 +66,37 @@ import com.adaptivebiotech.cora.ui.task.TaskDetail;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 /**
  * @author jpatel
  *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "tDetectOrder" })
-public class TDetectReportTestSuite extends NewOrderTestBase {
+public class TDetectReportTestSuite extends ReportTestBase {
 
-    private Login              login               = new Login ();
-    private OrdersList         ordersList          = new OrdersList ();
-    private NewOrderTDetect    newOrderTDetect     = new NewOrderTDetect ();
-    private OrderDetailTDetect orderDetailTDetect  = new OrderDetailTDetect ();
-    private ReportTDetect      reportTDetect       = new ReportTDetect ();
-    private OrcaHistory        history             = new OrcaHistory ();
-    private TaskDetail         taskDetail          = new TaskDetail ();
-    private OrderStatus        orderStatus         = new OrderStatus ();
-    private final String       todaysDate          = genDate (0, formatDt1, pstZoneId);
-    private final String       todaysDateDash      = convertDateFormat (todaysDate, "MM/dd/yyyy", "yyyy-MM-dd");
-    private final String       result              = "RESULT";
-    private final String       expTestResult       = "NEGATIVE";
-    private final String       reviewedReleasedBy  = "This report was released by an automated process.";
-    private final String       approvedBy          = "John Alsobrook, II, PhD, DABCC";
-    private final String       reviewSignStr       = "RELEASED BY DATE & TIME";
-    private final String       approvedSignStr     = "APPROVED BY SIGNATURE DATE";
-    private final String       reasonCorrectionStr = "REASON FOR CORRECTION";
-    private final Assay        assayTest           = COVID19_DX_IVD;
-    private String             downloadDir;
+    private Login                login               = new Login ();
+    private OrdersList           ordersList          = new OrdersList ();
+    private NewOrderTDetect      newOrderTDetect     = new NewOrderTDetect ();
+    private OrderDetailTDetect   orderDetailTDetect  = new OrderDetailTDetect ();
+    private ReportTDetect        reportTDetect       = new ReportTDetect ();
+    private OrcaHistory          history             = new OrcaHistory ();
+    private TaskDetail           taskDetail          = new TaskDetail ();
+    private OrderStatus          orderStatus         = new OrderStatus ();
+    private ThreadLocal <String> downloadDir         = new ThreadLocal <> ();
+    private final String         todaysDate          = genDate (0, formatDt1, pstZoneId);
+    private final String         todaysDateDash      = convertDateFormat (todaysDate, "MM/dd/yyyy", "yyyy-MM-dd");
+    private final String         result              = "RESULT";
+    private final String         expTestResult       = "NEGATIVE";
+    private final String         reviewedReleasedBy  = "This report was released by an automated process.";
+    private final String         approvedBy          = "John Alsobrook, II, PhD, DABCC";
+    private final String         reviewSignStr       = "RELEASED BY DATE & TIME";
+    private final String         approvedSignStr     = "APPROVED BY SIGNATURE DATE";
+    private final String         reasonCorrectionStr = "REASON FOR CORRECTION";
+    private final Assay          assayTest           = COVID19_DX_IVD;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
-        downloadDir = artifacts (this.getClass ().getName (), test.getName ());
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
         login.doLogin ();
         ordersList.isCorrectPage ();
     }
@@ -123,7 +120,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
                                                           SlideBox5CS);
         testLog ("T-Detect Order created: " + order.orderNumber);
 
-        String patientId = orderDetailTDetect.getPatientId ();
+        UUID patientId = orderDetailTDetect.getPatientId ();
         order = orderDetailTDetect.parseOrder ();
         String sample = order.tests.get (0).sampleName;
         history.gotoOrderDebug (sample);
@@ -158,7 +155,9 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         orderStatus.clickReportTab (assayTest);
         reportTDetect.isCorrectPage ();
 
-        String fileContent = getTextFromPDF (reportTDetect.getReleasedReportPdfUrl (), 1);
+        String pdfFileLocation = join ("/", downloadDir.get (), sample + ".pdf");
+        coraApi.get (reportTDetect.getReleasedReportPdfUrl (), pdfFileLocation);
+        String fileContent = getTextFromPDF (pdfFileLocation, 1);
         validateReportContent (fileContent, order);
         validatePdfContent (fileContent, result);
         validatePdfContent (fileContent, expTestResult);
@@ -198,14 +197,15 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         reportTDetect.setReportDataJson (editReportDataJson.toString ());
         reportTDetect.releaseReportWithSignatureRequired ();
 
-        String correctedPreviewPdfUrl = reportTDetect.getReleasedReportPdfUrl ();
-        String correctedReleasePdfContent = getTextFromPDF (correctedPreviewPdfUrl, 1);
+        pdfFileLocation = join ("/", downloadDir.get (), sample + "-CORRECTED.pdf");
+        coraApi.get (reportTDetect.getReleasedReportPdfUrl (), pdfFileLocation);
+        String correctedReleasePdfContent = getTextFromPDF (pdfFileLocation, 1);
         validateReportContent (correctedReleasePdfContent, order);
         validatePdfContent (correctedReleasePdfContent, reasonCorrectionStr);
         validatePdfContent (correctedReleasePdfContent, correctedReason);
         testLog ("STEP 7.1 - The report pdf Page 1 contains values for the following fields as listed below");
 
-        correctedReleasePdfContent = getTextFromPDF (correctedPreviewPdfUrl, 2);
+        correctedReleasePdfContent = getTextFromPDF (pdfFileLocation, 2);
         validateReportContent (correctedReleasePdfContent, order);
         validatePdfContent (correctedReleasePdfContent, result);
         validatePdfContent (correctedReleasePdfContent, expTestResult);
@@ -270,7 +270,7 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         testLog ("STEP 11 - validate reportData.json displays isFailure as true");
     }
 
-    private void validateReportDataJson (ReportRender reportDataJson, Order order, String patientId) {
+    private void validateReportDataJson (ReportRender reportDataJson, Order order, UUID patientId) {
         assertEquals (reportDataJson.klass, "com.adaptive.clonoseqreport.dtos.ReportRenderDto");
         assertEquals (reportDataJson.version.intValue (), 1);
         assertEquals (reportDataJson.patientInfo.id, patientId);
@@ -350,34 +350,13 @@ public class TDetectReportTestSuite extends NewOrderTestBase {
         validatePdfContent (fileContent, order.physician.providerFullName);
     }
 
-    private String getTextFromPDF (String url, int pageNumber) {
-        String pdfFileLocation = join ("/", downloadDir, substringBefore (substringAfterLast (url, "/"), "?"));
-        info ("PDF File Location: " + pdfFileLocation);
-
-        // get file from URL and save it
-        coraApi.get (url, pdfFileLocation);
-
-        // read PDF and extract text
-        PdfReader reader = null;
-        String fileContent = null;
-        try {
-            reader = new PdfReader (pdfFileLocation);
-            fileContent = PdfTextExtractor.getTextFromPage (reader, pageNumber);
-        } catch (IOException e) {
-            throw new RuntimeException (e);
-        } finally {
-            reader.close ();
-        }
-        return fileContent;
-    }
-
     /**
      * go to debug page, parse reportData.json file
      * 
      * @return ReportRender object for reportData.json file
      */
     private ReportRender parseReportDataJson (String fileUrl) {
-        String reportDataJson = join ("/", downloadDir, "reportData.json");
+        String reportDataJson = join ("/", downloadDir.get (), "reportData.json");
         coraDebugApi.login ();
         coraDebugApi.get (fileUrl, reportDataJson);
         return mapper.readValue (new File (reportDataJson), ReportRender.class);

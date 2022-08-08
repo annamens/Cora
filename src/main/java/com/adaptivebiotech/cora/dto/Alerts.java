@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.dto;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
@@ -32,21 +33,21 @@ public final class Alerts {
     public static final class Alert {
 
         // end-point /cora/api/v1/external/alerts/summary
-        public String        id;
+        public UUID          id;
         public AlertType     alertType;
 
         // used by OrdersList and AlertsList Dora UI pages
         public String        color;
         @JsonAlias ("orderSummary")
         public Order         order;
-        public String        referencedEntityId;
+        public UUID          referencedEntityId;
 
         // end-point /cora/api/v2/alerts/create
         public String        alertTypeName;
         public List <String> recipients;
 
         // end-point /cora/api/v2/alerts/update
-        public String        alertId;
+        public UUID          alertId;
         public String        statusType;
 
         @Override

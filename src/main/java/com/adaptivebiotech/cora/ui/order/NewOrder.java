@@ -11,6 +11,7 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -22,8 +23,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
-import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -90,13 +91,13 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     @Override
-    public void gotoOrderEntry (String orderId) {
+    public void gotoOrderEntry (UUID orderId) {
         super.gotoOrderEntry (orderId);
         isCorrectPage ();
     }
 
-    public String getOrderId () {
-        return substringBetween (getCurrentUrl (), "cora/order/dx/", "/details");
+    public UUID getOrderId () {
+        return fromString (substringBetween (getCurrentUrl (), "cora/order/dx/", "/details"));
     }
 
     public List <String> getSectionHeaders () {
@@ -173,9 +174,9 @@ public abstract class NewOrder extends OrderHeader {
         assertEquals (waitForElementVisible ("[uisref='main.patient.orders']").getText (), "Patient Order History");
     }
 
-    public String getPatientId () {
+    public UUID getPatientId () {
         String patientUrl = getAttribute ("//*[contains(text(),'Patient Order History')]", "href");
-        return StringUtils.substringBetween (patientUrl, "patient/", "/orders");
+        return fromString (substringBetween (patientUrl, "patient/", "/orders"));
     }
 
     public void clickSave () {
@@ -419,12 +420,20 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (specimenType) ? SpecimenType.getSpecimenType (getFirstSelectedText (specimenType)) : null;
     }
 
+    public boolean isSpecimenTypeEnabled () {
+        return waitForElement (specimenType).isEnabled ();
+    }
+
     public SpecimenSource getSpecimenSource () {
         return isElementVisible (specimenSource) ? SpecimenSource.valueOf (readInput (specimenSource)) : null;
     }
 
     public Anticoagulant getAnticoagulant () {
         return isElementVisible (anticoagulant) ? Anticoagulant.valueOf (getFirstSelectedText (anticoagulant)) : null;
+    }
+
+    public boolean isAnticoagulantEnabled () {
+        return waitForElement (anticoagulant).isEnabled ();
     }
 
     protected String getReconciliationDate () {
@@ -483,6 +492,10 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (collectionDate) ? LocalDate.parse (readInput (collectionDate), formatDt2) : null;
     }
 
+    public boolean isCollectionDateEnabled () {
+        return waitForElement (collectionDate).isEnabled ();
+    }
+
     public String getCollectionDateErrorMsg () {
         String locator = join (" + ", collectionDate, textDanger);
         return isElementVisible (locator) ? getText (locator) : null;
@@ -519,6 +532,12 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (specimenApprovalStatus) ? SpecimenStatus.valueOf (getText (specimenApprovalStatus)) : null;
     }
 
+    public LocalDateTime getSpecimenActivationDate () {
+        String css = "//*[text()='Specimen Activation']/..//div";
+        String data = isElementVisible (css) ? getText (css) : null;
+        return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt7) : null;
+    }
+
     public void waitForSpecimenDelivery () {
         assertTrue (waitUntil (millisDuration, millisPoll, new Function <WebDriver, Boolean> () {
             public Boolean apply (WebDriver driver) {
@@ -533,6 +552,10 @@ public abstract class NewOrder extends OrderHeader {
 
     public DeliveryType getSpecimenDelivery () {
         return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
+    }
+
+    public boolean isSpecimenDeliveryEnabled () {
+        return waitForElement (specimenDelivery).isEnabled ();
     }
 
     public List <String> getSpecimenDeliveryOptions () {

@@ -15,6 +15,7 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
+import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Order;
@@ -65,7 +66,7 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         assertEquals (newOrderTDetect.getTabList (), asList (orderDetailsTab));
 
         shipment.createShipment (order.orderNumber, Tube);
-        String shipmentId = accession.getShipmentId ();
+        UUID shipmentId = accession.getShipmentId ();
         assertEquals (accession.getTabList (), accessionTabList);
         testLog ("Shipment Created");
 
@@ -133,7 +134,7 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         assertEquals (newOrderTDetect.getTabList (), asList (orderDetailsTab));
 
         shipment.createShipment (order.orderNumber, Tube);
-        String shipmentId = accession.getShipmentId ();
+        UUID shipmentId = accession.getShipmentId ();
         assertEquals (accession.getTabList (), accessionTabList);
         testLog ("Shipment Created");
 
