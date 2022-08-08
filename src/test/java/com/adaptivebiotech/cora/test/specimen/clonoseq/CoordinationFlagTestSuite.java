@@ -7,7 +7,6 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertTrue;
-import java.util.Arrays;
 import static org.testng.Assert.assertFalse;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -65,7 +64,7 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
         testLog ("Default state: flag visible but unchecked");
 
         // Select the checkbox, Test flag visible and checked
-        newOrderClonoSeq.clickPathologyRetrieval ();
+        newOrderClonoSeq.clickPathologyRetrieval  ();
         newOrderClonoSeq.clickSave ();
         testLog ("Clicked specimen coordination flag...");
         testFlagVisibleAndChecked ();
@@ -88,7 +87,7 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
         testFlagInvisible ();
 
         // Revert Intake Complete, Test flag visible and checked
-        newOrderClonoSeq.clickShipmentArrivalLink ();
+        newOrderClonoSeq.clickShipmentArrivalDate ();
         accession.clickAccessionTab ();
         accession.clickRevert ();
         accession.clickOrderNumber ();

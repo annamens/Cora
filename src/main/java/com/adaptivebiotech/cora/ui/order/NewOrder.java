@@ -539,7 +539,7 @@ public abstract class NewOrder extends OrderHeader {
         return getDropdownOptions (specimenDelivery);
     }
 
-    public void clickShipmentArrivalLink () {
+    public void clickShipmentArrivalDate () {
         assertTrue (click (shipmentArrivalLink));
     }
 
