@@ -88,7 +88,7 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
         testFlagInvisible ();
 
         // Revert Intake Complete, Test flag visible and checked
-        newOrderClonoSeq.clickOrderShipmentLink ();
+        newOrderClonoSeq.clickShipmentArrivalLink ();
         accession.clickAccessionTab ();
         accession.clickRevert ();
         accession.clickOrderNumber ();

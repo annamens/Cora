@@ -65,10 +65,10 @@ public abstract class NewOrder extends OrderHeader {
     private final String   fileLoc             = "//a[contains(text(),'%s')]";
     private final String   fileLocInC          = attachmentC + fileLoc;
     private final String   fileUpload          = ".attachment-upload-input";
-    private final String   specimenDelivery    = "[ng-reflect-name='specimenDeliveryType']";
+    private final String   specimenDelivery    = "[formcontrolname='specimenDeliveryType']";
     private final String   collectionDate      = "[formcontrolname='collectionDate']";
     private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
-    private final String   orderShipmentLink   = "[ng-reflect-state='main.shipment.entry']";
+    private final String   shipmentArrivalLink = "[ng-reflect-state='main.shipment.entry']";
     protected final String specimenType        = "[formcontrolname='sampleType']";
     protected final String specimenSource      = "[formcontrolname='source']";
     protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
@@ -539,8 +539,8 @@ public abstract class NewOrder extends OrderHeader {
         return getDropdownOptions (specimenDelivery);
     }
 
-    public void clickOrderShipmentLink () {
-        assertTrue (click (orderShipmentLink));
+    public void clickShipmentArrivalLink () {
+        assertTrue (click (shipmentArrivalLink));
     }
 
     public void expandShipment () {
