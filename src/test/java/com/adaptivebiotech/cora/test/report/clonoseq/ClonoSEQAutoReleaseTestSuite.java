@@ -11,7 +11,6 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRB;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRG;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
-import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -24,6 +23,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_CONSULTANT;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.RELEASED;
+import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -48,11 +48,18 @@ import com.adaptivebiotech.cora.utils.PageHelper.QC;
 @Test (groups = { "regression", "havanese" })
 public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
 
-    private Login          login       = new Login ();
-    private OrcaHistory    history     = new OrcaHistory ();
-    private ReportClonoSeq report      = new ReportClonoSeq ();
-    private OrderDetail    orderDetail = new OrderDetail ();
-    private OrderStatus    orderStatus = new OrderStatus ();
+    private Login          login         = new Login ();
+    private OrcaHistory    history       = new OrcaHistory ();
+    private ReportClonoSeq report        = new ReportClonoSeq ();
+    private OrderDetail    orderDetail   = new OrderDetail ();
+    private OrderStatus    orderStatus   = new OrderStatus ();
+    private final String   validICD      = "C90.00";
+    private final String   bCellIDTsv    = azTsvPath + "/above-loq.id.tsv.gz";
+    private final String   bCellMRDTsv   = azTsvPath + "/above-loq.mrd.tsv.gz";
+    private final String   polyclonalTsv = azTsvPath + "/polyclonal/polyclonal.id.tsv.gz";
+    private final String   highIGHtsv    = azTsvPath + "/many-clones/highIGH.id.tsv.gz";
+    private final String   highIGKtsv    = azTsvPath + "/many-clones/highIGK.id.tsv.gz";
+    private final String   highIGLtsv    = azTsvPath + "/many-clones/highIGL.id.tsv.gz";
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -69,7 +76,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         OrderTest iuoCliaTest = createBCellOrderTest (ID_BCell2_IUO_CLIA);
         OrderTest iuoFlexTest = createBCellOrderTest (ID_BCell2_IUO_FLEX);
         OrderTest iuoIvdTest = createBCellOrderTest (ID_BCell2_IUO_IVD);
-        OrderTest trackingTest = createBCellOrderTest (MRD_BCell2_CLIA, patient);
+        OrderTest trackingTest = createBCellOrderTest (MRD_BCell2_CLIA, patient, validICD, bCellMRDTsv);
 
         verifyAutoReleaseSuccess (ivdTest);
         testLog ("SR-9504:R1: B-cell 2.0 Clonality (IVD) autoreleased");
@@ -126,7 +133,8 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         String codes = "C90.00,C83.1,C82.9,C83.3,C90.1,C90.2";
         OrderTest test = createBCellOrderTest (ID_BCell2_CLIA,
                                                scenarioBuilderPatient (),
-                                               codes);
+                                               codes,
+                                               bCellIDTsv);
         verifyAutoReleaseSuccess (test);
         testLog ("SR-9504:R5: Report autoreleased for order containing the following ICD codes: " + codes);
     }
@@ -135,9 +143,12 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
      * @sdlc.requirements SR-9504:R5
      */
     public void invalidIcdCodes () {
-        String icdErrorMessage = "Failed Auto Release Rules: Rule IsAcceptedICDCodes expected Icd10Codes to match pattern ^C90\\.[012]|^C83\\.[13]|^C82\\.9(.*)$.]";
+        String icdErrorMessage = "Failed Auto Release Rules: Rule IsAcceptedICDCodes expected Icd10Codes to include one of the following codes (Autorelease will fail if the list of idc codes contain a code starting with C that is not on the list): C90.0, C83.1, C82.9, C83.3, C90.1, C90.2.";
         String cPrefixCodes = "C90.0,C91.0";
-        OrderTest cPrefixCodesTest = createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), cPrefixCodes);
+        OrderTest cPrefixCodesTest = createBCellOrderTest (ID_BCell2_CLIA,
+                                                           scenarioBuilderPatient (),
+                                                           cPrefixCodes,
+                                                           bCellIDTsv);
         verifyAutoReleaseFailure (cPrefixCodesTest, icdErrorMessage);
         testLog ("SR-9504:R5: Report failed autorelease for order containing the following ICD codes: " + cPrefixCodes);
     }
@@ -147,26 +158,31 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
      */
     public void priorBCellID () {
         Patient patient = scenarioBuilderPatient ();
-        OrderTest firstID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        OrderTest firstID = createBCellOrderTest (ID_BCell2_CLIA, patient, validICD, bCellIDTsv);
         verifyAutoReleaseSuccess (firstID);
-        OrderTest secondID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        OrderTest secondID = createBCellOrderTest (ID_BCell2_CLIA, patient, validICD, bCellIDTsv);
         verifyAutoReleaseFailure (secondID,
                                   "Failed Auto Release Rules: HasNoCompletedClonalityTests expects BCell to be false.");
         testLog ("SR-9504:R6: Report failed autorelease for Bcell ID with prior completed Bcell ID");
     }
 
     /**
-     * @sdlc.requirements SR-9504:R6
+     * @sdlc.requirements SR-9504:R6, SR-9504:R7
      */
     public void priorNoResultBCellID () {
         Patient patient = scenarioBuilderPatient ();
-        OrderTest priorFailedID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        OrderTest priorFailedID = createBCellOrderTest (ID_BCell2_CLIA, patient, validICD, bCellIDTsv);
         orderStatus.gotoOrderStatusPage (priorFailedID.orderId);
         orderStatus.isCorrectPage ();
         orderStatus.failWorkflow (priorFailedID.sampleName, "testing prior no result autorelease");
         waitForReportGeneration (priorFailedID);
-        report.releaseReport (ID_BCell2_CLIA, Pass);
-        OrderTest secondID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        verifyAutoReleaseFailure (priorFailedID,
+                                  "Failed Auto Release Rules: IsSentToFailureTarget expected wasSentToFailureTarget not to be true,IsNotPolyClonal expects PolyClonal to be false.");
+        testLog ("SR-9504:R7: Report with no result failed autorelease");
+        history.clickOrderTest ();
+        report.clickReportTab (Assay.getAssay (priorFailedID.test.name));
+        report.clickReleaseReport ();
+        OrderTest secondID = createBCellOrderTest (ID_BCell2_CLIA, patient, validICD, bCellIDTsv);
         verifyAutoReleaseSuccess (secondID);
         testLog ("SR-9504:R6: Report autoreleased for Bcell ID with prior Bcell ID that had no result");
     }
@@ -176,10 +192,10 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
      */
     public void priorCancelledBCellID () {
         Patient patient = scenarioBuilderPatient ();
-        OrderTest priorCancelledID = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        OrderTest priorCancelledID = createBCellOrderTest (ID_BCell2_CLIA, patient, validICD, bCellIDTsv);
         orderDetail.gotoOrderDetailsPage (priorCancelledID.orderId);
         orderDetail.clickCancelOrder ();
-        OrderTest secondTest = createBCellOrderTest (ID_BCell2_CLIA, patient, "C90.00");
+        OrderTest secondTest = createBCellOrderTest (ID_BCell2_CLIA, patient, validICD, bCellIDTsv);
         verifyAutoReleaseSuccess (secondTest);
         testLog ("SR-9504:R6: Report autoreleased for Bcell ID with prior cancelled Bcell ID");
     }
@@ -195,9 +211,59 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         verifyAutoReleaseFailure (diagnostic.findOrderTest (ID_TCRG),
                                   "Failed Auto Release Rules: Auto Release is not enabled for this SKU.");
         testLog ("SR-9504:R1: TCRG Clonality (CLIA) failed autorelease");
-        OrderTest bCellTest = createBCellOrderTest (ID_BCell2_CLIA, diagnostic.patient, "C90.00");
+        OrderTest bCellTest = createBCellOrderTest (ID_BCell2_CLIA, diagnostic.patient, validICD, bCellIDTsv);
         verifyAutoReleaseSuccess (bCellTest);
         testLog ("SR-9504:R6: Report autoreleased for Bcell ID with prior Tcell ID");
+    }
+
+    /**
+     * @sdlc.requirements SR-9504:R7
+     */
+    public void polyclonal () {
+        OrderTest polyclonalTest = createBCellOrderTest (ID_BCell2_CLIA,
+                                                         scenarioBuilderPatient (),
+                                                         validICD,
+                                                         polyclonalTsv);
+        verifyAutoReleaseFailure (polyclonalTest,
+                                  "Failed Auto Release Rules: IsNotPolyClonal expects PolyClonal to be false.");
+        testLog ("SR-9504:R7: Polyclonal report failed autorelease");
+    }
+
+    /**
+     * @sdlc.requirements SR-9504:R8
+     */
+    public void manyClones () {
+        int ighThreshold = 4;
+        int igkThreshold = 5;
+        int iglThreshold = 3;
+        OrderTest highIGHtest = createBCellOrderTest (ID_BCell2_CLIA,
+                                                      scenarioBuilderPatient (),
+                                                      validICD,
+                                                      highIGHtsv);
+        OrderTest highIGKtest = createBCellOrderTest (ID_BCell2_CLIA,
+                                                      scenarioBuilderPatient (),
+                                                      validICD,
+                                                      highIGKtsv);
+        OrderTest highIGLtest = createBCellOrderTest (ID_BCell2_CLIA,
+                                                      scenarioBuilderPatient (),
+                                                      validICD,
+                                                      highIGLtsv);
+        verifyAutoReleaseFailure (highIGHtest,
+                                  format ("Failed Auto Release Rules: CheckIghIsBelowThreshold expected IGH to be less than %s.",
+                                          Integer.toString (ighThreshold)));
+        testLog (format ("SR-9504:R8: Report with %s dominant IGH sequences failed autorelease",
+                         Integer.toString (ighThreshold)));
+        verifyAutoReleaseFailure (highIGKtest,
+                                  format ("Failed Auto Release Rules: CheckIgkIsBelowThreshold expected IGK to be less than %s.",
+                                          Integer.toString (igkThreshold)));
+        testLog (format ("SR-9504:R8: Report with %s dominant IGK sequences failed autorelease",
+                         Integer.toString (igkThreshold)));
+        verifyAutoReleaseFailure (highIGLtest,
+                                  format ("Failed Auto Release Rules: CheckIglIsBelowThreshold expected IGL to be less than %s.",
+                                          Integer.toString (iglThreshold)));
+        testLog (format ("SR-9504:R8: Report with %s dominant IGL sequences failed autorelease",
+                         Integer.toString (iglThreshold)));
+
     }
 
     private void waitForReportGeneration (OrderTest orderTest) {
@@ -264,19 +330,19 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     }
 
     private OrderTest createBCellOrderTest () {
-        return createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), "C90.0");
+        return createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), "C90.0", bCellIDTsv);
     }
 
     private OrderTest createBCellOrderTest (Assay sku) {
-        return createBCellOrderTest (sku, scenarioBuilderPatient (), "C90.0");
+        return createBCellOrderTest (sku, scenarioBuilderPatient (), "C90.0", bCellIDTsv);
     }
 
     private OrderTest createBCellOrderTest (Assay sku, Patient patient) {
-        return createBCellOrderTest (sku, patient, "C90.0");
+        return createBCellOrderTest (sku, patient, "C90.0", bCellIDTsv);
     }
 
-    private OrderTest createBCellOrderTest (Assay sku, Patient patient, String icdCodes) {
-        CoraTest test = genCDxTest (sku, azTsvPath + "/above-loq.id.tsv.gz");
+    private OrderTest createBCellOrderTest (Assay sku, Patient patient, String icdCodes, String tsvPath) {
+        CoraTest test = genCDxTest (sku, tsvPath);
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                icdCodes,
                                                stage (SecondaryAnalysis, Ready),
