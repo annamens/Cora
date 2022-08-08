@@ -7,6 +7,7 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertTrue;
+import java.util.Arrays;
 import static org.testng.Assert.assertFalse;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -26,7 +27,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  * @author cbragg
  * 
  */
-@Test (groups = { "clonoSeq", "regression", "WHIP" })
+@Test (groups = { "clonoSeq", "regression", "whip" })
 public class CoordinationFlagTestSuite extends SpecimenTestBase {
 
     private Login               login            = new Login ();

@@ -347,27 +347,6 @@ public final class Orders {
             this.label = label;
         }
 
-        public static String getDeliveryValue (DeliveryType type) {
-            switch (type) {
-            case CustomerShipment: {
-                return "0: CustomerShipment";
-            }
-            case PathRequest: {
-                return "1: PathRequest";
-            }
-            case Reflex: {
-                return "2: Reflex";
-            }
-            case BloodDrawLabCorp: {
-                return "3: BloodDrawLabCorp";
-            }
-            case BloodDrawHome: {
-                return "4: BloodDrawHome";
-            }
-            }
-            return "invalid";
-        }
-
         public static DeliveryType getDeliveryType (String label) {
             return allOf (DeliveryType.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
                                              .get ();

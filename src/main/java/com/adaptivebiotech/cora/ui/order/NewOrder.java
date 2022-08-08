@@ -528,7 +528,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterSpecimenDelivery (DeliveryType type) {
-        assertTrue (clickAndSelectValue (specimenDelivery, DeliveryType.getDeliveryValue (type)));
+        assertTrue (clickAndSelectText (specimenDelivery, type.label));
     }
 
     public DeliveryType getSpecimenDelivery () {
