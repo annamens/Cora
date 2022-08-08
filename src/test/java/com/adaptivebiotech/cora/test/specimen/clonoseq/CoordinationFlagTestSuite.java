@@ -60,12 +60,12 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
         testLog ("Order created: " + order.orderNumber);
 
         // Default state, Test flag visible and unchecked
-        assertTrue (orderDetail.getSpecimenCoordinationFlagVisibility ());
-        assertFalse (orderDetail.getSpecimenCoordinationFlagSelected ());
+        assertTrue (newOrderClonoSeq.isPathologyRetrievalVisible ());
+        assertFalse (newOrderClonoSeq.isPathologyRetrievalSelected ());
         testLog ("Default state: flag visible but unchecked");
 
         // Select the checkbox, Test flag visible and checked
-        newOrderClonoSeq.clickSpecimenCoordinationFlag ();
+        newOrderClonoSeq.clickPathologyRetrieval ();
         newOrderClonoSeq.clickSave ();
         testLog ("Clicked specimen coordination flag...");
         testFlagVisibleAndChecked ();
@@ -108,13 +108,13 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
     }
 
     private void testFlagVisibleAndChecked () {
-        assertTrue (orderDetail.getSpecimenCoordinationFlagVisibility ());
-        assertTrue (orderDetail.getSpecimenCoordinationFlagSelected ());
+        assertTrue (newOrderClonoSeq.isPathologyRetrievalVisible ());
+        assertTrue (newOrderClonoSeq.isPathologyRetrievalSelected ());
         testLog ("Flag visible and checked");
     }
 
     private void testFlagInvisible () {
-        assertFalse (orderDetail.getSpecimenCoordinationFlagVisibility ());
+        assertFalse (newOrderClonoSeq.isPathologyRetrievalVisible ());
         testLog ("Flag not visible");
     }
 

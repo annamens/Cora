@@ -190,7 +190,7 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (click (specimenDetails));
     }
 
-    public void clickSpecimenCoordinationFlag () {
+    public void clickPathologyRetrieval () {
         assertTrue (click (specimenCoordination));
     }
 
@@ -250,6 +250,14 @@ public class NewOrderClonoSeq extends NewOrder {
     public LocalDateTime getRetrievalDate () {
         String data = isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
         return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt1) : null;
+    }
+
+    public boolean isPathologyRetrievalVisible () {
+        return isElementVisible (specimenCoordination);
+    }
+
+    public boolean isPathologyRetrievalSelected () {
+        return findElement (specimenCoordination).isSelected ();
     }
 
     public void closeTestSelectionWarningModal () {

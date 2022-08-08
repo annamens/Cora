@@ -9,8 +9,7 @@ package com.adaptivebiotech.cora.ui.order;
  */
 public class OrderDetailClonoSeq extends OrderDetail {
 
-    public BillingOrderDetail billing              = new BillingOrderDetail ();
-    private final String      specimenCoordination = "[formcontrolname='specimenCoordination']";
+    public BillingOrderDetail billing = new BillingOrderDetail ();
 
     public String getSpecimenDeliverySelectedOption () {
         String css = "[ng-bind^='ctrl.orderEntry.order.specimenDeliveryType']";
@@ -26,13 +25,5 @@ public class OrderDetailClonoSeq extends OrderDetail {
             return getText (css);
         }
         return null;
-    }
-
-    public boolean getSpecimenCoordinationFlagVisibility () {
-        return isElementVisible (specimenCoordination);
-    }
-
-    public boolean getSpecimenCoordinationFlagSelected () {
-        return findElement (specimenCoordination).isSelected ();
     }
 }
