@@ -51,15 +51,15 @@ import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 @Test (groups = "regression")
 public class ReportTcrbv4bTestSuite extends ReportTestBase {
 
-    private final String  reportData = "reportData.json";
-    private Login         login      = new Login ();
-    private OrcaHistory   history    = new OrcaHistory ();
-    private ReportTDetect report     = new ReportTDetect ();
-    private String        downloadDir;
+    private final String         reportData  = "reportData.json";
+    private Login                login       = new Login ();
+    private OrcaHistory          history     = new OrcaHistory ();
+    private ReportTDetect        report      = new ReportTDetect ();
+    private ThreadLocal <String> downloadDir = new ThreadLocal <> ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
-        downloadDir = artifacts (this.getClass ().getName (), test.getName ());
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
     }
 
     /**
@@ -86,7 +86,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
 
         OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
-        String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
+        String reportDataJson = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
@@ -151,7 +151,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
 
         OrderTest orderTest = diagnostic.findOrderTest (LYME_DX);
-        String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
+        String reportDataJson = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);

@@ -76,15 +76,14 @@ public class OrderHeader extends CoraPage {
     }
 
     public void waitUntilActivated () {
-        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 2);
+        Timeout timer = new Timeout (millisDuration * 10, millisPoll * 5);
         OrderStatus orderStatus = getOrderStatus ();
         while (!timer.Timedout () && !orderStatus.equals (Active)) {
             if (orderStatus.equals (FailedActivation))
                 fail (format ("the order is '%s'", FailedActivation));
 
             timer.Wait ();
-            clickAccessionTab ();
-            clickOrderDetailsTab ();
+            refresh ();
             orderStatus = getOrderStatus ();
         }
         assertEquals (orderStatus, Active, "Order did not activated successfully");

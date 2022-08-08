@@ -23,7 +23,9 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
 import static java.time.LocalDateTime.parse;
 import static org.testng.Assert.assertEquals;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -41,12 +43,17 @@ import com.adaptivebiotech.picasso.dto.verify.ClonoSeq;
 @Test (groups = "regression")
 public class BelowLoDTestSuite extends ReportTestBase {
 
-    private final String   downloadDir = artifacts (this.getClass ().getName ());
-    private final String   analysisID  = getSystemResource ("SecondaryAnalysis/below-lod.id.json").getPath ();
-    private final String   analysisMRD = getSystemResource ("SecondaryAnalysis/below-lod.mrd.json").getPath ();
-    private Login          login       = new Login ();
-    private OrcaHistory    history     = new OrcaHistory ();
-    private ReportClonoSeq report      = new ReportClonoSeq ();
+    private final String         analysisID  = getSystemResource ("SecondaryAnalysis/below-lod.id.json").getPath ();
+    private final String         analysisMRD = getSystemResource ("SecondaryAnalysis/below-lod.mrd.json").getPath ();
+    private Login                login       = new Login ();
+    private OrcaHistory          history     = new OrcaHistory ();
+    private ReportClonoSeq       report      = new ReportClonoSeq ();
+    private ThreadLocal <String> downloadDir = new ThreadLocal <> ();
+
+    @BeforeMethod (alwaysRun = true)
+    public void beforeMethod (Method test) {
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
+    }
 
     /**
      * @sdlc.requirements SR-5046
@@ -68,7 +75,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        String actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisID);
@@ -85,7 +92,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         clonoseq.header.reportDt = releaseDt.toLocalDate ();
         clonoseq.appendix.sampleInfo = "0.87 65,603 IGH 81,603 1,976 IGK 132,814 3,187 IGL 812 565";
         clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        String actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
@@ -96,7 +103,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisMRD);
@@ -113,7 +120,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         clonoseq.appendix.sampleInfo = "0.04 322,875 IGH ≥7,550 7,550 IGK 8,328 5,829 IGL 1,968 1,503";
         clonoseq.appendix.sequenceInfo = "IGH - Sequence A 6 7 IGK - Sequence B 589 740 IGK - Sequence C 589 740";
         clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }
@@ -138,7 +145,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        String actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisID);
@@ -155,7 +162,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         clonoseq.header.reportDt = releaseDt.toLocalDate ();
         clonoseq.appendix.sampleInfo = "0.87 65,603 IGH 81,603 1,976 IGK 132,814 3,187 IGL 812 565";
         clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        String actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
@@ -166,7 +173,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
-        actual = join ("/", downloadDir, orderTest.sampleName, saResult);
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (saResult), actual);
         compareSecondaryAnalysisResults (actual, analysisMRD);
@@ -183,7 +190,7 @@ public class BelowLoDTestSuite extends ReportTestBase {
         clonoseq.appendix.sampleInfo = "0.04 322,875 IGH ≥7,550 7,550 IGK 8,328 5,829 IGL 1,968 1,503";
         clonoseq.appendix.sequenceInfo = "IGH - Sequence A 6 7 IGK - Sequence B 589 740 IGK - Sequence C 589 740";
         clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
         verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }

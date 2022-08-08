@@ -30,9 +30,10 @@ public class ContainerFilterTestSuite extends ContainerTestBase {
     private final Container freezerAB018018 = freezerAB018018 ();
 
     /**
+     * Note: assumes freezerAB018078 is in 1551, has unlimited capacity
+     * 
      * @sdlc.requirements SR-9904:R1
      */
-    // assumes freezerAB018078 is in 1551, has unlimited capacity
     public void applyFilters () {
         ContainerType targetContainerType = ContainerType.Tube;
         ContainerType wrongContainerType = ContainerType.Conical;

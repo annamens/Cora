@@ -233,8 +233,8 @@ public class OrcaHistory extends CoraPage {
 
         assertTrue (waitUntilVisible (format (propXpath, property.name (), value)));
 
-        refresh (); // need to do this otherwise if you do a setWorkflowProperty next it doesn't
-                    // enter the text
+        // need to do this otherwise if you do a setWorkflowProperty next it doesn't enter the text
+        refresh ();
     }
 
     public void setWorkflowProperties (Map <WorkflowProperty, String> properties) {
