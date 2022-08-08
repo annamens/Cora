@@ -251,6 +251,10 @@ public class NewOrderClonoSeq extends NewOrder {
         String data = isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
         return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt1) : null;
     }
+    
+    public boolean isRetrievalDateEnabled () {
+        return waitForElement (uniqueSpecimenId).isEnabled ();
+    }
 
     public boolean isPathologyRetrievalVisible () {
         return isElementVisible (specimenCoordination);

@@ -64,7 +64,7 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
         testLog ("Default state: flag visible but unchecked");
 
         // Select the checkbox, Test flag visible and checked
-        newOrderClonoSeq.clickPathologyRetrieval  ();
+        newOrderClonoSeq.clickPathologyRetrieval ();
         newOrderClonoSeq.clickSave ();
         testLog ("Clicked specimen coordination flag...");
         testFlagVisibleAndChecked ();
