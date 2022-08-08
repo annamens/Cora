@@ -10,7 +10,7 @@ package com.adaptivebiotech.cora.ui.order;
 public class OrderDetailClonoSeq extends OrderDetail {
 
     public BillingOrderDetail billing              = new BillingOrderDetail ();
-    public String             specimenCoordination = "[formcontrolname='specimenCoordination']";
+    private final String      specimenCoordination = "[formcontrolname='specimenCoordination']";
 
     public String getSpecimenDeliverySelectedOption () {
         String css = "[ng-bind^='ctrl.orderEntry.order.specimenDeliveryType']";
