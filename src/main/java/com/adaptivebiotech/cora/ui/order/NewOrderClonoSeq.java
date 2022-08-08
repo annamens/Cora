@@ -42,17 +42,18 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
  */
 public class NewOrderClonoSeq extends NewOrder {
 
-    public BillingNewOrderClonoSeq billing             = new BillingNewOrderClonoSeq (staticNavBarHeight);
-    public PickPatientModule       pickPatient         = new PickPatientModule ();
-    private Accession              accession           = new Accession ();
-    private final String           specimenDetails     = "#specimen-details";
-    private final String           specimenTypeOther   = "#specimen-entry-other-specimen-type";
-    private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
-    private final String           uniqueSpecimenId    = "[formcontrolname='uniqueSpecimenId']";
-    private final String           retrievalDate       = "#specimen-entry-retrieval-date";
-    private final String           option              = "option";
-    private final String           compartment         = "[formcontrolname='compartment']";
-    private final String           anticoagulantOther  = "[formcontrolname='anticoagulantOther']";
+    public BillingNewOrderClonoSeq billing              = new BillingNewOrderClonoSeq (staticNavBarHeight);
+    public PickPatientModule       pickPatient          = new PickPatientModule ();
+    private Accession              accession            = new Accession ();
+    private final String           specimenDetails      = "#specimen-details";
+    private final String           specimenCoordination = "[formcontrolname='specimenCoordination']";
+    private final String           specimenTypeOther    = "#specimen-entry-other-specimen-type";
+    private final String           specimenSourceOther  = "#specimen-entry-specimen-source-other";
+    private final String           uniqueSpecimenId     = "[formcontrolname='uniqueSpecimenId']";
+    private final String           retrievalDate        = "#specimen-entry-retrieval-date";
+    private final String           option               = "option";
+    private final String           compartment          = "[formcontrolname='compartment']";
+    private final String           anticoagulantOther   = "[formcontrolname='anticoagulantOther']";
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -187,6 +188,10 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void clickEnterSpecimenDetails () {
         assertTrue (click (specimenDetails));
+    }
+
+    public void clickSpecimenCoordinationFlag () {
+        assertTrue (click (specimenCoordination));
     }
 
     public void enterSpecimenType (SpecimenType type) {

@@ -26,4 +26,14 @@ public class OrderDetailClonoSeq extends OrderDetail {
         }
         return null;
     }
+
+    public boolean getSpecimenCoordinationFlagVisibility () {
+        String css = "[formcontrolname='specimenCoordination']";
+        return isElementPresent (css);
+    }
+
+    public boolean getSpecimenCoordinationFlagSelected () {
+        String css = "[formcontrolname='specimenCoordination']";
+        return findElement (css).isSelected ();
+    }
 }
