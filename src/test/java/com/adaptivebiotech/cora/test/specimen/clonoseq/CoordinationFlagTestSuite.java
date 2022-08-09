@@ -2,16 +2,20 @@ package com.adaptivebiotech.cora.test.specimen.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
+import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Refrigerated;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
+import static com.adaptivebiotech.cora.utils.PageHelper.Carrier.UPS;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertTrue;
+import java.util.UUID;
 import static org.testng.Assert.assertFalse;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Specimen;
-import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+
 import com.adaptivebiotech.cora.test.specimen.SpecimenTestBase;
 import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
@@ -78,8 +82,9 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
         // Revert delivery type, New Shipment to Intake Complete, Test flag invisible
         newOrderClonoSeq.enterSpecimenDelivery (DeliveryType.CustomerShipment);
         newOrderClonoSeq.clickSave ();
-        shipment.createShipment (order.orderNumber, ContainerType.Vacutainer);
-        String shipmentId = shipment.getShipmentId ();
+        shipment.createShipment (Refrigerated, UPS, trackingNumber, order.orderNumber, Vacutainer, "");
+        UUID shipmentId = shipment.getShipmentId ();
+        accession.clickAccessionTab ();
         accession.clickIntakeComplete ();
         accession.clickOrderNumber ();
         newOrderClonoSeq.isCorrectPage ();
@@ -97,6 +102,7 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
 
         // Bring shipment to Accession Complete, Activate order, Test Flag invisible
         newOrderClonoSeq.gotoShipmentEntry (shipmentId);
+        accession.clickAccessionTab ();
         accession.completeAccession ();
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.activateOrder ();

@@ -266,7 +266,7 @@ public class NewOrderClonoSeq extends NewOrder {
         String data = isElementVisible (retrievalDate) ? readInput (retrievalDate) : null;
         return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt1) : null;
     }
-    
+
     public boolean isRetrievalDateEnabled () {
         return waitForElement (uniqueSpecimenId).isEnabled ();
     }
@@ -277,10 +277,6 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public boolean isPathologyRetrievalSelected () {
         return findElement (specimenCoordination).isSelected ();
-    }
-
-    public boolean isRetrievalDateEnabled () {
-        return waitForElement (uniqueSpecimenId).isEnabled ();
     }
 
     public void closeTestSelectionWarningModal () {
