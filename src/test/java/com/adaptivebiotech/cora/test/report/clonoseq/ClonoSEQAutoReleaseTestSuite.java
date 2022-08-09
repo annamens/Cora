@@ -334,15 +334,15 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     }
 
     private OrderTest createBCellOrderTest () {
-        return createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), "C90.0", bCellIDTsv);
+        return createBCellOrderTest (ID_BCell2_CLIA, scenarioBuilderPatient (), validICD, bCellIDTsv);
     }
 
     private OrderTest createBCellOrderTest (Assay sku) {
-        return createBCellOrderTest (sku, scenarioBuilderPatient (), "C90.0", bCellIDTsv);
+        return createBCellOrderTest (sku, scenarioBuilderPatient (), validICD, bCellIDTsv);
     }
 
     private OrderTest createBCellOrderTest (Assay sku, Patient patient) {
-        return createBCellOrderTest (sku, patient, "C90.0", bCellIDTsv);
+        return createBCellOrderTest (sku, patient, validICD, bCellIDTsv);
     }
 
     private OrderTest createBCellOrderTest (Assay sku, Patient patient, String icdCodes, String tsvPath) {
