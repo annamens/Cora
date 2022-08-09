@@ -62,7 +62,7 @@ public class ReportEosTestSuite extends ReportTestBase {
      * @sdlc.requirements SR-633, SR-1017, SR-1016, SR-1014, SR-1012, SR-1011, SR-1009, SR-1007,
      *                    SR-630, SR-4103, SR-4072, SR-4073
      */
-    @Test (groups = { "struay", "sanssouci" })
+    @Test (groups = { "struay", "sanssouci", "havanese" })
     public void verify_clia_report () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
@@ -181,7 +181,7 @@ public class ReportEosTestSuite extends ReportTestBase {
      * @sdlc.requirements SR-633, SR-1017, SR-1016, SR-1014, SR-1012, SR-1011, SR-1009, SR-1007,
      *                    SR-630, SR-4103, SR-4072, SR-4073
      */
-    @Test (groups = { "struay", "sanssouci" })
+    @Test (groups = { "struay", "sanssouci", "havanese" })
     public void verify_ivd_report () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
