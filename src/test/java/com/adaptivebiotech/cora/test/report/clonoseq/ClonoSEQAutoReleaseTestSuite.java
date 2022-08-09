@@ -45,6 +45,10 @@ import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
 
+/**
+ * @author Spencer Fisco
+ *         <a href="mailto:<sfisco@adaptivebiotech.com">sfisco@adaptivebiotech.com</a>
+ */
 @Test (groups = { "regression", "havanese" })
 public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
 
