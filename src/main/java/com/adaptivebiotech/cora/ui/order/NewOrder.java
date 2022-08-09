@@ -69,6 +69,7 @@ public abstract class NewOrder extends OrderHeader {
     private final String   specimenDelivery    = "[formcontrolname='specimenDeliveryType']";
     private final String   collectionDate      = "[formcontrolname='collectionDate']";
     private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
+    private final String   shipmentArrivalLink = "[ng-reflect-state='main.shipment.entry']";
     protected final String specimenType        = "[formcontrolname='sampleType']";
     protected final String specimenSource      = "[formcontrolname='source']";
     protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
@@ -546,7 +547,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterSpecimenDelivery (DeliveryType type) {
-        assertTrue (clickAndSelectValue (specimenDelivery, "string:" + type));
+        assertTrue (clickAndSelectText (specimenDelivery, type.label));
     }
 
     public DeliveryType getSpecimenDelivery () {
@@ -559,6 +560,10 @@ public abstract class NewOrder extends OrderHeader {
 
     public List <String> getSpecimenDeliveryOptions () {
         return getDropdownOptions (specimenDelivery);
+    }
+
+    public void clickShipmentArrivalDate () {
+        assertTrue (click (shipmentArrivalLink));
     }
 
     public void expandShipment () {
