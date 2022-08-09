@@ -78,10 +78,6 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             case MatrixTube:
                 freezer = freezerAB018055;
                 break;
-            case Slide:
-            case SlideWithCoverslip:
-                freezer = freezerAB039003;
-                break;
             default:
                 freezer = freezerAB018078;
                 break;
@@ -163,10 +159,6 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 child.depleted = false;
             case MatrixTube:
                 freezer = freezerAB018055;
-                break;
-            case Slide:
-            case SlideWithCoverslip:
-                freezer = freezerAB039003;
                 break;
             default:
                 freezer = freezerAB018078;

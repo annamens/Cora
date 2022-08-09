@@ -67,7 +67,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private ThreadLocal <String>    downloadDir          = new ThreadLocal <> ();
 
     private final String            noResultsAvailable   = "No result available";
-    private final String            mrdResultDescription = "This sample failed the quality control criteria despite multiple sequencing attempts, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
+    private final String            mrdResultDescription = "This sample failed the quality control criteria despite multiple sequencing attempts, exceeded the sample stability time period, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
     private final String            updateQuery          = "UPDATE cora.specimens SET properties = jsonb_set(properties, '{ActivationDate}', '\"%s\"', true) WHERE id = (SELECT specimen_id FROM cora.specimen_order_xref WHERE order_id = '%s')";
 
     private final DateTimeFormatter formatDt8            = ofPattern ("uuuu-MM-dd'T'HH:mm:ss.SSS'Z'");

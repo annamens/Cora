@@ -33,7 +33,7 @@ public abstract class BillingNewOrder extends CoraPage {
     private final String   billingMismatchWarning       = "[ng-if='ctrl.showBillingMismatchWarning()']";
     private final String   billing                      = "#billing-type";
     private final String   reason                       = "#no-charge-reason-type";
-    protected final String abnStatus                    = "//label[text()='ABN Status']/..//div[1]";
+    protected final String abnStatus                    = "#abn-status-type";
     private final String   insuranceProvider            = "[formcontrolname='insuranceProvider']";
     private final String   groupNumber                  = "[formcontrolname='groupNumber']";
     private final String   policyNumber                 = "[formcontrolname='policyNumber']";
