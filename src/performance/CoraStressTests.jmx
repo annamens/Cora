@@ -28,6 +28,7 @@
             <stringProp name="Argument.name">apiUsername</stringProp>
             <stringProp name="Argument.value">svc_test_orca</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Test user</stringProp>
           </elementProp>
           <elementProp name="apiPassword" elementType="Argument">
             <stringProp name="Argument.name">apiPassword</stringProp>
