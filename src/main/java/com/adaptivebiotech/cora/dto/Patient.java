@@ -62,6 +62,7 @@ public final class Patient {
     public LocalDateTime created;
     public String        createdBy;
     public String        testStatus;
+    public boolean       selectPatientVisible;
 
     @Override
     public String toString () {

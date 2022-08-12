@@ -112,7 +112,9 @@ public final class Physician {
         CLEP_covid ("CLEP", "Covid", "SEA_QA Test"),
         trial_clonoseq ("Trial", "ClonoSEQ", "SEA_QA Test"),
         non_trial_clonoseq ("Non-Trial", "ClonoSEQ", "SEA_QA Test"),
-        big_shot ("Big", "Shot", "Test123");
+        big_shot ("Big", "Shot", "Test123"),
+        emr_alerts_test ("EMR", "AlertsTest", "Test Account 1 x"),
+        ted_thumb ("Ted", "Thumb-VR", "Somewhere Else Hospital");
 
         public String firstName;
         public String lastName;
