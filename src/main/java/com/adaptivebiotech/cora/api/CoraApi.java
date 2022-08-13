@@ -133,6 +133,14 @@ public class CoraApi extends HttpClientHelper {
         post (url, body (payload));
     }
 
+    public void cancelWorkflow (UUID workflowId) {
+        String url = coraTestUrl + "/cora/api/v1/orderTests/setWorkflowStatus/" + workflowId;
+        Map <String, String> payload = new HashMap <> ();
+        payload.put ("stageStatus", "Cancelled");
+        payload.put ("subStatusMessage", "cancelled by SEA team automation");
+        post (url, body (payload));
+    }
+
     public Stage[] getWorkflowStages (OrderTest orderTest) {
         String url = coraTestUrl + "/cora/api/v1/reports/clinical/reportHistory/%s/workflow/%s";
         return mapper.readValue (get (format (url, orderTest.id, orderTest.workflowId)), Stage[].class);
@@ -344,6 +352,11 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), Patient.class);
     }
 
+    public Patient getPatient (UUID patientID) {
+        String url = coraTestUrl + "/cora/api/v1/patients/" + patientID;
+        return mapper.readValue (get (url), Patient.class);
+    }
+
     public Patient updatePatient (Patient patient) {
         String url = coraTestUrl + "/cora/api/v2/patients/" + patient.id;
         return mapper.readValue (put (url, body (patient)), Patient.class);
@@ -384,17 +397,15 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (params)), Alerts.class);
     }
 
-    public Alert[] getAlertsForOrderId (UUID orderId) {
+    /**
+     * @param id
+     *            can be order id or patient id
+     * @return array of {@link Alert}
+     */
+    public Alert[] getAlertsById (UUID id) {
         String url = coraTestUrl + "/cora/api/v2/alerts/searchUnpaged";
         Map <String, List <UUID>> params = new HashMap <> ();
-        params.put ("referencedEntityIds", Arrays.asList (orderId));
-        return mapper.readValue (post (url, body (params)), Alert[].class);
-    }
-
-    public Alert[] getAlertsForPatientId (UUID patientId) {
-        String url = coraTestUrl + "/cora/api/v2/alerts/searchUnpaged";
-        Map <String, List <UUID>> params = new HashMap <> ();
-        params.put ("referencedEntityIds", Arrays.asList (patientId));
+        params.put ("referencedEntityIds", Arrays.asList (id));
         return mapper.readValue (post (url, body (params)), Alert[].class);
     }
 

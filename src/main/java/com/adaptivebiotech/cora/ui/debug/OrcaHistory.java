@@ -131,20 +131,21 @@ public class OrcaHistory extends CoraPage {
             fail (format (fail, stage, status));
     }
 
-    public void waitForActorPickup (StageName stage, String actor) {
-        String fail = "unable to locate Stage: %s, Actor: %s";
-        String xpath = "//table[@class='genoTable']//td[text()='%s']/../td[contains(text(), '%s')]";
-        String check = format (xpath, stage, actor);
+    public void waitForWorkflowPropertySet (WorkflowProperty property) {
+        String fail = "unable to locate workflow property: %s";
         Timeout timer = new Timeout (millisDuration, millisPoll);
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
-        while (!timer.Timedout () && ! (found = isElementPresent (check))) {
+        Map <String, String> properties = getWorkflowProperties ();
+        while (!timer.Timedout () && ! (found = properties.containsKey (property.name ()))) {
             doForceClaim (orcaHistoryUrl);
             timer.Wait ();
             refresh ();
+            properties = getWorkflowProperties ();
         }
-        if (!found)
-            fail (format (fail, stage, actor));
+        if (!found) {
+            fail (format (fail, property.name ()));
+        }
     }
 
     public boolean isStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
