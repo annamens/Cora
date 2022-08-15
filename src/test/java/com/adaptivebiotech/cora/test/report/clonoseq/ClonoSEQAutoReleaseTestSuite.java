@@ -82,7 +82,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         for (UUID id : patientsToCleanUp) {
             Arrays.stream (coraApi.getOrdersForPatient (id))
                   .filter (order -> !order.orderTestStatusType.equals ("Cancelled"))
-                  .filter (order -> order.name.contains ("SEA_QA"))
+                  .filter (order -> order.accountName.contains ("SEA_QA"))
                   .forEach (order -> coraApi.cancelWorkflow (order.workflowId));
         }
     }
