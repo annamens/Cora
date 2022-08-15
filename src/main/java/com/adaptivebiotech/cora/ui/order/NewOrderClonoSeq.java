@@ -232,10 +232,8 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectValue (specimenSource, source.name ()));
     }
 
-    // TODO use isEnabled after SR-12204 is complete
     public boolean isSpecimenSourceEnabled () {
-        String data = getAttribute (specimenSource, "readOnly");
-        return isNotBlank (data) ? !data.equals ("true") : false;
+        return waitForElement (specimenSource).isEnabled ();
     }
 
     public void enterSpecimenSourceOther (String source) {

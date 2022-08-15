@@ -3,6 +3,12 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.test.container;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Conical;
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
+import static com.adaptivebiotech.cora.ui.container.ContainersList.Building.SSF;
+import static com.adaptivebiotech.cora.ui.container.ContainersList.Building.WA_1165;
+import static com.adaptivebiotech.cora.ui.container.ContainersList.Category.Batch;
+import static com.adaptivebiotech.cora.ui.container.ContainersList.Category.Diagnostic;
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018018;
 import static com.adaptivebiotech.cora.utils.TestHelper.freezerAB018078;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -35,14 +41,14 @@ public class ContainerFilterTestSuite extends ContainerTestBase {
      * @sdlc.requirements SR-9904:R1
      */
     public void applyFilters () {
-        ContainerType targetContainerType = ContainerType.Tube;
-        ContainerType wrongContainerType = ContainerType.Conical;
+        ContainerType targetContainerType = Tube;
+        ContainerType wrongContainerType = Conical;
         Container targetFreezer = freezerAB018078;
         Container wrongFreezer = freezerAB018018;
-        Building targetBuilding = Building.WA_1551;
-        Building wrongBuilding = Building.SSF;
-        Category targetCategory = Category.Diagnostic;
-        Category wrongCategory = Category.Batch;
+        Building targetBuilding = WA_1165;
+        Building wrongBuilding = SSF;
+        Category targetCategory = Diagnostic;
+        Category wrongCategory = Batch;
         login.doLogin ();
         ordersList.isCorrectPage ();
         newShipment.createShipment (targetContainerType, targetFreezer.name);
@@ -51,6 +57,7 @@ public class ContainerFilterTestSuite extends ContainerTestBase {
         ordersList.clickContainers ();
 
         // category
+        containersList.isCorrectPage ();
         containersList.searchContainerIdOrName (container.containerNumber);
         containersList.setCategoryFilter (wrongCategory);
         containersList.clickFilter ();

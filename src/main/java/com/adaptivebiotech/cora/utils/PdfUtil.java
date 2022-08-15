@@ -9,12 +9,7 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.fail;
-import java.io.IOException;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
-import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
-import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
+import com.testautomationguru.utility.PDFUtil;
 import de.redsix.pdfcompare.CompareResult;
 import de.redsix.pdfcompare.Exclusion;
 import de.redsix.pdfcompare.PdfComparator;
@@ -32,27 +27,16 @@ public class PdfUtil {
      *            The location of pdf file
      * @return The content of pdf file
      */
-    public static String getPDFContent (String pdfFileLocation) {
-
-        // read PDF and extract text
-        PdfReader reader = null;
-        StringBuilder fileContent = new StringBuilder ();
+    public static String getTextFromPDF (String pdfFileLocation) {
+        String fileContent = null;
         try {
-            reader = new PdfReader (pdfFileLocation);
-            PdfReaderContentParser parser = new PdfReaderContentParser (reader);
-            int totalPages = reader.getNumberOfPages ();
-            for (int i = 1; i <= totalPages; i++) {
-                TextExtractionStrategy strategy = parser.processContent (i, new SimpleTextExtractionStrategy ());
-                String pageContent = strategy.getResultantText ();
-                fileContent.append (pageContent + "\n");
-            }
+            PDFUtil pdfUtil = new PDFUtil ();
+            fileContent = pdfUtil.getText (pdfFileLocation);
             info ("File Content:\n" + fileContent);
         } catch (Exception e) {
             throw new RuntimeException (e);
-        } finally {
-            reader.close ();
         }
-        return fileContent.toString ();
+        return fileContent;
     }
 
     /**
@@ -65,19 +49,14 @@ public class PdfUtil {
      * @return The content of pdf file
      */
     public static String getTextFromPDF (String pdfFileLocation, int pageNumber) {
-
-        // read PDF and extract text
-        PdfReader reader = null;
         String fileContent = null;
         try {
-            reader = new PdfReader (pdfFileLocation);
-            fileContent = PdfTextExtractor.getTextFromPage (reader, pageNumber).replace ("\n", " ");
-        } catch (IOException e) {
+            PDFUtil pdfUtil = new PDFUtil ();
+            fileContent = pdfUtil.getText (pdfFileLocation, pageNumber);
+            info ("File Content:\n" + fileContent);
+        } catch (Exception e) {
             throw new RuntimeException (e);
-        } finally {
-            reader.close ();
         }
-        info ("Extracted Text:\n" + fileContent);
         return fileContent;
     }
 
