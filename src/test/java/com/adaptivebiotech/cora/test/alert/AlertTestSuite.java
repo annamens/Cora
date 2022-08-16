@@ -52,90 +52,62 @@ public class AlertTestSuite extends CoraBaseBrowser {
         testLog ("submitted new BCell ID order");
         coraPage.gotoOrderEntry (response.orderId);
         // Open Alerts Box
-        assertTrue (orderAlert.click (".new-alert"));
         // Add Letter of Medical Necessity
-        assertTrue (orderAlert.click ("//select[@class='form-control ng-untouched ng-pristine ng-valid']"));
-        assertTrue (orderAlert.click ("//option[@value='2: Object']"));
+        orderAlert.addLetterOfMedicalNecessity ();
         // Check boxes are marked as unchecked
-        while (!orderAlert.isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
-        assertTrue (!orderAlert.isElementPresent ("//input[@ng-reflect-model='true']"));
-        assertTrue (orderAlert.isElementPresent ("//input[@ng-reflect-model='false']"));
+        assertTrue (orderAlert.noBoxesChecked ());
         // Save
-        assertTrue (orderAlert.click ("//button[@class='btn btn-primary mar-right-10 mar-top-10']"));
+        orderAlert.clickSaveNewAlert ();
         // Expand Letter of medical necessity
-        assertTrue (orderAlert.click ("//span[@class='alert-expand glyphicon glyphicon-triangle-right']"));
+        orderAlert.expandTopAlert ();
         // Expand Send Email Notification
-        assertTrue (orderAlert.click ("//span[@class='btn glyphicon alert-expand glyphicon-triangle-right']"));
+        orderAlert.expandEmailsFromTopAlert ();
         // Check boxes are marked as unchecked
-        while (!orderAlert.isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
-        assertTrue (!orderAlert.isElementPresent ("//input[@ng-reflect-model='true']"));
-        assertTrue (orderAlert.isElementPresent ("//input[@ng-reflect-model='false']"));
-        assertTrue (orderAlert.click ("//button[@class='btn btn-secondary pull-right']"));
+        assertTrue (orderAlert.noBoxesChecked ());
+        orderAlert.closeExpandedAlert ();
         // Add Pathology Report
-        assertTrue (orderAlert.click (".new-alert"));
-        assertTrue (orderAlert.click ("//button[@class='btn btn-primary resolve-alert-button']"));
-        orderAlert.clickClose ();
-        assertTrue (orderAlert.click (".new-alert"));
-        assertTrue (orderAlert.click ("//select[@class='form-control ng-untouched ng-pristine ng-valid']"));
-        assertTrue (orderAlert.click ("//option[@value='4: Object']"));
+        orderAlert.resolveTopAlert ();
+        orderAlert.addPathologyReport ();
         // Check boxes are marked as unchecked
-        while (!orderAlert.isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
-        assertTrue (!orderAlert.isElementPresent ("//input[@ng-reflect-model='true']"));
-        assertTrue (orderAlert.isElementPresent ("//input[@ng-reflect-model='false']"));
+        assertTrue (orderAlert.noBoxesChecked ());
         // Save
-        assertTrue (orderAlert.click ("//button[@class='btn btn-primary mar-right-10 mar-top-10']"));
+        orderAlert.clickSaveNewAlert ();
         // Expand Pathology Report needed
-        assertTrue (orderAlert.click ("//span[@class='alert-expand glyphicon glyphicon-triangle-right']"));
+        orderAlert.expandTopAlert ();
         // Expand Send Email Notification section
-        assertTrue (orderAlert.click ("//span[@class='btn glyphicon alert-expand glyphicon-triangle-right']"));
+        orderAlert.expandEmailsFromTopAlert ();
         // Check boxes are marked as unchecked
-        while (!orderAlert.isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
-        assertTrue (!orderAlert.isElementPresent ("//input[@ng-reflect-model='true']"));
-        assertTrue (orderAlert.isElementPresent ("//input[@ng-reflect-model='false']"));
-        assertTrue (orderAlert.click ("//button[@class='btn btn-secondary pull-right']"));
+        assertTrue (orderAlert.noBoxesChecked ());
+        orderAlert.closeExpandedAlert ();
         // Add Corrected Report
-        assertTrue (orderAlert.click (".new-alert"));
-        assertTrue (orderAlert.click ("//button[@class='btn btn-primary resolve-alert-button']"));
-        orderAlert.clickClose ();
-        assertTrue (orderAlert.click (".new-alert"));
-        assertTrue (orderAlert.click ("//select[@class='form-control ng-untouched ng-pristine ng-valid']"));
-        assertTrue (orderAlert.click ("//option[@value='3: Object']"));
+        orderAlert.resolveTopAlert ();
+        orderAlert.addCorrectedReport ();
         // Check boxes are marked as unchecked
-        while (!orderAlert.isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
-        assertTrue (!orderAlert.isElementPresent ("//input[@ng-reflect-model='true']"));
-        assertTrue (orderAlert.isElementPresent ("//input[@ng-reflect-model='false']"));
+        assertTrue (orderAlert.noBoxesChecked ());
         // Save
-        assertTrue (orderAlert.click ("//button[@class='btn btn-primary mar-right-10 mar-top-10']"));
+        orderAlert.clickSaveNewAlert ();
         // Expand Corrected Report
-        assertTrue (orderAlert.click ("//span[@class='alert-expand glyphicon glyphicon-triangle-right']"));
+        orderAlert.expandTopAlert ();
         // Expand Send Email Notification section
-        assertTrue (orderAlert.click ("//span[@class='btn glyphicon alert-expand glyphicon-triangle-right']"));
+        orderAlert.expandEmailsFromTopAlert ();
         // Check boxes are marked as unchecked
-        while (!orderAlert.isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
-        assertTrue (!orderAlert.isElementPresent ("//input[@ng-reflect-model='true']"));
-        assertTrue (orderAlert.isElementPresent ("//input[@ng-reflect-model='false']"));
-        assertTrue (orderAlert.click ("//button[@class='btn btn-secondary pull-right']"));
+        assertTrue (orderAlert.noBoxesChecked ());
+        orderAlert.closeExpandedAlert ();
         // Add Clinical Consultation
-        assertTrue (orderAlert.click (".new-alert"));
-        assertTrue (orderAlert.click ("//button[@class='btn btn-primary resolve-alert-button']"));
-        orderAlert.clickClose ();
-        assertTrue (orderAlert.click (".new-alert"));
-        assertTrue (orderAlert.click ("//select[@class='form-control ng-untouched ng-pristine ng-valid']"));
-        assertTrue (orderAlert.click ("//option[@value='7: Object']"));
+        orderAlert.resolveTopAlert ();
+        orderAlert.addClinicalConsultationOption ();
         // Check boxes are marked as unchecked
-        while (!orderAlert.isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
-        assertTrue (!orderAlert.isElementPresent ("//input[@ng-reflect-model='true']"));
-        assertTrue (orderAlert.isElementPresent ("//input[@ng-reflect-model='false']"));
+        assertTrue (orderAlert.noBoxesChecked ());
         // Save
-        assertTrue (orderAlert.click ("//button[@class='btn btn-primary mar-right-10 mar-top-10']"));
+        orderAlert.clickSaveNewAlert ();
         // Expand Clinical Consultation
-        assertTrue (orderAlert.click ("//span[@class='alert-expand glyphicon glyphicon-triangle-right']"));
+        orderAlert.expandTopAlert ();
         // Expand Send Email Notification section
-        assertTrue (orderAlert.click ("//span[@class='btn glyphicon alert-expand glyphicon-triangle-right']"));
+        orderAlert.expandEmailsFromTopAlert ();
         // Check boxes are marked as unchecked
-        while (!orderAlert.isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
-        assertTrue (!orderAlert.isElementPresent ("//input[@ng-reflect-model='true']"));
-        assertTrue (orderAlert.isElementPresent ("//input[@ng-reflect-model='false']"));
-        assertTrue (orderAlert.click ("//button[@class='btn btn-secondary pull-right']"));
+        assertTrue (orderAlert.noBoxesChecked ());
+        orderAlert.closeExpandedAlert ();
+        // Resolve Alert
+        orderAlert.resolveTopAlert ();
     }
 }

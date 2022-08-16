@@ -24,6 +24,19 @@ public class OrderAlert extends BasePage {
     private final String saveBtn          = "//*[text()='Save']";
     private final String cancelBtn        = "//*[text()='Cancel']";
     private final String panelOpen        = ".panel-open";
+    private final String newAlert         = ".new-alert";
+    private final String addAlert         = "//select[@class='form-control ng-untouched ng-pristine ng-valid']";
+    private final String medicalNecOption = "//option[@value='2: Object']";
+    private final String pathologyOption  = "//option[@value='4: Object']";
+    private final String correctedOption  = "//option[@value='3: Object']";
+    private final String clinicalOption   = "//option[@value='7: Object']";
+    private final String saveNewAlert     = "//button[@class='btn btn-primary mar-right-10 mar-top-10']";
+    private final String expandTopAlert   = "//span[@class='alert-expand glyphicon glyphicon-triangle-right']";
+    private final String expandEmails     = "//span[@class='btn glyphicon alert-expand glyphicon-triangle-right']";
+    private final String resolveTopAlert  = "//button[@class='btn btn-primary resolve-alert-button']";
+    private final String boxChecked       = "//input[@ng-reflect-model='true']";
+    private final String noBoxChecked     = "//input[@ng-reflect-model='false']";
+    private final String closeExpandAlert = "//button[@class='btn btn-secondary pull-right']";
     private final String getAlertNote     = String.join (" ", panelOpen, ".alert-panel-content textarea");
     private final String addAlertNote     = String.join (" ", panelOpen, ".add-alert-type textarea");
 
@@ -35,6 +48,66 @@ public class OrderAlert extends BasePage {
     public void isCorrectPage (String orderNo) {
         isCorrectPage ();
         assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order #" + orderNo));
+    }
+
+    public void clickNewAlert () {
+        assertTrue (click (newAlert));
+    }
+
+    public void clickAddAlert () {
+        assertTrue (click (addAlert));
+    }
+
+    public void addLetterOfMedicalNecessity () {
+        clickNewAlert ();
+        clickAddAlert ();
+        assertTrue (click (medicalNecOption));
+    }
+
+    public void addPathologyReport () {
+        clickNewAlert ();
+        clickAddAlert ();
+        assertTrue (click (pathologyOption));
+    }
+
+    public void addCorrectedReport () {
+        clickNewAlert ();
+        clickAddAlert ();
+        assertTrue (click (correctedOption));
+    }
+
+    public void addClinicalConsultationOption () {
+        clickNewAlert ();
+        clickAddAlert ();
+        assertTrue (click (clinicalOption));
+    }
+
+    public void clickSaveNewAlert () {
+        assertTrue (click (saveNewAlert));
+    }
+
+    public void expandTopAlert () {
+        assertTrue (click (expandTopAlert));
+    }
+
+    public void expandEmailsFromTopAlert () {
+        assertTrue (click (expandEmails));
+    }
+
+    public void resolveTopAlert () {
+        clickNewAlert ();
+        assertTrue (click (resolveTopAlert));
+        clickClose ();
+    }
+
+    public boolean noBoxesChecked () {
+        while (!isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
+        assertTrue (!isElementPresent (boxChecked));
+        return isElementPresent (noBoxChecked);
+    }
+
+    public void closeExpandedAlert () {
+        assertTrue (click (closeExpandAlert));
     }
 
     public boolean isAlertModalPresent () {
