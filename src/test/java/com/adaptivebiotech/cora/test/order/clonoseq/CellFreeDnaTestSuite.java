@@ -7,10 +7,14 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
+import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
+import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
+import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
@@ -18,10 +22,20 @@ import static com.adaptivebiotech.test.utils.DateHelper.utcZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ReportDelivery;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
+import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcceptedTsvPath;
+import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
@@ -29,13 +43,19 @@ import java.lang.reflect.Method;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -70,17 +90,28 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private final String            noResultsAvailable   = "No result available";
     private final String            mrdResultDescription = "This sample failed the quality control criteria despite multiple sequencing attempts, exceeded the sample stability time period, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
     private final String            updateQuery          = "UPDATE cora.specimens SET properties = jsonb_set(properties, '{ActivationDate}', '\"%s\"', true) WHERE id = (SELECT specimen_id FROM cora.specimen_order_xref WHERE order_id = '%s')";
-    private final String            tsvPathOverride      = "s3://pipeline-north-production-archive:us-west-2/220409_NB551731_0399_AH2YHWBGXL/v3.1/20220411_1845/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev39/H2YHWBGXL_0_CLINICAL-CLINICAL_77898-27PC-AJP-012.adap.txt.results.tsv.gz";
+    private final String            tsvPathOverride      = azTsvPath + "/H2YHWBGXL_0_CLINICAL-CLINICAL_77898-27PC-AJP-012.adap.txt.results.tsv.gz";
 
     private final DateTimeFormatter formatDt8            = ofPattern ("uuuu-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     private final String[]          icdCodes             = { "C90.00" };
+    private final String            acceptedPathOverride = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
+    private final String            patientQuery         = "SELECT id FROM cora.patients WHERE firstname = '%s' and lastname = '%s' AND dateofbirth = '%s'";
+    private final String            patientOrderQuery    = "select * from cora.orders where patient_id IN (SELECT id FROM cora.patients WHERE firstname = '%s' and lastname = '%s')";
+
+    private final List <String>     deleteOrders         = asList ("delete from cora.specimen_order_xref where order_id IN (%s)",
+                                                                   "delete from cora.order_tests where order_id IN (%s)",
+                                                                   "delete from cora.order_billing where order_id IN (%s)",
+                                                                   "delete from cora.order_panel_xref where order_id IN (%s)",
+                                                                   "delete from cora.order_messages where order_id IN (%s)");
+    private final List <String>     deletePatient        = asList ("delete from cora.orders where patient_id IN (%s)",
+                                                                   "delete from cora.providers_patients where patient_id IN (%s)",
+                                                                   "delete from cora.patient_billing where patient_id IN (%s)",
+                                                                   "delete from cora.patients where id IN (%s)");
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
-        login.doLogin ();
-        ordersList.isCorrectPage ();
     }
 
     /**
@@ -118,14 +149,20 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-10414:R2
      */
-    public void cfDnaBCellTrackingNoResultAvailable () {
+    public void cfDnaBCellTrackingReport () {
+        Patient patient = setPatient ("SR-T4212", "TrackingReport", "08/15/2001", "mrnsrt2412trackingreport");
+        Physician physician = coraApi.getPhysician (clonoSEQ_selfpay);
+        createMrdEnabledPatient (patient, physician);
+
         Specimen specimenDto = new Specimen ();
         specimenDto.sampleType = Plasma;
         specimenDto.collectionDate = genLocalDate (-3);
         Assay assayTest = MRD_BCell2_CLIA;
 
-        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
-                                                            newTrialProtocolPatient (),
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (physician,
+                                                            patient,
                                                             icdCodes,
                                                             assayTest,
                                                             specimenDto,
@@ -140,11 +177,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         orcaHistory.clickOrderTest ();
         orderDetailClonoSeq.clickReportTab (assayTest);
         reportClonoSeq.releaseReport (assayTest, QC.Pass);
-        testLog ("Order Number: " + order.orderNumber + ", Released Report, Failure Report Generated");
+        testLog ("Order Number: " + order.orderNumber + ", Released Report, Tracking Report Generated");
 
         orcaHistory.gotoOrderDebug (sampleName);
         orcaHistory.waitFor (StageName.ReportDelivery, StageStatus.Finished, StageSubstatus.ALL_SUCCEEDED);
-        testLog ("New Clonality (ID) order needed alert should be triggered");
 
         orcaHistory.clickOrderTest ();
         orderDetailClonoSeq.clickReportTab (assayTest);
@@ -170,6 +206,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         specimenDto.anticoagulant = Streck;
         Assay assayTest = ID_BCell2_CLIA;
 
+        login.doLogin ();
+        ordersList.isCorrectPage ();
         Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
                                                             newTrialProtocolPatient (),
                                                             icdCodes,
@@ -228,6 +266,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         Specimen specimenDto = bloodSpecimen ();
         Assay assayTest = ID_BCell2_CLIA;
 
+        login.doLogin ();
+        ordersList.isCorrectPage ();
         Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
                                                             newTrialProtocolPatient (),
                                                             icdCodes,
@@ -272,6 +312,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     }
 
     private void createOrderAndValidateFailReport (Specimen specimenDto, Assay assayTest) {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
         Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
                                                             newTrialProtocolPatient (),
                                                             icdCodes,
@@ -313,6 +355,111 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (newOrderClonoSeq.isUniqueSpecimenIdEnabled (), allFields);
         assertEquals (newOrderClonoSeq.isRetrievalDateEnabled (), allFields);
         assertEquals (newOrderClonoSeq.isSpecimenSourceEnabled (), specimenSource);
+    }
+
+    private Patient setPatient (String firstName, String lastName, String dob, String mrn) {
+        Patient patient = newSelfPayPatient ();
+        patient.firstName = firstName;
+        patient.lastName = lastName;
+        patient.dateOfBirth = dob;
+        patient.mrn = mrn;
+        patient.middleName = "";
+        return patient;
+    }
+
+    private void createMrdEnabledPatient (Patient patient, Physician physician) {
+        boolean isPatientExist = isPatientOrderExist (patient);
+        String patientDob = convertDateFormat (patient.dateOfBirth, "MM/dd/yyyy", "yyyy-MM-dd");
+
+        boolean isPatinetMrdEnabled = false;
+        if (isPatientExist) {
+            String query = "SELECT id FROM cora.patients WHERE firstname = '%s' and lastname = '%s' AND dateofbirth = '%s'";
+            query = format (query, patient.firstName, patient.lastName, patientDob);
+            List <Map <String, Object>> queryRes = coraDb.executeSelect (query);
+            if (queryRes.size () > 0) {
+                String patinetId = queryRes.get (0).get ("id").toString ();
+                String patinetStatus = coraApi.getPatientStatus (UUID.fromString (patinetId));
+                testLog ("Patient Id: " + patinetId + ", Status: " + patinetStatus);
+                isPatinetMrdEnabled = patinetStatus.replace ("\"", "").equals ("MrdEnabled");
+            }
+            if (!isPatinetMrdEnabled) {
+                deletePatients (patient);
+            }
+        }
+
+        if (!isPatientExist || !isPatinetMrdEnabled) {
+            Assay assayTest = ID_BCell2_CLIA;
+
+            login.doLogin ();
+            Order order = newOrderClonoSeq.createClonoSeqOrder (physician,
+                                                                patient,
+                                                                icdCodes,
+                                                                assayTest,
+                                                                bloodSpecimen (),
+                                                                Active,
+                                                                Tube);
+            info ("Order Number: " + order.orderNumber);
+
+            String sampleName = orderDetailClonoSeq.getSampleName (assayTest);
+            orcaHistory.gotoOrderDebug (sampleName);
+            orcaHistory.setWorkflowProperty (lastAcceptedTsvPath, acceptedPathOverride);
+            orcaHistory.forceStatusUpdate (SecondaryAnalysis, Ready);
+            orcaHistory.waitFor (SecondaryAnalysis, Finished);
+            orcaHistory.waitFor (ShmAnalysis, Finished);
+            orcaHistory.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
+            orcaHistory.clickOrderTest ();
+
+            reportClonoSeq.clickReportTab (assayTest);
+            reportClonoSeq.releaseReport (assayTest, Pass);
+            orcaHistory.gotoOrderDebug (sampleName);
+            orcaHistory.waitFor (ReportDelivery, Finished);
+
+            new CoraPage ().clickSignOut ();
+        }
+    }
+
+    private boolean isPatientOrderExist (Patient patient) {
+        String query = format (patientOrderQuery,
+                               patient.firstName,
+                               patient.lastName);
+
+        List <Map <String, Object>> queryRes = coraDb.executeSelect (query);
+        boolean isPatientProviderExist = true;
+        if (queryRes.size () == 0) {
+            deletePatients (patient);
+            isPatientProviderExist = false;
+        }
+        return isPatientProviderExist;
+    }
+
+    private void deletePatients (Patient patient) {
+        String patientDob = convertDateFormat (patient.dateOfBirth, "MM/dd/yyyy", "yyyy-MM-dd");
+        List <Map <String, Object>> patientQueryRes = coraDb.executeSelect (format (patientQuery,
+                                                                                    patient.firstName,
+                                                                                    patient.lastName,
+                                                                                    patientDob));
+
+        List <Map <String, Object>> orderQueryRes = coraDb.executeSelect (format (patientOrderQuery,
+                                                                                  patient.firstName,
+                                                                                  patient.lastName,
+                                                                                  patientDob));
+
+        if (orderQueryRes.size () > 0) {
+            String orderIds = orderQueryRes.stream ().map (e -> e.get ("id").toString ())
+                                           .collect (Collectors.joining ("','", "'", "'"));
+            for (String deleteQuery : deleteOrders) {
+                coraDb.executeUpdate (format (deleteQuery, orderIds));
+            }
+        }
+
+        if (patientQueryRes.size () > 0) {
+            String patientIds = patientQueryRes.stream ().map (e -> e.get ("id").toString ())
+                                               .collect (Collectors.joining ("','", "'", "'"));
+
+            for (String deleteQuery : deletePatient) {
+                coraDb.executeUpdate (format (deleteQuery, patientIds));
+            }
+        }
     }
 
 }

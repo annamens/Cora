@@ -349,6 +349,11 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (put (url, body (patient)), Patient.class);
     }
 
+    public String getPatientStatus (UUID patientId) {
+        String url = coraTestUrl + "/cora/api/v2/patients/status/" + patientId;
+        return get (url);
+    }
+
     public Order[] getOrdersForPatient (UUID patientId) {
         String url = coraTestUrl + "/cora/api/v2/patients/list/" + patientId + "/orders";
         return mapper.readValue (get (url), Order[].class);
