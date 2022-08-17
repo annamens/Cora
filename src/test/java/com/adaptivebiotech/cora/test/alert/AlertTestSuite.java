@@ -36,7 +36,7 @@ public class AlertTestSuite extends CoraBaseBrowser {
     private CoraPage     coraPage   = new CoraPage ();
     private OrderAlert   orderAlert = new OrderAlert ();
 
-    public void verifyEmailNotificationsUnchecked () throws InterruptedException {
+    public void verifyEmailNotificationsUnchecked () {
         login.doLogin ();
         // Find order or make new one
         coraApi.getAuthToken ();
