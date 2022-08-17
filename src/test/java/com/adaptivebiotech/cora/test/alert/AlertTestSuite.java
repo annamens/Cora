@@ -27,7 +27,7 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.OrderAlert;
 
-@Test (groups = "wparsons")
+@Test (groups = "regression")
 public class AlertTestSuite extends CoraBaseBrowser {
     private Login        login      = new Login ();
     private CoraApi      coraApi    = new CoraApi ();
