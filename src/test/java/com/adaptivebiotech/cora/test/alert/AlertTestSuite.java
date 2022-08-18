@@ -34,7 +34,6 @@ public class AlertTestSuite extends CoraBaseBrowser {
 
     public void verifyEmailNotificationsUnchecked () {
         login.doLogin ();
-        // Find order or make new one
         physician = coraApi.getPhysician (clonoSEQ_client);
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildDiagnosticOrder (physician,
@@ -45,63 +44,23 @@ public class AlertTestSuite extends CoraBaseBrowser {
         assertEquals (response.patientId, patient.id);
         testLog ("submitted new BCell ID order");
         coraPage.gotoOrderEntry (response.orderId);
-        // Open Alerts Box
-        // Add Letter of Medical Necessity
         orderAlert.addLetterOfMedicalNecessity ();
-        // Check boxes are marked as unchecked
-        assertTrue (orderAlert.noBoxesChecked ());
-        // Save
-        orderAlert.clickSaveNewAlert ();
-        // Expand Letter of medical necessity
-        orderAlert.expandTopAlert ();
-        // Expand Send Email Notification
-        orderAlert.expandEmailsFromTopAlert ();
-        // Check boxes are marked as unchecked
-        assertTrue (orderAlert.noBoxesChecked ());
-        orderAlert.closeExpandedAlert ();
-        // Add Pathology Report
-        orderAlert.resolveTopAlert ();
+        fullyCheckBoxes ();
         orderAlert.addPathologyReport ();
-        // Check boxes are marked as unchecked
-        assertTrue (orderAlert.noBoxesChecked ());
-        // Save
-        orderAlert.clickSaveNewAlert ();
-        // Expand Pathology Report needed
-        orderAlert.expandTopAlert ();
-        // Expand Send Email Notification section
-        orderAlert.expandEmailsFromTopAlert ();
-        // Check boxes are marked as unchecked
-        assertTrue (orderAlert.noBoxesChecked ());
-        orderAlert.closeExpandedAlert ();
-        // Add Corrected Report
-        orderAlert.resolveTopAlert ();
+        fullyCheckBoxes ();
         orderAlert.addCorrectedReport ();
-        // Check boxes are marked as unchecked
-        assertTrue (orderAlert.noBoxesChecked ());
-        // Save
-        orderAlert.clickSaveNewAlert ();
-        // Expand Corrected Report
-        orderAlert.expandTopAlert ();
-        // Expand Send Email Notification section
-        orderAlert.expandEmailsFromTopAlert ();
-        // Check boxes are marked as unchecked
-        assertTrue (orderAlert.noBoxesChecked ());
-        orderAlert.closeExpandedAlert ();
-        // Add Clinical Consultation
-        orderAlert.resolveTopAlert ();
+        fullyCheckBoxes ();
         orderAlert.addClinicalConsultationOption ();
-        // Check boxes are marked as unchecked
+        fullyCheckBoxes ();
+    }
+
+    private void fullyCheckBoxes () {
         assertTrue (orderAlert.noBoxesChecked ());
-        // Save
         orderAlert.clickSaveNewAlert ();
-        // Expand Clinical Consultation
         orderAlert.expandTopAlert ();
-        // Expand Send Email Notification section
         orderAlert.expandEmailsFromTopAlert ();
-        // Check boxes are marked as unchecked
         assertTrue (orderAlert.noBoxesChecked ());
         orderAlert.closeExpandedAlert ();
-        // Resolve Alert
         orderAlert.resolveTopAlert ();
     }
 }
