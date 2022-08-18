@@ -65,9 +65,6 @@ public class PatientsList extends CoraPage {
     /**
      * Newly created patients take a few minutes before they populate on Patient List page, this
      * method will attempt an EXISTING patient search every minute for 10 minutes before timeout
-     * 
-     * @param patient
-     *            - patient name
      */
     public void waitForNewPatientToPopulate () {
         Timeout timer = new Timeout (600000l, 60000l);
