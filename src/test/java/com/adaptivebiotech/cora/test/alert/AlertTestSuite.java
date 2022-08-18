@@ -39,7 +39,6 @@ public class AlertTestSuite extends CoraBaseBrowser {
     private Login        login      = new Login ();
     private CoraApi      coraApi    = new CoraApi ();
     private Physician    physician;
-    private final String bcellIdTsv = azTsvPath + "/above-loq.id.tsv.gz";
     private CoraPage     coraPage   = new CoraPage ();
     private OrderAlert   orderAlert = new OrderAlert ();
 
