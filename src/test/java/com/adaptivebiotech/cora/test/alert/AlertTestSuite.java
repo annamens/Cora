@@ -8,19 +8,11 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_clie
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildDiagnosticOrder;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
-import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-
-import java.util.List;
-
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -36,22 +28,19 @@ import com.adaptivebiotech.cora.ui.order.OrderAlert;
  */
 @Test (groups = "regression")
 public class AlertTestSuite extends CoraBaseBrowser {
-    private Login        login      = new Login ();
-    private CoraApi      coraApi    = new CoraApi ();
-    private Physician    physician;
-    private CoraPage     coraPage   = new CoraPage ();
-    private OrderAlert   orderAlert = new OrderAlert ();
+    private Login      login      = new Login ();
+    private Physician  physician;
+    private CoraPage   coraPage   = new CoraPage ();
+    private OrderAlert orderAlert = new OrderAlert ();
 
     public void verifyEmailNotificationsUnchecked () {
         login.doLogin ();
         // Find order or make new one
-        coraApi.getAuthToken ();
-        coraApi.addTokenAndUsername ();
         physician = coraApi.getPhysician (clonoSEQ_client);
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildDiagnosticOrder (physician,
                                                       patient,
-                                                      stage (null, Ready),
+                                                      stage (null, null),
                                                       genCDxTest (ID_BCell2_CLIA, null));
         HttpResponse response = coraApi.newBcellOrder (diagnostic);
         assertEquals (response.patientId, patient.id);
