@@ -196,6 +196,14 @@ public class TestHelper {
         patient.billingType = InternalPharmaBilling;
         return patient;
     }
+    
+    public static Patient newPatientSetFirstLastNameDOB (String firstName, String lastName, String dateOfBirth) {
+        Patient patient = newPatient ();
+        patient.firstName = firstName;
+        patient.lastName = lastName;
+        patient.dateOfBirth = dateOfBirth;
+        return patient;
+    }
 
     public static Patient scenarioBuilderPatient () {
         Patient patient = new Patient ();

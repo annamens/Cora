@@ -9,6 +9,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author Harry Soehalim
@@ -29,6 +30,7 @@ public class PatientsList extends CoraPage {
     public void searchPatient (String term) {
         assertTrue (setText ("[type='search']", term));
         assertTrue (pressKey (ENTER));
+        pageLoading ();
     }
 
     public List <Patient> getPatients () {
@@ -47,5 +49,32 @@ public class PatientsList extends CoraPage {
         String css = "patient-list tbody tr:nth-child(" + idx + ") td:nth-child(1) a";
         assertTrue (click (css));
         pageLoading ();
+    }
+
+    public void clickPatientDetails (int idx) {
+        String css = "patient-list tbody tr:nth-child(" + idx + ") td:nth-child(5) span";
+        assertTrue (click (css));
+        pageLoading ();
+    }
+
+    public String getPatientMRDStatus () {
+        String css = ".patient-status";
+        return getText (css);
+    }
+
+    /**
+     * Newly created patients take a few minutes before they populate on Patient List page, this
+     * method will attempt an EXISTING patient search every minute for 10 minutes before timeout
+     * 
+     * @param patient
+     *            - patient name
+     */
+    public void waitForNewPatientToPopulate () {
+        Timeout timer = new Timeout (600000l, 60000l);
+        while (!timer.Timedout () && isElementPresent ("//*[text()='Sorry, no results found.']")) {
+            timer.Wait ();
+            assertTrue (pressKey (ENTER));
+            pageLoading ();
+        }
     }
 }
