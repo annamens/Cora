@@ -7,9 +7,10 @@ import static java.lang.String.join;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-import com.seleniumfy.test.utils.BasePage;
 
-public class OrderAlert extends BasePage {
+import com.adaptivebiotech.cora.ui.CoraPage;
+
+public class OrderAlert extends CoraPage {
 
     private final String alertModal       = ".modal-content";
     private final String alertTitle       = ".modal-title";
@@ -49,24 +50,28 @@ public class OrderAlert extends BasePage {
         clickNewAlert ();
         clickAddAlert ();
         assertTrue (click ("//option[@value='2: Object']"));
+        pageLoading ();
     }
 
     public void addPathologyReport () {
         clickNewAlert ();
         clickAddAlert ();
         assertTrue (click ("//option[@value='4: Object']"));
+        pageLoading ();
     }
 
     public void addCorrectedReport () {
         clickNewAlert ();
         clickAddAlert ();
         assertTrue (click ("//option[@value='3: Object']"));
+        pageLoading ();
     }
 
     public void addClinicalConsultationOption () {
         clickNewAlert ();
         clickAddAlert ();
         assertTrue (click ("//option[@value='7: Object']"));
+        pageLoading ();
     }
 
     public void clickSaveNewAlert () {
@@ -75,10 +80,12 @@ public class OrderAlert extends BasePage {
 
     public void expandTopAlert () {
         assertTrue (click ("//span[@class='alert-expand glyphicon glyphicon-triangle-right']"));
+        pageLoading ();
     }
 
     public void expandEmailsFromTopAlert () {
         assertTrue (click ("//span[@class='btn glyphicon alert-expand glyphicon-triangle-right']"));
+        pageLoading ();
     }
 
     public void resolveTopAlert () {
@@ -88,7 +95,6 @@ public class OrderAlert extends BasePage {
     }
 
     public boolean noBoxesChecked () {
-        while (!isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
         assertTrue (!isElementPresent ("//input[@ng-reflect-model='true']"));
         return isElementPresent ("//input[@ng-reflect-model='false']");
     }
