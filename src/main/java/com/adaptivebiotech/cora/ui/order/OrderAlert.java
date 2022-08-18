@@ -24,19 +24,6 @@ public class OrderAlert extends BasePage {
     private final String saveBtn          = "//*[text()='Save']";
     private final String cancelBtn        = "//*[text()='Cancel']";
     private final String panelOpen        = ".panel-open";
-    private final String newAlert         = ".new-alert";
-    private final String addAlert         = "//select[@class='form-control ng-untouched ng-pristine ng-valid']";
-    private final String medicalNecOption = "//option[@value='2: Object']";
-    private final String pathologyOption  = "//option[@value='4: Object']";
-    private final String correctedOption  = "//option[@value='3: Object']";
-    private final String clinicalOption   = "//option[@value='7: Object']";
-    private final String saveNewAlert     = "//button[@class='btn btn-primary mar-right-10 mar-top-10']";
-    private final String expandTopAlert   = "//span[@class='alert-expand glyphicon glyphicon-triangle-right']";
-    private final String expandEmails     = "//span[@class='btn glyphicon alert-expand glyphicon-triangle-right']";
-    private final String resolveTopAlert  = "//button[@class='btn btn-primary resolve-alert-button']";
-    private final String boxChecked       = "//input[@ng-reflect-model='true']";
-    private final String noBoxChecked     = "//input[@ng-reflect-model='false']";
-    private final String closeExpandAlert = "//button[@class='btn btn-secondary pull-right']";
     private final String getAlertNote     = String.join (" ", panelOpen, ".alert-panel-content textarea");
     private final String addAlertNote     = String.join (" ", panelOpen, ".add-alert-type textarea");
 
@@ -51,63 +38,63 @@ public class OrderAlert extends BasePage {
     }
 
     public void clickNewAlert () {
-        assertTrue (click (newAlert));
+        assertTrue (click (".new-alert"));
     }
 
     public void clickAddAlert () {
-        assertTrue (click (addAlert));
+        assertTrue (click ("//select[@class='form-control ng-untouched ng-pristine ng-valid']"));
     }
 
     public void addLetterOfMedicalNecessity () {
         clickNewAlert ();
         clickAddAlert ();
-        assertTrue (click (medicalNecOption));
+        assertTrue (click ("//option[@value='2: Object']"));
     }
 
     public void addPathologyReport () {
         clickNewAlert ();
         clickAddAlert ();
-        assertTrue (click (pathologyOption));
+        assertTrue (click ("//option[@value='4: Object']"));
     }
 
     public void addCorrectedReport () {
         clickNewAlert ();
         clickAddAlert ();
-        assertTrue (click (correctedOption));
+        assertTrue (click ("//option[@value='3: Object']"));
     }
 
     public void addClinicalConsultationOption () {
         clickNewAlert ();
         clickAddAlert ();
-        assertTrue (click (clinicalOption));
+        assertTrue (click ("//option[@value='7: Object']"));
     }
 
     public void clickSaveNewAlert () {
-        assertTrue (click (saveNewAlert));
+        assertTrue (click ("//button[@class='btn btn-primary mar-right-10 mar-top-10']"));
     }
 
     public void expandTopAlert () {
-        assertTrue (click (expandTopAlert));
+        assertTrue (click ("//span[@class='alert-expand glyphicon glyphicon-triangle-right']"));
     }
 
     public void expandEmailsFromTopAlert () {
-        assertTrue (click (expandEmails));
+        assertTrue (click ("//span[@class='btn glyphicon alert-expand glyphicon-triangle-right']"));
     }
 
     public void resolveTopAlert () {
         clickNewAlert ();
-        assertTrue (click (resolveTopAlert));
+        assertTrue (click ("//button[@class='btn btn-primary resolve-alert-button']"));
         clickClose ();
     }
 
     public boolean noBoxesChecked () {
         while (!isElementPresent ("//input[@class='recipient-email ng-untouched ng-pristine ng-valid']")) {}
-        assertTrue (!isElementPresent (boxChecked));
-        return isElementPresent (noBoxChecked);
+        assertTrue (!isElementPresent ("//input[@ng-reflect-model='true']"));
+        return isElementPresent ("//input[@ng-reflect-model='false']");
     }
 
     public void closeExpandedAlert () {
-        assertTrue (click (closeExpandAlert));
+        assertTrue (click ("//button[@class='btn btn-secondary pull-right']"));
     }
 
     public boolean isAlertModalPresent () {

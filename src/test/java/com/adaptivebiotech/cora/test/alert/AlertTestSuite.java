@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.alert;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
@@ -27,6 +30,10 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.OrderAlert;
 
+/**
+ * @author Mitch Parsons
+ *         <a href="mailto:<wparsons@adaptivebiotech.com">wparsons@adaptivebiotech.com</a>
+ */
 @Test (groups = "regression")
 public class AlertTestSuite extends CoraBaseBrowser {
     private Login        login      = new Login ();
@@ -45,8 +52,8 @@ public class AlertTestSuite extends CoraBaseBrowser {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildDiagnosticOrder (physician,
                                                       patient,
-                                                      stage (SecondaryAnalysis, Ready),
-                                                      genCDxTest (ID_BCell2_CLIA, bcellIdTsv));
+                                                      stage (null, Ready),
+                                                      genCDxTest (ID_BCell2_CLIA, null));
         HttpResponse response = coraApi.newBcellOrder (diagnostic);
         assertEquals (response.patientId, patient.id);
         testLog ("submitted new BCell ID order");
