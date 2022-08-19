@@ -11,14 +11,11 @@ import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.Clarity;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
-import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
-import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
-import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
-import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Failed;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import java.lang.reflect.Method;
@@ -39,10 +36,8 @@ import com.adaptivebiotech.picasso.dto.verify.ClonoSeq;
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 @Test (groups = "regression")
-public class BetweenLoDLoQTestSuite extends ReportTestBase {
+public class NoResultAvailableTestSuite extends ReportTestBase {
 
-    private final String         analysisID  = getSystemResource ("SecondaryAnalysis/between-lod-loq.id.json").getPath ();
-    private final String         analysisMRD = getSystemResource ("SecondaryAnalysis/between-lod-loq.mrd.json").getPath ();
     private Login                login       = new Login ();
     private OrcaHistory          history     = new OrcaHistory ();
     private ReportClonoSeq       report      = new ReportClonoSeq ();
@@ -53,21 +48,20 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
     }
 
-    public void verify_clia_report () {
+    @Test (groups = "irish-wolfhound")
+    public void verify_clia_eos_report () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                null,
-                                               genCDxTest (ID_BCell2_CLIA, azTsvPath + "/between-lod-loq.id.tsv.gz"),
-                                               genCDxTest (MRD_BCell2_CLIA, azTsvPath + "/between-lod-loq.mrd.tsv.gz"));
+                                               genCDxTest (ID_BCell2_CLIA, null),
+                                               genCDxTest (MRD_BCell2_CLIA, null));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
         testLog ("[CLIA] submitted clonality and tracking orders");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
-        history.forceStatusUpdate (SecondaryAnalysis, Ready);
-        history.waitFor (SecondaryAnalysis, Finished);
-        history.waitFor (ShmAnalysis, Finished);
+        history.forceStatusUpdate (Clarity, Failed);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         report.clickReportTab (ID_BCell2_CLIA);
@@ -77,28 +71,22 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
         coraApi.get (report.getReportUrl (), actualPdf);
         history.gotoOrderDebug (orderTest.sampleName);
 
-        String actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
+        String actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
         coraDebugApi.login ();
-        coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, analysisID);
-        testLog ("[CLIA] the secondaryAnalysisResult.json for above LOD / below LOQ for clonality matched with the baseline");
-
-        actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
         coraDebugApi.get (history.getFileLocation (reportData), actual);
         ReportRender reportRender = parseReportData (actual);
         testLog ("[CLIA] downloaded " + reportData);
 
         ClonoSeq clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isCLIA = true;
-        clonoseq.pageSize = 3;
+        clonoseq.helper.isFailed = true;
+        clonoseq.pageSize = 1;
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[CLIA] the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.forceStatusUpdate (SecondaryAnalysis, Ready);
-        history.waitFor (SecondaryAnalysis, Finished);
-        history.waitFor (ShmAnalysis, Finished);
+        history.forceStatusUpdate (Clarity, Failed);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         report.clickReportTab (MRD_BCell2_CLIA);
@@ -108,12 +96,6 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
         coraApi.get (report.getReportUrl (), actualPdf);
         history.gotoOrderDebug (orderTest.sampleName);
 
-        actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
-        coraDebugApi.login ();
-        coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, analysisMRD);
-        testLog ("[CLIA] the secondaryAnalysisResult.json for above LOD / below LOQ for tracking matched with the baseline");
-
         actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
         coraDebugApi.get (history.getFileLocation (reportData), actual);
         reportRender = parseReportData (actual);
@@ -121,26 +103,26 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
 
         clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isCLIA = true;
-        clonoseq.pageSize = 4;
+        clonoseq.helper.isFailed = true;
+        clonoseq.pageSize = 1;
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[CLIA] the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }
 
-    public void verify_ivd_report () {
+    @Test (groups = "irish-wolfhound")
+    public void verify_ivd_eos_report () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
                                                null,
-                                               genCDxTest (ID_BCell2_IVD, azTsvPath + "/between-lod-loq.id.tsv.gz"),
-                                               genCDxTest (MRD_BCell2_IVD, azTsvPath + "/between-lod-loq.mrd.tsv.gz"));
+                                               genCDxTest (ID_BCell2_IVD, azTsvPath + "/above-loq.id.tsv.gz"),
+                                               genCDxTest (MRD_BCell2_IVD, azTsvPath + "/above-loq.mrd.tsv.gz"));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
         testLog ("[IVD] submitted clonality and tracking orders");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_IVD);
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
-        history.forceStatusUpdate (SecondaryAnalysis, Ready);
-        history.waitFor (SecondaryAnalysis, Finished);
-        history.waitFor (ShmAnalysis, Finished);
+        history.forceStatusUpdate (Clarity, Failed);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         report.clickReportTab (ID_BCell2_IVD);
@@ -150,28 +132,22 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
         coraApi.get (report.getReportUrl (), actualPdf);
         history.gotoOrderDebug (orderTest.sampleName);
 
-        String actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
+        String actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
         coraDebugApi.login ();
-        coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, analysisID);
-        testLog ("[IVD] the secondaryAnalysisResult.json for above LOD / below LOQ for clonality matched with the baseline");
-
-        actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
         coraDebugApi.get (history.getFileLocation (reportData), actual);
         ReportRender reportRender = parseReportData (actual);
         testLog ("[IVD] downloaded " + reportData);
 
         ClonoSeq clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isIVD = true;
-        clonoseq.pageSize = 3;
+        clonoseq.helper.isFailed = true;
+        clonoseq.pageSize = 1;
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[IVD] the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_IVD);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.forceStatusUpdate (SecondaryAnalysis, Ready);
-        history.waitFor (SecondaryAnalysis, Finished);
-        history.waitFor (ShmAnalysis, Finished);
+        history.forceStatusUpdate (Clarity, Failed);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
         history.clickOrderTest ();
         report.clickReportTab (MRD_BCell2_IVD);
@@ -181,12 +157,6 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
         coraApi.get (report.getReportUrl (), actualPdf);
         history.gotoOrderDebug (orderTest.sampleName);
 
-        actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
-        coraDebugApi.login ();
-        coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, analysisMRD);
-        testLog ("[IVD] the secondaryAnalysisResult.json for above LOD / below LOQ for tracking matched with the baseline");
-
         actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
         coraDebugApi.get (history.getFileLocation (reportData), actual);
         reportRender = parseReportData (actual);
@@ -194,7 +164,8 @@ public class BetweenLoDLoQTestSuite extends ReportTestBase {
 
         clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isIVD = true;
-        clonoseq.pageSize = 4;
+        clonoseq.helper.isFailed = true;
+        clonoseq.pageSize = 1;
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[IVD] the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }

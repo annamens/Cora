@@ -30,11 +30,12 @@ import com.adaptivebiotech.cora.utils.PageHelper.LinkShipment;
  */
 public class NewShipment extends ShipmentHeader {
 
-    private final String shippingCondition = "#conditionType";
-    private final String cssCarrier        = "#carrierType";
-    private final String cssTrackingNumber = "#trackingNumber";
-    private final String cssNotes          = "#shipment-notes";
-    private final String fileLoc           = "//a//span[contains(text(),'%s')]";
+    private final String shippingCondition      = "#conditionType";
+    private final String cssCarrier             = "#carrierType";
+    private final String cssTrackingNumber      = "#trackingNumber";
+    private final String cssNotes               = "#shipment-notes";
+    private final String fileLoc                = "//a//span[contains(text(),'%s')]";
+    private final String initialStorageLocation = "//*[text()='Initial Storage Location']/following-sibling::select";
 
     public NewShipment () {
         staticNavBarHeight = 195;
@@ -250,8 +251,7 @@ public class NewShipment extends ShipmentHeader {
     }
 
     public void enterInitialStorageLocation (String freezerName) {
-        String cssInitialStorageLocation = "[ng-model='ctrl.storageLocation']";
-        CoraSelect storageLocations = new CoraSelect (waitForElementClickable (cssInitialStorageLocation));
+        CoraSelect storageLocations = new CoraSelect (waitForElementClickable (initialStorageLocation));
         storageLocations.selectByVisibleText (freezerName);
     }
 
@@ -272,8 +272,7 @@ public class NewShipment extends ShipmentHeader {
     }
 
     public String getInitialStorageLocation () {
-        String cssInitialStorageLocation = "[ng-model='ctrl.storageLocation']";
-        return getFirstSelectedText (cssInitialStorageLocation);
+        return getFirstSelectedText (initialStorageLocation);
     }
 
     public List <String> getAttachmentNames () {

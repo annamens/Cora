@@ -6,10 +6,9 @@ package com.adaptivebiotech.cora.test.report.clonoseq;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRB;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_TCRB;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
-import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB;
-import static com.adaptivebiotech.test.utils.DateHelper.formatDt6;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Analyzer;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.CalculateSampleSummary;
@@ -21,9 +20,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static java.lang.String.join;
-import static java.time.LocalDateTime.parse;
 import static org.testng.Assert.assertEquals;
-import java.time.LocalDateTime;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -32,6 +29,7 @@ import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
+import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.verify.ClonoSeq;
 
 /**
@@ -59,6 +57,7 @@ public class ReportTcrbTestSuite extends ReportTestBase {
                                                genTcrTest (MRD_TCRB, lastFlowcellId, tsvPath));
         diagnostic.order.postToImmunoSEQ = true;
         assertEquals (coraApi.newTcellOrder (diagnostic).patientId, patient.id);
+        testLog ("[TCRB] submitted clonality and tracking orders");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_TCRB);
         login.doLogin ();
@@ -72,17 +71,21 @@ public class ReportTcrbTestSuite extends ReportTestBase {
         report.clickReportTab (ID_TCRB);
         report.releaseReport (ID_TCRB, Pass);
 
-        LocalDateTime releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
-        ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, TCRB);
-        clonoseq.helper.isCLIA = true;
-        clonoseq.helper.isClonality = true;
-        clonoseq.pageSize = 3;
-        clonoseq.header.reportDt = releaseDt.toLocalDate ();
-        clonoseq.appendix.sampleInfo = "0.9 61,413 TCRB 16,723 1,661";
-        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
         String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
-        verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
-        testLog ("the TCRB ClonoSEQ 2.0 clonality report matched with the baseline");
+        coraApi.get (report.getReportUrl (), actualPdf);
+        history.gotoOrderDebug (orderTest.sampleName);
+
+        String actual = join ("/", downloadDir, orderTest.sampleName, reportData);
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (reportData), actual);
+        ReportRender reportRender = parseReportData (actual);
+        testLog ("[TCRB] downloaded " + reportData);
+
+        ClonoSeq clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
+        clonoseq.helper.isCLIA = true;
+        clonoseq.pageSize = 3;
+        verifyReport (clonoseq, getTextFromPDF (actualPdf));
+        testLog ("[TCRB] the ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (MRD_TCRB);
         history.gotoOrderDebug (orderTest.sampleName);
@@ -95,15 +98,20 @@ public class ReportTcrbTestSuite extends ReportTestBase {
         report.clickReportTab (MRD_TCRB);
         report.releaseReport (MRD_TCRB, Pass);
 
-        releaseDt = parse (report.getReportReleaseDate () + ".0000", formatDt6);
-        clonoseq = basicClonoSeq (patient, diagnostic, orderTest, TCRB);
+        actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        coraApi.get (report.getReportUrl (), actualPdf);
+        history.gotoOrderDebug (orderTest.sampleName);
+
+        actual = join ("/", downloadDir, orderTest.sampleName, reportData);
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (reportData), actual);
+        reportRender = parseReportData (actual);
+        testLog ("[TCRB] downloaded " + reportData);
+
+        clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isCLIA = true;
         clonoseq.pageSize = 3;
-        clonoseq.header.reportDt = releaseDt.toLocalDate ();
-        clonoseq.appendix.sampleInfo = "0.9 61,413 TCRB 16,723 1,661";
-        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
-        verifyReport (clonoseq, getReport (report.getReportUrl (), actualPdf));
-        testLog ("the TCRB ClonoSEQ 2.0 tracking report matched with the baseline");
+        verifyReport (clonoseq, getTextFromPDF (actualPdf));
+        testLog ("[TCRB] the ClonoSEQ 2.0 tracking report matched with the baseline");
     }
 }
