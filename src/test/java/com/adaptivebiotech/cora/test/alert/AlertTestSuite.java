@@ -17,9 +17,9 @@ import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
-import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.OrderAlert;
+import com.adaptivebiotech.cora.dto.Alerts.AlertOptions;
 
 /**
  * @author Mitch Parsons
@@ -29,38 +29,34 @@ import com.adaptivebiotech.cora.ui.order.OrderAlert;
 public class AlertTestSuite extends CoraBaseBrowser {
     private Login      login      = new Login ();
     private Physician  physician;
-    private CoraPage   coraPage   = new CoraPage ();
     private OrderAlert orderAlert = new OrderAlert ();
 
     public void verifyEmailNotificationsUnchecked () {
-        login.doLogin ();
         physician = coraApi.getPhysician (clonoSEQ_client);
         Patient patient = scenarioBuilderPatient ();
-        Diagnostic diagnostic = buildDiagnosticOrder (physician,
-                                                      patient,
-                                                      stage (null, null),
-                                                      genCDxTest (ID_BCell2_CLIA, null));
+        Diagnostic diagnostic = buildDiagnosticOrder (physician, patient, null, genCDxTest (ID_BCell2_CLIA, null));
         HttpResponse response = coraApi.newBcellOrder (diagnostic);
         assertEquals (response.patientId, patient.id);
         testLog ("submitted new BCell ID order");
-        coraPage.gotoOrderEntry (response.orderId);
-        orderAlert.addLetterOfMedicalNecessity ();
+        login.doLogin ();
+        orderAlert.gotoOrderEntry (response.orderId);
+        orderAlert.addAlert (AlertOptions.LetterOfMedicalNecessity);
         fullyCheckBoxes ();
-        orderAlert.addPathologyReport ();
+        orderAlert.addAlert (AlertOptions.PathologyReport);
         fullyCheckBoxes ();
-        orderAlert.addCorrectedReport ();
+        orderAlert.addAlert (AlertOptions.CorrectedReport);
         fullyCheckBoxes ();
-        orderAlert.addClinicalConsultationOption ();
+        orderAlert.addAlert (AlertOptions.ClinicalConsultation);
         fullyCheckBoxes ();
     }
 
     private void fullyCheckBoxes () {
-        assertTrue (orderAlert.noBoxesChecked ());
+        orderAlert.noBoxesChecked ();
         orderAlert.clickSaveNewAlert ();
         orderAlert.expandTopAlert ();
         orderAlert.expandEmailsFromTopAlert ();
-        assertTrue (orderAlert.noBoxesChecked ());
-        orderAlert.closeExpandedAlert ();
+        orderAlert.noBoxesChecked ();
+        orderAlert.clickClose ();
         orderAlert.resolveTopAlert ();
     }
 }

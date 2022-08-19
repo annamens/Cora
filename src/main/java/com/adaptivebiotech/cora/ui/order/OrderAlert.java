@@ -5,9 +5,13 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static java.lang.String.join;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openqa.selenium.WebElement;
+
+import com.adaptivebiotech.cora.dto.Alerts.AlertOptions;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
 public class OrderAlert extends CoraPage {
@@ -42,49 +46,24 @@ public class OrderAlert extends CoraPage {
         assertTrue (click (".new-alert"));
     }
 
-    public void clickAddAlert () {
-        assertTrue (click ("//select[@class='form-control ng-untouched ng-pristine ng-valid']"));
-    }
-
-    public void addLetterOfMedicalNecessity () {
+    public void addAlert (AlertOptions alert) {
         clickNewAlert ();
-        clickAddAlert ();
-        assertTrue (click ("//option[@value='2: Object']"));
-        pageLoading ();
-    }
-
-    public void addPathologyReport () {
-        clickNewAlert ();
-        clickAddAlert ();
-        assertTrue (click ("//option[@value='4: Object']"));
-        pageLoading ();
-    }
-
-    public void addCorrectedReport () {
-        clickNewAlert ();
-        clickAddAlert ();
-        assertTrue (click ("//option[@value='3: Object']"));
-        pageLoading ();
-    }
-
-    public void addClinicalConsultationOption () {
-        clickNewAlert ();
-        clickAddAlert ();
-        assertTrue (click ("//option[@value='7: Object']"));
+        assertTrue (clickAndSelectText ("[name='select-alert-type'] select",
+                                        alert.getLabel ()));
         pageLoading ();
     }
 
     public void clickSaveNewAlert () {
-        assertTrue (click ("//button[@class='btn btn-primary mar-right-10 mar-top-10']"));
+        assertTrue (click (saveBtn));
     }
 
     public void expandTopAlert () {
-        assertTrue (click ("//span[@class='alert-expand glyphicon glyphicon-triangle-right']"));
+        assertTrue (click ("//span[@ng-reflect-klass='alert-expand glyphicon']"));
         pageLoading ();
     }
 
     public void expandEmailsFromTopAlert () {
-        assertTrue (click ("//span[@class='btn glyphicon alert-expand glyphicon-triangle-right']"));
+        assertTrue (click ("//span[@aria-controls='editRecipients']"));
         pageLoading ();
     }
 
@@ -94,13 +73,10 @@ public class OrderAlert extends CoraPage {
         clickClose ();
     }
 
-    public boolean noBoxesChecked () {
-        assertTrue (!isElementPresent ("//input[@ng-reflect-model='true']"));
-        return isElementPresent ("//input[@ng-reflect-model='false']");
-    }
-
-    public void closeExpandedAlert () {
-        assertTrue (click ("//button[@class='btn btn-secondary pull-right']"));
+    public void noBoxesChecked () {
+        for (WebElement i : waitForElements ("//input[@ng-reflect-model]")) {
+            assertFalse (i.isSelected ());
+        }
     }
 
     public boolean isAlertModalPresent () {
