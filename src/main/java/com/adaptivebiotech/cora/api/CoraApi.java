@@ -308,6 +308,17 @@ public class CoraApi extends HttpClientHelper {
         return tests;
     }
 
+    public void waitForNewPatientToPopulate (String patientCode) {
+        Patient[] patients = getPatients (patientCode);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
+        while (!timer.Timedout () && (patients.length == 0)) {
+            timer.Wait ();
+            patients = getPatients (patientCode);
+        }
+        if (patients.length == 0)
+            fail ("unable to find patient");
+    }
+
     public HttpResponse newBcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
         HttpResponse response = mapper.readValue (post (url, body (diagnostic)), HttpResponse.class);
