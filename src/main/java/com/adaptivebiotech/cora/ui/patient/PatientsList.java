@@ -9,7 +9,6 @@ import static org.testng.Assert.assertTrue;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author Harry Soehalim
