@@ -10,7 +10,7 @@
     <parent>
         <groupId>com.adaptivebiotech.test.utils</groupId>
         <artifactId>parent-pom</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
     <repositories>
         <repository>
@@ -53,10 +53,6 @@
                         <configfailurepolicy>continue</configfailurepolicy>
                     </properties>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

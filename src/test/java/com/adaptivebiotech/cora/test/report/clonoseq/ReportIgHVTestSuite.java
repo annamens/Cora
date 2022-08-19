@@ -122,7 +122,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
 
         ShmReportResult result = report.shmReportResult;
         assertNotNull (result);
-        testLog ("found a ReportRenderDto object with a new field called shmReportResult containingan ShmReportResult Object");
+        testLog ("found a ReportRenderDto object with a new field called shmReportResult containing n ShmReportResult Object");
 
         assertEquals (result.mutationStatus, MUTATED);
         assertEquals (result.shmSequenceList.size (), 1);
