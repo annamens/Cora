@@ -7,10 +7,10 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_client;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildDiagnosticOrder;
-import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.HttpResponse;
@@ -51,11 +51,11 @@ public class AlertTestSuite extends CoraBaseBrowser {
     }
 
     private void fullyCheckBoxes () {
-        orderAlert.noBoxesChecked ();
+        assertFalse (orderAlert.boxesChecked ());
         orderAlert.clickSaveNewAlert ();
         orderAlert.expandTopAlert ();
         orderAlert.expandEmailsFromTopAlert ();
-        orderAlert.noBoxesChecked ();
+        assertFalse (orderAlert.boxesChecked ());
         orderAlert.clickClose ();
         orderAlert.resolveTopAlert ();
     }

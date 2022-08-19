@@ -5,7 +5,6 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static java.lang.String.join;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertFalse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,10 +73,13 @@ public class OrderAlert extends CoraPage {
         clickClose ();
     }
 
-    public void noBoxesChecked () {
+    public boolean boxesChecked () {
         for (WebElement i : waitForElements ("//div[@class='recipients-list-box']//input[@ng-reflect-model]")) {
-            assertFalse (i.isSelected ());
+            if (i.isSelected()) {
+            	return true;
+            }
         }
+        return false;
     }
 
     public boolean isAlertModalPresent () {
