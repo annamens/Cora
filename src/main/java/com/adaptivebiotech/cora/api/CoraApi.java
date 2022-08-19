@@ -310,7 +310,7 @@ public class CoraApi extends HttpClientHelper {
 
     public void waitForNewPatientToPopulate (String patientCode) {
         Patient[] patients = getPatients (patientCode);
-        Timeout timer = new Timeout (600000l, 60000l);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && (patients.length == 0)) {
             timer.Wait ();
             patients = getPatients (patientCode);
