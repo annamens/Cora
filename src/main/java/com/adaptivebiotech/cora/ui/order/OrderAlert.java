@@ -58,23 +58,24 @@ public class OrderAlert extends CoraPage {
     }
 
     public void expandTopAlert () {
-        assertTrue (click ("//span[@ng-reflect-klass='alert-expand glyphicon']"));
+        assertTrue (click ("//div[@class='panel-title']//span[@class='alert-expand glyphicon glyphicon-triangle-right'][@ng-reflect-klass='alert-expand glyphicon']"));
         pageLoading ();
+
     }
 
     public void expandEmailsFromTopAlert () {
-        assertTrue (click ("//span[@aria-controls='editRecipients']"));
+        assertTrue (click ("//div[@class='edit-recipients-header']//span[@aria-controls='editRecipients'][@role='button'][@ng-reflect-klass][@aria-expanded]"));
         pageLoading ();
     }
 
     public void resolveTopAlert () {
         clickNewAlert ();
-        assertTrue (click ("//button[@class='btn btn-primary resolve-alert-button']"));
+        assertTrue (click ("//div[@class='pull-right']//button[@class='btn btn-primary resolve-alert-button'][text()='Resolve']"));
         clickClose ();
     }
 
     public void noBoxesChecked () {
-        for (WebElement i : waitForElements ("//input[@ng-reflect-model]")) {
+        for (WebElement i : waitForElements ("//div[@class='recipients-list-box']//input[@ng-reflect-model]")) {
             assertFalse (i.isSelected ());
         }
     }
