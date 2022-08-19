@@ -50,8 +50,8 @@ public class PatientsList extends CoraPage {
         pageLoading ();
     }
 
-    public void clickPatientDetails (String patientCode) {
-        String css = "//*[*[*[text()='" + patientCode + "']]]/following-sibling::td//*[@class='history-link']";
+    public void clickPatientDetails (String term) {
+        String css = "//*[*[*[text()='" + term + "']]]/following-sibling::td//*[@class='history-link']";
         assertTrue (click (css));
         pageLoading ();
     }
