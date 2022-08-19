@@ -7,6 +7,7 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.MrdEnabled;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
@@ -52,6 +53,7 @@ import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Patient.PatientTestStatus;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
@@ -378,9 +380,9 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
             List <Map <String, Object>> queryRes = coraDb.executeSelect (query);
             if (queryRes.size () > 0) {
                 String patinetId = queryRes.get (0).get ("id").toString ();
-                String patinetStatus = coraApi.getPatientStatus (UUID.fromString (patinetId));
+                PatientTestStatus patinetStatus = coraApi.getPatientStatus (UUID.fromString (patinetId));
                 testLog ("Patient Id: " + patinetId + ", Status: " + patinetStatus);
-                isPatinetMrdEnabled = patinetStatus.replace ("\"", "").equals ("MrdEnabled");
+                isPatinetMrdEnabled = patinetStatus.equals (MrdEnabled);
             }
             if (!isPatinetMrdEnabled) {
                 deletePatients (patient);

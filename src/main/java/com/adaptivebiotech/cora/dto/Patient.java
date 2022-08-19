@@ -98,7 +98,7 @@ public final class Patient {
     public enum PatientTestStatus {
         Pending ("Pending"),
         ClonalityProcessing ("Clonality (ID) Processing"),
-        TrackingEnabled ("Tracking (MRD) Enabled"),
+        MrdEnabled ("Tracking (MRD) Enabled"),
         Deceased ("Deceased"),
         NoClonesFound ("No Calibrated Clones Found");
 
@@ -108,7 +108,7 @@ public final class Patient {
             this.label = label;
         }
 
-        public static PatientTestStatus getCompartment (String label) {
+        public static PatientTestStatus getPatientStatus (String label) {
             return allOf (PatientTestStatus.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
                                                   .get ();
         }
