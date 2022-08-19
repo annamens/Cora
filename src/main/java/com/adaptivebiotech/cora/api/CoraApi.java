@@ -13,6 +13,8 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+import static org.openqa.selenium.Keys.ENTER;
+import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -306,6 +308,17 @@ public class CoraApi extends HttpClientHelper {
         }
 
         return tests;
+    }
+
+    public void waitForNewPatientToPopulate (String patientCode) {
+        Patient[] patients = getPatients (patientCode);
+        Timeout timer = new Timeout (600000l, 60000l);
+        while (!timer.Timedout () && (patients.length == 0)) {
+            timer.Wait ();
+            patients = getPatients (patientCode);
+        }
+        if (patients.length == 0)
+            fail ("unable to find patient");
     }
 
     public HttpResponse newBcellOrder (Diagnostic diagnostic) {

@@ -51,8 +51,8 @@ public class PatientsList extends CoraPage {
         pageLoading ();
     }
 
-    public void clickPatientDetails (int idx) {
-        String css = "patient-list tbody tr:nth-child(" + idx + ") td:nth-child(5) span";
+    public void clickPatientDetails (String patientCode) {
+        String css = "//*[*[*[text()='" + patientCode + "']]]/following-sibling::td//*[@class='history-link']";
         assertTrue (click (css));
         pageLoading ();
     }

@@ -196,7 +196,7 @@ public class TestHelper {
         patient.billingType = InternalPharmaBilling;
         return patient;
     }
-    
+
     public static Patient scenarioBuilderPatient () {
         Patient patient = new Patient ();
         patient.id = randomUUID ();
