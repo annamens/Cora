@@ -20,6 +20,8 @@ import de.redsix.pdfcompare.PdfComparator;
  */
 public class PdfUtil {
 
+    private static final PDFUtil pdfUtil = new PDFUtil ();
+
     /**
      * Open a pdf file and return the content as text
      * 
@@ -28,15 +30,13 @@ public class PdfUtil {
      * @return The content of pdf file
      */
     public static String getTextFromPDF (String pdfFileLocation) {
-        String fileContent = null;
         try {
-            PDFUtil pdfUtil = new PDFUtil ();
-            fileContent = pdfUtil.getText (pdfFileLocation);
+            String fileContent = pdfUtil.getText (pdfFileLocation);
             info ("File Content:\n" + fileContent);
+            return fileContent;
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
-        return fileContent;
     }
 
     /**
@@ -49,15 +49,13 @@ public class PdfUtil {
      * @return The content of pdf file
      */
     public static String getTextFromPDF (String pdfFileLocation, int pageNumber) {
-        String fileContent = null;
         try {
-            PDFUtil pdfUtil = new PDFUtil ();
-            fileContent = pdfUtil.getText (pdfFileLocation, pageNumber);
+            String fileContent = pdfUtil.getText (pdfFileLocation, pageNumber);
             info ("File Content:\n" + fileContent);
+            return fileContent;
         } catch (Exception e) {
             throw new RuntimeException (e);
         }
-        return fileContent;
     }
 
     /**

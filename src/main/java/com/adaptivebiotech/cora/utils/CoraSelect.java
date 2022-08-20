@@ -4,6 +4,8 @@
 package com.adaptivebiotech.cora.utils;
 
 import static com.seleniumfy.test.utils.Logging.info;
+import static com.seleniumfy.test.utils.Logging.warn;
+import static java.lang.String.format;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,8 @@ public class CoraSelect extends Select {
             doWait (10000);
             optionTexts = getAllOptionTexts ();
         }
+        if (!optionTexts.contains (s))
+            warn (format ("unable to find '%s' in the dropdown: %s", s, optionTexts));
         return optionTexts.contains (s);
     }
 

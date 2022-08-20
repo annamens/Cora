@@ -6,12 +6,11 @@ package com.adaptivebiotech.cora.test.report.clonoseq;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.MUTATED;
-import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.BCell;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.IGH;
-import static com.adaptivebiotech.test.utils.DateHelper.formatDt6;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.BoneMarrow;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.FreshBoneMarrow;
@@ -24,11 +23,9 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.FINISHED;
 import static java.lang.String.join;
-import static java.time.LocalDateTime.parse;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-import java.time.LocalDateTime;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -106,14 +103,13 @@ public class ReportIgHVTestSuite extends ReportTestBase {
         testLog ("CLIA-IGHV flag appeared just below the Report tab");
 
         orderReport.releaseReport (ID_BCell2_CLIA, Pass);
+        String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
+        coraApi.get (orderReport.getReportUrl (), actualPdf);
+
         history.gotoOrderDebug (orderTest.sampleName);
         coraDebugApi.login ();
         coraDebugApi.get (history.getFileLocation (reportData), reportDataJson);
         testLog ("downloaded " + reportData);
-
-        history.clickOrderTest ();
-        orderReport.clickReportTab (ID_BCell2_CLIA);
-        LocalDateTime releaseDt = parse (orderReport.getReportReleaseDate () + ".0000", formatDt6);
 
         ReportRender report = parseReportData (reportDataJson);
         assertEquals (report.patientInfo.reportSpecimenType, FreshBoneMarrow);
@@ -126,7 +122,7 @@ public class ReportIgHVTestSuite extends ReportTestBase {
 
         ShmReportResult result = report.shmReportResult;
         assertNotNull (result);
-        testLog ("found a ReportRenderDto object with a new field called shmReportResult containing an ShmReportResult Object");
+        testLog ("found a ReportRenderDto object with a new field called shmReportResult containing n ShmReportResult Object");
 
         assertEquals (result.mutationStatus, MUTATED);
         assertEquals (result.shmSequenceList.size (), 1);
@@ -143,18 +139,10 @@ public class ReportIgHVTestSuite extends ReportTestBase {
                        "mutationStatus (enum)",
                        "shmSequenceList (List<ShmSequence>)"));
 
-        ClonoSeq clonoseq = basicClonoSeq (patient, diagnostic, orderTest, BCell);
+        ClonoSeq clonoseq = basicClonoSeq (report, patient, diagnostic, orderTest);
         clonoseq.helper.isCLIA = true;
-        clonoseq.helper.isClonality = true;
-        clonoseq.header.reportDt = releaseDt.toLocalDate ();
         clonoseq.pageSize = 5;
-        clonoseq.appendix.sampleInfo = "0.41 122,367 IGH 9,963 5,290 IGK 7,978 5,463 IGL ≥1,661 1,661";
-        clonoseq.helper.report.commentInfo.signedAt = releaseDt;
-        clonoseq.helper.isSHM = true;
-        clonoseq.helper.report = report;
-
-        String actualPdf = join ("/", downloadDir, orderTest.sampleName + ".pdf");
-        verifyReport (clonoseq, getReport (orderReport.getReportUrl (), actualPdf));
+        verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
         prepPipelineApi (true);

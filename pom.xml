@@ -10,7 +10,7 @@
     <parent>
         <groupId>com.adaptivebiotech.test.utils</groupId>
         <artifactId>parent-pom</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
     <repositories>
         <repository>
@@ -54,10 +54,6 @@
                     </properties>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -80,11 +76,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
         </dependency>
     </dependencies>
 </project>

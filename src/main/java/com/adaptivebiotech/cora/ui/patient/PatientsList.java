@@ -29,6 +29,7 @@ public class PatientsList extends CoraPage {
     public void searchPatient (String term) {
         assertTrue (setText ("[type='search']", term));
         assertTrue (pressKey (ENTER));
+        pageLoading ();
     }
 
     public List <Patient> getPatients () {
@@ -47,5 +48,20 @@ public class PatientsList extends CoraPage {
         String css = "patient-list tbody tr:nth-child(" + idx + ") td:nth-child(1) a";
         assertTrue (click (css));
         pageLoading ();
+    }
+
+    /**
+     * @param term
+     *            patient name (first last) or patient code
+     */
+    public void clickPatientDetails (String term) {
+        String css = "//*[*[*[text()='" + term + "']]]/following-sibling::td//*[@class='history-link']";
+        assertTrue (click (css));
+        pageLoading ();
+    }
+
+    public String getPatientMRDStatus () {
+        String css = ".patient-status";
+        return getText (css);
     }
 }

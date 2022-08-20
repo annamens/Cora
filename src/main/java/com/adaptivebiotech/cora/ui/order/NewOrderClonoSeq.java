@@ -182,7 +182,7 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void clickEditPatient () {
-        String editPatientLink = "a[ui-sref^='main.patient.details']";
+        String editPatientLink = "//*[text()='Edit Patient Demographics']";
         assertTrue (click (editPatientLink));
         pageLoading ();
     }

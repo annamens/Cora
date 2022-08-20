@@ -575,6 +575,8 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
         releaseReport (assayTest);
 
         String pdfFileLocation = join ("/", downloadDir.get (), orderDetails.specimenDto.sampleName + ".pdf");
+        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
+
         String extractedText = getTextFromPDF (pdfFileLocation, 4, beginIghvMutationStatus, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 8 - order 5 - In SHM report of the pdf report, it is showing No Result Available for the IGHV Mutation Status");
@@ -619,6 +621,8 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
 
         releaseReport (assayTest);
         String pdfFileLocation = join ("/", downloadDir.get (), orderDetails.specimenDto.sampleName + ".pdf");
+        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
+
         String extractedText = getTextFromPDF (pdfFileLocation, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 11 - order 6 - Clonality Result for workflow with failed Primary Analysis (NorthQC) displays No Result Available");
@@ -672,6 +676,8 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
 
         releaseReport (assayTest);
         String pdfFileLocation = join ("/", downloadDir.get (), orderDetails.specimenDto.sampleName + ".pdf");
+        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
+
         String extractedText = getTextFromPDF (pdfFileLocation, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 14 - order 7 - Clonality Result for workflow with failed Clinical QC displays No Result Available");

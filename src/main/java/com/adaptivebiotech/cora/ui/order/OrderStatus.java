@@ -170,7 +170,10 @@ public class OrderStatus extends OrderHeader {
         }
     }
 
-    public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus,
+    public void waitFor (String sampleName,
+                         StageName stage,
+                         StageStatus status,
+                         StageSubstatus substatus,
                          String message) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";
