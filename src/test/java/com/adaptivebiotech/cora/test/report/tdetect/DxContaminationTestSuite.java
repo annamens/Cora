@@ -123,7 +123,7 @@ public class DxContaminationTestSuite extends ReportTestBase {
         testLog ("the scopes listed were Flowcell, Plate, and ExtractionBatch");
 
         String found = "xcContaminated";
-        assertEquals (history.getWorkflowProperties ().get (found), "true");
+        assertTrue (history.getWorkflowProperties ().xcContaminated);
         testLog (format ("workflow property '%s' is set to 'true'", found));
 
         coraDebugApi.login ();

@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Cancelled;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -136,7 +137,7 @@ public class CoraApi extends HttpClientHelper {
     public void cancelWorkflow (UUID workflowId) {
         String url = coraTestUrl + "/cora/api/v1/orderTests/setWorkflowStatus/" + workflowId;
         Map <String, String> payload = new HashMap <> ();
-        payload.put ("stageStatus", "Cancelled");
+        payload.put ("stageStatus", Cancelled.name ());
         payload.put ("subStatusMessage", "cancelled by SEA team automation");
         post (url, body (payload));
     }
@@ -352,8 +353,8 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), Patient.class);
     }
 
-    public Patient getPatient (UUID patientID) {
-        String url = coraTestUrl + "/cora/api/v1/patients/" + patientID;
+    public Patient getPatient (UUID patientId) {
+        String url = coraTestUrl + "/cora/api/v1/patients/" + patientId;
         return mapper.readValue (get (url), Patient.class);
     }
 

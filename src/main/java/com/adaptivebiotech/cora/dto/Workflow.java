@@ -9,6 +9,7 @@ import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author Harry Soehalim
@@ -25,6 +26,7 @@ public final class Workflow {
         return toStringOverride (this);
     }
 
+    @JsonIgnoreProperties (ignoreUnknown = true)
     public static final class WorkflowProperties {
 
         public String  flowcell;
@@ -40,8 +42,14 @@ public final class Workflow {
         public Boolean ighvAnalysisEnabled;
         public Boolean ighvReportEnabled;
         public Boolean notifyGateway;
+        @JsonAlias ("AutoPassedClinicalQC")
+        public Boolean autoPassedClinicalQC;
+        @JsonAlias ("AutoReleasedReport")
+        public Boolean autoReleasedReport;
+        public Boolean xcContaminated;
         public String  shmDataSourcePath;
         public String  country;
+
     }
 
     public static final class Stage {

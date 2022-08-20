@@ -11,6 +11,7 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRB;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRG;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -81,7 +82,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         coraApi.addTokenAndUsername ();
         for (UUID id : patientsToCleanUp) {
             Arrays.stream (coraApi.getOrdersForPatient (id))
-                  .filter (order -> !order.orderTestStatusType.equals ("Cancelled"))
+                  .filter (order -> !order.orderTestStatusType.equals (Cancelled))
                   .filter (order -> order.accountName.contains ("SEA_QA"))
                   .forEach (order -> coraApi.cancelWorkflow (order.workflowId));
         }
@@ -265,7 +266,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         orderStatus.isCorrectPage ();
         orderStatus.failWorkflow (test.sampleName, "testing prior no result autorelease");
         verifyAutoReleaseFailure (test,
-                                  "Failed Auto Release Rules: IsSentToFailureTarget expected wasSentToFailureTarget not to be true,IsNotPolyClonal expects PolyClonal to be false.");
+                                  "Failed Auto Release Rules: IsSentToFailureTarget expected wasSentToFailureTarget not to be true.");
         testLog ("SR-9504:R7: Report with no result failed autorelease");
     }
 
@@ -385,9 +386,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         waitForReportGeneration (orderTest);
         report.setQCstatus (QC.Pass);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.waitForWorkflowPropertySet (WorkflowProperty.AutoReleasedReport);
-        assertTrue (Boolean.parseBoolean (history.getWorkflowProperties ()
-                                                 .get (WorkflowProperty.AutoReleasedReport.name ())),
+        assertTrue (history.waitForWorkflowPropertySet (WorkflowProperty.AutoReleasedReport).autoReleasedReport,
                     "Autorelease unexpectedly failed");
     }
 
@@ -395,9 +394,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         waitForReportGeneration (orderTest);
         report.setQCstatus (QC.Pass);
         history.gotoOrderDebug (orderTest.sampleName);
-        history.waitForWorkflowPropertySet (WorkflowProperty.AutoReleasedReport);
-        assertFalse (Boolean.parseBoolean (history.getWorkflowProperties ()
-                                                  .get (WorkflowProperty.AutoReleasedReport.name ())),
+        assertFalse (history.waitForWorkflowPropertySet (WorkflowProperty.AutoReleasedReport).autoReleasedReport,
                      "Autorelease unexpectedly succeeded");
         assertEquals (history.parseStatusHistory ().get (0).subStatusMessage,
                       failureMessage);

@@ -20,12 +20,14 @@ import java.util.function.Function;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seleniumfy.test.utils.Timeout;
 
 /**
@@ -131,21 +133,22 @@ public class OrcaHistory extends CoraPage {
             fail (format (fail, stage, status));
     }
 
-    public void waitForWorkflowPropertySet (WorkflowProperty property) {
+    public WorkflowProperties waitForWorkflowPropertySet (WorkflowProperty property) {
         String fail = "unable to locate workflow property: %s";
         Timeout timer = new Timeout (millisDuration, millisPoll);
         boolean found = false;
         String orcaHistoryUrl = getCurrentUrl ();
-        Map <String, String> properties = getWorkflowProperties ();
-        while (!timer.Timedout () && ! (found = properties.containsKey (property.name ()))) {
+        String propertySelector = format ("//h3[text()='Properties']/following-sibling::table//*[text()='%s:']/..",
+                                          property.name ());
+        while (!timer.Timedout () && ! (found = isElementPresent (propertySelector))) {
             doForceClaim (orcaHistoryUrl);
             timer.Wait ();
             refresh ();
-            properties = getWorkflowProperties ();
         }
         if (!found) {
             fail (format (fail, property.name ()));
         }
+        return getWorkflowProperties ();
     }
 
     public boolean isStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
@@ -262,12 +265,13 @@ public class OrcaHistory extends CoraPage {
         waitFor (stageName, stageStatus);
     }
 
-    public Map <String, String> getWorkflowProperties () {
+    public WorkflowProperties getWorkflowProperties () {
         Map <String, String> props = new HashMap <> ();
         waitForElements ("//h3[text()='Properties']/following-sibling::table[1]//tr").forEach (tr -> {
             props.put (getText (tr, "th").replace (":", ""), getText (tr, "td"));
         });
-        return props;
+        ObjectMapper mapper = new ObjectMapper ();
+        return mapper.convertValue (props, WorkflowProperties.class);
     }
 
     public Map <String, String> getWorkflowFiles () {

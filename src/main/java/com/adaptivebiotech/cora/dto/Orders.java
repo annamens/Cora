@@ -121,7 +121,7 @@ public final class Orders {
         public String              providerFirstName;
         public String              providerLastName;
         public String              accountName;
-        public String              orderTestStatusType;
+        public OrderStatus         orderTestStatusType;
         public String              collectionDate;
         public String              testName;
         public UUID                orderTestId;
