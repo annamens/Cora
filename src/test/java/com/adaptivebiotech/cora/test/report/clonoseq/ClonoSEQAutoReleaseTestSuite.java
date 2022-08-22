@@ -217,7 +217,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
      * @sdlc.requirements SR-9504:R5
      */
     public void validIcdCodes () {
-        String codes = "C90.00,C83.1,C82.9,C83.3,C90.1,C90.2";
+        String codes = "C90.00,C83.1,C82.9,C83.3,C90.1,C90.2,W61.62XD";
         OrderTest test = createBCellDiagnostic (scenarioBuilderPatient (),
                                                 codes,
                                                 genCDxTest (ID_BCell2_CLIA,
