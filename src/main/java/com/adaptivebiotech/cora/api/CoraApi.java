@@ -41,6 +41,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Patient.PatientTestStatus;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.dto.ProvidersResponse;
@@ -372,6 +373,11 @@ public class CoraApi extends HttpClientHelper {
     public Patient updatePatient (Patient patient) {
         String url = coraTestUrl + "/cora/api/v2/patients/" + patient.id;
         return mapper.readValue (put (url, body (patient)), Patient.class);
+    }
+
+    public PatientTestStatus getPatientStatus (UUID patientId) {
+        String url = coraTestUrl + "/cora/api/v2/patients/status/" + patientId;
+        return PatientTestStatus.valueOf (get (url).replace ("\"", ""));
     }
 
     public Order[] getOrdersForPatient (UUID patientId) {
