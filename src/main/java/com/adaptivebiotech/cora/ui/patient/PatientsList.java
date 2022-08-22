@@ -55,7 +55,7 @@ public class PatientsList extends CoraPage {
      *            patient name (first last) or patient code
      */
     public void clickPatient (String term) {
-        String css = "//*[text()='" + term + "']";
+        String css = "//*[contains (@class, 'list-section')]//*[text()='\" + term + \"']";
         assertTrue (click (css));
         pageLoading ();
     }
