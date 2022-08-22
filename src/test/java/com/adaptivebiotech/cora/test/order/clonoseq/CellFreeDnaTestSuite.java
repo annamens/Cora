@@ -373,7 +373,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         boolean isPatientExist = isPatientOrderExist (patient);
         String patientDob = convertDateFormat (patient.dateOfBirth, "MM/dd/yyyy", "yyyy-MM-dd");
 
-        boolean isPatinetMrdEnabled = false;
+        boolean isPatientMrdEnabled = false;
         if (isPatientExist) {
             String query = "SELECT id FROM cora.patients WHERE firstname = '%s' and lastname = '%s' AND dateofbirth = '%s'";
             query = format (query, patient.firstName, patient.lastName, patientDob);
@@ -382,14 +382,14 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                 String patinetId = queryRes.get (0).get ("id").toString ();
                 PatientTestStatus patinetStatus = coraApi.getPatientStatus (UUID.fromString (patinetId));
                 testLog ("Patient Id: " + patinetId + ", Status: " + patinetStatus);
-                isPatinetMrdEnabled = patinetStatus.equals (MrdEnabled);
+                isPatientMrdEnabled = patinetStatus.equals (MrdEnabled);
             }
-            if (!isPatinetMrdEnabled) {
+            if (!isPatientMrdEnabled) {
                 deletePatients (patient);
             }
         }
 
-        if (!isPatientExist || !isPatinetMrdEnabled) {
+        if (!isPatientExist || !isPatientMrdEnabled) {
             Assay assayTest = ID_BCell2_CLIA;
 
             login.doLogin ();
