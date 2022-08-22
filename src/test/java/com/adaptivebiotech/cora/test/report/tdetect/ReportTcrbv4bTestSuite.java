@@ -107,10 +107,10 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
 
         history.waitFor (DxReport, Finished);
         WorkflowProperties properties = history.getWorkflowProperties ();
-        assertTrue (properties.autoPassedClinicalQC);
+        assertTrue (properties.AutoPassedClinicalQC);
         testLog (format ("workflow property: '%s' is set and has value: 'true'", AutoPassedClinicalQC));
 
-        assertTrue (properties.autoReleasedReport);
+        assertTrue (properties.AutoReleasedReport);
         testLog (format ("workflow property: '%s' is set and has value: 'true'", AutoReleasedReport));
 
         coraDebugApi.login ();

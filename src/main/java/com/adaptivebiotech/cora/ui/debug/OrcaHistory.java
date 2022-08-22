@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
@@ -27,7 +28,6 @@ import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seleniumfy.test.utils.Timeout;
 
 /**
@@ -270,7 +270,6 @@ public class OrcaHistory extends CoraPage {
         waitForElements ("//h3[text()='Properties']/following-sibling::table[1]//tr").forEach (tr -> {
             props.put (getText (tr, "th").replace (":", ""), getText (tr, "td"));
         });
-        ObjectMapper mapper = new ObjectMapper ();
         return mapper.convertValue (props, WorkflowProperties.class);
     }
 

@@ -386,7 +386,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         waitForReportGeneration (orderTest);
         report.setQCstatus (QC.Pass);
         history.gotoOrderDebug (orderTest.sampleName);
-        assertTrue (history.waitForWorkflowPropertySet (WorkflowProperty.AutoReleasedReport).autoReleasedReport,
+        assertTrue (history.waitForWorkflowPropertySet (WorkflowProperty.AutoReleasedReport).AutoReleasedReport,
                     "Autorelease unexpectedly failed");
     }
 
@@ -394,7 +394,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         waitForReportGeneration (orderTest);
         report.setQCstatus (QC.Pass);
         history.gotoOrderDebug (orderTest.sampleName);
-        assertFalse (history.waitForWorkflowPropertySet (WorkflowProperty.AutoReleasedReport).autoReleasedReport,
+        assertFalse (history.waitForWorkflowPropertySet (WorkflowProperty.AutoReleasedReport).AutoReleasedReport,
                      "Autorelease unexpectedly succeeded");
         assertEquals (history.parseStatusHistory ().get (0).subStatusMessage,
                       failureMessage);
