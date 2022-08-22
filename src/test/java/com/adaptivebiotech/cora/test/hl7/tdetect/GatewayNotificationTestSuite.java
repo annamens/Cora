@@ -28,7 +28,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.SENDING_REPORT_NOTIFICATION;
-import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.country;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import org.testng.annotations.Test;
@@ -91,7 +90,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.waitFor (sample, DxReport, Finished);
         orderStatus.waitFor (sample, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (sample);
-        assertEquals (history.getWorkflowProperties ().get (country.name ()), "US");
+        assertEquals (history.getWorkflowProperties ().country, "US");
         testLog ("workflow property: 'country' is set and has value: 'US'");
 
         assertFalse (history.isFilePresent (gatewayJson));
@@ -128,7 +127,7 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         orderStatus.waitFor (sample, DxReport, Finished);
         orderStatus.waitFor (sample, ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         history.gotoOrderDebug (sample);
-        assertEquals (history.getWorkflowProperties ().get (country.name ()), "CA");
+        assertEquals (history.getWorkflowProperties ().country, "CA");
         testLog ("workflow property: 'country' is set and has value: 'CA'");
 
         assertFalse (history.isFilePresent (gatewayJson));
