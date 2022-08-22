@@ -47,7 +47,7 @@ import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 
 /**
  * @author Spencer Fisco
- *         <a href="mailto:<sfisco@adaptivebiotech.com">sfisco@adaptivebiotech.com</a>
+ *         <a href="mailto:sfisco@adaptivebiotech.com">sfisco@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "havanese" })
 public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
