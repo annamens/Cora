@@ -8,6 +8,7 @@ import static java.util.EnumSet.allOf;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
@@ -28,6 +29,7 @@ public final class Specimen {
     public String             subjectId;
     public String             externalSubjectId;
     public String             sampleName;
+    public DeliveryType       specimenDeliveryType;
     public SpecimenType       sampleType;
     @JsonAlias ("sourceType")
     public SpecimenSource     sampleSource;
