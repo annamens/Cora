@@ -181,6 +181,16 @@ public class Accession extends ShipmentHeader {
         return getTextList (specimenIds);
     }
 
+    public String getStabilizationWindowText () {
+        String css = "//specimen-stabilization-window//div//span//strong";
+        return getText (css);
+    }
+
+    public String getStabilizationWindowColor () {
+        String css = "//specimen-stabilization-window//div";
+        return getCssValue (css, "background-color");
+    }
+
     public void completeAccession () {
         isCorrectPage ();
         clickIntakeComplete ();

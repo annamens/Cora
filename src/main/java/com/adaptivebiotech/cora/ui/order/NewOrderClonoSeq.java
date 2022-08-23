@@ -284,6 +284,16 @@ public class NewOrderClonoSeq extends NewOrder {
         clickPopupOK ();
     }
 
+    public String getStabilizationWindowText () {
+        String css = "//specimen-stabilization-window//div//span//strong";
+        return getText (css);
+    }
+
+    public String getStabilizationWindowColor () {
+        String css = "//specimen-stabilization-window//div";
+        return getCssValue (css, "background-color");
+    }
+
     /**
      * Create ClonoSeq Pending Order by filling out all the required fields and passed arguments on
      * New Order ClonoSeq page, and returns order no.

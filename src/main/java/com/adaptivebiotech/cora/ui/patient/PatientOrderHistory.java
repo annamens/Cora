@@ -46,4 +46,14 @@ public class PatientOrderHistory extends PatientHeader {
         String css = ".selectable-tooltip-content";
         return getText (css);
     }
+
+    public String getStabilizationWindowText () {
+        String css = "//specimen-stabilization-window//div//span//strong";
+        return getText (css);
+    }
+
+    public String getStabilizationWindowColor () {
+        String css = "//specimen-stabilization-window//div";
+        return getCssValue (css, "background-color");
+    }
 }
