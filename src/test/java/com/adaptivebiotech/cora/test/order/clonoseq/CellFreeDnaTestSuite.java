@@ -121,7 +121,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                                                                    "delete from cora.patients where id IN (%s)");
 
     @BeforeMethod (alwaysRun = true)
-
     public void beforeMethod (Method test) {
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
     }
