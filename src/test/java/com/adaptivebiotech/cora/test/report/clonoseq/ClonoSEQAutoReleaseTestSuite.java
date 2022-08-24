@@ -28,8 +28,8 @@ import static org.testng.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Alerts.Alert;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -47,7 +47,7 @@ import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
 
 /**
  * @author Spencer Fisco
- *         <a href="mailto:sfisco@adaptivebiotech.com">sfisco@adaptivebiotech.com</a>
+ *         <a href="mailto:<sfisco@adaptivebiotech.com">sfisco@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "havanese" })
 public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
@@ -72,8 +72,13 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
                                                                           priorNoResultBcellPatient,
                                                                           priorTcellPatient);
 
-    @BeforeClass (alwaysRun = true)
-    public void beforeClass () {
+    @BeforeMethod (alwaysRun = true)
+    public void beforeMethod () {
+        login.doLogin ();
+    }
+
+    @BeforeSuite (alwaysRun = true)
+    public void cleanUpExistingPatients () {
         coraApi.addTokenAndUsername ();
         for (UUID id : patientsToCleanUp) {
             Arrays.stream (coraApi.getOrdersForPatient (id))
@@ -81,11 +86,6 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
                   .filter (order -> order.accountName.contains ("SEA_QA"))
                   .forEach (order -> coraApi.cancelWorkflow (order.workflowId));
         }
-    }
-
-    @BeforeMethod (alwaysRun = true)
-    public void beforeMethod () {
-        login.doLogin ();
     }
 
     /**
