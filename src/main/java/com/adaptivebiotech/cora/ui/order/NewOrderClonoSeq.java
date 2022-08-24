@@ -287,10 +287,9 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public Element getStabilizationWindow () {
         Element el = new Element ();
-        String xpathText = "//specimen-stabilization-window//div//span//strong";
-        String xpathColor = "//specimen-stabilization-window//div";
-        el.text = getText (xpathText);
-        el.color = getCssValue (xpathColor, "background-color");
+        String xpath = "//specimen-stabilization-window//div";
+        el.text = getText (xpath + "//strong");
+        el.color = getCssValue (xpath, "background-color");
         return el;
     }
 

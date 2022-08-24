@@ -202,6 +202,11 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickCancelOrder () {
         assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
+        pageLoading ();
+    }
+
+    public void cancelOrder () {
+        clickCancelOrder ();
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
         assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
         assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));

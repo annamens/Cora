@@ -130,10 +130,5 @@ public final class Specimen {
         private StabilityStatus (String rgba) {
             this.rgba = rgba;
         }
-
-        public static StabilityStatus getSpecimenStabilityStatus (String rgba) {
-            return allOf (StabilityStatus.class).parallelStream ().filter (st -> st.rgba.equals (rgba))
-                                                .findAny ().orElse (null);
-        }
     }
 }

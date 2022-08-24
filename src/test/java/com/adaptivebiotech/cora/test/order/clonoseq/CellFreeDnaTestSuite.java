@@ -360,9 +360,9 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.clickOrderNumber ();
         newOrderClonoSeq.clickPatientCode ();
         patientDetail.clickPatientOrderHistoryTab ();
-        assertEquals (patientHistory.getStabilizationWindow ().color, Advisory.rgba);
-        assertEquals (patientHistory.getStabilizationWindow ().text, "Streck (Blood) - 7 days left");
-        testLog ("Patient Order History: " + patientHistory.getStabilizationWindow ().text + ", Styling: " + Advisory);
+        assertEquals (patientHistory.getStabilizationWindow (order).color, Advisory.rgba);
+        assertEquals (patientHistory.getStabilizationWindow (order).text, "Streck (Blood) - 7 days left");
+        testLog ("Patient Order History: " + patientHistory.getStabilizationWindow (order).text + ", Styling: " + Advisory);
 
         // Verify Blood Stabilization Window on ORDER DETAILS tab
         newOrderClonoSeq.gotoOrderEntry (order.id);

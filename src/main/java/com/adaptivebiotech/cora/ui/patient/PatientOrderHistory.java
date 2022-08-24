@@ -48,12 +48,11 @@ public class PatientOrderHistory extends PatientHeader {
         return getText (css);
     }
 
-    public Element getStabilizationWindow () {
+    public Element getStabilizationWindow (Order order) {
         Element el = new Element ();
-        String xpathText = "//specimen-stabilization-window//div//span//strong";
-        String xpathColor = "//specimen-stabilization-window//div";
-        el.text = getText (xpathText);
-        el.color = getCssValue (xpathColor, "background-color");
+        String xpath = "//*[*[text()='" + order.orderNumber + "']]/following-sibling::td//*//specimen-stabilization-window//div[*[*[contains (@title, 'Stabilization')]]]";
+        el.text = getText (xpath + "//strong");
+        el.color = getCssValue (xpath, "background-color");
         return el;
     }
 }

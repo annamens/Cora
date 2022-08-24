@@ -184,10 +184,9 @@ public class Accession extends ShipmentHeader {
 
     public Element getStabilizationWindow () {
         Element el = new Element ();
-        String xpathText = "//specimen-stabilization-window//div//span//strong";
-        String xpathColor = "//specimen-stabilization-window//div";
-        el.text = getText (xpathText);
-        el.color = getCssValue (xpathColor, "background-color");
+        String xpath = "specimen-stabilization-window [class*='stability']";
+        el.text = getText (xpath);
+        el.color = getCssValue (xpath, "background-color");
         return el;
     }
 
