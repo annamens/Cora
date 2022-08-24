@@ -54,9 +54,19 @@ public class PatientsList extends CoraPage {
      * @param term
      *            patient name (first last) or patient code
      */
-    public void clickPatientDetails (String term) {
-        String css = "//*[*[*[text()='" + term + "']]]/following-sibling::td//*[@class='history-link']";
+    public void clickPatient (String term) {
+        String css = "//*[contains (@class, 'list-section')]//*[text()='" + term + "']";
         assertTrue (click (css));
+        pageLoading ();
+    }
+
+    /**
+     * @param term
+     *            patient name (first last) or patient code
+     */
+    public void clickPatientDetails (String term) {
+        String details = "//*[*[*[text()='" + term + "']]]/following-sibling::td//*[contains (@class, 'history-link')]";
+        assertTrue (click (details));
         pageLoading ();
     }
 

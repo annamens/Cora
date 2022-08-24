@@ -34,6 +34,15 @@ public class PatientDetail extends PatientHeader {
         return getText ("[label='Last Name']").replace ("Last Name", "").trim ();
     }
 
+    public String getDateOfBirth () {
+        return getText ("[label='Birth Date']").replace ("Birth Date", "").trim ();
+    }
+
+    public String getPatientMRDStatus () {
+        String css = ".patient-status";
+        return getText (css);
+    }
+
     public void clickEditPatientDemographics () {
         String xpathForEditButton = "//*[@class='demographics-details']/..//button//*[contains(@class,'glyphicon-pencil')]";
         assertTrue (click (xpathForEditButton));

@@ -29,14 +29,15 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 import java.lang.reflect.Method;
-import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -105,11 +106,11 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         testLog (format (log, DxReport, Awaiting, CLINICAL_QC, "Pass: AutoPass"));
 
         history.waitFor (DxReport, Finished);
-        Map <String, String> properties = history.getWorkflowProperties ();
-        assertEquals (properties.get (AutoPassedClinicalQC.name ()), "true");
+        WorkflowProperties properties = history.getWorkflowProperties ();
+        assertTrue (properties.AutoPassedClinicalQC);
         testLog (format ("workflow property: '%s' is set and has value: 'true'", AutoPassedClinicalQC));
 
-        assertEquals (properties.get (AutoReleasedReport.name ()), "true");
+        assertTrue (properties.AutoReleasedReport);
         testLog (format ("workflow property: '%s' is set and has value: 'true'", AutoReleasedReport));
 
         coraDebugApi.login ();

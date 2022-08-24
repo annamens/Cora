@@ -66,6 +66,7 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.ShmResultData;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -177,7 +178,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           new String[] { c83_00, c91_10 },
                                           "Order 1 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, true, true);
         testLog ("step 1 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
@@ -188,7 +189,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                            null);
         testLog ("step 2 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().sampleName, assayTest);
         testLog ("step 2 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
         boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
@@ -218,7 +219,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           new String[] { c83_00 },
                                           "Order 2 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "false", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, false, true);
         testLog ("step 5 - ighvAnalysisEnabled is true, ighvReportEnabled is false (or absent)");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
@@ -229,7 +230,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                            null);
         testLog ("step 6 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().sampleName, assayTest);
         testLog ("step 6 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
         boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
@@ -259,7 +260,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           new String[] { c91_10 },
                                           "Order 3 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, true, true);
         testLog ("step 9, order3 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
@@ -270,7 +271,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                            null);
         testLog ("step 10 - 1 - order3 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().sampleName, assayTest);
         testLog ("step 10 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
         boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
@@ -300,7 +301,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           new String[] { c91_10 },
                                           "Order 4 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, true, true);
         testLog ("step 9, order4 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
@@ -311,7 +312,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                            null);
         testLog ("step 10 - 1 - order4 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().sampleName, assayTest);
         testLog ("step 10 - 2 - order4 - An eos.shm analysis job was spawned and Completed in portal");
 
         boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
@@ -880,16 +881,16 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
      * validate ighvReportEnabled and ighvAnalysisEnabled properties
      */
     private void validateFlagsOnDebugPage (String sampleName,
-                                           String expectedIghvReportEnabled,
-                                           String expectedIghvAnalysisEnabled) {
+                                           Boolean expectedIghvReportEnabled,
+                                           Boolean expectedIghvAnalysisEnabled) {
         // debug page - get workflow properties
         history.gotoOrderDebug (sampleName);
-        Map <String, String> workflowProperties = history.getWorkflowProperties ();
+        WorkflowProperties workflowProperties = history.getWorkflowProperties ();
 
-        assertEquals (workflowProperties.get ("ighvReportEnabled"),
+        assertEquals (workflowProperties.ighvReportEnabled,
                       expectedIghvReportEnabled,
                       "Validate ighvReportEnabled property");
-        assertEquals (workflowProperties.get ("ighvAnalysisEnabled"),
+        assertEquals (workflowProperties.ighvAnalysisEnabled,
                       expectedIghvAnalysisEnabled,
                       "Validate ighvAnalysisEnabled property");
 
