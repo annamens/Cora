@@ -96,8 +96,8 @@ public final class Patient {
     }
 
     public enum PatientTestStatus {
-        Pending ("Pending"),
-        ClonalityProcessing ("Clonality (ID) Processing"),
+        NA ("Pending"),
+        IdPending ("Clonality (ID) Processing"),
         MrdEnabled ("Tracking (MRD) Enabled"),
         Deceased ("Deceased"),
         NoClonesFound ("No Calibrated Clones Found");
