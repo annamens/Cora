@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -129,6 +131,24 @@ public class OrcaHistory extends CoraPage {
         }
         if (!found)
             fail (format (fail, stage, status));
+    }
+
+    public WorkflowProperties waitForWorkflowPropertySet (WorkflowProperty property) {
+        String fail = "unable to locate workflow property: %s";
+        Timeout timer = new Timeout (millisDuration, millisPoll);
+        boolean found = false;
+        String orcaHistoryUrl = getCurrentUrl ();
+        String propertySelector = format ("//h3[text()='Properties']/following-sibling::table//*[text()='%s:']/..",
+                                          property.name ());
+        while (!timer.Timedout () && ! (found = isElementPresent (propertySelector))) {
+            doForceClaim (orcaHistoryUrl);
+            timer.Wait ();
+            refresh ();
+        }
+        if (!found) {
+            fail (format (fail, property.name ()));
+        }
+        return getWorkflowProperties ();
     }
 
     public boolean isStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
@@ -245,12 +265,12 @@ public class OrcaHistory extends CoraPage {
         waitFor (stageName, stageStatus);
     }
 
-    public Map <String, String> getWorkflowProperties () {
+    public WorkflowProperties getWorkflowProperties () {
         Map <String, String> props = new HashMap <> ();
         waitForElements ("//h3[text()='Properties']/following-sibling::table[1]//tr").forEach (tr -> {
             props.put (getText (tr, "th").replace (":", ""), getText (tr, "td"));
         });
-        return props;
+        return mapper.convertValue (props, WorkflowProperties.class);
     }
 
     public Map <String, String> getWorkflowFiles () {

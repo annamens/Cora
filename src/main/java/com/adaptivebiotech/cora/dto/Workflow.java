@@ -40,8 +40,12 @@ public final class Workflow {
         public Boolean ighvAnalysisEnabled;
         public Boolean ighvReportEnabled;
         public Boolean notifyGateway;
+        public Boolean AutoPassedClinicalQC;
+        public Boolean AutoReleasedReport;
+        public Boolean xcContaminated;
         public String  shmDataSourcePath;
         public String  country;
+
     }
 
     public static final class Stage {
