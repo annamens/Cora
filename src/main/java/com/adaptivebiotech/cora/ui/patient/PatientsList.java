@@ -65,8 +65,8 @@ public class PatientsList extends CoraPage {
      *            patient name (first last) or patient code
      */
     public void clickPatientDetails (String term) {
-        String css = "//*[*[*[text()='" + term + "']]]/following-sibling::td//*[@class='history-link']";
-        assertTrue (click (css));
+        String locator = "//*[*[*[text()='" + term + "']]]/following-sibling::td//*[contains (@class, 'history-link')]";
+        assertTrue (click (locator));
         pageLoading ();
     }
 
