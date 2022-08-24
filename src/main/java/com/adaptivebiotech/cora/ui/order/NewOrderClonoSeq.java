@@ -135,7 +135,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.patient.gender = getPatientGender ();
         order.patient.patientCode = getPatientCode ();
         order.patient.externalPatientCode = getBillingPatientCode ();
-        order.patient.testStatus = getPatientMRDStatusCode ();
+        order.patient.testStatus = getPatientMRDStatus ();
         order.patient.race = getPatientRace ();
         order.patient.ethnicity = getPatientEthnicity ();
         order.patient.mrn = getPatientMRN ();

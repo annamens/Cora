@@ -4,6 +4,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -35,6 +36,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.OrderAuthorization;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
+import com.adaptivebiotech.cora.dto.Patient.PatientTestStatus;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus;
@@ -147,8 +149,8 @@ public abstract class NewOrder extends OrderHeader {
         return Ethnicity.getEthnicity (getText ("//label[text()='Ethnicity']/../div[1]"));
     }
 
-    public String getPatientMRDStatus () {
-        return getText (patientMrdStatus);
+    public PatientTestStatus getPatientMRDStatus () {
+        return getPatientStatus (getText (patientMrdStatus));
     }
 
     public List <String> getPatientICDCodes () {
@@ -370,11 +372,6 @@ public abstract class NewOrder extends OrderHeader {
     public Integer getBillingPatientCode () {
         String xpath = "//*[text()='Billing Patient Code']/../div[1]";
         return isElementVisible (xpath) ? Integer.valueOf (getText (xpath)) : null;
-    }
-
-    public String getPatientMRDStatusCode () {
-        String xpath = "//*[text()='Patient MRD Status']/..//span";
-        return getText (xpath);
     }
 
     public String getPatientMRN () {

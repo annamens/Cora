@@ -25,44 +25,44 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public final class Patient {
 
     @JsonAlias ("emrId")
-    public UUID          id;
-    public String        firstName;
-    public String        middleName;
-    public String        lastName;
-    public String        fullname;
-    public String        gender;
+    public UUID              id;
+    public String            firstName;
+    public String            middleName;
+    public String            lastName;
+    public String            fullname;
+    public String            gender;
     @JsonAlias ("dob")
-    public String        dateOfBirth;
-    public String        mrn;
-    public Race          race;
-    public Ethnicity     ethnicity;
-    public Insurance     insurance1;
-    public Insurance     insurance2;
-    public Insurance     insurance3;
+    public String            dateOfBirth;
+    public String            mrn;
+    public Race              race;
+    public Ethnicity         ethnicity;
+    public Insurance         insurance1;
+    public Insurance         insurance2;
+    public Insurance         insurance3;
     @JsonAlias ("address1")
-    public String        address;
-    public String        address2;
-    public String        locality;
-    public String        region;
+    public String            address;
+    public String            address2;
+    public String            locality;
+    public String            region;
     @JsonAlias ("postalCode")
-    public String        postCode;
-    public String        country;
-    public String        phone;
-    public String        email;
-    public Integer       patientCode;
-    public Integer       externalPatientCode;
-    public Integer       calibrationPatientCode;
-    public Boolean       deceased;
-    public String        notes;
-    public ChargeType    billingType;
-    public AbnStatus     abnStatusType;
-    public Physician     requestingPhysician;
-    public LocalDateTime modified;
-    public String        modifiedBy;
-    public LocalDateTime created;
-    public String        createdBy;
-    public String        testStatus;
-    public boolean       isSelectPatientVisible;
+    public String            postCode;
+    public String            country;
+    public String            phone;
+    public String            email;
+    public Integer           patientCode;
+    public Integer           externalPatientCode;
+    public Integer           calibrationPatientCode;
+    public Boolean           deceased;
+    public String            notes;
+    public ChargeType        billingType;
+    public AbnStatus         abnStatusType;
+    public Physician         requestingPhysician;
+    public LocalDateTime     modified;
+    public String            modifiedBy;
+    public LocalDateTime     created;
+    public String            createdBy;
+    public PatientTestStatus testStatus;
+    public boolean           isSelectPatientVisible;
 
     @Override
     public String toString () {
