@@ -41,6 +41,7 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -75,6 +76,7 @@ import com.adaptivebiotech.cora.ui.patient.PatientOrderHistory;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
+import com.adaptivebiotech.test.utils.DateHelper;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
@@ -434,7 +436,11 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                                                                     StabilityStatus stabilityWindow,
                                                                     String asid) {
         String query = "UPDATE cora.specimens SET isolation_date = '%s' where specimen_number = '%s';";
-        coraDb.executeUpdate (format (query, getLocalDateTimeStamp (dateDifference), asid));
+        coraDb.executeUpdate (format (query,
+                                      DateHelper.genDate (dateDifference,
+                                                          ISO_LOCAL_DATE_TIME,
+                                                          pstZoneId),
+                                      asid));
         newOrderClonoSeq.refresh ();
         newOrderClonoSeq.isCorrectPage ();
         assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, stabilityWindow.rgba);
@@ -448,10 +454,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         }
 
         testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + stabilityWindow);
-    }
-
-    private String getLocalDateTimeStamp (int daysDifference) {
-        return LocalDateTime.now ().plusDays (daysDifference).format (DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
     private void createOrderAndValidateFailReport (Specimen specimenDto, Assay assayTest) {
