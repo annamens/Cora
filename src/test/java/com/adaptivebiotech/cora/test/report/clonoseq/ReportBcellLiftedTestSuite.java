@@ -61,7 +61,7 @@ public class ReportBcellLiftedTestSuite extends ReportTestBase {
         coraApi.addTokenAndUsername ();
         Arrays.stream (coraApi.getOrdersForPatient (priorBcellPatient))
               .filter (order -> !order.orderTestStatusType.equals (Cancelled))
-              .filter (order -> order.accountName.contains ("SEA_QA"))
+              .filter (order -> order.accountName.contains (SEAaccount))
               .forEach (order -> coraApi.cancelWorkflow (order.workflowId));
     }
 

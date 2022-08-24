@@ -35,6 +35,7 @@ public class CoraBaseBrowser extends TestBase {
     protected final String        azE2EPath      = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e";
     protected final String        azPipelineClia = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
     protected final String        azPipelineFda  = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
+    protected final String        SEAaccount     = "SEA_QA";
     protected static CoraApi      coraApi;
     protected static CoraDebugApi coraDebugApi;
     protected static CoraDb       coraDb;

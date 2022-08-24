@@ -74,7 +74,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
         Arrays.stream (coraApi.getOrdersForPatient (patient.id))
               .filter (order -> !order.orderTestStatusType.equals (Cancelled))
-              .filter (order -> order.accountName.contains ("SEA_QA"))
+              .filter (order -> order.accountName.contains (SEAaccount))
               .forEach (order -> coraApi.cancelWorkflow (order.workflowId));
 
         diagnostic = buildCdxOrder (patient,
