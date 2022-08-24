@@ -5,7 +5,11 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED_ACTIVATION;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.PENDING;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
@@ -17,6 +21,7 @@ import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +40,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author jpatel
@@ -266,7 +272,32 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public boolean isRetrievalDateEnabled () {
-        return waitForElement (uniqueSpecimenId).isEnabled ();
+        return waitForElement (retrievalDate).isEnabled ();
+    }
+
+    public LocalDateTime waitUntilSpecimenActivated () {
+        Timeout timer = new Timeout (6 * 60 * 1000, 1 * 60 * 1000);
+        String specimenActivationDate = getSpecimenActivationDate ();
+        while (!timer.Timedout ()) {
+            if (!isNotBlank (specimenActivationDate)) {
+                timer.Wait ();
+                refresh ();
+                specimenActivationDate = getSpecimenActivationDate ();
+                continue;
+            }
+            if (specimenActivationDate.equals (FAILED_ACTIVATION.label)) {
+                fail (format ("the order is '%s'", FAILED_ACTIVATION));
+            } else if (specimenActivationDate.equals (PENDING.label) || specimenActivationDate.equals (FAILED.label)) {
+                timer.Wait ();
+                refresh ();
+                specimenActivationDate = getSpecimenActivationDate ();
+            } else {
+                return LocalDateTime.parse (getSpecimenActivationDate (), formatDt7);
+            }
+            specimenActivationDate = getSpecimenActivationDate ();
+        }
+        fail (format ("Specimen did not activated in time, Specimen Activation: %s", getSpecimenActivationDate ()));
+        return null;
     }
 
     public boolean isPathologyRetrievalVisible () {

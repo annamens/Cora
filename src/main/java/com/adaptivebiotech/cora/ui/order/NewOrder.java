@@ -532,10 +532,9 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (specimenApprovalStatus) ? SpecimenStatus.valueOf (getText (specimenApprovalStatus)) : null;
     }
 
-    public LocalDateTime getSpecimenActivationDate () {
-        String css = "//*[text()='Specimen Activation']/..//div";
-        String data = isElementVisible (css) ? getText (css) : null;
-        return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt7) : null;
+    public String getSpecimenActivationDate () {
+        String css = "specimen-activation-date";
+        return isElementVisible (css) ? getText (css) : null;
     }
 
     public void waitForSpecimenDelivery () {

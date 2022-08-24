@@ -107,11 +107,23 @@ public class Accession extends ShipmentHeader {
         assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
     }
 
+    public void clickEachContainerLabelingComplete () {
+        assertTrue (click ("[ng-click='ctrl.setLabelingComplete(container)']"));
+        assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
+        clickPopupOK ();
+    }
+
     public void clickLabelVerificationComplete () {
         assertTrue (click ("[ng-click='ctrl.setLabelVerificationComplete(container)']"));
         assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
         clickPopupOK ();
         assertTrue (isTextInElement (shipmentStatus, "Label Verification Complete"));
+    }
+
+    public void clickEachContainerLabelVerificationComplete () {
+        assertTrue (click ("[ng-click='ctrl.setLabelVerificationComplete(container)']"));
+        assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
+        clickPopupOK ();
     }
 
     public void clickPassAllDocumentations () {

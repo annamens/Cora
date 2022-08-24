@@ -16,8 +16,11 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static org.testng.ITestResult.SKIP;
+import static org.testng.Reporter.getCurrentTestResult;
 import java.lang.reflect.Method;
 import org.slf4j.MDC;
+import org.testng.SkipException;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
@@ -25,6 +28,7 @@ import com.adaptivebiotech.cora.api.CoraApi;
 import com.adaptivebiotech.cora.api.CoraDebugApi;
 import com.adaptivebiotech.cora.db.CoraDb;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
+import com.adaptivebiotech.cora.dto.FeatureFlags;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.test.TestBase;
@@ -38,6 +42,7 @@ public class CoraBaseBrowser extends TestBase {
     protected static CoraApi      coraApi;
     protected static CoraDebugApi coraDebugApi;
     protected static CoraDb       coraDb;
+    protected static FeatureFlags featureFlags;
 
     static {
         initialization ();
@@ -66,6 +71,7 @@ public class CoraBaseBrowser extends TestBase {
         String testName = join (".", getClass ().getName (), method.getName ());
         MDC.put (jobId, testName);
         coraApi.addTokenAndUsername ();
+        featureFlags = coraApi.getFeatureFlags ();
         info (format ("running: %s()", testName));
     }
 
@@ -112,5 +118,19 @@ public class CoraBaseBrowser extends TestBase {
         test.workflowProperties.disableHiFreqSave = true;
         test.workflowProperties.disableHiFreqSharing = true;
         return test;
+    }
+
+    protected void skipTestIfFeatureFlagOff (Boolean featureFlag) {
+        if (!featureFlag) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("Required feature Flag is false, expected true");
+        }
+    }
+
+    protected void skipTestIfFeatureFlagOn (Boolean featureFlag) {
+        if (featureFlag) {
+            getCurrentTestResult ().setStatus (SKIP);
+            throw new SkipException ("Required feature Flag is true, expected false");
+        }
     }
 }
