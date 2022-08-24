@@ -25,6 +25,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -284,14 +285,13 @@ public class NewOrderClonoSeq extends NewOrder {
         clickPopupOK ();
     }
 
-    public String getStabilizationWindowText () {
-        String css = "//specimen-stabilization-window//div//span//strong";
-        return getText (css);
-    }
-
-    public String getStabilizationWindowColor () {
-        String css = "//specimen-stabilization-window//div";
-        return getCssValue (css, "background-color");
+    public Element getStabilizationWindow () {
+        Element el = new Element ();
+        String xpathText = "//specimen-stabilization-window//div//span//strong";
+        String xpathColor = "//specimen-stabilization-window//div";
+        el.text = getText (xpathText);
+        el.color = getCssValue (xpathColor, "background-color");
+        return el;
     }
 
     /**

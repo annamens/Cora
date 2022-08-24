@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.patient;
 
 import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 
 /**
@@ -47,13 +48,12 @@ public class PatientOrderHistory extends PatientHeader {
         return getText (css);
     }
 
-    public String getStabilizationWindowText () {
-        String css = "//specimen-stabilization-window//div//span//strong";
-        return getText (css);
-    }
-
-    public String getStabilizationWindowColor () {
-        String css = "//specimen-stabilization-window//div";
-        return getCssValue (css, "background-color");
+    public Element getStabilizationWindow () {
+        Element el = new Element ();
+        String xpathText = "//specimen-stabilization-window//div//span//strong";
+        String xpathColor = "//specimen-stabilization-window//div";
+        el.text = getText (xpathText);
+        el.color = getCssValue (xpathColor, "background-color");
+        return el;
     }
 }

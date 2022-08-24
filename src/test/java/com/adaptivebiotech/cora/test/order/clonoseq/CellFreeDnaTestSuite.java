@@ -352,23 +352,23 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.clickLabelingComplete ();
 
         // Verify Blood Stabilization Window on Shipment ACCESSION tab
-        assertEquals (accession.getStabilizationWindowColor (), Advisory.rgba);
-        assertEquals (accession.getStabilizationWindowText (), "Streck (Blood) - 7 days left");
-        testLog ("Accession Tab: " + newOrderClonoSeq.getStabilizationWindowText () + ", Styling: " + Advisory);
+        assertEquals (accession.getStabilizationWindow ().color, Advisory.rgba);
+        assertEquals (accession.getStabilizationWindow ().text, "Streck (Blood) - 7 days left");
+        testLog ("Accession Tab: " + accession.getStabilizationWindow ().text + ", Styling: " + Advisory);
 
         // Verify Blood Stabilization Window on PATIENT ORDER HISTORY tab
         accession.clickOrderNumber ();
         newOrderClonoSeq.clickPatientCode ();
         patientDetail.clickPatientOrderHistoryTab ();
-        assertEquals (patientHistory.getStabilizationWindowColor (), Advisory.rgba);
-        assertEquals (patientHistory.getStabilizationWindowText (), "Streck (Blood) - 7 days left");
-        testLog ("Patient Order History: " + newOrderClonoSeq.getStabilizationWindowText () + ", Styling: " + Advisory);
+        assertEquals (patientHistory.getStabilizationWindow ().color, Advisory.rgba);
+        assertEquals (patientHistory.getStabilizationWindow ().text, "Streck (Blood) - 7 days left");
+        testLog ("Patient Order History: " + patientHistory.getStabilizationWindow ().text + ", Styling: " + Advisory);
 
         // Verify Blood Stabilization Window on ORDER DETAILS tab
         newOrderClonoSeq.gotoOrderEntry (order.id);
-        assertEquals (newOrderClonoSeq.getStabilizationWindowColor (), Advisory.rgba);
-        assertEquals (newOrderClonoSeq.getStabilizationWindowText (), "Streck (Blood) - 7 days left");
-        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindowText () + ", Styling: " + Advisory);
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, Advisory.rgba);
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().text, "Streck (Blood) - 7 days left");
+        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + Advisory);
 
         updateCollectionDateAndVerifyBloodStabilityWindow (-1, Advisory);
         updateCollectionDateAndVerifyBloodStabilityWindow (-2, Warning);
@@ -406,17 +406,17 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                                                                     StabilityStatus stabilityWindow) {
         newOrderClonoSeq.enterCollectionDate (genLocalDate (dateDifference));
         newOrderClonoSeq.clickSave ();
-        assertEquals (newOrderClonoSeq.getStabilizationWindowColor (), stabilityWindow.rgba);
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, stabilityWindow.rgba);
 
         if (dateDifference > -7) {
-            assertEquals (newOrderClonoSeq.getStabilizationWindowText (),
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
                           format ("Streck (Blood) - %s days left", 7 + dateDifference));
         } else {
-            assertEquals (newOrderClonoSeq.getStabilizationWindowText (),
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
                           format ("Streck (Blood) - Expired %s days ago", Math.abs (7 + dateDifference)));
         }
 
-        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindowText () + ", Styling: " + stabilityWindow);
+        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + stabilityWindow);
     }
 
     /**
@@ -437,17 +437,17 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         coraDb.executeUpdate (format (query, getLocalDateTimeStamp (dateDifference), asid));
         newOrderClonoSeq.refresh ();
         newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getStabilizationWindowColor (), stabilityWindow.rgba);
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, stabilityWindow.rgba);
 
         if (dateDifference > -45) {
-            assertEquals (newOrderClonoSeq.getStabilizationWindowText (),
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
                           format ("Streck (Plasma) - %s days left", 45 + dateDifference));
         } else {
-            assertEquals (newOrderClonoSeq.getStabilizationWindowText (),
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
                           format ("Streck (Plasma) - Expired %s days ago", Math.abs (45 + dateDifference)));
         }
 
-        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindowText () + ", Styling: " + stabilityWindow);
+        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + stabilityWindow);
     }
 
     private String getLocalDateTimeStamp (int daysDifference) {

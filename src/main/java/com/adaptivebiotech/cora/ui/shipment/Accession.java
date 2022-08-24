@@ -11,6 +11,7 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -181,14 +182,13 @@ public class Accession extends ShipmentHeader {
         return getTextList (specimenIds);
     }
 
-    public String getStabilizationWindowText () {
-        String css = "//specimen-stabilization-window//div//span//strong";
-        return getText (css);
-    }
-
-    public String getStabilizationWindowColor () {
-        String css = "//specimen-stabilization-window//div";
-        return getCssValue (css, "background-color");
+    public Element getStabilizationWindow () {
+        Element el = new Element ();
+        String xpathText = "//specimen-stabilization-window//div//span//strong";
+        String xpathColor = "//specimen-stabilization-window//div";
+        el.text = getText (xpathText);
+        el.color = getCssValue (xpathColor, "background-color");
+        return el;
     }
 
     public void completeAccession () {
