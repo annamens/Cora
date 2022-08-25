@@ -15,7 +15,5 @@ public class SpecimenTestBase extends CoraBaseBrowser {
     protected final String   collectionDateErrorMsg = "Please enter a valid date";
     protected final String   validateSuccessMsg     = "order saved";
     protected final String   trackingNumber         = "12345678";
-
-    protected final String[] icdCodes               = { "C90.00" };
-
+    protected final String[] icdCodes               = { "B64" };
 }

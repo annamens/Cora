@@ -108,7 +108,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
 
     private final String         c91_10                           = "C91.10";
     private final String         c83_00                           = "C83.00";
-    private final String         c90_00                           = "C90.00";
+    private final String         b72                              = "B72";
 
     private final String         tsvOverridePathO1O2              = azPipelineClia + "/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
     private final String         tsvOverridePathO3O4              = azPipelineFda + "/210615_NB551732_0294_AH3G53BGXJ/v3.1/20210617_0828/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/H3G53BGXJ_0_CLINICAL-CLINICAL_96633-08MC-UA001BM.adap.txt.results.tsv.gz";
@@ -402,7 +402,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           ID_BCell2_CLIA,
                                           CellPellet,
                                           PBMC,
-                                          new String[] { c90_00 },
+                                          new String[] { b72 },
                                           "Order 7 Flag On");
 
         validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, null, null);
@@ -704,7 +704,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           assayTest,
                                           CellPellet,
                                           PBMC,
-                                          new String[] { c90_00 },
+                                          new String[] { b72 },
                                           "Order 8 Orca Work");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
