@@ -3,9 +3,11 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.patient;
 
+import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
 import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.dto.Insurance.PatientRelationship;
+import com.adaptivebiotech.cora.dto.Patient.PatientTestStatus;
 
 /**
  * @author Harry Soehalim
@@ -38,9 +40,8 @@ public class PatientDetail extends PatientHeader {
         return getText ("[label='Birth Date']").replace ("Birth Date", "").trim ();
     }
 
-    public String getPatientMRDStatus () {
-        String css = ".patient-status";
-        return getText (css);
+    public PatientTestStatus getPatientMRDStatus () {
+        return getPatientStatus (getText (".patient-status"));
     }
 
     public void clickEditPatientDemographics () {

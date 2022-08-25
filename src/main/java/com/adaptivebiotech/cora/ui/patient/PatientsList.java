@@ -69,9 +69,4 @@ public class PatientsList extends CoraPage {
         assertTrue (click (details));
         pageLoading ();
     }
-
-    public String getPatientMRDStatus () {
-        String css = ".patient-status";
-        return getText (css);
-    }
 }
