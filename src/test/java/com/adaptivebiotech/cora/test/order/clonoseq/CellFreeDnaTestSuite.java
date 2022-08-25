@@ -16,7 +16,6 @@ import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED_ACTIVATION;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.PENDING;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
-import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
@@ -71,6 +70,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 
 /**
  * @author jpatel
@@ -79,34 +79,34 @@ import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 @Test (groups = { "clonoSeq", "regression", "golden-retriever" })
 public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
-    private Login                   login                = new Login ();
-    private OrdersList              ordersList           = new OrdersList ();
-    private NewOrderClonoSeq        newOrderClonoSeq     = new NewOrderClonoSeq ();
-    private NewShipment             shipment             = new NewShipment ();
-    private Accession               accession            = new Accession ();
-    private OrderDetailClonoSeq     orderDetailClonoSeq  = new OrderDetailClonoSeq ();
-    private ReportClonoSeq          reportClonoSeq       = new ReportClonoSeq ();
-    private OrcaHistory             orcaHistory          = new OrcaHistory ();
-    private ThreadLocal <String>    downloadDir          = new ThreadLocal <> ();
+    private Login                 login                = new Login ();
+    private OrdersList            ordersList           = new OrdersList ();
+    private NewOrderClonoSeq      newOrderClonoSeq     = new NewOrderClonoSeq ();
+    private NewShipment           shipment             = new NewShipment ();
+    private Accession             accession            = new Accession ();
+    private OrderDetailClonoSeq   orderDetailClonoSeq  = new OrderDetailClonoSeq ();
+    private ReportClonoSeq        reportClonoSeq       = new ReportClonoSeq ();
+    private OrcaHistory           orcaHistory          = new OrcaHistory ();
+    private ThreadLocal <String>  downloadDir          = new ThreadLocal <> ();
 
     private final String          noResultsAvailable   = "No result available";
     private final String          mrdResultDescription = "This sample failed the quality control criteria despite multiple sequencing attempts, exceeded the sample stability time period, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
     private final String          tsvPathOverride      = azTsvPath + "/H2YHWBGXL_0_CLINICAL-CLINICAL_77898-27PC-AJP-012.adap.txt.results.tsv.gz";
 
-    private final String[]          icdCodes             = { "C90.00" };
-    private final String            acceptedPathOverride = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
+    private final String[]        icdCodes             = { "C90.00" };
+    private final String          acceptedPathOverride = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
 
     private ThreadLocal <Boolean> cfDna                = new ThreadLocal <> ();
     private ThreadLocal <Boolean> specimenActivation   = new ThreadLocal <> ();
-    private final List <String>     deleteOrders         = asList ("delete from cora.specimen_order_xref where order_id IN (%s)",
-                                                                   "delete from cora.order_tests where order_id IN (%s)",
-                                                                   "delete from cora.order_billing where order_id IN (%s)",
-                                                                   "delete from cora.order_panel_xref where order_id IN (%s)",
-                                                                   "delete from cora.order_messages where order_id IN (%s)");
-    private final List <String>     deletePatient        = asList ("delete from cora.orders where patient_id = '%s'",
-                                                                   "delete from cora.providers_patients where patient_id = '%s'",
-                                                                   "delete from cora.patient_billing where patient_id = '%s'",
-                                                                   "delete from cora.patients where id = '%s'");
+    private final List <String>   deleteOrders         = asList ("delete from cora.specimen_order_xref where order_id IN (%s)",
+                                                                 "delete from cora.order_tests where order_id IN (%s)",
+                                                                 "delete from cora.order_billing where order_id IN (%s)",
+                                                                 "delete from cora.order_panel_xref where order_id IN (%s)",
+                                                                 "delete from cora.order_messages where order_id IN (%s)");
+    private final List <String>   deletePatient        = asList ("delete from cora.orders where patient_id = '%s'",
+                                                                 "delete from cora.providers_patients where patient_id = '%s'",
+                                                                 "delete from cora.patient_billing where patient_id = '%s'",
+                                                                 "delete from cora.patients where id = '%s'");
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
@@ -324,15 +324,16 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         specimenActivation = LocalDateTime.parse (newOrderClonoSeq.getSpecimenActivationDate (), formatDt7);
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
         testLog ("Specimen Activation Date is present and specimen fields are disabled");
-        
+
         // TODO uncomment below after SR-12631 is resolved
-//        newOrderClonoSeq.activateOrder ();
-//        testLog ("Activate Order");
-//
-//        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-//        specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate (), formatDt7);
-//        assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
-//        testLog ("Specimen Activation Date is present");
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
+        //
+        // orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
+        // specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate
+        // (), formatDt7);
+        // assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
+        // testLog ("Specimen Activation Date is present");
     }
 
     /**
@@ -372,7 +373,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         int updateCount = coraDb.executeUpdate (format ("UPDATE cora.specimens SET activation_date = null WHERE specimen_number = '%s'",
                                                         specimenNo));
         assertEquals (updateCount, 1);
-        
+
         updateCount = coraDb.executeUpdate (format ("UPDATE cora.specimen_activations SET activation_status = 'Failed' WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')",
                                                     specimenNo));
         assertEquals (updateCount, 1);
@@ -380,7 +381,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         newOrderClonoSeq.isCorrectPage ();
         assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), FAILED.label);
         testLog ("Validate Specimen Activation Failed Label");
-        
+
         updateCount = coraDb.executeUpdate (format ("UPDATE cora.specimen_activations SET activation_status = 'Terminal' WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')",
                                                     specimenNo));
         assertEquals (updateCount, 1);
@@ -388,7 +389,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         newOrderClonoSeq.isCorrectPage ();
         assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), FAILED_ACTIVATION.label);
         testLog ("Validate Specimen Activation Faield Activation Label");
-        
+
         // TODO uncomment below after SR-12631 is resolved
         // newOrderClonoSeq.activateOrder ();
         // testLog ("Specimen Activation fail order can be activated");

@@ -285,9 +285,11 @@ public class NewOrderClonoSeq extends NewOrder {
                 specimenActivationDate = getSpecimenActivationDate ();
                 continue;
             }
-            if (specimenActivationDate.equals (FAILED_ACTIVATION.label)) {
-                fail (format ("the order is '%s'", FAILED_ACTIVATION));
-            } else if (specimenActivationDate.equals (PENDING.label) || specimenActivationDate.equals (FAILED.label)) {
+            if (specimenActivationDate.equals (FAILED_ACTIVATION.label) || specimenActivationDate.equals (FAILED.label)) {
+                fail (format ("Order No: %s, Specimen Activation: %s",
+                              getOrderNumber (),
+                              getSpecimenActivationDate ()));
+            } else if (specimenActivationDate.equals (PENDING.label)) {
                 timer.Wait ();
                 refresh ();
                 specimenActivationDate = getSpecimenActivationDate ();
