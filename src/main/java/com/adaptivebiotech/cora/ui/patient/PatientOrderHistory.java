@@ -50,7 +50,8 @@ public class PatientOrderHistory extends PatientHeader {
 
     public Element getStabilizationWindow (Order order) {
         Element el = new Element ();
-        String xpath = "//*[*[text()='" + order.orderNumber + "']]/following-sibling::td//specimen-stabilization-window//div[*[*[contains (@title, 'Stabilization')]]]";
+        String xpath = format ("//*[*[text()='%s']]/following-sibling::td//specimen-stabilization-window//div[*[*[contains (@title, 'Stabilization')]]]",
+                               order.orderNumber);
         el.text = getText (xpath + "//strong");
         el.color = getCssValue (xpath, "background-color");
         return el;
