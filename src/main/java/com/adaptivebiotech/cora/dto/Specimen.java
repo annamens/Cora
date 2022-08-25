@@ -34,8 +34,7 @@ public final class Specimen {
     @JsonAlias ("sourceType")
     public SpecimenSource     sampleSource;
     public LocalDateTime      approvedDate;
-    // activationDate field can be status OR date time based on specimen is activated
-    public Object             activationDate;
+    public String             activationDate;
     public String             sampleTypeDisplayName;
     public SpecimenStatus     approvalStatus;
     public List <Sample>      samples;

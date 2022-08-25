@@ -11,6 +11,7 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.openqa.selenium.By;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -101,23 +102,25 @@ public class Accession extends ShipmentHeader {
     }
 
     public void clickLabelingComplete () {
-        clickEachContainerLabelingComplete ();
+        clickLabelingComplete (1);
         assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
     }
 
-    public void clickEachContainerLabelingComplete () {
-        assertTrue (click ("[ng-click='ctrl.setLabelingComplete(container)']"));
+    public void clickLabelingComplete (int containeNo) {
+        String locator = format ("(//*[@ng-click='ctrl.setLabelingComplete(container)'])[%s]", containeNo);
+        assertTrue (click (waitForElementClickable (By.xpath (locator))));
         assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
         clickPopupOK ();
     }
 
     public void clickLabelVerificationComplete () {
-        clickEachContainerLabelVerificationComplete ();
+        clickLabelVerificationComplete (1);
         assertTrue (isTextInElement (shipmentStatus, "Label Verification Complete"));
     }
 
-    public void clickEachContainerLabelVerificationComplete () {
-        assertTrue (click ("[ng-click='ctrl.setLabelVerificationComplete(container)']"));
+    public void clickLabelVerificationComplete (int containeNo) {
+        String locator = format ("(//*[@ng-click='ctrl.setLabelVerificationComplete(container)'])[%s]", containeNo);
+        assertTrue (click (waitForElementClickable (By.xpath (locator))));
         assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
         clickPopupOK ();
     }
