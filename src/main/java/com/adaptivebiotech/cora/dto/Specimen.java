@@ -117,4 +117,18 @@ public final class Specimen {
                                                .findAny ().orElse (null);
         }
     }
+
+    public enum StabilityStatus {
+        Expired ("rgba(62, 63, 66, 1)"),
+        Advisory ("rgba(255, 240, 181, 1)"),
+        Warning ("rgba(255, 208, 169, 1)"),
+        Alarm ("rgba(255, 169, 187, 1)"),
+        Frozen ("rgba(228, 229, 229, 1)");
+
+        public String rgba;
+
+        private StabilityStatus (String rgba) {
+            this.rgba = rgba;
+        }
+    }
 }

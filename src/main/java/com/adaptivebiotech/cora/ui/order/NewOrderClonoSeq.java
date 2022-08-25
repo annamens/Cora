@@ -25,6 +25,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -282,6 +283,14 @@ public class NewOrderClonoSeq extends NewOrder {
         String modalHeader = "[ng-bind-html=\"ctrl.dialogOptions.headerText\"]";
         assertTrue (isTextInElement (modalHeader, expectedModalTitle));
         clickPopupOK ();
+    }
+
+    public Element getStabilizationWindow () {
+        Element el = new Element ();
+        String xpath = "//specimen-stabilization-window//div";
+        el.text = getText (xpath + "//strong");
+        el.color = getCssValue (xpath, "background-color");
+        return el;
     }
 
     /**

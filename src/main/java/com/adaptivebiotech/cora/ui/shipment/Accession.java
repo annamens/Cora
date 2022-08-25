@@ -11,6 +11,7 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -179,6 +180,14 @@ public class Accession extends ShipmentHeader {
     public List <String> getSpecimenIds () {
         String specimenIds = "[data-ng-bind='::specimen.specimen.specimenNumber']";
         return getTextList (specimenIds);
+    }
+
+    public Element getStabilizationWindow () {
+        Element el = new Element ();
+        String xpath = "specimen-stabilization-window [class*='stability']";
+        el.text = getText (xpath);
+        el.color = getCssValue (xpath, "background-color");
+        return el;
     }
 
     public void completeAccession () {

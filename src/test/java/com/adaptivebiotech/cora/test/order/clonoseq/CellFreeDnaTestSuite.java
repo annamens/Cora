@@ -11,6 +11,10 @@ import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.MrdEnabled;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
+import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Advisory;
+import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Alarm;
+import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Expired;
+import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Warning;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
@@ -37,6 +41,7 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
@@ -58,6 +63,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
+import com.adaptivebiotech.cora.dto.Specimen.StabilityStatus;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -65,9 +71,12 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
+import com.adaptivebiotech.cora.ui.patient.PatientDetail;
+import com.adaptivebiotech.cora.ui.patient.PatientOrderHistory;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
+import com.adaptivebiotech.test.utils.DateHelper;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
@@ -87,6 +96,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private OrderDetailClonoSeq     orderDetailClonoSeq  = new OrderDetailClonoSeq ();
     private ReportClonoSeq          reportClonoSeq       = new ReportClonoSeq ();
     private OrcaHistory             orcaHistory          = new OrcaHistory ();
+    private PatientDetail           patientDetail        = new PatientDetail ();
+    private PatientOrderHistory     patientHistory       = new PatientOrderHistory ();
     private ThreadLocal <String>    downloadDir          = new ThreadLocal <> ();
 
     private final String            noResultsAvailable   = "No result available";
@@ -313,6 +324,138 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
         assertNull (orderDetailClonoSeq.getSpecimenActivationDate ());
         testLog ("Specimen Activation Date is not present");
+    }
+
+    /**
+     * NOTE: SR-T4271
+     * 
+     * @sdlc.requirements SR-11419
+     */
+    @Test (groups = "havanese")
+    public void verifyStreckStabilityWindow () {
+        Specimen specimenDto = bloodSpecimen ();
+        Patient patient = newTrialProtocolPatient ();
+        specimenDto.compartment = CellFree;
+        specimenDto.anticoagulant = Streck;
+        specimenDto.collectionDate = genLocalDate (0);
+        Assay assayTest = ID_BCell2_CLIA;
+
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            patient,
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenDto);
+        specimenDto.specimenNumber = newOrderClonoSeq.getSpecimenId ();
+        testLog ("Order No: " + order.orderNumber);
+        testLog ("Specimen ID: " + specimenDto.specimenNumber);
+
+        shipment.createShipment (order.orderNumber, Tube);
+        accession.clickIntakeComplete ();
+        accession.clickLabelingComplete ();
+
+        // Verify Blood Stabilization Window on Shipment ACCESSION tab
+        assertEquals (accession.getStabilizationWindow ().color, Advisory.rgba);
+        assertEquals (accession.getStabilizationWindow ().text, "Streck (Blood) - 7 days left");
+        testLog ("Accession Tab: " + accession.getStabilizationWindow ().text + ", Styling: " + Advisory);
+
+        // Verify Blood Stabilization Window on PATIENT ORDER HISTORY tab
+        accession.clickOrderNumber ();
+        newOrderClonoSeq.clickPatientCode ();
+        patientDetail.clickPatientOrderHistoryTab ();
+        assertEquals (patientHistory.getStabilizationWindow (order).color, Advisory.rgba);
+        assertEquals (patientHistory.getStabilizationWindow (order).text, "Streck (Blood) - 7 days left");
+        testLog ("Patient Order History: " + patientHistory.getStabilizationWindow (order).text + ", Styling: " + Advisory);
+
+        // Verify Blood Stabilization Window on ORDER DETAILS tab
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, Advisory.rgba);
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().text, "Streck (Blood) - 7 days left");
+        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + Advisory);
+
+        updateCollectionDateAndVerifyBloodStabilityWindow (-1, Advisory);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-2, Warning);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-3, Warning);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-4, Alarm);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-5, Alarm);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-6, Alarm);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-7, Expired);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-8, Expired);
+
+        // Verify Plasma Stabilization Window on ORDER DETAILS tab
+        newOrderClonoSeq.enterCollectionDate (genLocalDate (-1));
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (0, Advisory, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-39, Advisory, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-40, Warning, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-41, Warning, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-42, Alarm, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-43, Alarm, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-44, Alarm, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-45, Expired, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-46, Expired, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-47, Expired, specimenDto.specimenNumber);
+    }
+
+    /**
+     * Updates the Collection Date on the Order Details tab and verifies the stability window
+     * styling based off params
+     * 
+     * @param dateDifference
+     *            number of days away from today to test
+     * @param stabilityWindow
+     *            expected styling/background color of stability window component
+     */
+    private void updateCollectionDateAndVerifyBloodStabilityWindow (int dateDifference,
+                                                                    StabilityStatus stabilityWindow) {
+        newOrderClonoSeq.enterCollectionDate (genLocalDate (dateDifference));
+        newOrderClonoSeq.clickSave ();
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, stabilityWindow.rgba);
+
+        if (dateDifference > -7) {
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
+                          format ("Streck (Blood) - %s days left", 7 + dateDifference));
+        } else {
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
+                          format ("Streck (Blood) - Expired %s days ago", Math.abs (7 + dateDifference)));
+        }
+
+        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + stabilityWindow);
+    }
+
+    /**
+     * Updates the Specimen isolation_date via SQL and verifies the stability window styling based
+     * off params
+     * 
+     * @param dateDifference
+     *            number of days away from today to test
+     * @param stabilityWindow
+     *            expected styling/background color of stability window component
+     * @param asid
+     *            specimen id for SQL query
+     */
+    private void updateIsolationDateAndVerifyPlasmaStabilityWindow (int dateDifference,
+                                                                    StabilityStatus stabilityWindow,
+                                                                    String asid) {
+        String query = "UPDATE cora.specimens SET isolation_date = '%s' where specimen_number = '%s';";
+        coraDb.executeUpdate (format (query,
+                                      DateHelper.genDate (dateDifference,
+                                                          ISO_LOCAL_DATE_TIME,
+                                                          pstZoneId),
+                                      asid));
+        newOrderClonoSeq.refresh ();
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, stabilityWindow.rgba);
+
+        if (dateDifference > -45) {
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
+                          format ("Streck (Plasma) - %s days left", 45 + dateDifference));
+        } else {
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
+                          format ("Streck (Plasma) - Expired %s days ago", Math.abs (45 + dateDifference)));
+        }
+
+        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + stabilityWindow);
     }
 
     private void createOrderAndValidateFailReport (Specimen specimenDto, Assay assayTest) {
