@@ -40,8 +40,8 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcc
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
@@ -107,7 +107,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
     private final DateTimeFormatter formatDt8            = ofPattern ("uuuu-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    private final String[]          icdCodes             = { "C90.00" };
+    private final String[]          icdCodes             = { "V00.218S" };
     private final String            acceptedPathOverride = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
 
     private final List <String>     deleteOrders         = asList ("delete from cora.specimen_order_xref where order_id IN (%s)",

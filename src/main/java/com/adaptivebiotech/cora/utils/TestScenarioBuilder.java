@@ -150,7 +150,7 @@ public class TestScenarioBuilder {
                                                    Stage stage,
                                                    CoraTest... tests) {
         Diagnostic diagnostic = diagnosticOrder (physician, patient, specimen (), shipment ());
-        diagnostic.order = order (new OrderProperties (patient.billingType, CustomerShipment, "C91.00"), tests);
+        diagnostic.order = order (new OrderProperties (patient.billingType, CustomerShipment, "W15.XXXA"), tests);
         diagnostic.order.mrn = patient.mrn;
         diagnostic.specimen.collectionDate = dateToArrInt (collectionDate);
         diagnostic.specimen.reconciliationDate = dateToArrInt (reconciliationDate);
