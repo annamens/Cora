@@ -106,8 +106,8 @@ public class Accession extends ShipmentHeader {
         assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
     }
 
-    public void clickLabelingComplete (int containeNo) {
-        String locator = format ("(//*[@ng-click='ctrl.setLabelingComplete(container)'])[%s]", containeNo);
+    public void clickLabelingComplete (int containerNo) {
+        String locator = format ("(//*[@ng-click='ctrl.setLabelingComplete(container)'])[%s]", containerNo);
         assertTrue (click (waitForElementClickable (By.xpath (locator))));
         assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
         clickPopupOK ();
@@ -118,8 +118,8 @@ public class Accession extends ShipmentHeader {
         assertTrue (isTextInElement (shipmentStatus, "Label Verification Complete"));
     }
 
-    public void clickLabelVerificationComplete (int containeNo) {
-        String locator = format ("(//*[@ng-click='ctrl.setLabelVerificationComplete(container)'])[%s]", containeNo);
+    public void clickLabelVerificationComplete (int containerNo) {
+        String locator = format ("(//*[@ng-click='ctrl.setLabelVerificationComplete(container)'])[%s]", containerNo);
         assertTrue (click (waitForElementClickable (By.xpath (locator))));
         assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
         clickPopupOK ();

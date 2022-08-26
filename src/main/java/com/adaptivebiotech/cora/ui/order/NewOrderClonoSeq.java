@@ -276,7 +276,7 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public LocalDateTime waitUntilSpecimenActivated () {
-        Timeout timer = new Timeout (6 * 60 * 1000, 1 * 60 * 1000);
+        Timeout timer = new Timeout (millisDuration * 12, millisPoll * 30);
         String specimenActivationDate = getSpecimenActivationDate ();
         while (!timer.Timedout ()) {
             if (!isNotBlank (specimenActivationDate)) {
@@ -296,7 +296,6 @@ public class NewOrderClonoSeq extends NewOrder {
             } else {
                 return LocalDateTime.parse (getSpecimenActivationDate (), formatDt7);
             }
-            specimenActivationDate = getSpecimenActivationDate ();
         }
         fail (format ("Specimen did not activated in time, Specimen Activation: %s", getSpecimenActivationDate ()));
         return null;

@@ -250,7 +250,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
         testLog ("Specimen Activation Date is present and specimen fields are disabled");
 
-        // TODO uncomment below after SR-12631 is resolved
+        // TODO uncomment below after SR-12693 is resolved
         // newOrderClonoSeq.activateOrder ();
         // testLog ("Activate Order");
         //
@@ -302,8 +302,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.clickLabelVerificationComplete (2);
         testLog ("Label verification complete of second container");
 
-        doWait (6 * 60 * 1000);
-
         newOrderClonoSeq.gotoOrderEntry (order.id);
         validateSpecimenSectionFields (true, false);
         assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
@@ -328,7 +326,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
         testLog ("Specimen Activation Date is present and specimen fields are disabled");
 
-        // TODO uncomment below after SR-12631 is resolved
+        // TODO uncomment below after SR-12693 is resolved
         // newOrderClonoSeq.activateOrder ();
         // testLog ("Activate Order");
         //
@@ -390,7 +388,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), FAILED_ACTIVATION.label);
         testLog ("Validate Specimen Activation Faield Activation Label");
 
-        // TODO uncomment below after SR-12631 is resolved
+        // TODO uncomment below after SR-12693 is resolved
         // newOrderClonoSeq.activateOrder ();
         // testLog ("Specimen Activation fail order can be activated");
     }
