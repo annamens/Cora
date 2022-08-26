@@ -17,6 +17,7 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.testng.Assert.assertEquals;
@@ -277,27 +278,22 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public LocalDateTime waitUntilSpecimenActivated () {
         Timeout timer = new Timeout (millisDuration * 12, millisPoll * 30);
-        String specimenActivationDate = getSpecimenActivationDate ();
         while (!timer.Timedout ()) {
-            if (!isNotBlank (specimenActivationDate)) {
+            String specimenActivationDate = getSpecimenActivationDate ();
+            if (isBlank (specimenActivationDate) || specimenActivationDate.equals (PENDING.label)) {
                 timer.Wait ();
                 refresh ();
-                specimenActivationDate = getSpecimenActivationDate ();
-                continue;
-            }
-            if (specimenActivationDate.equals (FAILED_ACTIVATION.label) || specimenActivationDate.equals (FAILED.label)) {
-                fail (format ("Order No: %s, Specimen Activation: %s",
+            } else if (specimenActivationDate.equals (FAILED_ACTIVATION.label) || specimenActivationDate.equals (FAILED.label)) {
+                fail (format ("Specimen activation failed , Order No: %s, Specimen Activation: %s",
                               getOrderNumber (),
-                              getSpecimenActivationDate ()));
-            } else if (specimenActivationDate.equals (PENDING.label)) {
-                timer.Wait ();
-                refresh ();
-                specimenActivationDate = getSpecimenActivationDate ();
+                              specimenActivationDate));
             } else {
-                return LocalDateTime.parse (getSpecimenActivationDate (), formatDt7);
+                return LocalDateTime.parse (specimenActivationDate, formatDt7);
             }
         }
-        fail (format ("Specimen did not activated in time, Specimen Activation: %s", getSpecimenActivationDate ()));
+        fail (format ("Specimen did not activate in time, Order No: %s, Specimen Activation: %s",
+                      getOrderNumber (),
+                      getSpecimenActivationDate ()));
         return null;
     }
 
