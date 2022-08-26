@@ -45,7 +45,7 @@ public final class Workflow {
         public Boolean xcContaminated;
         public String  shmDataSourcePath;
         public String  country;
-
+        public String  clinicalQcReportTaskId;
     }
 
     public static final class Stage {
