@@ -143,7 +143,7 @@ public class OrderDetail extends OrderHeader {
         order.patient.mrn = getPatientMRN ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode ());
+        order.patient.patientCode = getPatientCode ();
         order.patient.testStatus = getPatientMRDStatus ();
         order.patient.notes = getPatientNotes ();
         ChargeType chargeType = billing.getBillingType ();
@@ -300,9 +300,9 @@ public class OrderDetail extends OrderHeader {
         navigateToTab (1);
     }
 
-    public String getPatientCode () {
+    public Integer getPatientCode () {
         String xpath = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
-        return getText (xpath);
+        return Integer.valueOf (getText (xpath));
     }
 
     public String getPatientNotes () {

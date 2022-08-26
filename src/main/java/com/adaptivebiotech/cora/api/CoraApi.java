@@ -318,7 +318,7 @@ public class CoraApi extends HttpClientHelper {
         return tests;
     }
 
-    public void waitForNewPatientToPopulate (String patientCode) {
+    public void waitForNewPatientToPopulate (Integer patientCode) {
         Patient[] patients = getPatients (patientCode);
         Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && (patients.length == 0)) {
@@ -355,7 +355,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (research)), HttpResponse.class);
     }
 
-    public Patient[] getPatients (String searchKeyword) {
+    public Patient[] getPatients (Object searchKeyword) {
         String[] args = { "search=" + searchKeyword, "sort=Patient Code", "ascending=false" };
         return mapper.readValue (get (encodeUrl (coraTestUrl + "/cora/api/v2/patients?", args)), Patient[].class);
     }
