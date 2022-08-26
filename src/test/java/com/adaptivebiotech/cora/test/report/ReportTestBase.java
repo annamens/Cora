@@ -62,7 +62,7 @@ public class ReportTestBase extends CoraBaseBrowser {
     protected final String reportData = "reportData.json";
 
     protected Diagnostic buildCdxOrder (Patient patient, Stage stage, CoraTest... tests) {
-        return buildCdxOrder (patient, "C91.00", stage, tests);
+        return buildCdxOrder (patient, "W15.XXXA", stage, tests);
     }
 
     protected Diagnostic buildCdxOrder (Patient patient, String icdcodes, Stage stage, CoraTest... tests) {
@@ -249,8 +249,8 @@ public class ReportTestBase extends CoraBaseBrowser {
     }
 
     private String fullIcdCodes (Diagnostic diagnostic) {
-        if ("C91.00".equals (diagnostic.order.properties.Icd10Codes))
-            return "C91.00 Acute lymphoblastic leukemia not having achieved remission";
+        if ("W15.XXXA".equals (diagnostic.order.properties.Icd10Codes))
+            return "W15.XXXA Fall from cliff, initial encounter";
         if ("C91.10".equals (diagnostic.order.properties.Icd10Codes))
             return "C91.10 Chronic lymphocytic leuk of B-cell type not achieve remis";
         return null;
