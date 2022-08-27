@@ -3,7 +3,6 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
-import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
@@ -81,7 +80,7 @@ public class ShipmentDetail extends CoraPage {
 
     public SpecimenStatus getSpecimenApprovalStatus () {
         String css = "[data-ng-bind='ctrl.entry.specimen.approvalStatus']";
-        return getShipmentSpecimenStatus (getText (css));
+        return SpecimenStatus.valueOf (getText (css));
     }
 
     public LocalDateTime getSpecimenApprovalDateTime () {

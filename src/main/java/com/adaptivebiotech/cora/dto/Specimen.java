@@ -104,7 +104,7 @@ public final class Specimen {
     }
 
     public enum SpecimenStatus {
-        PASS ("Pass"), FAIL ("Fail");
+        Pass ("PASS"), Fail ("FAIL");
 
         public String shipmentLabel;
 

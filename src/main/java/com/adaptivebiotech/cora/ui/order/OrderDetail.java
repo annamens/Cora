@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -383,7 +384,7 @@ public class OrderDetail extends OrderHeader {
 
     public SpecimenStatus getSpecimenApprovalStatus () {
         String data = isElementVisible (approvalStatus) ? getText (approvalStatus) : null;
-        return isNoneBlank (data) ? SpecimenStatus.valueOf (data) : null;
+        return isNoneBlank (data) ? getShipmentSpecimenStatus (data) : null;
     }
 
     public LocalDateTime getSpecimenActivationDate () {

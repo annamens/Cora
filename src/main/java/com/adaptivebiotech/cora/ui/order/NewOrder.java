@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -526,7 +527,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public SpecimenStatus getSpecimenApprovalStatus () {
         String specimenApprovalStatus = "//*[text()='Specimen Approval']/..//span[1]";
-        return isElementVisible (specimenApprovalStatus) ? SpecimenStatus.valueOf (getText (specimenApprovalStatus)) : null;
+        return isElementVisible (specimenApprovalStatus) ? getShipmentSpecimenStatus (getText (specimenApprovalStatus)) : null;
     }
 
     public LocalDateTime getSpecimenActivationDate () {
