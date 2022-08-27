@@ -384,8 +384,7 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
         history.gotoOrderDebug (orderTest.sampleName);
         assertFalse (history.waitForWorkflowPropertySet (WorkflowProperty.AutoReleasedReport).AutoReleasedReport,
                      "Autorelease unexpectedly succeeded");
-        assertEquals (history.parseStatusHistory ().get (0).subStatusMessage,
-                      failureMessage);
+        assertEquals (history.parseStatusHistory ().get (0).subStatusMessage, failureMessage);
     }
 
     private void setPatientAlert (String alertTypeName, Patient patient) {
