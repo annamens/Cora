@@ -11,7 +11,6 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.openqa.selenium.By;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -108,7 +107,7 @@ public class Accession extends ShipmentHeader {
 
     public void clickLabelingComplete (int containerNo) {
         String locator = format ("(//*[@ng-click='ctrl.setLabelingComplete(container)'])[%s]", containerNo);
-        assertTrue (click (waitForElementClickable (By.xpath (locator))));
+        assertTrue (click (locator));
         assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
         clickPopupOK ();
     }
@@ -120,7 +119,7 @@ public class Accession extends ShipmentHeader {
 
     public void clickLabelVerificationComplete (int containerNo) {
         String locator = format ("(//*[@ng-click='ctrl.setLabelVerificationComplete(container)'])[%s]", containerNo);
-        assertTrue (click (waitForElementClickable (By.xpath (locator))));
+        assertTrue (click (locator));
         assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
         clickPopupOK ();
     }
