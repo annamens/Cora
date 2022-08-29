@@ -239,8 +239,11 @@ public class NewOrderTDetect extends NewOrder {
 
         return order;
     }
-
-    public String getTestSelection (Order order) {
+    
+    /*
+     * Call this on order entry page
+     */
+    public String getTestSelection () {
         return getText ("//*[contains (text(), 'Test Selection:')]//strong");
     }
 }
