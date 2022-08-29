@@ -53,9 +53,9 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
     }
 
     /**
-     * NOTE: SR-T4182
+     * NOTE: SR-T4182,SR-T4251
      * 
-     * @sdlc.requirements SR-10524:R1
+     * @sdlc.requirements SR-10524:R1,SR-12033:R1
      */
     @Test (groups = "fox-terrier")
     public void validateOrderTabsWithDiscrepancy () {
@@ -118,12 +118,15 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
         
+        assertNotEquals (orderDetailTDetect.getTabList (), asList (accessionTab, discrepancyTab));
+        testLog ("Validate there is no accession and/or discrepancy tabs.");
+        
     }
 
     /**
-     * NOTE: SR-T4182
+     * NOTE: SR-T4182,SR-T4251
      * 
-     * @sdlc.requirements SR-10524:R1
+     * @sdlc.requirements SR-10524:R1,SR-12033:R1
      */
     @Test (groups = "fox-terrier")
     public void validateOrderTabsWithoutDiscrepancy () {
@@ -165,6 +168,9 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         orderDetailTDetect.gotoOrderDetailsPage (order.id);
         assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
+        
+        assertNotEquals (orderDetailTDetect.getTabList (), asList (accessionTab, discrepancyTab));
+        testLog ("Validate there is no accession and/or discrepancy tabs.");
 
     }
 
