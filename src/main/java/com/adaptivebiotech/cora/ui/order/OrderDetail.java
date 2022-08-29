@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -37,6 +38,7 @@ import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Patient.PatientTestStatus;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
@@ -110,8 +112,8 @@ public class OrderDetail extends OrderHeader {
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
     }
 
-    public String getPatientMRDStatus () {
-        return getText (patientMrdStatus);
+    public PatientTestStatus getPatientMRDStatus () {
+        return getPatientStatus (getText (patientMrdStatus));
     }
 
     public void clickPatientOrderHistory () {
@@ -141,8 +143,8 @@ public class OrderDetail extends OrderHeader {
         order.patient.mrn = getPatientMRN ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode ());
-        order.patient.testStatus = getPatientMRDStatusCode ();
+        order.patient.patientCode = getPatientCode ();
+        order.patient.testStatus = getPatientMRDStatus ();
         order.patient.notes = getPatientNotes ();
         ChargeType chargeType = billing.getBillingType ();
         order.patient.billingType = chargeType;
@@ -298,14 +300,9 @@ public class OrderDetail extends OrderHeader {
         navigateToTab (1);
     }
 
-    public String getPatientCode () {
+    public Integer getPatientCode () {
         String xpath = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
-        return getText (xpath);
-    }
-
-    public String getPatientMRDStatusCode () {
-        String xpath = "//*[text()='Patient MRD Status']/..//span";
-        return getText (xpath);
+        return Integer.valueOf (getText (xpath));
     }
 
     public String getPatientNotes () {

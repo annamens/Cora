@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.MrdEnabled;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
@@ -15,10 +16,15 @@ import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED_ACTIVATION;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.PENDING;
+import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Advisory;
+import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Alarm;
+import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Expired;
+import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Warning;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
+import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
@@ -37,6 +43,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcc
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
@@ -57,6 +64,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
+import com.adaptivebiotech.cora.dto.Specimen.StabilityStatus;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -64,9 +72,12 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
+import com.adaptivebiotech.cora.ui.patient.PatientDetail;
+import com.adaptivebiotech.cora.ui.patient.PatientOrderHistory;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
+import com.adaptivebiotech.test.utils.DateHelper;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
@@ -87,6 +98,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private OrderDetailClonoSeq   orderDetailClonoSeq    = new OrderDetailClonoSeq ();
     private ReportClonoSeq        reportClonoSeq         = new ReportClonoSeq ();
     private OrcaHistory           orcaHistory            = new OrcaHistory ();
+    private PatientDetail         patientDetail          = new PatientDetail ();
+    private PatientOrderHistory   patientHistory         = new PatientOrderHistory ();
     private ThreadLocal <String>  downloadDir            = new ThreadLocal <> ();
 
     private final String          noResultsAvailable     = "No result available";
@@ -155,7 +168,13 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     public void cfDnaBCellTrackingReport () {
         skipTestIfFeatureFlagOff (cfDna.get ());
         skipTestIfFeatureFlagOff (specimenActivation.get ());
-        Patient patient = setPatient ("SR-T4212", "TrackingReport", "08/15/2001", "mrnsrt2412trackingreport");
+        Patient patient = newSelfPayPatient ();
+        patient.firstName = "SR-T4212";
+        patient.lastName = "TrackingReport";
+        patient.middleName = "";
+        patient.dateOfBirth = "08/15/2001";
+        patient.mrn = "mrnsrt2412trackingreport";
+
         Physician physician = coraApi.getPhysician (clonoSEQ_selfpay);
         createMrdEnabledPatient (patient, physician);
 
@@ -426,9 +445,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.clickLabelVerificationComplete ();
         testLog ("Label verification Complete");
 
-        // wait for specimen activation job to run
-        doWait (6 * 60 * 1000);
-
         newOrderClonoSeq.gotoOrderEntry (order.id);
         validateSpecimenSectionFields (true, false);
         assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
@@ -483,6 +499,138 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         testLog ("Specimen is not sent for activation as flag is off");
     }
 
+    /**
+     * NOTE: SR-T4271
+     * 
+     * @sdlc.requirements SR-11419
+     */
+    @Test (groups = "havanese")
+    public void verifyStreckStabilityWindow () {
+        Specimen specimenDto = bloodSpecimen ();
+        Patient patient = newTrialProtocolPatient ();
+        specimenDto.compartment = CellFree;
+        specimenDto.anticoagulant = Streck;
+        specimenDto.collectionDate = genLocalDate (0);
+        Assay assayTest = ID_BCell2_CLIA;
+
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            patient,
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenDto);
+        specimenDto.specimenNumber = newOrderClonoSeq.getSpecimenId ();
+        testLog ("Order No: " + order.orderNumber);
+        testLog ("Specimen ID: " + specimenDto.specimenNumber);
+
+        shipment.createShipment (order.orderNumber, Tube);
+        accession.clickIntakeComplete ();
+        accession.clickLabelingComplete ();
+
+        // Verify Blood Stabilization Window on Shipment ACCESSION tab
+        assertEquals (accession.getStabilizationWindow ().color, Advisory.rgba);
+        assertEquals (accession.getStabilizationWindow ().text, "Streck (Blood) - 7 days left");
+        testLog ("Accession Tab: " + accession.getStabilizationWindow ().text + ", Styling: " + Advisory);
+
+        // Verify Blood Stabilization Window on PATIENT ORDER HISTORY tab
+        accession.clickOrderNumber ();
+        newOrderClonoSeq.clickPatientCode ();
+        patientDetail.clickPatientOrderHistoryTab ();
+        assertEquals (patientHistory.getStabilizationWindow (order).color, Advisory.rgba);
+        assertEquals (patientHistory.getStabilizationWindow (order).text, "Streck (Blood) - 7 days left");
+        testLog ("Patient Order History: " + patientHistory.getStabilizationWindow (order).text + ", Styling: " + Advisory);
+
+        // Verify Blood Stabilization Window on ORDER DETAILS tab
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, Advisory.rgba);
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().text, "Streck (Blood) - 7 days left");
+        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + Advisory);
+
+        updateCollectionDateAndVerifyBloodStabilityWindow (-1, Advisory);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-2, Warning);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-3, Warning);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-4, Alarm);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-5, Alarm);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-6, Alarm);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-7, Expired);
+        updateCollectionDateAndVerifyBloodStabilityWindow (-8, Expired);
+
+        // Verify Plasma Stabilization Window on ORDER DETAILS tab
+        newOrderClonoSeq.enterCollectionDate (genLocalDate (-1));
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (0, Advisory, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-39, Advisory, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-40, Warning, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-41, Warning, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-42, Alarm, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-43, Alarm, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-44, Alarm, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-45, Expired, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-46, Expired, specimenDto.specimenNumber);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-47, Expired, specimenDto.specimenNumber);
+    }
+
+    /**
+     * Updates the Collection Date on the Order Details tab and verifies the stability window
+     * styling based off params
+     * 
+     * @param dateDifference
+     *            number of days away from today to test
+     * @param stabilityWindow
+     *            expected styling/background color of stability window component
+     */
+    private void updateCollectionDateAndVerifyBloodStabilityWindow (int dateDifference,
+                                                                    StabilityStatus stabilityWindow) {
+        newOrderClonoSeq.enterCollectionDate (genLocalDate (dateDifference));
+        newOrderClonoSeq.clickSave ();
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, stabilityWindow.rgba);
+
+        if (dateDifference > -7) {
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
+                          format ("Streck (Blood) - %s days left", 7 + dateDifference));
+        } else {
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
+                          format ("Streck (Blood) - Expired %s days ago", Math.abs (7 + dateDifference)));
+        }
+
+        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + stabilityWindow);
+    }
+
+    /**
+     * Updates the Specimen isolation_date via SQL and verifies the stability window styling based
+     * off params
+     * 
+     * @param dateDifference
+     *            number of days away from today to test
+     * @param stabilityWindow
+     *            expected styling/background color of stability window component
+     * @param asid
+     *            specimen id for SQL query
+     */
+    private void updateIsolationDateAndVerifyPlasmaStabilityWindow (int dateDifference,
+                                                                    StabilityStatus stabilityWindow,
+                                                                    String asid) {
+        String query = "UPDATE cora.specimens SET isolation_date = '%s' where specimen_number = '%s';";
+        coraDb.executeUpdate (format (query,
+                                      DateHelper.genDate (dateDifference,
+                                                          ISO_LOCAL_DATE_TIME,
+                                                          pstZoneId),
+                                      asid));
+        newOrderClonoSeq.refresh ();
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, stabilityWindow.rgba);
+
+        if (dateDifference > -45) {
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
+                          format ("Streck (Plasma) - %s days left", 45 + dateDifference));
+        } else {
+            assertEquals (newOrderClonoSeq.getStabilizationWindow ().text,
+                          format ("Streck (Plasma) - Expired %s days ago", Math.abs (45 + dateDifference)));
+        }
+
+        testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + stabilityWindow);
+    }
+
     private void createOrderAndValidateFailReport (Specimen specimenDto, Assay assayTest) {
         login.doLogin ();
         ordersList.isCorrectPage ();
@@ -529,58 +677,63 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (newOrderClonoSeq.isSpecimenSourceEnabled (), specimenSource);
     }
 
-    private Patient setPatient (String firstName, String lastName, String dob, String mrn) {
-        Patient patient = newSelfPayPatient ();
-        patient.firstName = firstName;
-        patient.lastName = lastName;
-        patient.dateOfBirth = dob;
-        patient.mrn = mrn;
-        patient.middleName = "";
-        return patient;
-    }
-
     private void createMrdEnabledPatient (Patient patient, Physician physician) {
+        String patientDob = convertDateFormat (patient.dateOfBirth, "MM/dd/yyyy", "yyyy-MM-dd");
         List <Patient> patients = stream (coraApi.getPatients (patient.firstName)).filter (p -> patient.lastName.equals (p.lastName))
+                                                                                  .filter (p -> patientDob.equals (p.dateOfBirth))
                                                                                   .collect (toList ());
         if (patients.size () > 1)
             fail (format ("found [%s] patients, for search terms: %s", patients.size (), patient));
 
-        if (patients.size () == 1) {
-            Order[] orders = coraApi.getOrdersForPatient (patients.get (0).id);
-            String orderIds = stream (orders).map (o -> o.id.toString ()).collect (joining ("','", "'", "'"));
-            for (String deleteQuery : deleteOrders)
-                coraDb.executeUpdate (format (deleteQuery, orderIds));
+        boolean needToCreateOrder = false;
+        if (patients.size () == 0)
+            needToCreateOrder = true;
+        else {
+            // patient exist, check if status is MrdEnabled
+            boolean isPatientMrdEnabled = MrdEnabled.equals (coraApi.getPatientStatus (patients.get (0).id));
+            if (!isPatientMrdEnabled) {
+                Order[] orders = coraApi.getOrdersForPatient (patients.get (0).id);
+                if (orders.length > 0) {
+                    String orderIds = stream (orders).map (o -> o.id.toString ()).collect (joining ("','", "'", "'"));
+                    for (String deleteQuery : deleteOrders)
+                        coraDb.executeUpdate (format (deleteQuery, orderIds));
+                }
 
-            for (String deleteQuery : deletePatient)
-                coraDb.executeUpdate (format (deleteQuery, patients.get (0).id));
+                for (String deleteQuery : deletePatient)
+                    coraDb.executeUpdate (format (deleteQuery, patients.get (0).id));
+
+                needToCreateOrder = true;
+            }
         }
 
-        // now that we've deleted the patient and any orders for that patient
-        Assay assayTest = ID_BCell2_CLIA;
-
         login.doLogin ();
-        Order order = newOrderClonoSeq.createClonoSeqOrder (physician,
-                                                            patient,
-                                                            icdCodes,
-                                                            assayTest,
-                                                            bloodSpecimen (),
-                                                            Active,
-                                                            Tube);
-        info ("Order Number: " + order.orderNumber);
+        ordersList.isCorrectPage ();
 
-        String sampleName = orderDetailClonoSeq.getSampleName (assayTest);
-        orcaHistory.gotoOrderDebug (sampleName);
-        orcaHistory.setWorkflowProperty (lastAcceptedTsvPath, acceptedPathOverride);
-        orcaHistory.forceStatusUpdate (SecondaryAnalysis, Ready);
-        orcaHistory.waitFor (SecondaryAnalysis, Finished);
-        orcaHistory.waitFor (ShmAnalysis, Finished);
-        orcaHistory.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        orcaHistory.clickOrderTest ();
+        if (needToCreateOrder) {
+            Assay assayTest = ID_BCell2_CLIA;
+            Order order = newOrderClonoSeq.createClonoSeqOrder (physician,
+                                                                patient,
+                                                                icdCodes,
+                                                                assayTest,
+                                                                bloodSpecimen (),
+                                                                Active,
+                                                                Tube);
+            info ("Order Number: " + order.orderNumber);
 
-        reportClonoSeq.clickReportTab (assayTest);
-        reportClonoSeq.releaseReport (assayTest, Pass);
-        orcaHistory.gotoOrderDebug (sampleName);
-        orcaHistory.waitFor (ReportDelivery, Finished);
-        orcaHistory.clickOrderTest ();
+            String sampleName = orderDetailClonoSeq.getSampleName (assayTest);
+            orcaHistory.gotoOrderDebug (sampleName);
+            orcaHistory.setWorkflowProperty (lastAcceptedTsvPath, acceptedPathOverride);
+            orcaHistory.forceStatusUpdate (SecondaryAnalysis, Ready);
+            orcaHistory.waitFor (SecondaryAnalysis, Finished);
+            orcaHistory.waitFor (ShmAnalysis, Finished);
+            orcaHistory.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
+            orcaHistory.clickOrderTest ();
+
+            reportClonoSeq.clickReportTab (assayTest);
+            reportClonoSeq.releaseReport (assayTest, Pass);
+            orcaHistory.gotoOrderDebug (sampleName);
+            orcaHistory.waitFor (ReportDelivery, Finished);
+            orcaHistory.clickOrderTest ();
+        }
     }
 }

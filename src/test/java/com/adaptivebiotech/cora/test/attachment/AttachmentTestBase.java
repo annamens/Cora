@@ -32,7 +32,7 @@ public class AttachmentTestBase extends CoraBaseBrowser {
     protected final List <String> uploadPreviewFiles = previewFiles.stream ().map (e -> "uploadFiles/" + e)
                                                                    .collect (Collectors.toList ());
 
-    protected final String[]      icdCodes           = { "C90.00" };
+    protected final String[]      icdCodes           = { "A20.0" };
 
     protected void validateAttachments (List <UploadFile> actualAttachments, List <String> expFiles,
                                         OrderStatus status) {
