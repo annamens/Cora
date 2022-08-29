@@ -239,4 +239,8 @@ public class NewOrderTDetect extends NewOrder {
 
         return order;
     }
+
+    public String getTestSelection (Order order) {
+        return getText ("//*[contains (text(), 'Test Selection:')]//strong");
+    }
 }
