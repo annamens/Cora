@@ -221,7 +221,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-11228:R2, R3
      */
-    @Test (groups = "havanese")
+    @Test (groups = "irish-wolfhound")
     public void validateSpecimenActivationPresent () {
         skipTestIfFeatureFlagOff (cfDna.get ());
         skipTestIfFeatureFlagOff (specimenActivation.get ());
@@ -417,7 +417,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-11228:R3
      */
-    @Test (groups = "havanese")
+    @Test (groups = "irish-wolfhound")
     public void validateSpecimenActivationNotPresent () {
         Specimen specimenDto = bloodSpecimen ();
         Assay assayTest = ID_BCell2_CLIA;
@@ -493,7 +493,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         shipment.createShipment (order.orderNumber, Tube);
         accession.completeAccession ();
 
-        doWait (6 * 60 * 1000);
         newOrderClonoSeq.isCorrectPage ();
         assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), PENDING.label);
         testLog ("Specimen is not sent for activation as flag is off");

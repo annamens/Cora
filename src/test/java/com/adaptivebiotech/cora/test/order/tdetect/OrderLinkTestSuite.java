@@ -14,8 +14,6 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotEquals;
-
 import java.util.List;
 import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
@@ -117,7 +115,6 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         orderDetailTDetect.gotoOrderDetailsPage (order.id);
         assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
-        
     }
 
     /**
