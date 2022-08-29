@@ -34,7 +34,7 @@ public final class Specimen {
     @JsonAlias ("sourceType")
     public SpecimenSource     sampleSource;
     public LocalDateTime      approvedDate;
-    public LocalDateTime      activationDate;
+    public String             activationDate;
     public String             sampleTypeDisplayName;
     public SpecimenStatus     approvalStatus;
     public List <Sample>      samples;
@@ -131,4 +131,22 @@ public final class Specimen {
             this.rgba = rgba;
         }
     }
+
+    public enum SpecimenActivation {
+        PENDING ("Pending"),
+        FAILED ("Failed"),
+        FAILED_ACTIVATION ("Failed Activation");
+
+        public String label;
+
+        private SpecimenActivation (String label) {
+            this.label = label;
+        }
+
+        public static SpecimenActivation getSpecimenActivationStatus (String label) {
+            return allOf (SpecimenActivation.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                                                   .orElse (null);
+        }
+    }
+
 }

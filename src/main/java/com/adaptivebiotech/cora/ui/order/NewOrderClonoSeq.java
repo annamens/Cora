@@ -5,7 +5,11 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED_ACTIVATION;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.PENDING;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
@@ -13,10 +17,12 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,6 +42,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author jpatel
@@ -267,7 +274,28 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public boolean isRetrievalDateEnabled () {
-        return waitForElement (uniqueSpecimenId).isEnabled ();
+        return waitForElement (retrievalDate).isEnabled ();
+    }
+
+    public LocalDateTime waitUntilSpecimenActivated () {
+        Timeout timer = new Timeout (millisDuration * 12, millisPoll * 30);
+        while (!timer.Timedout ()) {
+            String specimenActivationDate = getSpecimenActivationDate ();
+            if (isBlank (specimenActivationDate) || specimenActivationDate.equals (PENDING.label)) {
+                timer.Wait ();
+                refresh ();
+            } else if (specimenActivationDate.equals (FAILED_ACTIVATION.label) || specimenActivationDate.equals (FAILED.label)) {
+                fail (format ("Specimen activation failed , Order No: %s, Specimen Activation: %s",
+                              getOrderNumber (),
+                              specimenActivationDate));
+            } else {
+                return LocalDateTime.parse (specimenActivationDate, formatDt7);
+            }
+        }
+        fail (format ("Specimen did not activate in time, Order No: %s, Specimen Activation: %s",
+                      getOrderNumber (),
+                      getSpecimenActivationDate ()));
+        return null;
     }
 
     public boolean isPathologyRetrievalVisible () {

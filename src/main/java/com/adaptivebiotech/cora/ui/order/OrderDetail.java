@@ -386,10 +386,9 @@ public class OrderDetail extends OrderHeader {
         return isNoneBlank (data) ? SpecimenStatus.valueOf (data) : null;
     }
 
-    public LocalDateTime getSpecimenActivationDate () {
+    public String getSpecimenActivationDate () {
         String activationDate = "[ng-bind^='ctrl.orderEntry.specimen.activationDate']";
-        String data = isElementVisible (activationDate) ? getText (activationDate) : null;
-        return isNoneBlank (data) && !data.equals ("N/A") ? LocalDateTime.parse (data, formatDt7) : null;
+        return isElementVisible (activationDate) ? getText (activationDate) : null;
     }
 
     public ContainerType getSpecimenContainerType () {
