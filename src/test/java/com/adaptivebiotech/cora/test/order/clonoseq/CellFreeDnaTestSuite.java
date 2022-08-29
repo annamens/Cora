@@ -106,7 +106,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private final String          mrdResultDescription   = "This sample failed the quality control criteria despite multiple sequencing attempts, exceeded the sample stability time period, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
     private final String          tsvPathOverride        = azTsvPath + "/H2YHWBGXL_0_CLINICAL-CLINICAL_77898-27PC-AJP-012.adap.txt.results.tsv.gz";
 
-    private final String[]        icdCodes               = { "C90.00" };
+    private final String[]        icdCodes               = { "V00.218S" };
     private final String          acceptedPathOverride   = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
     private final String          updateActivationDate   = "UPDATE cora.specimens SET activation_date = null WHERE specimen_number = '%s'";
     private final String          updateActivationStatus = "UPDATE cora.specimen_activations SET activation_status = '%s' WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')";
