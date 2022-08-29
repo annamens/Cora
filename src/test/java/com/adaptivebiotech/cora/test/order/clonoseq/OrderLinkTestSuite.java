@@ -18,6 +18,8 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
+
 import java.util.List;
 import java.util.UUID;
 import org.testng.annotations.BeforeClass;
@@ -221,9 +223,9 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
     }
 
     /**
-     * NOTE: SR-T4182
+     * NOTE: SR-T4182,SR-T4251
      * 
-     * @sdlc.requirements SR-10524:R1
+     * @sdlc.requirements SR-10524:R1,SR-12033:R1
      */
     @Test (groups = "fox-terrier")
     public void validateOrderTabsWithDiscrepancy () {
@@ -285,13 +287,16 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
         assertEquals (orderDetailClonoSeq.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
+        
+        assertNotEquals (orderDetailClonoSeq.getTabList (), asList (accessionTab, discrepancyTab));
+        testLog ("Validate there is no accession and/or discrepancy tabs.");
 
     }
 
     /**
-     * NOTE: SR-T4182
+     * NOTE: SR-T4182,SR-T4251
      * 
-     * @sdlc.requirements SR-10524:R1
+     * @sdlc.requirements SR-10524:R1,SR-12033:R1
      */
     @Test (groups = "fox-terrier")
     public void validateOrderTabsWithoutDiscrepancy () {
@@ -333,6 +338,9 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
         assertEquals (orderDetailClonoSeq.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
+        
+        assertNotEquals (orderDetailClonoSeq.getTabList (), asList (accessionTab, discrepancyTab));
+        testLog ("Validate there is no accession and/or discrepancy tabs.");
 
     }
 
