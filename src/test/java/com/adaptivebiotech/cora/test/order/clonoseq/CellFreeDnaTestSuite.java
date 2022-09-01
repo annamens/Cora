@@ -56,6 +56,7 @@ import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -494,7 +495,11 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.completeAccession ();
 
         newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), PENDING.label);
+        String specimenNo = newOrderClonoSeq.getSpecimenId ();
+        List <Map <String, Object>> queryRes = coraDb.executeSelect (format ("SELECT * FROM cora.specimen_activations WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')",
+                                                                             specimenNo));
+        assertEquals (queryRes.size (), 0);
+        assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
         testLog ("Specimen is not sent for activation as flag is off");
     }
 
