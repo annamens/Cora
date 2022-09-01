@@ -67,7 +67,6 @@ public class PickPatientModule extends CoraPage {
         assertTrue (setText ("#patient-firstname", patient.firstName));
         assertTrue (setText ("#patient-lastname", patient.lastName));
         assertTrue (setText ("#patient-dateofbirth", patient.dateOfBirth));
-        assertTrue (setText ("#patient-mrn", patient.mrn));
         assertTrue (click ("#patient-search"));
         pageLoading ();
     }
