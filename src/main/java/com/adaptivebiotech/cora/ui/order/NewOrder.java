@@ -4,6 +4,7 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
@@ -656,5 +657,12 @@ public abstract class NewOrder extends OrderHeader {
     public void clickFilePreviewLink (String containerName, String fileName) {
         assertTrue (click (format (fileLocInC, containerName, fileName)));
         assertTrue (isTextInElement (popupTitle, fileName));
+    }
+
+    /*
+     * Call this on order entry page
+     */
+    public Assay getTestSelection () {
+        return getAssay (getText ("//*[contains (text(), 'Test Selection:')]//strong"));
     }
 }
