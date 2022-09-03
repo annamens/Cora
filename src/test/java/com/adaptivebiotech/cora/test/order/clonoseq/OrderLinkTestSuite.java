@@ -17,8 +17,10 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertFalse;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertTrue;
 
 import java.util.List;
 import java.util.UUID;
@@ -66,6 +68,7 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
     private PatientOrderHistory    patientOrderHistory    = new PatientOrderHistory ();
     private DiscrepancyResolutions discrepancyResolutions = new DiscrepancyResolutions ();
     private Physician              physician;
+    private List <String>          tabsList               = null;
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
@@ -284,11 +287,15 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         testLog ("Validate Order Details Tab Data loads");
 
         newOrderClonoSeq.activateOrder ();
-        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-        assertEquals (orderDetailClonoSeq.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
-        
-        assertNotEquals (orderDetailClonoSeq.getTabList (), asList (accessionTab, discrepancyTab));
+
+        tabsList = orderDetailClonoSeq.getTabList ();
+        assertTrue (tabsList.contains (orderStatusTab));
+        assertTrue (tabsList.contains (orderDetailsTab));
+        testLog ("Validate page has redirected to display Order Status and Order Details");
+
+        assertFalse (tabsList.contains (accessionTab));
+        assertFalse (tabsList.contains (discrepancyTab));
         testLog ("Validate there is no accession and/or discrepancy tabs.");
 
     }
@@ -335,12 +342,15 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         testLog ("Validate Order Details Tab Data loads");
 
         newOrderClonoSeq.activateOrder ();
-        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-        assertEquals (orderDetailClonoSeq.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
-        
-        assertNotEquals (orderDetailClonoSeq.getTabList (), asList (accessionTab, discrepancyTab));
-        testLog ("Validate there is no accession and/or discrepancy tabs.");
+
+        tabsList = orderDetailClonoSeq.getTabList ();
+        assertTrue (tabsList.contains (orderStatusTab));
+        assertTrue (tabsList.contains (orderDetailsTab));
+        testLog ("Validate page has redirected to display Order Status and Order Details");
+
+        assertFalse (tabsList.contains (accessionTab));
+        testLog ("Validate there is no accession tab.");
 
     }
 

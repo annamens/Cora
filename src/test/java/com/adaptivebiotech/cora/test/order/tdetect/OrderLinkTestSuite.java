@@ -13,8 +13,10 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertFalse;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertTrue;
 
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +47,7 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
     private NewShipment            shipment               = new NewShipment ();
     private Accession              accession              = new Accession ();
     private DiscrepancyResolutions discrepancyResolutions = new DiscrepancyResolutions ();
+    private List <String>          tabsList               = null;
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -114,13 +117,17 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         testLog ("Validate Order Details Tab Data loads");
 
         newOrderTDetect.activateOrder ();
-        orderDetailTDetect.gotoOrderDetailsPage (order.id);
-        assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
-        
-        assertNotEquals (orderDetailTDetect.getTabList (), asList (accessionTab, discrepancyTab));
+
+        tabsList = orderDetailTDetect.getTabList ();
+        assertTrue (tabsList.contains (orderStatusTab));
+        assertTrue (tabsList.contains (orderDetailsTab));
+        testLog ("Validate page has redirected to display Order Status and Order Details");
+
+        assertFalse (tabsList.contains (accessionTab));
+        assertFalse (tabsList.contains (discrepancyTab));
         testLog ("Validate there is no accession and/or discrepancy tabs.");
-        
+
     }
 
     /**
@@ -165,13 +172,15 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         testLog ("Validate Order Details Tab Data loads");
 
         newOrderTDetect.activateOrder ();
-        orderDetailTDetect.gotoOrderDetailsPage (order.id);
-        assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
-        
-        assertNotEquals (orderDetailTDetect.getTabList (), asList (accessionTab, discrepancyTab));
-        testLog ("Validate there is no accession and/or discrepancy tabs.");
 
+        tabsList = orderDetailTDetect.getTabList ();
+        assertTrue (tabsList.contains (orderStatusTab));
+        assertTrue (tabsList.contains (orderDetailsTab));
+        testLog ("Validate page has redirected to display Order Status and Order Details");
+
+        assertFalse (tabsList.contains (accessionTab));
+        testLog ("Validate there is no accession tab.");
     }
 
     private void validateTabsOrderPage (Order order, List <String> expTabs) {
