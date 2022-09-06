@@ -204,6 +204,10 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickCancelOrder () {
         assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
+        pageLoading ();
+    }
+
+    public void cancelOrder () {
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
         assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
         assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
@@ -214,6 +218,24 @@ public abstract class NewOrder extends OrderHeader {
         moduleLoading ();
         checkOrderForErrors ();
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+    }
+
+    // UPDATE WITH CSS
+    public boolean isCancelActionDropdownVisible () {
+        String css = "#PLACEHOLDER";
+        return isElementVisible (css);
+    }
+
+    // UPDATE WITH CSS
+    public String getCancelActionValue () {
+        String css = "#PLACEHOLDER";
+        return getText (css);
+    }
+
+    // UPDATE WITH CSS
+    public void setCancelActionValue (String value) {
+        String css = "#PLACEHOLDER";
+        assertTrue (clickAndSelectValue (css, value));
     }
 
     protected void checkOrderForErrors () {
