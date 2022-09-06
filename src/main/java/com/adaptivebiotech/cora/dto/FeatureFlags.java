@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public final class FeatureFlags {
 
-    @JsonProperty ("Entlebucher-lomnDocusign")
-    public boolean lomnDocusign;
     public boolean cfDNA;
+    @JsonProperty ("Havanese-SpecimenActivation")
+    public boolean specimenActivation;
 
     @Override
     public String toString () {

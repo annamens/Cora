@@ -20,6 +20,7 @@ public class PickPatientModule extends CoraPage {
 
     public void clickSave () {
         assertTrue (click ("//button[text()='Save']"));
+        moduleLoading ();
     }
 
     public void clickCancel () {
@@ -66,7 +67,6 @@ public class PickPatientModule extends CoraPage {
         assertTrue (setText ("#patient-firstname", patient.firstName));
         assertTrue (setText ("#patient-lastname", patient.lastName));
         assertTrue (setText ("#patient-dateofbirth", patient.dateOfBirth));
-        assertTrue (setText ("#patient-mrn", patient.mrn));
         assertTrue (click ("#patient-search"));
         pageLoading ();
     }
@@ -81,7 +81,7 @@ public class PickPatientModule extends CoraPage {
         else {
             assertTrue (click (firstrow));
             assertTrue (click ("#select-patient"));
-            moduleLoading ();
+            pageLoading ();
             matchFound = true;
             enterPatientMrn (patient.mrn);
         }

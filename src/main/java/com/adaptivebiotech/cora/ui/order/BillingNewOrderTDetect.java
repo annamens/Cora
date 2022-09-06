@@ -45,7 +45,8 @@ public class BillingNewOrderTDetect extends BillingNewOrder {
     }
 
     public AbnStatus getAbnStatus () {
-        return AbnStatus.getAbnStatus (getText (abnStatus));
+        String css = "//label[text()='ABN Status']/..//div[1]";
+        return AbnStatus.getAbnStatus (getText (css));
     }
 
     public Patient getPatientBilling () {

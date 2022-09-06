@@ -1,24 +1,23 @@
 package com.adaptivebiotech.cora.test.specimen.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Refrigerated;
-import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.utils.PageHelper.Carrier.UPS;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.util.UUID;
-import static org.testng.Assert.assertFalse;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.dto.Specimen;
-
-import com.adaptivebiotech.cora.test.specimen.SpecimenTestBase;
 import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Specimen;
+import com.adaptivebiotech.cora.test.specimen.SpecimenTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
@@ -106,6 +105,7 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
         accession.completeAccession ();
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.activateOrder ();
+        orderDetail.gotoOrderDetailsPage (order.id);
         orderDetail.isCorrectPage ();
         testLog ("Activated order...");
         testFlagInvisible ();

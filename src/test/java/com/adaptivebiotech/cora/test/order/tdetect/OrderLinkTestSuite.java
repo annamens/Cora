@@ -115,7 +115,6 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         orderDetailTDetect.gotoOrderDetailsPage (order.id);
         assertEquals (orderDetailTDetect.getTabList (), asList (orderStatusTab, orderDetailsTab));
         testLog ("activate Order");
-
     }
 
     /**

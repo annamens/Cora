@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.ui.order;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -143,7 +144,7 @@ public class OrderDetail extends OrderHeader {
         order.patient.mrn = getPatientMRN ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode ());
+        order.patient.patientCode = getPatientCode ();
         order.patient.testStatus = getPatientMRDStatus ();
         order.patient.notes = getPatientNotes ();
         ChargeType chargeType = billing.getBillingType ();
@@ -300,9 +301,9 @@ public class OrderDetail extends OrderHeader {
         navigateToTab (1);
     }
 
-    public String getPatientCode () {
+    public Integer getPatientCode () {
         String xpath = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
-        return getText (xpath);
+        return Integer.valueOf (getText (xpath));
     }
 
     public String getPatientNotes () {
@@ -383,13 +384,12 @@ public class OrderDetail extends OrderHeader {
 
     public SpecimenStatus getSpecimenApprovalStatus () {
         String data = isElementVisible (approvalStatus) ? getText (approvalStatus) : null;
-        return isNoneBlank (data) ? SpecimenStatus.valueOf (data) : null;
+        return isNoneBlank (data) ? getShipmentSpecimenStatus (data) : null;
     }
 
-    public LocalDateTime getSpecimenActivationDate () {
+    public String getSpecimenActivationDate () {
         String activationDate = "[ng-bind^='ctrl.orderEntry.specimen.activationDate']";
-        String data = isElementVisible (activationDate) ? getText (activationDate) : null;
-        return isNoneBlank (data) && !data.equals ("N/A") ? LocalDateTime.parse (data, formatDt7) : null;
+        return isElementVisible (activationDate) ? getText (activationDate) : null;
     }
 
     public ContainerType getSpecimenContainerType () {

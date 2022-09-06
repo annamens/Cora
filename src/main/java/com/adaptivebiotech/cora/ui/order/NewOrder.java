@@ -4,7 +4,9 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -548,13 +550,12 @@ public abstract class NewOrder extends OrderHeader {
 
     public SpecimenStatus getSpecimenApprovalStatus () {
         String specimenApprovalStatus = "//*[text()='Specimen Approval']/..//span[1]";
-        return isElementVisible (specimenApprovalStatus) ? SpecimenStatus.valueOf (getText (specimenApprovalStatus)) : null;
+        return isElementVisible (specimenApprovalStatus) ? getShipmentSpecimenStatus (getText (specimenApprovalStatus)) : null;
     }
 
-    public LocalDateTime getSpecimenActivationDate () {
-        String css = "//*[text()='Specimen Activation']/..//div";
-        String data = isElementVisible (css) ? getText (css) : null;
-        return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt7) : null;
+    public String getSpecimenActivationDate () {
+        String css = "specimen-activation-date";
+        return isElementVisible (css) ? getText (css) : null;
     }
 
     public void waitForSpecimenDelivery () {
@@ -678,5 +679,12 @@ public abstract class NewOrder extends OrderHeader {
     public void clickFilePreviewLink (String containerName, String fileName) {
         assertTrue (click (format (fileLocInC, containerName, fileName)));
         assertTrue (isTextInElement (popupTitle, fileName));
+    }
+
+    /*
+     * Call this on order entry page
+     */
+    public Assay getTestSelection () {
+        return getAssay (getText ("//*[contains (text(), 'Test Selection:')]//strong"));
     }
 }

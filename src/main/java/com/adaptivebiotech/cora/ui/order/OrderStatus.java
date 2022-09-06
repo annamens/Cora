@@ -160,6 +160,7 @@ public class OrderStatus extends OrderHeader {
         assertTrue (waitUntilVisible (stageActionsDropdown));
         assertTrue (click (format (dropdownItem, "Nudge workflow")));
         assertTrue (click (confirmYes));
+        transactionInProgress ();
     }
 
     public void checkForStuck (String sampleName, StageStatus status) {
