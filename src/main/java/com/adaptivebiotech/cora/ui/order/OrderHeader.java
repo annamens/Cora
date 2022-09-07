@@ -83,7 +83,8 @@ public class OrderHeader extends CoraPage {
                 fail (format ("the order is '%s'", FailedActivation));
 
             timer.Wait ();
-            refresh ();
+            clickAccessionTab ();
+            clickOrderDetailsTab ();
             orderStatus = getOrderStatus ();
         }
         assertEquals (orderStatus, Active, "Order did not activated successfully");

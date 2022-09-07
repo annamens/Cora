@@ -16,6 +16,7 @@ import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.POSITIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.BCell;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
@@ -24,7 +25,6 @@ import static java.lang.Math.abs;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.time.LocalDate.parse;
-import static java.time.LocalDateTime.now;
 import static javax.imageio.ImageIO.read;
 import static org.apache.commons.lang3.StringUtils.countMatches;
 import static org.apache.commons.lang3.StringUtils.right;
@@ -122,7 +122,7 @@ public class ReportTestBase extends CoraBaseBrowser {
         clonoseq.header.DOB = parse ("01/01/1999", formatDt1);
         clonoseq.header.medicalRecord = patient.mrn;
         clonoseq.header.gender = patient.gender;
-        clonoseq.header.reportDt = now ().toLocalDate ();
+        clonoseq.header.reportDt = genLocalDate (0);
         clonoseq.header.orderNum = right (orderTest.orderName, 8);
         clonoseq.header.specimen = diagnostic.specimen.sampleType.label;
         if (diagnostic.specimen.properties.SourceType != null)

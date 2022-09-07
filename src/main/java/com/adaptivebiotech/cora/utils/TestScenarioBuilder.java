@@ -12,10 +12,10 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
+import static com.adaptivebiotech.test.utils.DateHelper.genLocalDateTime;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSeq2_WorkflowNanny;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
-import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static java.util.UUID.fromString;
@@ -47,9 +47,9 @@ import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
  */
 public class TestScenarioBuilder {
 
-    public static final LocalDateTime collectionDate     = now ().minusDays (10);
-    public static final LocalDateTime reconciliationDate = now ().minusDays (10);
-    public static final LocalDateTime arrivalDate        = now ().minusDays (15);
+    public static final LocalDateTime collectionDate     = genLocalDateTime (-10);
+    public static final LocalDateTime reconciliationDate = genLocalDateTime (-10);
+    public static final LocalDateTime arrivalDate        = genLocalDateTime (-15);
 
     public static Order order (OrderProperties properties, CoraTest... tests) {
         Order order = new Order ();
