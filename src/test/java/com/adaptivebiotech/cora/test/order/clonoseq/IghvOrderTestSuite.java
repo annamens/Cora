@@ -12,6 +12,7 @@ import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clon
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.EDTA;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Fail;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.INDETERMINATE;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.MUTATED;
 import static com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus.NO_CLONES;
@@ -65,6 +66,7 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.ShmResultData;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -84,8 +86,6 @@ import com.adaptivebiotech.pipeline.dto.shm.ShmResult;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
 import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 /**
  * Note:
@@ -104,10 +104,11 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
     private OrcaHistory          history                          = new OrcaHistory ();
     private OrderStatus          orderStatus                      = new OrderStatus ();
     private OrderDetailClonoSeq  orderDetailClonoSeq              = new OrderDetailClonoSeq ();
+    private ThreadLocal <String> downloadDir                      = new ThreadLocal <> ();
 
     private final String         c91_10                           = "C91.10";
     private final String         c83_00                           = "C83.00";
-    private final String         c90_00                           = "C90.00";
+    private final String         b72                              = "B72";
 
     private final String         tsvOverridePathO1O2              = azPipelineClia + "/210612_NB552467_0088_AH3CH7BGXJ/v3.1/20210614_0809/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev32/H3CH7BGXJ_0_CLINICAL-CLINICAL_96343-05BC.adap.txt.results.tsv.gz";
     private final String         tsvOverridePathO3O4              = azPipelineFda + "/210615_NB551732_0294_AH3G53BGXJ/v3.1/20210617_0828/packaged/rd.Human.BCell.nextseq.146x13x116.threeRead.ultralight.rev24/H3G53BGXJ_0_CLINICAL-CLINICAL_96633-08MC-UA001BM.adap.txt.results.tsv.gz";
@@ -141,7 +142,6 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
     private final String         beginIghvMutationStatus          = "IGHV MUTATION STATUS";
     private final String         beginClonalityResult             = "CLONALITY RESULT";
     private final String         endThisSampleFailed              = "This sample failed the quality control";
-    private ThreadLocal <String> downloadDir                      = new ThreadLocal <> ();
 
     @BeforeClass (alwaysRun = true)
     public void beforeClass () {
@@ -178,7 +178,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           new String[] { c83_00, c91_10 },
                                           "Order 1 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, true, true);
         testLog ("step 1 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
@@ -189,7 +189,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                            null);
         testLog ("step 2 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().sampleName, assayTest);
         testLog ("step 2 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
         boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
@@ -219,7 +219,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           new String[] { c83_00 },
                                           "Order 2 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "false", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, false, true);
         testLog ("step 5 - ighvAnalysisEnabled is true, ighvReportEnabled is false (or absent)");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
@@ -230,7 +230,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                            null);
         testLog ("step 6 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().sampleName, assayTest);
         testLog ("step 6 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
         boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
@@ -260,7 +260,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           new String[] { c91_10 },
                                           "Order 3 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, true, true);
         testLog ("step 9, order3 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
@@ -271,7 +271,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                            null);
         testLog ("step 10 - 1 - order3 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().sampleName, assayTest);
         testLog ("step 10 - 2 - An eos.shm analysis job was spawned and Completed in portal");
 
         boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
@@ -301,7 +301,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           new String[] { c91_10 },
                                           "Order 4 Flag On");
 
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, "true", "true");
+        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, true, true);
         testLog ("step 9, order4 - ighvAnalysisEnabled and ighvReportEnabled are true");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
@@ -312,7 +312,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                            null);
         testLog ("step 10 - 1 - order4 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
 
-        validatePipelineStatusToComplete (history.getWorkflowProperties ().get ("sampleName"), assayTest);
+        validatePipelineStatusToComplete (history.getWorkflowProperties ().sampleName, assayTest);
         testLog ("step 10 - 2 - order4 - An eos.shm analysis job was spawned and Completed in portal");
 
         boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
@@ -402,7 +402,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           ID_BCell2_CLIA,
                                           CellPellet,
                                           PBMC,
-                                          new String[] { c90_00 },
+                                          new String[] { b72 },
                                           "Order 7 Flag On");
 
         validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, null, null);
@@ -574,9 +574,10 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
 
         releaseReport (assayTest);
 
-        String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
-        info ("PDF File URL: " + pdfUrl);
-        String extractedText = getTextFromPDF (pdfUrl, 4, beginIghvMutationStatus, endThisSampleFailed);
+        String pdfFileLocation = join ("/", downloadDir.get (), orderDetails.specimenDto.sampleName + ".pdf");
+        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
+
+        String extractedText = getTextFromPDF (pdfFileLocation, 4, beginIghvMutationStatus, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 8 - order 5 - In SHM report of the pdf report, it is showing No Result Available for the IGHV Mutation Status");
 
@@ -619,9 +620,10 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
         assertTrue (history.isStagePresent (ClonoSEQReport, Awaiting, CLINICAL_QC));
 
         releaseReport (assayTest);
-        String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
-        info ("PDF File URL: " + pdfUrl);
-        String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
+        String pdfFileLocation = join ("/", downloadDir.get (), orderDetails.specimenDto.sampleName + ".pdf");
+        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
+
+        String extractedText = getTextFromPDF (pdfFileLocation, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 11 - order 6 - Clonality Result for workflow with failed Primary Analysis (NorthQC) displays No Result Available");
 
@@ -668,14 +670,15 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
         reportClonoSeq.isCorrectPage ();
         reportClonoSeq.setQCstatus (Fail);
 
-        // we will jave multiple ClonoSEQReport/Awaiting/CLINICAL_QC stages, look for the last one
+        // we will have multiple ClonoSEQReport/Awaiting/CLINICAL_QC stages, look for the last one
         history.gotoOrderDebug (orderDetails.specimenDto.sampleName);
         history.waitForTopLevel (ClonoSEQReport, Awaiting, CLINICAL_QC);
 
         releaseReport (assayTest);
-        String pdfUrl = reportClonoSeq.getReleasedReportPdfUrl ();
-        info ("PDF File URL: " + pdfUrl);
-        String extractedText = getTextFromPDF (pdfUrl, 1, beginClonalityResult, endThisSampleFailed);
+        String pdfFileLocation = join ("/", downloadDir.get (), orderDetails.specimenDto.sampleName + ".pdf");
+        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
+
+        String extractedText = getTextFromPDF (pdfFileLocation, 1, beginClonalityResult, endThisSampleFailed);
         assertTrue (extractedText.contains (noResultsAvailable));
         testLog ("step 14 - order 7 - Clonality Result for workflow with failed Clinical QC displays No Result Available");
 
@@ -701,7 +704,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
                                           assayTest,
                                           CellPellet,
                                           PBMC,
-                                          new String[] { c90_00 },
+                                          new String[] { b72 },
                                           "Order 8 Orca Work");
 
         forceStatusUpdate (orderDetails.specimenDto.sampleName,
@@ -878,16 +881,16 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
      * validate ighvReportEnabled and ighvAnalysisEnabled properties
      */
     private void validateFlagsOnDebugPage (String sampleName,
-                                           String expectedIghvReportEnabled,
-                                           String expectedIghvAnalysisEnabled) {
+                                           Boolean expectedIghvReportEnabled,
+                                           Boolean expectedIghvAnalysisEnabled) {
         // debug page - get workflow properties
         history.gotoOrderDebug (sampleName);
-        Map <String, String> workflowProperties = history.getWorkflowProperties ();
+        WorkflowProperties workflowProperties = history.getWorkflowProperties ();
 
-        assertEquals (workflowProperties.get ("ighvReportEnabled"),
+        assertEquals (workflowProperties.ighvReportEnabled,
                       expectedIghvReportEnabled,
                       "Validate ighvReportEnabled property");
-        assertEquals (workflowProperties.get ("ighvAnalysisEnabled"),
+        assertEquals (workflowProperties.ighvAnalysisEnabled,
                       expectedIghvAnalysisEnabled,
                       "Validate ighvAnalysisEnabled property");
 
@@ -1062,7 +1065,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
      * @param orderTestId
      * @param mutationStatus
      */
-    private void validateShmResultReportType (String orderTestId, ShmMutationStatus mutationStatus) {
+    private void validateShmResultReportType (UUID orderTestId, ShmMutationStatus mutationStatus) {
         validateShmResultReportType (orderTestId, mutationStatus, null);
     }
 
@@ -1074,7 +1077,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
      * @param mutationStatus
      * @param ericSampleCall
      */
-    private void validateShmResultReportType (String orderTestId,
+    private void validateShmResultReportType (UUID orderTestId,
                                               ShmMutationStatus mutationStatus,
                                               EricSampleCall ericSampleCall) {
         ShmResultData shmResultData = coraDb.getShmResult (orderTestId);
@@ -1082,41 +1085,5 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
 
         if (ericSampleCall != null)
             assertEquals (shmResultData.shm_result.ericSampleCall, ericSampleCall);
-    }
-
-    /**
-     * get file from URL, read pageNumber, and return extracted text from beginText and endText
-     * 
-     * @param url
-     * @param pageNumber
-     * @param beginText
-     * @param endText
-     * @return
-     */
-    private String getTextFromPDF (String url, int pageNumber, String beginText, String endText) {
-        String pdfFileLocation = join ("/", downloadDir.get (), UUID.randomUUID () + ".pdf");
-        info ("PDF File Location: " + pdfFileLocation);
-
-        // get file from URL and save it
-        coraApi.get (url, pdfFileLocation);
-
-        // read PDF and extract text
-        PdfReader reader = null;
-        String extractedText = null;
-        try {
-            reader = new PdfReader (pdfFileLocation);
-            String fileContent = PdfTextExtractor.getTextFromPage (reader, pageNumber);
-            info ("File Content: " + fileContent);
-
-            int beginIndex = fileContent.indexOf (beginText);
-            int endIndex = fileContent.indexOf (endText);
-            extractedText = fileContent.substring (beginIndex, endIndex);
-            info ("Extracted Text: " + extractedText);
-        } catch (Exception e) {
-            throw new RuntimeException (e);
-        } finally {
-            reader.close ();
-        }
-        return extractedText;
     }
 }

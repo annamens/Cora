@@ -21,7 +21,6 @@ import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
 import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.COVID19;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
-import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
@@ -36,8 +35,8 @@ import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
 import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
+import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class TestHelper {
 
     public static Container freezerDestroyed () {
         Container container = new Container ();
-        container.id = testdata ().get ("freezerDestroyed_id");
+        container.id = fromString (testdata ().get ("freezerDestroyed_id"));
         container.containerNumber = testdata ().get ("freezerDestroyed_num");
         container.name = "[Destroyed]";
         container.location = "[Destroyed]";
@@ -67,16 +66,16 @@ public class TestHelper {
 
     public static Container dumbwaiter () {
         Container container = new Container ();
-        container.id = testdata ().get ("dumbwaiter_id");
+        container.id = fromString (testdata ().get ("dumbwaiter_id"));
         container.containerNumber = testdata ().get ("dumbwaiter_num");
         container.name = "1165 Dumbwaiter";
-        container.location = "1165 Dumbwaiter";
+        container.location = "1165 : 1165 Dumbwaiter";
         return container;
     }
 
     public static Container freezerAB018055 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB018055_id");
+        container.id = fromString (testdata ().get ("AB018055_id"));
         container.containerNumber = testdata ().get ("AB018055_num");
         container.name = "AB018055 (4C)";
         container.location = "1551 : RM 258 : AB018055 (4C)";
@@ -85,34 +84,25 @@ public class TestHelper {
 
     public static Container freezerAB018078 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB018078_id");
+        container.id = fromString (testdata ().get ("AB018078_id"));
         container.containerNumber = testdata ().get ("AB018078_num");
         container.name = "AB018078 (4C) Right";
-        container.location = "1551 : RM 258 : AB018078 (4C) Right";
-        return container;
-    }
-
-    public static Container freezerAB039003 () {
-        Container container = new Container ();
-        container.id = testdata ().get ("AB039003_id");
-        container.containerNumber = testdata ().get ("AB039003_num");
-        container.name = "AB039003 (Ambient)";
-        container.location = "RM 255 : AB039003 (Ambient)";
+        container.location = "1165 : RM 119 : AB018078 (4C) Right";
         return container;
     }
 
     public static Container freezerAB018018 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB018018_id");
+        container.id = fromString (testdata ().get ("AB018018_id"));
         container.containerNumber = testdata ().get ("AB018018_num");
         container.name = "AB018018 (-20C)";
-        container.location = "RM 243 : AB018018 (-20C)";
+        container.location = "1551 : RM 237 : AB018018 (-20C)";
         return container;
     }
 
     public static Container freezerAB018056 () {
         Container container = new Container ();
-        container.id = testdata ().get ("AB018056_id");
+        container.id = fromString (testdata ().get ("AB018056_id"));
         container.containerNumber = testdata ().get ("AB018056_num");
         container.name = "AB018056 : Validation (-20C)";
         container.location = "1551 : RM 258 : AB018056 : Validation (-20C)";
@@ -207,7 +197,7 @@ public class TestHelper {
 
     public static Patient scenarioBuilderPatient () {
         Patient patient = new Patient ();
-        patient.id = randomUUID ().toString ();
+        patient.id = randomUUID ();
         patient.firstName = "Jane";
         patient.middleName = "Selenium";
         patient.lastName = "ClonoSeq";
@@ -249,7 +239,7 @@ public class TestHelper {
         insurance.policyholder = "Moana";
         insurance.hospitalizationStatus = Inpatient;
         insurance.billingInstitution = "Swedish Hospital";
-        insurance.dischargeDate = formatDt1.format (LocalDate.now ().minusDays (7l));
+        insurance.dischargeDate = genDate (-7);
         return insurance;
     }
 
@@ -281,8 +271,6 @@ public class TestHelper {
         data.put ("AB018055_num", "CO-100001");
         data.put ("AB018078_id", "53ddaaf6-eeeb-46c5-8f58-4dfbfa83146e");
         data.put ("AB018078_num", "CO-297770");
-        data.put ("AB039003_id", "8fba58e9-6d78-4e0f-993a-63c7b9450494");
-        data.put ("AB039003_num", "CO-166946");
         data.put ("dumbwaiter_id", "eec8c896-0cbe-4531-83a6-da958c79c368");
         data.put ("dumbwaiter_num", "CO-724045");
         data.put ("AB018018_id", "2c37b67f-45c0-427d-8fa6-9d469d673fff");
@@ -339,7 +327,7 @@ public class TestHelper {
         survey.questionnaires.add (new Questionnaire ("treatmentOrTherapyV1", asList ("Yes")));
         survey.questionnaires.add (new Questionnaire ("treatmentOrTherapyDateV1", asList (genDate (-3))));
         survey.questionnaires.add (new Questionnaire ("diseaseClinicalEvidenceV1", asList ("Yes")));
-        survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Ambulatory Surgery Center")));
+        survey.questionnaires.add (new Questionnaire ("testOrderLocationV1", asList ("Critical Access Hospital")));
         survey.questionnaires.add (new Questionnaire ("inNetworkV1", asList ("Yes")));
         return survey;
     }

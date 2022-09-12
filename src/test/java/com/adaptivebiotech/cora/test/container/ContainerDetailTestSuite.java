@@ -101,7 +101,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         // test: change modified time
         history.gotoMyCustody ();
         myCustody.isCorrectPage ();
-        myCustody.moveToFreezer (testContainer, freezerAB039003);
+        myCustody.moveToFreezer (testContainer, freezerAB018078);
 
         // test: check history section of container detail one more time
         myCustody.gotoContainerDetail (testContainer);
@@ -111,7 +111,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         ContainerHistory activity2 = new ContainerHistory ();
         activity2.activityDate = detailHistories2.get (1).replace (" Last modified by " + coraTestUser, "");
         activity2.activity = "Moved to Location";
-        activity2.location = join (" : ", freezerAB039003.location, "5-Slide boxes");
+        activity2.location = join (" : ", freezerAB018078.location, "Shelf 1", "5-Slide boxes");
         activity2.activityBy = coraTestUser;
 
         // test: check history section of history view one more time

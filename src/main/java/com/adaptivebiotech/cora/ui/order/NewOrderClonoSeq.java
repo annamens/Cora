@@ -5,7 +5,11 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED_ACTIVATION;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.PENDING;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
@@ -13,10 +17,12 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +31,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -35,6 +42,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author jpatel
@@ -42,17 +50,18 @@ import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
  */
 public class NewOrderClonoSeq extends NewOrder {
 
-    public BillingNewOrderClonoSeq billing             = new BillingNewOrderClonoSeq (staticNavBarHeight);
-    public PickPatientModule       pickPatient         = new PickPatientModule ();
-    private Accession              accession           = new Accession ();
-    private final String           specimenDetails     = "#specimen-details";
-    private final String           specimenTypeOther   = "#specimen-entry-other-specimen-type";
-    private final String           specimenSourceOther = "#specimen-entry-specimen-source-other";
-    private final String           uniqueSpecimenId    = "[formcontrolname='uniqueSpecimenId']";
-    private final String           retrievalDate       = "#specimen-entry-retrieval-date";
-    private final String           option              = "option";
-    private final String           compartment         = "[formcontrolname='compartment']";
-    private final String           anticoagulantOther  = "[formcontrolname='anticoagulantOther']";
+    public BillingNewOrderClonoSeq billing              = new BillingNewOrderClonoSeq (staticNavBarHeight);
+    public PickPatientModule       pickPatient          = new PickPatientModule ();
+    private Accession              accession            = new Accession ();
+    private final String           specimenDetails      = "#specimen-details";
+    private final String           specimenCoordination = "[formcontrolname='specimenCoordination']";
+    private final String           specimenTypeOther    = "#specimen-entry-other-specimen-type";
+    private final String           specimenSourceOther  = "#specimen-entry-specimen-source-other";
+    private final String           uniqueSpecimenId     = "[formcontrolname='uniqueSpecimenId']";
+    private final String           retrievalDate        = "#specimen-entry-retrieval-date";
+    private final String           option               = "option";
+    private final String           compartment          = "[formcontrolname='compartment']";
+    private final String           anticoagulantOther   = "[formcontrolname='anticoagulantOther']";
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -134,7 +143,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.patient.gender = getPatientGender ();
         order.patient.patientCode = getPatientCode ();
         order.patient.externalPatientCode = getBillingPatientCode ();
-        order.patient.testStatus = getPatientMRDStatusCode ();
+        order.patient.testStatus = getPatientMRDStatus ();
         order.patient.race = getPatientRace ();
         order.patient.ethnicity = getPatientEthnicity ();
         order.patient.mrn = getPatientMRN ();
@@ -153,6 +162,7 @@ public class NewOrderClonoSeq extends NewOrder {
         order.specimenDto.retrievalDate = getRetrievalDate ();
         order.specimenDto.approvedDate = getSpecimenApprovalDate ();
         order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
+        order.specimenDto.activationDate = getSpecimenActivationDate ();
         order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
         order.intakeCompletedDate = getIntakeCompleteDate ();
         order.specimenDisplayContainerType = getSpecimenContainerType ();
@@ -180,13 +190,17 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void clickEditPatient () {
-        String editPatientLink = "a[ui-sref^='main.patient.details']";
+        String editPatientLink = "//*[text()='Edit Patient Demographics']";
         assertTrue (click (editPatientLink));
         pageLoading ();
     }
 
     public void clickEnterSpecimenDetails () {
         assertTrue (click (specimenDetails));
+    }
+
+    public void clickPathologyRetrieval () {
+        assertTrue (click (specimenCoordination));
     }
 
     public void enterSpecimenType (SpecimenType type) {
@@ -206,6 +220,10 @@ public class NewOrderClonoSeq extends NewOrder {
         return isNotBlank (compartmentVal) ? Compartment.getCompartment (compartmentVal) : null;
     }
 
+    public boolean isCompartmentEnabled () {
+        return waitForElement (compartment).isEnabled ();
+    }
+
     public void enterAntiCoagulant (Anticoagulant anticoagulantEnum) {
         assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
     }
@@ -220,6 +238,10 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void enterSpecimenSource (SpecimenSource source) {
         assertTrue (clickAndSelectValue (specimenSource, source.name ()));
+    }
+
+    public boolean isSpecimenSourceEnabled () {
+        return waitForElement (specimenSource).isEnabled ();
     }
 
     public void enterSpecimenSourceOther (String source) {
@@ -238,6 +260,10 @@ public class NewOrderClonoSeq extends NewOrder {
         return isElementVisible (uniqueSpecimenId) ? readInput (uniqueSpecimenId) : null;
     }
 
+    public boolean isUniqueSpecimenIdEnabled () {
+        return waitForElement (uniqueSpecimenId).isEnabled ();
+    }
+
     public void enterRetrievalDate (String date) {
         assertTrue (setText (retrievalDate, date));
     }
@@ -247,11 +273,52 @@ public class NewOrderClonoSeq extends NewOrder {
         return isNoneBlank (data) ? LocalDateTime.parse (data, formatDt1) : null;
     }
 
+    public boolean isRetrievalDateEnabled () {
+        return waitForElement (retrievalDate).isEnabled ();
+    }
+
+    public LocalDateTime waitUntilSpecimenActivated () {
+        Timeout timer = new Timeout (millisDuration * 12, millisPoll * 30);
+        while (!timer.Timedout ()) {
+            String specimenActivationDate = getSpecimenActivationDate ();
+            if (isBlank (specimenActivationDate) || specimenActivationDate.equals (PENDING.label)) {
+                timer.Wait ();
+                refresh ();
+            } else if (specimenActivationDate.equals (FAILED_ACTIVATION.label) || specimenActivationDate.equals (FAILED.label)) {
+                fail (format ("Specimen activation failed , Order No: %s, Specimen Activation: %s",
+                              getOrderNumber (),
+                              specimenActivationDate));
+            } else {
+                return LocalDateTime.parse (specimenActivationDate, formatDt7);
+            }
+        }
+        fail (format ("Specimen did not activate in time, Order No: %s, Specimen Activation: %s",
+                      getOrderNumber (),
+                      getSpecimenActivationDate ()));
+        return null;
+    }
+
+    public boolean isPathologyRetrievalVisible () {
+        return isElementVisible (specimenCoordination);
+    }
+
+    public boolean isPathologyRetrievalSelected () {
+        return findElement (specimenCoordination).isSelected ();
+    }
+
     public void closeTestSelectionWarningModal () {
         String expectedModalTitle = "Test Selection Warning";
         String modalHeader = "[ng-bind-html=\"ctrl.dialogOptions.headerText\"]";
         assertTrue (isTextInElement (modalHeader, expectedModalTitle));
         clickPopupOK ();
+    }
+
+    public Element getStabilizationWindow () {
+        Element el = new Element ();
+        String xpath = "//specimen-stabilization-window//div";
+        el.text = getText (xpath + "//strong");
+        el.color = getCssValue (xpath, "background-color");
+        return el;
     }
 
     /**
@@ -310,6 +377,8 @@ public class NewOrderClonoSeq extends NewOrder {
 
         if (specimen.sampleSource != null)
             enterSpecimenSource (specimen.sampleSource);
+        if (specimen.compartment != null)
+            enterCompartment (specimen.compartment);
         if (specimen.anticoagulant != null)
             enterAntiCoagulant (specimen.anticoagulant);
         if (asList (CellPellet, CellSuspension).contains (specimen.sampleType))

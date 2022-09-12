@@ -4,7 +4,9 @@
 package com.adaptivebiotech.cora.dto;
 
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static java.util.UUID.fromString;
 import java.sql.ResultSet;
+import java.util.UUID;
 import com.adaptivebiotech.picasso.dto.ReportRender.ShmMutationStatus;
 import com.adaptivebiotech.pipeline.dto.shm.ShmResult;
 
@@ -14,8 +16,8 @@ import com.adaptivebiotech.pipeline.dto.shm.ShmResult;
  */
 public class ShmResultData {
 
-    public String            id;
-    public String            order_test_id;
+    public UUID              id;
+    public UUID              order_test_id;
     public ShmMutationStatus report_type;
     public ShmResult         shm_result;
     public int               iteration;
@@ -26,8 +28,8 @@ public class ShmResultData {
 
     public ShmResultData (ResultSet rs) {
         try {
-            this.id = rs.getString ("id");
-            this.order_test_id = rs.getString ("order_test_id");
+            this.id = fromString (rs.getString ("id"));
+            this.order_test_id = fromString (rs.getString ("order_test_id"));
             this.report_type = ShmMutationStatus.valueOf (rs.getString ("report_type"));
             this.shm_result = mapper.readValue (rs.getString ("shm_result"), ShmResult.class);
             this.iteration = rs.getInt ("iteration");

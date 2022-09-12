@@ -10,12 +10,12 @@ import static java.util.EnumSet.allOf;
 import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.Ethnicity;
 import com.adaptivebiotech.cora.utils.PageHelper.Race;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -25,44 +25,44 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public final class Patient {
 
     @JsonAlias ("emrId")
-    public String        id;
-    public String        firstName;
-    public String        middleName;
-    public String        lastName;
-    public String        fullname;
-    public String        gender;
+    public UUID              id;
+    public String            firstName;
+    public String            middleName;
+    public String            lastName;
+    public String            fullname;
+    public String            gender;
     @JsonAlias ("dob")
-    public String        dateOfBirth;
-    public String        mrn;
-    public Race          race;
-    public Ethnicity     ethnicity;
-    public Insurance     insurance1;
-    public Insurance     insurance2;
-    public Insurance     insurance3;
+    public String            dateOfBirth;
+    public String            mrn;
+    public Race              race;
+    public Ethnicity         ethnicity;
+    public Insurance         insurance1;
+    public Insurance         insurance2;
+    public Insurance         insurance3;
     @JsonAlias ("address1")
-    public String        address;
-    public String        address2;
-    public String        locality;
-    public String        region;
-    public String        postCode;
-    public String        country;
-    public String        phone;
-    public String        email;
-    public Integer       patientCode;
-    public Integer       externalPatientCode;
-    public Integer       calibrationPatientCode;
-    public Boolean       deceased;
-    public String        notes;
-    public ChargeType    billingType;
-    public AbnStatus     abnStatusType;
-    public Physician     requestingPhysician;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
-    public LocalDateTime modified;
-    public String        modifiedBy;
-    @JsonFormat (shape = JsonFormat.Shape.STRING)
-    public LocalDateTime created;
-    public String        createdBy;
-    public String        testStatus;
+    public String            address;
+    public String            address2;
+    public String            locality;
+    public String            region;
+    @JsonAlias ("postalCode")
+    public String            postCode;
+    public String            country;
+    public String            phone;
+    public String            email;
+    public Integer           patientCode;
+    public Integer           externalPatientCode;
+    public Integer           calibrationPatientCode;
+    public Boolean           deceased;
+    public String            notes;
+    public ChargeType        billingType;
+    public AbnStatus         abnStatusType;
+    public Physician         requestingPhysician;
+    public LocalDateTime     modified;
+    public String            modifiedBy;
+    public LocalDateTime     created;
+    public String            createdBy;
+    public PatientTestStatus testStatus;
+    public boolean           isSelectPatientVisible;
 
     @Override
     public String toString () {
@@ -96,9 +96,9 @@ public final class Patient {
     }
 
     public enum PatientTestStatus {
-        Pending ("Pending"),
-        ClonalityProcessing ("Clonality (ID) Processing"),
-        TrackingEnabled ("Tracking (MRD) Enabled"),
+        NA ("Pending"),
+        IdPending ("Clonality (ID) Processing"),
+        MrdEnabled ("Tracking (MRD) Enabled"),
         Deceased ("Deceased"),
         NoClonesFound ("No Calibrated Clones Found");
 
@@ -108,7 +108,7 @@ public final class Patient {
             this.label = label;
         }
 
-        public static PatientTestStatus getCompartment (String label) {
+        public static PatientTestStatus getPatientStatus (String label) {
             return allOf (PatientTestStatus.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
                                                   .get ();
         }

@@ -5,11 +5,13 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
@@ -132,8 +134,8 @@ public class OrderStatus extends OrderHeader {
         return waitUntilVisible (css);
     }
 
-    public String getOrderTestIdFromUrl () {
-        return substringAfterLast (getCurrentUrl (), "ordertestid=");
+    public UUID getOrderTestIdFromUrl () {
+        return fromString (substringAfterLast (getCurrentUrl (), "ordertestid="));
     }
 
     public void failWorkflow (String sampleName, String message) {
@@ -158,6 +160,7 @@ public class OrderStatus extends OrderHeader {
         assertTrue (waitUntilVisible (stageActionsDropdown));
         assertTrue (click (format (dropdownItem, "Nudge workflow")));
         assertTrue (click (confirmYes));
+        transactionInProgress ();
     }
 
     public void checkForStuck (String sampleName, StageStatus status) {
@@ -168,7 +171,10 @@ public class OrderStatus extends OrderHeader {
         }
     }
 
-    public void waitFor (String sampleName, StageName stage, StageStatus status, StageSubstatus substatus,
+    public void waitFor (String sampleName,
+                         StageName stage,
+                         StageStatus status,
+                         StageSubstatus substatus,
                          String message) {
         String fail = "unable to locate Stage: %s, Status: %s, Substatus: %s, Message: %s";
         String xpath = "//tr[td[text()='%s']]/following-sibling::tr[1]//table[contains (@class, 'history')]//td[text()='%s']/following-sibling::td[text()='%s']/following-sibling::td[contains(.,'%s')]/*[contains (text(), '%s')]";

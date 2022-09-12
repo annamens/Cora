@@ -7,6 +7,7 @@ import static com.seleniumfy.test.utils.Logging.error;
 import static com.seleniumfy.test.utils.Logging.info;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.UUID;
 import com.adaptivebiotech.common.dto.Server;
 import com.adaptivebiotech.cora.dto.ShmResultData;
 import com.adaptivebiotech.test.utils.DbClientHelper;
@@ -21,7 +22,7 @@ public class CoraDb extends DbClientHelper {
         super (database, jumpbox);
     }
 
-    public ShmResultData getShmResult (String orderTestId) {
+    public ShmResultData getShmResult (UUID orderTestId) {
         String query = "select * from orca.shm_results where order_test_id = '" + orderTestId + "'";
         info ("query is: " + query);
 

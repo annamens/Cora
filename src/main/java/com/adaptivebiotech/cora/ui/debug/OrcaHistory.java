@@ -5,7 +5,9 @@ package com.adaptivebiotech.cora.ui.debug;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -14,10 +16,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.test.utils.Logging;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -58,8 +62,8 @@ public class OrcaHistory extends CoraPage {
         return getText ("//*[th='Finished:']/td");
     }
 
-    public String getWorkflowId () {
-        return readInput ("#claimDiv [name='workflowId']");
+    public UUID getWorkflowId () {
+        return fromString (readInput ("#claimDiv [name='workflowId']"));
     }
 
     public String getFileLocation (String filename) {
@@ -129,6 +133,24 @@ public class OrcaHistory extends CoraPage {
             fail (format (fail, stage, status));
     }
 
+    public WorkflowProperties waitForWorkflowPropertySet (WorkflowProperty property) {
+        String fail = "unable to locate workflow property: %s";
+        Timeout timer = new Timeout (millisDuration, millisPoll);
+        boolean found = false;
+        String orcaHistoryUrl = getCurrentUrl ();
+        String propertySelector = format ("//h3[text()='Properties']/following-sibling::table//*[text()='%s:']/..",
+                                          property.name ());
+        while (!timer.Timedout () && ! (found = isElementPresent (propertySelector))) {
+            doForceClaim (orcaHistoryUrl);
+            timer.Wait ();
+            refresh ();
+        }
+        if (!found) {
+            fail (format (fail, property.name ()));
+        }
+        return getWorkflowProperties ();
+    }
+
     public boolean isStagePresent (StageName stage, StageStatus status, StageSubstatus substatus) {
         String xpath = "//table[@class='genoTable']//td[text()='%s']/../td[text()='%s']/../td[contains (text(),'%s')]";
         return isElementPresent (format (xpath, stage.name (), status.name (), substatus.name ()));
@@ -191,8 +213,8 @@ public class OrcaHistory extends CoraPage {
         return substringAfterLast (getAttribute ("a[href*='/cora/order/auto?id=']", "href"), "id=");
     }
 
-    public String getOrderTestId () {
-        return substringAfterLast (getAttribute ("a[href*='/cora/order/status']", "href"), "ordertestid=");
+    public UUID getOrderTestId () {
+        return fromString (substringAfterLast (getAttribute ("a[href*='/cora/order/status']", "href"), "ordertestid="));
     }
 
     public void clickOrder () {
@@ -215,8 +237,8 @@ public class OrcaHistory extends CoraPage {
 
         assertTrue (waitUntilVisible (format (propXpath, property.name (), value)));
 
-        refresh (); // need to do this otherwise if you do a setWorkflowProperty next it doesn't
-                    // enter the text
+        // need to do this otherwise if you do a setWorkflowProperty next it doesn't enter the text
+        refresh ();
     }
 
     public void setWorkflowProperties (Map <WorkflowProperty, String> properties) {
@@ -243,12 +265,12 @@ public class OrcaHistory extends CoraPage {
         waitFor (stageName, stageStatus);
     }
 
-    public Map <String, String> getWorkflowProperties () {
+    public WorkflowProperties getWorkflowProperties () {
         Map <String, String> props = new HashMap <> ();
         waitForElements ("//h3[text()='Properties']/following-sibling::table[1]//tr").forEach (tr -> {
             props.put (getText (tr, "th").replace (":", ""), getText (tr, "td"));
         });
-        return props;
+        return mapper.convertValue (props, WorkflowProperties.class);
     }
 
     public Map <String, String> getWorkflowFiles () {

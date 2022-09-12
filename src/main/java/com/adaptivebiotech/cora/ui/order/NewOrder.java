@@ -4,6 +4,9 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
+import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -11,6 +14,7 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -22,8 +26,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
-import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -34,6 +38,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.cora.dto.Orders.OrderAuthorization;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
+import com.adaptivebiotech.cora.dto.Patient.PatientTestStatus;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus;
@@ -68,6 +73,7 @@ public abstract class NewOrder extends OrderHeader {
     private final String   specimenDelivery    = "[formcontrolname='specimenDeliveryType']";
     private final String   collectionDate      = "[formcontrolname='collectionDate']";
     private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
+    private final String   shipmentArrivalLink = "[ng-reflect-state='main.shipment.entry']";
     protected final String specimenType        = "[formcontrolname='sampleType']";
     protected final String specimenSource      = "[formcontrolname='source']";
     protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
@@ -89,13 +95,13 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     @Override
-    public void gotoOrderEntry (String orderId) {
+    public void gotoOrderEntry (UUID orderId) {
         super.gotoOrderEntry (orderId);
         isCorrectPage ();
     }
 
-    public String getOrderId () {
-        return substringBetween (getCurrentUrl (), "cora/order/dx/", "/details");
+    public UUID getOrderId () {
+        return fromString (substringBetween (getCurrentUrl (), "cora/order/dx/", "/details"));
     }
 
     public List <String> getSectionHeaders () {
@@ -145,8 +151,8 @@ public abstract class NewOrder extends OrderHeader {
         return Ethnicity.getEthnicity (getText ("//label[text()='Ethnicity']/../div[1]"));
     }
 
-    public String getPatientMRDStatus () {
-        return getText (patientMrdStatus);
+    public PatientTestStatus getPatientMRDStatus () {
+        return getPatientStatus (getText (patientMrdStatus));
     }
 
     public List <String> getPatientICDCodes () {
@@ -172,9 +178,9 @@ public abstract class NewOrder extends OrderHeader {
         assertEquals (waitForElementVisible ("[uisref='main.patient.orders']").getText (), "Patient Order History");
     }
 
-    public String getPatientId () {
+    public UUID getPatientId () {
         String patientUrl = getAttribute ("//*[contains(text(),'Patient Order History')]", "href");
-        return StringUtils.substringBetween (patientUrl, "patient/", "/orders");
+        return fromString (substringBetween (patientUrl, "patient/", "/orders"));
     }
 
     public void clickSave () {
@@ -370,11 +376,6 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (xpath) ? Integer.valueOf (getText (xpath)) : null;
     }
 
-    public String getPatientMRDStatusCode () {
-        String xpath = "//*[text()='Patient MRD Status']/..//span";
-        return getText (xpath);
-    }
-
     public String getPatientMRN () {
         return isElementVisible (patientMrn) ? readInput (patientMrn) : null;
     }
@@ -418,12 +419,20 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (specimenType) ? SpecimenType.getSpecimenType (getFirstSelectedText (specimenType)) : null;
     }
 
+    public boolean isSpecimenTypeEnabled () {
+        return waitForElement (specimenType).isEnabled ();
+    }
+
     public SpecimenSource getSpecimenSource () {
         return isElementVisible (specimenSource) ? SpecimenSource.valueOf (readInput (specimenSource)) : null;
     }
 
     public Anticoagulant getAnticoagulant () {
         return isElementVisible (anticoagulant) ? Anticoagulant.valueOf (getFirstSelectedText (anticoagulant)) : null;
+    }
+
+    public boolean isAnticoagulantEnabled () {
+        return waitForElement (anticoagulant).isEnabled ();
     }
 
     protected String getReconciliationDate () {
@@ -482,6 +491,10 @@ public abstract class NewOrder extends OrderHeader {
         return isElementVisible (collectionDate) ? LocalDate.parse (readInput (collectionDate), formatDt2) : null;
     }
 
+    public boolean isCollectionDateEnabled () {
+        return waitForElement (collectionDate).isEnabled ();
+    }
+
     public String getCollectionDateErrorMsg () {
         String locator = join (" + ", collectionDate, textDanger);
         return isElementVisible (locator) ? getText (locator) : null;
@@ -515,7 +528,12 @@ public abstract class NewOrder extends OrderHeader {
 
     public SpecimenStatus getSpecimenApprovalStatus () {
         String specimenApprovalStatus = "//*[text()='Specimen Approval']/..//span[1]";
-        return isElementVisible (specimenApprovalStatus) ? SpecimenStatus.valueOf (getText (specimenApprovalStatus)) : null;
+        return isElementVisible (specimenApprovalStatus) ? getShipmentSpecimenStatus (getText (specimenApprovalStatus)) : null;
+    }
+
+    public String getSpecimenActivationDate () {
+        String css = "specimen-activation-date";
+        return isElementVisible (css) ? getText (css) : null;
     }
 
     public void waitForSpecimenDelivery () {
@@ -527,15 +545,23 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterSpecimenDelivery (DeliveryType type) {
-        assertTrue (clickAndSelectValue (specimenDelivery, "string:" + type));
+        assertTrue (clickAndSelectText (specimenDelivery, type.label));
     }
 
     public DeliveryType getSpecimenDelivery () {
         return DeliveryType.getDeliveryType (getFirstSelectedText (specimenDelivery));
     }
 
+    public boolean isSpecimenDeliveryEnabled () {
+        return waitForElement (specimenDelivery).isEnabled ();
+    }
+
     public List <String> getSpecimenDeliveryOptions () {
         return getDropdownOptions (specimenDelivery);
+    }
+
+    public void clickShipmentArrivalDate () {
+        assertTrue (click (shipmentArrivalLink));
     }
 
     public void expandShipment () {
@@ -631,5 +657,12 @@ public abstract class NewOrder extends OrderHeader {
     public void clickFilePreviewLink (String containerName, String fileName) {
         assertTrue (click (format (fileLocInC, containerName, fileName)));
         assertTrue (isTextInElement (popupTitle, fileName));
+    }
+
+    /*
+     * Call this on order entry page
+     */
+    public Assay getTestSelection () {
+        return getAssay (getText ("//*[contains (text(), 'Test Selection:')]//strong"));
     }
 }

@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Cancelled;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.IntStream;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
@@ -39,6 +41,7 @@ import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Patient.PatientTestStatus;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.dto.ProvidersResponse;
@@ -132,6 +135,14 @@ public class CoraApi extends HttpClientHelper {
         post (url, body (payload));
     }
 
+    public void cancelWorkflow (UUID workflowId) {
+        String url = coraTestUrl + "/cora/api/v1/orderTests/setWorkflowStatus/" + workflowId;
+        Map <String, String> payload = new HashMap <> ();
+        payload.put ("stageStatus", Cancelled.name ());
+        payload.put ("subStatusMessage", "cancelled by SEA team automation");
+        post (url, body (payload));
+    }
+
     public Stage[] getWorkflowStages (OrderTest orderTest) {
         String url = coraTestUrl + "/cora/api/v1/reports/clinical/reportHistory/%s/workflow/%s";
         return mapper.readValue (get (format (url, orderTest.id, orderTest.workflowId)), Stage[].class);
@@ -221,12 +232,12 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), Specimen.class);
     }
 
-    public OrderTest[] getOrderTest (String orderId) {
+    public OrderTest[] getOrderTest (UUID orderId) {
         String url = coraTestUrl + "/cora/api/v1/orderTests/order/" + orderId;
         return mapper.readValue (get (url), OrderTest[].class);
     }
 
-    public Integer getPatientOrSubjectCode (String orderTestId) {
+    public Integer getPatientOrSubjectCode (UUID orderTestId) {
         String url = coraTestUrl + "/cora/api/v1/orderTests/patientOrSubjectCode/" + orderTestId;
         return mapper.readValue (get (url), Integer.class);
     }
@@ -248,7 +259,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), Order[].class);
     }
 
-    public OrderTest[] searchOrderTests (String term) {
+    public OrderTest[] searchOrderTests (Object term) {
         return searchOrderTests (asList ("search=" + term));
     }
 
@@ -264,7 +275,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), OrderTest[].class);
     }
 
-    public OrderTest[] waitForOrderReady (String orderId) {
+    public OrderTest[] waitForOrderReady (UUID orderId) {
         OrderTest[] tests = getOrderTest (orderId);
         Timeout timer = new Timeout (millisDuration, millisPoll);
         while (!timer.Timedout () && (tests.length == 0 || stream (tests).anyMatch (ot -> ot.sampleName == null))) {
@@ -307,6 +318,17 @@ public class CoraApi extends HttpClientHelper {
         return tests;
     }
 
+    public void waitForNewPatientToPopulate (Integer patientCode) {
+        Patient[] patients = getPatients (patientCode);
+        Timeout timer = new Timeout (millisDuration, millisPoll);
+        while (!timer.Timedout () && (patients.length == 0)) {
+            timer.Wait ();
+            patients = getPatients (patientCode);
+        }
+        if (patients.length == 0)
+            fail ("unable to find patient");
+    }
+
     public HttpResponse newBcellOrder (Diagnostic diagnostic) {
         String url = coraTestUrl + "/cora/api/v1/test/scenarios/diagnosticClarity";
         HttpResponse response = mapper.readValue (post (url, body (diagnostic)), HttpResponse.class);
@@ -333,7 +355,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (research)), HttpResponse.class);
     }
 
-    public Patient[] getPatients (String searchKeyword) {
+    public Patient[] getPatients (Object searchKeyword) {
         String[] args = { "search=" + searchKeyword, "sort=Patient Code", "ascending=false" };
         return mapper.readValue (get (encodeUrl (coraTestUrl + "/cora/api/v2/patients?", args)), Patient[].class);
     }
@@ -343,12 +365,22 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (get (url), Patient.class);
     }
 
+    public Patient getPatient (UUID patientId) {
+        String url = coraTestUrl + "/cora/api/v1/patients/" + patientId;
+        return mapper.readValue (get (url), Patient.class);
+    }
+
     public Patient updatePatient (Patient patient) {
         String url = coraTestUrl + "/cora/api/v2/patients/" + patient.id;
         return mapper.readValue (put (url, body (patient)), Patient.class);
     }
 
-    public Order[] getOrdersForPatient (String patientId) {
+    public PatientTestStatus getPatientStatus (UUID patientId) {
+        String url = coraTestUrl + "/cora/api/v2/patients/status/" + patientId;
+        return PatientTestStatus.valueOf (get (url).replace ("\"", ""));
+    }
+
+    public Order[] getOrdersForPatient (UUID patientId) {
         String url = coraTestUrl + "/cora/api/v2/patients/list/" + patientId + "/orders";
         return mapper.readValue (get (url), Order[].class);
     }
@@ -383,14 +415,19 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (params)), Alerts.class);
     }
 
-    public Alert[] getAlertsForOrderId (String orderId) {
+    /**
+     * @param id
+     *            can be order id or patient id
+     * @return array of {@link Alert}
+     */
+    public Alert[] getAlertsById (UUID id) {
         String url = coraTestUrl + "/cora/api/v2/alerts/searchUnpaged";
-        Map <String, List <String>> params = new HashMap <> ();
-        params.put ("referencedEntityIds", Arrays.asList (orderId));
+        Map <String, List <UUID>> params = new HashMap <> ();
+        params.put ("referencedEntityIds", Arrays.asList (id));
         return mapper.readValue (post (url, body (params)), Alert[].class);
     }
 
-    public void dismissAlert (String userName, String alertId) {
+    public void dismissAlert (String userName, UUID alertId) {
         String url = coraTestUrl + "/cora/api/v1/external/alerts/" + alertId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);
@@ -415,7 +452,7 @@ public class CoraApi extends HttpClientHelper {
         }
     }
 
-    public Order[] getOrderAttachments (String orderIdOrNo) {
+    public Order[] getOrderAttachments (Object orderIdOrNo) {
         String url = coraTestUrl + "/cora/api/v1/attachments/orders/" + orderIdOrNo;
         return mapper.readValue (get (url), Order[].class);
     }
@@ -427,7 +464,7 @@ public class CoraApi extends HttpClientHelper {
         return mapper.readValue (post (url, body (params)), Reminders.class);
     }
 
-    public void deleteReminder (String reminderId, String userName) {
+    public void deleteReminder (UUID reminderId, String userName) {
         String url = coraTestUrl + "/cora/api/v1/external/reminders/" + reminderId + "/dismiss";
         Map <String, String> params = new HashMap <> ();
         params.put ("username", userName);

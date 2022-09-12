@@ -20,6 +20,7 @@ public class PickPatientModule extends CoraPage {
 
     public void clickSave () {
         assertTrue (click ("//button[text()='Save']"));
+        moduleLoading ();
     }
 
     public void clickCancel () {
@@ -59,14 +60,13 @@ public class PickPatientModule extends CoraPage {
         clickCreateNewPatient ();
         fillPatientInfo (patient);
         clickSave ();
-        assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
+        enterPatientMrn (patient.mrn);
     }
 
     public void searchPatient (Patient patient) {
         assertTrue (setText ("#patient-firstname", patient.firstName));
         assertTrue (setText ("#patient-lastname", patient.lastName));
         assertTrue (setText ("#patient-dateofbirth", patient.dateOfBirth));
-        assertTrue (setText ("#patient-mrn", patient.mrn));
         assertTrue (click ("#patient-search"));
         pageLoading ();
     }
@@ -81,10 +81,23 @@ public class PickPatientModule extends CoraPage {
         else {
             assertTrue (click (firstrow));
             assertTrue (click ("#select-patient"));
-            moduleLoading ();
+            pageLoading ();
             matchFound = true;
-            assertTrue (setText ("[formcontrolname='mrn']", patient.mrn));
+            enterPatientMrn (patient.mrn);
         }
         return matchFound;
     }
+
+    public void enterPatientMrn (String mrn) {
+        assertTrue (setText ("[formcontrolname='mrn']", mrn));
+    }
+
+    public boolean isDuplicateFoundPopUpVisible () {
+        return isElementVisible (join (" ", ".findDialog", popupTitle));
+    }
+
+    public void clickContinueAndSaveAnyway () {
+        assertTrue (click ("//button[text()='Continue and Save Anyway']"));
+    }
+
 }

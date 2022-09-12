@@ -29,14 +29,15 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 import java.lang.reflect.Method;
-import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
 import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
@@ -51,15 +52,15 @@ import com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput;
 @Test (groups = "regression")
 public class ReportTcrbv4bTestSuite extends ReportTestBase {
 
-    private final String  reportData = "reportData.json";
-    private Login         login      = new Login ();
-    private OrcaHistory   history    = new OrcaHistory ();
-    private ReportTDetect report     = new ReportTDetect ();
-    private String        downloadDir;
+    private final String         reportData  = "reportData.json";
+    private Login                login       = new Login ();
+    private OrcaHistory          history     = new OrcaHistory ();
+    private ReportTDetect        report      = new ReportTDetect ();
+    private ThreadLocal <String> downloadDir = new ThreadLocal <> ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
-        downloadDir = artifacts (this.getClass ().getName (), test.getName ());
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
     }
 
     /**
@@ -86,7 +87,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
 
         OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
-        String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
+        String reportDataJson = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);
@@ -105,11 +106,11 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         testLog (format (log, DxReport, Awaiting, CLINICAL_QC, "Pass: AutoPass"));
 
         history.waitFor (DxReport, Finished);
-        Map <String, String> properties = history.getWorkflowProperties ();
-        assertEquals (properties.get (AutoPassedClinicalQC.name ()), "true");
+        WorkflowProperties properties = history.getWorkflowProperties ();
+        assertTrue (properties.AutoPassedClinicalQC);
         testLog (format ("workflow property: '%s' is set and has value: 'true'", AutoPassedClinicalQC));
 
-        assertEquals (properties.get (AutoReleasedReport.name ()), "true");
+        assertTrue (properties.AutoReleasedReport);
         testLog (format ("workflow property: '%s' is set and has value: 'true'", AutoReleasedReport));
 
         coraDebugApi.login ();
@@ -151,7 +152,7 @@ public class ReportTcrbv4bTestSuite extends ReportTestBase {
         assertEquals (coraApi.newTdetectOrder (diagnostic).patientId, patient.id);
 
         OrderTest orderTest = diagnostic.findOrderTest (LYME_DX);
-        String reportDataJson = join ("/", downloadDir, orderTest.sampleName, reportData);
+        String reportDataJson = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
 
         login.doLogin ();
         history.gotoOrderDebug (orderTest.sampleName);

@@ -7,9 +7,9 @@ import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author jpatel
@@ -33,12 +33,10 @@ public final class Reminders {
 
     public static final class Reminder {
 
-        public String        id;
+        public UUID          id;
         public ReminderType  reminderType;
-        public String        referencedEntityId;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
+        public UUID          referencedEntityId;
         public LocalDateTime created;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime due;
         public String        description;
         @JsonAlias ("orderSummary")

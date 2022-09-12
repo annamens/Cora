@@ -5,6 +5,8 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
+import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -12,6 +14,7 @@ import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.time.LocalDateTime.parse;
 import static java.util.EnumSet.allOf;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
@@ -21,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -35,6 +39,7 @@ import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Patient.PatientTestStatus;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
@@ -78,13 +83,13 @@ public class OrderDetail extends OrderHeader {
     }
 
     @Override
-    public void gotoOrderDetailsPage (String orderId) {
+    public void gotoOrderDetailsPage (UUID orderId) {
         super.gotoOrderDetailsPage (orderId);
         isCorrectPage ();
     }
 
-    public String getOrderId () {
-        return substringAfterLast (getCurrentUrl (), "cora/order/details/");
+    public UUID getOrderId () {
+        return fromString (substringAfterLast (getCurrentUrl (), "cora/order/details/"));
     }
 
     public String getSalesforceOrderId () {
@@ -108,8 +113,8 @@ public class OrderDetail extends OrderHeader {
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
     }
 
-    public String getPatientMRDStatus () {
-        return getText (patientMrdStatus);
+    public PatientTestStatus getPatientMRDStatus () {
+        return getPatientStatus (getText (patientMrdStatus));
     }
 
     public void clickPatientOrderHistory () {
@@ -120,7 +125,7 @@ public class OrderDetail extends OrderHeader {
     public Order parseOrder () {
         Order order = new Order ();
         order.id = getOrderId ();
-        order.salesforceOrderId = getOrderId ();
+        order.salesforceOrderId = getSalesforceOrderId ();
         order.salesforceOrderNumber = getSalesforceOrderNumber ();
         order.orderEntryType = getOrderType ();
         order.name = getOrderName ();
@@ -139,8 +144,8 @@ public class OrderDetail extends OrderHeader {
         order.patient.mrn = getPatientMRN ();
         order.patient.dateOfBirth = getPatientDOB ();
         order.patient.gender = getPatientGender ();
-        order.patient.patientCode = Integer.valueOf (getPatientCode ());
-        order.patient.testStatus = getPatientMRDStatusCode ();
+        order.patient.patientCode = getPatientCode ();
+        order.patient.testStatus = getPatientMRDStatus ();
         order.patient.notes = getPatientNotes ();
         ChargeType chargeType = billing.getBillingType ();
         order.patient.billingType = chargeType;
@@ -156,6 +161,7 @@ public class OrderDetail extends OrderHeader {
         order.specimenDto.reconciliationDate = getReconciliationDate ();
         order.specimenDto.approvedDate = getSpecimenApprovalDate ();
         order.specimenDto.approvalStatus = getSpecimenApprovalStatus ();
+        order.specimenDto.activationDate = getSpecimenActivationDate ();
         order.specimenDisplayArrivalDate = getShipmentArrivalDate ();
         order.intakeCompletedDate = getIntakeCompleteDate ();
         order.specimenDisplayContainerType = getSpecimenContainerType ();
@@ -295,14 +301,9 @@ public class OrderDetail extends OrderHeader {
         navigateToTab (1);
     }
 
-    public String getPatientCode () {
+    public Integer getPatientCode () {
         String xpath = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
-        return getText (xpath);
-    }
-
-    public String getPatientMRDStatusCode () {
-        String xpath = "//*[text()='Patient MRD Status']/..//span";
-        return getText (xpath);
+        return Integer.valueOf (getText (xpath));
     }
 
     public String getPatientNotes () {
@@ -383,7 +384,12 @@ public class OrderDetail extends OrderHeader {
 
     public SpecimenStatus getSpecimenApprovalStatus () {
         String data = isElementVisible (approvalStatus) ? getText (approvalStatus) : null;
-        return isNoneBlank (data) ? SpecimenStatus.valueOf (data) : null;
+        return isNoneBlank (data) ? getShipmentSpecimenStatus (data) : null;
+    }
+
+    public String getSpecimenActivationDate () {
+        String activationDate = "[ng-bind^='ctrl.orderEntry.specimen.activationDate']";
+        return isElementVisible (activationDate) ? getText (activationDate) : null;
     }
 
     public ContainerType getSpecimenContainerType () {

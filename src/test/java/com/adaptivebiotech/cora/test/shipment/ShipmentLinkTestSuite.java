@@ -58,7 +58,7 @@ public class ShipmentLinkTestSuite extends CoraBaseBrowser {
         // create clonoSEQ diagnostic order
         Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (non_CLEP_clonoseq),
                                                             newNoChargePatient (),
-                                                            new String[] { "C90.00" },
+                                                            new String[] { "B54" },
                                                             ID_BCell2_CLIA,
                                                             bloodSpecimen ());
 

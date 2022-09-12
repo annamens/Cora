@@ -5,10 +5,13 @@ package com.adaptivebiotech.cora.ui.shipment;
 
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.String.format;
+import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -41,13 +44,13 @@ public class Accession extends ShipmentHeader {
     }
 
     @Override
-    public void gotoAccession (String shipmentId) {
+    public void gotoAccession (UUID shipmentId) {
         super.gotoAccession (shipmentId);
         isCorrectPage ();
     }
 
-    public String getShipmentId () {
-        return substringBetween (getCurrentUrl (), "cora/shipment/entry/", "?p=accession");
+    public UUID getShipmentId () {
+        return fromString (substringBetween (getCurrentUrl (), "cora/shipment/entry/", "?p=accession"));
     }
 
     public void clickOrderNumber () {
@@ -99,17 +102,27 @@ public class Accession extends ShipmentHeader {
     }
 
     public void clickLabelingComplete () {
-        assertTrue (click ("[ng-click='ctrl.setLabelingComplete(container)']"));
-        assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
-        clickPopupOK ();
+        clickLabelingComplete (1);
         assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
     }
 
+    public void clickLabelingComplete (int containerNo) {
+        String locator = format ("(//*[@ng-click='ctrl.setLabelingComplete(container)'])[%s]", containerNo);
+        assertTrue (click (locator));
+        assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
+        clickPopupOK ();
+    }
+
     public void clickLabelVerificationComplete () {
-        assertTrue (click ("[ng-click='ctrl.setLabelVerificationComplete(container)']"));
+        clickLabelVerificationComplete (1);
+        assertTrue (isTextInElement (shipmentStatus, "Label Verification Complete"));
+    }
+
+    public void clickLabelVerificationComplete (int containerNo) {
+        String locator = format ("(//*[@ng-click='ctrl.setLabelVerificationComplete(container)'])[%s]", containerNo);
+        assertTrue (click (locator));
         assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
         clickPopupOK ();
-        assertTrue (isTextInElement (shipmentStatus, "Label Verification Complete"));
     }
 
     public void clickPassAllDocumentations () {
@@ -177,6 +190,14 @@ public class Accession extends ShipmentHeader {
     public List <String> getSpecimenIds () {
         String specimenIds = "[data-ng-bind='::specimen.specimen.specimenNumber']";
         return getTextList (specimenIds);
+    }
+
+    public Element getStabilizationWindow () {
+        Element el = new Element ();
+        String xpath = "specimen-stabilization-window [class*='stability']";
+        el.text = getText (xpath);
+        el.color = getCssValue (xpath, "background-color");
+        return el;
     }
 
     public void completeAccession () {

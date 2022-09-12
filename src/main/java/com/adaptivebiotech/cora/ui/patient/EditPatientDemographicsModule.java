@@ -50,4 +50,9 @@ public class EditPatientDemographicsModule extends CoraPage {
     public String getDateOfBirth () {
         return getText (dateOfBirth);
     }
+
+    public void clickPatientDeceased () {
+        String css = "#deceased";
+        assertTrue (click (css));
+    }
 }

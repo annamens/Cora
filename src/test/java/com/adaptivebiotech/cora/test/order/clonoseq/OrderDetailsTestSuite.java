@@ -75,7 +75,7 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
 
         Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
         Patient patient = newNoChargePatient ();
-        String[] icdCode = new String[] { "C90.00" };
+        String[] icdCode = new String[] { "A81.81" };
         Assay orderTest = ID_BCell2_CLIA;
         Specimen specimen = bloodSpecimen ();
         Order order = diagnostic.createClonoSeqOrder (physician, patient, icdCode, orderTest, specimen);

@@ -7,10 +7,10 @@ import static com.adaptivebiotech.test.utils.TestHelper.equalsOverride;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.HttpResponse.Meta;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * @author Harry Soehalim
@@ -32,11 +32,9 @@ public final class AssayResponse {
 
     public static final class CoraTest {
 
-        public String             id;
+        public UUID               id;
         public Integer            version;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime      created;
-        @JsonFormat (shape = JsonFormat.Shape.STRING)
         public LocalDateTime      modified;
         public String             createdBy;
         public String             modifiedBy;
@@ -73,7 +71,7 @@ public final class AssayResponse {
         public String             key;
 
         // for TestingScenarioController
-        public String             testId;
+        public UUID               testId;
         public String             tsvPath;
         public String             flowcell;
         public WorkflowProperties workflowProperties;

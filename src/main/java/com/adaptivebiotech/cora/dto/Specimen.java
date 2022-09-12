@@ -7,6 +7,8 @@ import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+import com.adaptivebiotech.cora.dto.Orders.DeliveryType;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
@@ -20,17 +22,19 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 public final class Specimen {
 
     public String             id;
-    public String             key;
+    public UUID               key;
     public String             specimenNumber;
     public String             name;
     public Integer            subjectCode;
     public String             subjectId;
     public String             externalSubjectId;
     public String             sampleName;
+    public DeliveryType       specimenDeliveryType;
     public SpecimenType       sampleType;
     @JsonAlias ("sourceType")
     public SpecimenSource     sampleSource;
     public LocalDateTime      approvedDate;
+    public String             activationDate;
     public String             sampleTypeDisplayName;
     public SpecimenStatus     approvalStatus;
     public List <Sample>      samples;
@@ -100,7 +104,7 @@ public final class Specimen {
     }
 
     public enum SpecimenStatus {
-        PASS ("Pass"), FAIL ("Fail");
+        Pass ("PASS"), Fail ("FAIL");
 
         public String shipmentLabel;
 
@@ -113,4 +117,36 @@ public final class Specimen {
                                                .findAny ().orElse (null);
         }
     }
+
+    public enum StabilityStatus {
+        Expired ("rgba(62, 63, 66, 1)"),
+        Advisory ("rgba(255, 240, 181, 1)"),
+        Warning ("rgba(255, 208, 169, 1)"),
+        Alarm ("rgba(255, 169, 187, 1)"),
+        Frozen ("rgba(228, 229, 229, 1)");
+
+        public String rgba;
+
+        private StabilityStatus (String rgba) {
+            this.rgba = rgba;
+        }
+    }
+
+    public enum SpecimenActivation {
+        PENDING ("Pending"),
+        FAILED ("Failed"),
+        FAILED_ACTIVATION ("Failed Activation");
+
+        public String label;
+
+        private SpecimenActivation (String label) {
+            this.label = label;
+        }
+
+        public static SpecimenActivation getSpecimenActivationStatus (String label) {
+            return allOf (SpecimenActivation.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                                                   .orElse (null);
+        }
+    }
+
 }

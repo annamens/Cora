@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_IVD;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
@@ -20,6 +21,8 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_
 import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
+import java.lang.reflect.Method;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -28,6 +31,8 @@ import com.adaptivebiotech.cora.test.report.ReportTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
+import com.adaptivebiotech.picasso.dto.ReportRender;
+import com.adaptivebiotech.picasso.dto.verify.ClonoSeq;
 
 /**
  * @author Harry Soehalim
@@ -36,12 +41,17 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 @Test (groups = "regression")
 public class NotDetectedTestSuite extends ReportTestBase {
 
-    private final String   downloadDir = artifacts (this.getClass ().getName ());
-    private final String   analysisID  = getSystemResource ("SecondaryAnalysis/not-detected.id.json").getPath ();
-    private final String   analysisMRD = getSystemResource ("SecondaryAnalysis/not-detected.mrd.json").getPath ();
-    private Login          login       = new Login ();
-    private OrcaHistory    history     = new OrcaHistory ();
-    private ReportClonoSeq report      = new ReportClonoSeq ();
+    private final String         analysisID  = getSystemResource ("SecondaryAnalysis/not-detected.id.json").getPath ();
+    private final String         analysisMRD = getSystemResource ("SecondaryAnalysis/not-detected.mrd.json").getPath ();
+    private Login                login       = new Login ();
+    private OrcaHistory          history     = new OrcaHistory ();
+    private ReportClonoSeq       report      = new ReportClonoSeq ();
+    private ThreadLocal <String> downloadDir = new ThreadLocal <> ();
+
+    @BeforeMethod (alwaysRun = true)
+    public void beforeMethod (Method test) {
+        downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
+    }
 
     public void verify_clia_report () {
         Patient patient = scenarioBuilderPatient ();
@@ -50,6 +60,7 @@ public class NotDetectedTestSuite extends ReportTestBase {
                                                genCDxTest (ID_BCell2_CLIA, azTsvPath + "/not-detected.id.tsv.gz"),
                                                genCDxTest (MRD_BCell2_CLIA, azTsvPath + "/not-detected.mrd.tsv.gz"));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
+        testLog ("[CLIA] submitted clonality and tracking orders");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         login.doLogin ();
@@ -58,16 +69,30 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-
-        String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
-        coraDebugApi.login ();
-        coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, analysisID);
-        testLog ("the secondaryAnalysisResult.json for not detected for clonality matched with the baseline");
-
         history.clickOrderTest ();
         report.clickReportTab (ID_BCell2_CLIA);
         report.releaseReport (ID_BCell2_CLIA, Pass);
+
+        String actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
+        coraApi.get (report.getReportUrl (), actualPdf);
+        history.gotoOrderDebug (orderTest.sampleName);
+
+        String actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (saResult), actual);
+        compareSecondaryAnalysisResults (actual, analysisID);
+        testLog ("[CLIA] the secondaryAnalysisResult.json for not detected for clonality matched with the baseline");
+
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
+        coraDebugApi.get (history.getFileLocation (reportData), actual);
+        ReportRender reportRender = parseReportData (actual);
+        testLog ("[CLIA] downloaded " + reportData);
+
+        ClonoSeq clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
+        clonoseq.helper.isCLIA = true;
+        clonoseq.pageSize = 3;
+        verifyReport (clonoseq, getTextFromPDF (actualPdf));
+        testLog ("[CLIA] the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         history.gotoOrderDebug (orderTest.sampleName);
@@ -75,16 +100,30 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-
-        actual = join ("/", downloadDir, orderTest.sampleName, saResult);
-        coraDebugApi.login ();
-        coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, analysisMRD);
-        testLog ("the secondaryAnalysisResult.json for not detected for tracking matched with the baseline");
-
         history.clickOrderTest ();
         report.clickReportTab (MRD_BCell2_CLIA);
         report.releaseReport (MRD_BCell2_CLIA, Pass);
+
+        actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
+        coraApi.get (report.getReportUrl (), actualPdf);
+        history.gotoOrderDebug (orderTest.sampleName);
+
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (saResult), actual);
+        compareSecondaryAnalysisResults (actual, analysisMRD);
+        testLog ("[CLIA] the secondaryAnalysisResult.json for not detected for tracking matched with the baseline");
+
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
+        coraDebugApi.get (history.getFileLocation (reportData), actual);
+        reportRender = parseReportData (actual);
+        testLog ("[CLIA] downloaded " + reportData);
+
+        clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
+        clonoseq.helper.isCLIA = true;
+        clonoseq.pageSize = 4;
+        verifyReport (clonoseq, getTextFromPDF (actualPdf));
+        testLog ("[CLIA] the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }
 
     public void verify_ivd_report () {
@@ -94,6 +133,7 @@ public class NotDetectedTestSuite extends ReportTestBase {
                                                genCDxTest (ID_BCell2_IVD, azTsvPath + "/not-detected.id.tsv.gz"),
                                                genCDxTest (MRD_BCell2_IVD, azTsvPath + "/not-detected.mrd.tsv.gz"));
         assertEquals (coraApi.newBcellOrder (diagnostic).patientId, patient.id);
+        testLog ("[IVD] submitted clonality and tracking orders");
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_IVD);
         login.doLogin ();
@@ -102,16 +142,30 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-
-        String actual = join ("/", downloadDir, orderTest.sampleName, saResult);
-        coraDebugApi.login ();
-        coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, analysisID);
-        testLog ("the secondaryAnalysisResult.json for not detected for clonality matched with the baseline");
-
         history.clickOrderTest ();
         report.clickReportTab (ID_BCell2_IVD);
         report.releaseReport (ID_BCell2_IVD, Pass);
+
+        String actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
+        coraApi.get (report.getReportUrl (), actualPdf);
+        history.gotoOrderDebug (orderTest.sampleName);
+
+        String actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (saResult), actual);
+        compareSecondaryAnalysisResults (actual, analysisID);
+        testLog ("[IVD] the secondaryAnalysisResult.json for not detected for clonality matched with the baseline");
+
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
+        coraDebugApi.get (history.getFileLocation (reportData), actual);
+        ReportRender reportRender = parseReportData (actual);
+        testLog ("[IVD] downloaded " + reportData);
+
+        ClonoSeq clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
+        clonoseq.helper.isIVD = true;
+        clonoseq.pageSize = 3;
+        verifyReport (clonoseq, getTextFromPDF (actualPdf));
+        testLog ("[IVD] the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_IVD);
         history.gotoOrderDebug (orderTest.sampleName);
@@ -119,15 +173,29 @@ public class NotDetectedTestSuite extends ReportTestBase {
         history.waitFor (SecondaryAnalysis, Finished);
         history.waitFor (ShmAnalysis, Finished);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-
-        actual = join ("/", downloadDir, orderTest.sampleName, saResult);
-        coraDebugApi.login ();
-        coraDebugApi.get (history.getFileLocation (saResult), actual);
-        compareSecondaryAnalysisResults (actual, analysisMRD);
-        testLog ("the secondaryAnalysisResult.json for not detected for tracking matched with the baseline");
-
         history.clickOrderTest ();
         report.clickReportTab (MRD_BCell2_IVD);
         report.releaseReport (MRD_BCell2_IVD, Pass);
+
+        actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
+        coraApi.get (report.getReportUrl (), actualPdf);
+        history.gotoOrderDebug (orderTest.sampleName);
+
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, saResult);
+        coraDebugApi.login ();
+        coraDebugApi.get (history.getFileLocation (saResult), actual);
+        compareSecondaryAnalysisResults (actual, analysisMRD);
+        testLog ("[IVD] the secondaryAnalysisResult.json for not detected for tracking matched with the baseline");
+
+        actual = join ("/", downloadDir.get (), orderTest.sampleName, reportData);
+        coraDebugApi.get (history.getFileLocation (reportData), actual);
+        reportRender = parseReportData (actual);
+        testLog ("[IVD] downloaded " + reportData);
+
+        clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
+        clonoseq.helper.isIVD = true;
+        clonoseq.pageSize = 4;
+        verifyReport (clonoseq, getTextFromPDF (actualPdf));
+        testLog ("[IVD] the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }
 }

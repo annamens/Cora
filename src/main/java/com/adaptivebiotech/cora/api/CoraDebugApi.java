@@ -9,6 +9,7 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
@@ -37,7 +38,7 @@ public class CoraDebugApi extends HttpClientHelper {
     public void storeContainer (Containers containers, Container freezer) {
         String url = coraTestUrl + "/cora/debug/storeContainer";
         containers.list.forEach (c -> {
-            Map <String, String> props = new HashMap <> ();
+            Map <String, UUID> props = new HashMap <> ();
             props.put ("containerId", c.id);
             props.put ("rootContainerId", freezer.id);
             post (url, body (props));
@@ -47,7 +48,7 @@ public class CoraDebugApi extends HttpClientHelper {
     public void setWorkflowProperties (OrderTest orderTest, Map <WorkflowProperty, String> properties) {
         String url = coraTestUrl + "/cora/debug/forceWorkflowProperty";
         properties.entrySet ().forEach (wp -> {
-            Map <String, String> props = new HashMap <> ();
+            Map <String, Object> props = new HashMap <> ();
             props.put ("propertyName", wp.getKey ().name ());
             props.put ("propertyValue", wp.getValue ());
             props.put ("workflowId", orderTest.workflowId);

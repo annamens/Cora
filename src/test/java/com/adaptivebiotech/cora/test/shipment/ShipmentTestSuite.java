@@ -15,6 +15,7 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static org.testng.Assert.assertEquals;
 import java.util.List;
+import java.util.UUID;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -63,7 +64,7 @@ public class ShipmentTestSuite extends CoraBaseBrowser {
         shipment.enterOrderNumber (order.orderNumber);
         shipment.selectDiagnosticSpecimenContainerType (Tube);
         shipment.clickSave ();
-        String shipmentId = shipment.getShipmentId ();
+        UUID shipmentId = shipment.getShipmentId ();
         shipment.clickAccessionTab ();
         accession.completeAccession ();
         newOrderClonoSeq.isCorrectPage ();

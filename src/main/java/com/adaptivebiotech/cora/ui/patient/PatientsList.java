@@ -26,9 +26,10 @@ public class PatientsList extends CoraPage {
         pageLoading ();
     }
 
-    public void searchPatient (String term) {
-        assertTrue (setText ("[type='search']", term));
+    public void searchPatient (Object term) {
+        assertTrue (setText ("[type='search']", term.toString ()));
         assertTrue (pressKey (ENTER));
+        pageLoading ();
     }
 
     public List <Patient> getPatients () {
@@ -43,10 +44,29 @@ public class PatientsList extends CoraPage {
         }).collect (toList ());
     }
 
-    public void clickFirstPatient () {
-        // ick
-        String css = "patient-list > div > table > tbody > tr > td:nth-child(1) > a";
+    public void clickPatient (int idx) {
+        String css = "patient-list tbody tr:nth-child(" + idx + ") td:nth-child(1) a";
         assertTrue (click (css));
+        pageLoading ();
+    }
+
+    /**
+     * @param term
+     *            patient name (first last) or patient code
+     */
+    public void clickPatient (String term) {
+        String css = "//*[contains (@class, 'list-section')]//*[text()='" + term + "']";
+        assertTrue (click (css));
+        pageLoading ();
+    }
+
+    /**
+     * @param term
+     *            patient name (first last) or patient code
+     */
+    public void clickPatientDetails (Object term) {
+        String details = "//*[*[*[text()='" + term + "']]]/following-sibling::td//*[contains (@class, 'history-link')]";
+        assertTrue (click (details));
         pageLoading ();
     }
 }

@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.test.report.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_TCRB;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_TCRG;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.TCRB;
@@ -24,9 +25,11 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static java.lang.String.join;
 import static java.time.LocalDate.of;
+import static java.util.UUID.fromString;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
+import java.util.Arrays;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Diagnostic;
@@ -64,10 +67,16 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
     public void beforeClass () {
         coraApi.addTokenAndUsername ();
         patient = new Patient ();
-        patient.id = "6170cc74-6c83-4c22-929c-b08a6514617d";
+        patient.id = fromString ("6170cc74-6c83-4c22-929c-b08a6514617d");
         patient.mrn = "1111111111";
         patient.insurance1 = null;
         patient.insurance2 = null;
+
+        Arrays.stream (coraApi.getOrdersForPatient (patient.id))
+              .filter (order -> !order.orderTestStatusType.equals (Cancelled))
+              .filter (order -> order.accountName.contains (SEAaccount))
+              .forEach (order -> coraApi.cancelWorkflow (order.workflowId));
+
         diagnostic = buildCdxOrder (patient,
                                     stage (NorthQC, Ready),
                                     genTcrTest (MRD_TCRG, lastFlowcellIdTCRG, tsvPathTCRG),

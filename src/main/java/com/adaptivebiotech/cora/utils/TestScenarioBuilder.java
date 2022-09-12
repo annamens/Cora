@@ -12,12 +12,13 @@ import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.PageHelper.OrderType.TDx;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
+import static com.adaptivebiotech.test.utils.DateHelper.genLocalDateTime;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSeq2_WorkflowNanny;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
-import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
+import static java.util.UUID.fromString;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -46,9 +47,9 @@ import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
  */
 public class TestScenarioBuilder {
 
-    public static final LocalDateTime collectionDate     = now ().minusDays (10);
-    public static final LocalDateTime reconciliationDate = now ().minusDays (10);
-    public static final LocalDateTime arrivalDate        = now ().minusDays (15);
+    public static final LocalDateTime collectionDate     = genLocalDateTime (-10);
+    public static final LocalDateTime reconciliationDate = genLocalDateTime (-10);
+    public static final LocalDateTime arrivalDate        = genLocalDateTime (-15);
 
     public static Order order (OrderProperties properties, CoraTest... tests) {
         Order order = new Order ();
@@ -103,7 +104,7 @@ public class TestScenarioBuilder {
         task.status = Active;
         task.stageName = ClonoSeq2_WorkflowNanny;
         task.stageStatus = Ready;
-        task.configId = "04d48793-c0c7-4b76-ab2d-53e2ef65891e";
+        task.configId = fromString ("04d48793-c0c7-4b76-ab2d-53e2ef65891e");
         task.configName = "ReportScenarioTestHelper";
         return task;
     }
@@ -149,7 +150,7 @@ public class TestScenarioBuilder {
                                                    Stage stage,
                                                    CoraTest... tests) {
         Diagnostic diagnostic = diagnosticOrder (physician, patient, specimen (), shipment ());
-        diagnostic.order = order (new OrderProperties (patient.billingType, CustomerShipment, "C91.00"), tests);
+        diagnostic.order = order (new OrderProperties (patient.billingType, CustomerShipment, "W15.XXXA"), tests);
         diagnostic.order.mrn = patient.mrn;
         diagnostic.specimen.collectionDate = dateToArrInt (collectionDate);
         diagnostic.specimen.reconciliationDate = dateToArrInt (reconciliationDate);
@@ -164,8 +165,6 @@ public class TestScenarioBuilder {
                                                 Stage stage,
                                                 CoraTest test,
                                                 Assay assay) {
-        String covidPanel = "132d9440-8f75-46b8-b084-efe06346dfd4";
-        String lymePanel = "21c3d625-4c5a-4e0b-896b-0d4f3e817d23";
         Diagnostic diagnostic = diagnosticOrder (physician, patient, null, shipment ());
         diagnostic.order = order (null, test);
         diagnostic.order.orderType = TDx;
@@ -177,9 +176,9 @@ public class TestScenarioBuilder {
         diagnostic.order.specimenDto.properties = null;
 
         if (assay.equals (LYME_DX)) {
-            diagnostic.order.panels = asList (new Panel (lymePanel));
+            diagnostic.order.panels = asList (new Panel (fromString ("21c3d625-4c5a-4e0b-896b-0d4f3e817d23")));
         } else if (assay.equals (COVID19_DX_IVD)) {
-            diagnostic.order.panels = asList (new Panel (covidPanel));
+            diagnostic.order.panels = asList (new Panel (fromString ("132d9440-8f75-46b8-b084-efe06346dfd4")));
         }
 
         diagnostic.fastForwardStatus = stage;
