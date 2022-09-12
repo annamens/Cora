@@ -21,7 +21,6 @@ import static com.adaptivebiotech.cora.utils.PageHelper.Ethnicity.ASKED;
 import static com.adaptivebiotech.cora.utils.PageHelper.Race.AMERICAN_INDIAN;
 import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.COVID19;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.NEGATIVE;
-import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Blood;
@@ -38,7 +37,6 @@ import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -241,7 +239,7 @@ public class TestHelper {
         insurance.policyholder = "Moana";
         insurance.hospitalizationStatus = Inpatient;
         insurance.billingInstitution = "Swedish Hospital";
-        insurance.dischargeDate = formatDt1.format (LocalDate.now ().minusDays (7l));
+        insurance.dischargeDate = genDate (-7);
         return insurance;
     }
 
