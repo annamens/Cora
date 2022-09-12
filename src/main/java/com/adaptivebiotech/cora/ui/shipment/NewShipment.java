@@ -304,6 +304,21 @@ public class NewShipment extends ShipmentHeader {
         assertTrue (isTextInElement (popupTitle, fileName));
     }
 
+    public boolean isHighPriorityFlagVisible () {
+        String css = ".high-priority";
+        return isElementVisible (css);
+    }
+
+    public boolean isHighPriorityFlagSelected () {
+        String css = "#highPriority";
+        return findElement (css).isSelected ();
+    }
+
+    public void clickHighPriorityFlag () {
+        String css = "#highPriority";
+        assertTrue (click (css));
+    }
+
     public String createShipment (String orderNumber, ContainerType containerType) {
         selectNewDiagnosticShipment ();
         isDiagnostic ();
