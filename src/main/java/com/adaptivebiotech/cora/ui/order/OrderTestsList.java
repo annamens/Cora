@@ -9,8 +9,8 @@ import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
- * @author Harry Soehalim
- *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
+ * @author Harry Soehalim <a href=
+ *         "mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 public class OrderTestsList extends CoraPage {
 
@@ -31,6 +31,13 @@ public class OrderTestsList extends CoraPage {
         assertTrue (click (css));
     }
 
+    public void clickSkuProperties () {
+        String sku = "//a[@href='/cora/testproperties']";
+        assertTrue (click (sku));
+        pageLoading ();
+        waitForElementsVisible ("h4[class='ng-binding']");
+    }
+
     public void querySamplesPendingRequeue () {
         clickQueriesButton ();
         String css = "[href=\"/cora/requeues\"]";
@@ -38,6 +45,11 @@ public class OrderTestsList extends CoraPage {
         pageLoading ();
         waitForElementVisible (confirmRequeueButton);
         waitForElementVisible ("[data-ng-click=\"ctrl.fail()\"]");
+    }
+
+    public void clickCsvDownloadButton () {
+        String csv = "//a[@href='/cora/api/v1/tests/downloadSearch?sort=name&ascending=true']";
+        assertTrue (click (csv));
     }
 
     public void requeueSample (String flowcellId) {
