@@ -9,9 +9,12 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
+import static java.lang.String.format;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
@@ -75,20 +78,24 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
         String ship1 = shipment.createShipment (order.orderNumber, Vacutainer);
         testLog ("Non Streck order created with shipment number: " + ship1);
 
+        // Verify Flag visible but unselected by default in UI
         shipment.clickShipmentTab ();
+        shipment.clickSave ();
         assertTrue (shipment.isHighPriorityFlagVisible ());
         assertFalse (shipment.isHighPriorityFlagSelected ());
         testLog ("High Priority Flag is visible and not selected by default");
 
-        // TO DO: SQL CONFIRM FALSE
+        // Confirm False in DB
+        verifyCoraShipmentProperties (ship1, false);
 
+        // Select Flag and verify true in UI
         shipment.clickHighPriorityFlag ();
         shipment.clickSave ();
         assertTrue (shipment.isHighPriorityFlagSelected ());
         testLog ("High Priority Flag was clicked and is now selected");
 
-        // TO DO: SQL CONFIRM TRUE
-
+        // Confirm True in DB
+        verifyCoraShipmentProperties (ship1, true);
     }
 
     /**
@@ -111,21 +118,38 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
                                                             specimenDto);
 
         String ship2 = shipment.createShipment (order.orderNumber, Vacutainer);
-        testLog ("Non Streck order created with shipment number: " + ship2);
+        testLog ("Streck order created with shipment number: " + ship2);
 
+        // Verify Flag visible but selected by default in UI
         shipment.clickShipmentTab ();
+        shipment.clickSave ();
         assertTrue (shipment.isHighPriorityFlagVisible ());
         assertTrue (shipment.isHighPriorityFlagSelected ());
-        testLog ("High Priority Flag is visible and is selected by default");
+        testLog ("High Priority Flag is visible and selected by default");
 
-        // TO DO: SQL CONFIRM TRUE
+        // Confirm True in DB
+        verifyCoraShipmentProperties (ship2, true);
 
+        // Deselect Flag and verify false in UI
         shipment.clickHighPriorityFlag ();
         shipment.clickSave ();
         assertFalse (shipment.isHighPriorityFlagSelected ());
         testLog ("High Priority Flag was clicked and is now deselected");
 
-        // TO DO: SQL CONFIRM FALSE
+        // Confirm False in DB
+        verifyCoraShipmentProperties (ship2, false);
+    }
 
+    private void verifyCoraShipmentProperties (String shipmentNumber, boolean expectedValue) {
+        String query = "select properties from cora.shipments where shipment_number = '%s';";
+        List <Map <String, Object>> queryRes = coraDb.executeSelect (format (query, shipmentNumber));
+        String targetFalse = "\"HighPriority\":\"false\"";
+        String targetTrue = "\"HighPriority\":\"true\"";
+
+        if (expectedValue) {
+            assertTrue (coraDb.jsonbToString (queryRes.get (0).get ("properties")).contains (targetTrue));
+        } else {
+            assertTrue (coraDb.jsonbToString (queryRes.get (0).get ("properties")).contains (targetFalse));
+        }
     }
 }
