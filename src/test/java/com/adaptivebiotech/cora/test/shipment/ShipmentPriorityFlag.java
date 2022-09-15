@@ -9,16 +9,14 @@ import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
-import static java.lang.String.format;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -30,6 +28,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  * @author cbragg
  *         <a href="mailto:<cbragg@adaptivebiotech.com">cbragg@adaptivebiotech.com</a>
  */
+@Test (groups = { "regression", "irish-wolfhound" })
 public class ShipmentPriorityFlag extends CoraBaseBrowser {
 
     private final String[]   icdCodes         = { "Z63.1" };
@@ -49,7 +48,6 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
      * 
      * @sdlc.requirements SR-11342
      */
-    @Test (groups = "irish-wolfhound")
     public void noPriorityFlagBatchAndGeneralShipment () {
         shipment.selectNewGeneralShipment ();
         assertFalse (shipment.isHighPriorityFlagVisible ());
@@ -64,7 +62,6 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
      * 
      * @sdlc.requirements SR-11342
      */
-    @Test (groups = "irish-wolfhound")
     public void priorityFlagNonStreckOrder () {
         Specimen specimenDto = bloodSpecimen ();
         specimenDto.collectionDate = genLocalDate (-1);
@@ -103,7 +100,6 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
      * 
      * @sdlc.requirements SR-11342
      */
-    @Test (groups = "irish-wolfhound")
     public void priorityFlagStreckOrder () {
         Specimen specimenDto = bloodSpecimen ();
         specimenDto.compartment = CellFree;
@@ -141,15 +137,12 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
     }
 
     private void verifyCoraShipmentProperties (String shipmentNumber, boolean expectedValue) {
-        String query = "select properties from cora.shipments where shipment_number = '%s';";
-        List <Map <String, Object>> queryRes = coraDb.executeSelect (format (query, shipmentNumber));
-        String targetFalse = "\"HighPriority\":\"false\"";
-        String targetTrue = "\"HighPriority\":\"true\"";
+        Shipment shipData = coraDb.getShipmentProperties (shipmentNumber);
 
         if (expectedValue) {
-            assertTrue (coraDb.jsonbToString (queryRes.get (0).get ("properties")).contains (targetTrue));
+            assertTrue (shipData.properties.HighPriority);
         } else {
-            assertTrue (coraDb.jsonbToString (queryRes.get (0).get ("properties")).contains (targetFalse));
+            assertFalse (shipData.properties.HighPriority);
         }
     }
 }

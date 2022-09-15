@@ -36,6 +36,7 @@ public class NewShipment extends ShipmentHeader {
     private final String cssNotes               = "#shipment-notes";
     private final String fileLoc                = "//a//span[contains(text(),'%s')]";
     private final String initialStorageLocation = "//*[text()='Initial Storage Location']/following-sibling::select";
+    private final String highPriorityFlag       = "#highPriority";
 
     public NewShipment () {
         staticNavBarHeight = 195;
@@ -310,13 +311,11 @@ public class NewShipment extends ShipmentHeader {
     }
 
     public boolean isHighPriorityFlagSelected () {
-        String css = "#highPriority";
-        return findElement (css).isSelected ();
+        return waitForElement (highPriorityFlag).isSelected ();
     }
 
     public void clickHighPriorityFlag () {
-        String css = "#highPriority";
-        assertTrue (click (css));
+        assertTrue (click (highPriorityFlag));
     }
 
     public String createShipment (String orderNumber, ContainerType containerType) {

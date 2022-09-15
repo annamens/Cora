@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.UUID;
 import com.adaptivebiotech.common.dto.Server;
+import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.dto.ShmResultData;
 import com.adaptivebiotech.test.utils.DbClientHelper;
 
@@ -29,6 +30,19 @@ public class CoraDb extends DbClientHelper {
         try (Statement statement = connection.createStatement ();
                 ResultSet resultSet = statement.executeQuery (query)) {
             return resultSet.next () ? new ShmResultData (resultSet) : null;
+        } catch (Exception e) {
+            error (query, e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    public Shipment getShipmentProperties (String shipmentNumber) {
+        String query = "select * from cora.shipments where shipment_number = '" + shipmentNumber + "';";
+        info ("query is: " + query);
+
+        try (Statement statement = connection.createStatement ();
+                ResultSet resultSet = statement.executeQuery (query)) {
+            return resultSet.next () ? new Shipment (resultSet) : null;
         } catch (Exception e) {
             error (query, e);
             throw new RuntimeException (e);
