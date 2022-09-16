@@ -18,7 +18,7 @@ public class OrderTestsList extends CoraPage {
     private final String downloadCSVbutton    = ".download-list .glyphicon-save";
 
     public OrderTestsList () {
-        staticNavBarHeight = 90;
+        staticNavBarHeight = 50;
     }
 
     @Override
