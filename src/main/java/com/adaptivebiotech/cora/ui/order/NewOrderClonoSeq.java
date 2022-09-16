@@ -27,11 +27,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
-import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -279,11 +279,13 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public LocalDateTime waitUntilSpecimenActivated () {
         Timeout timer = new Timeout (millisDuration * 12, millisPoll * 30);
+        String specimenActivationDate = null;
         while (!timer.Timedout ()) {
-            String specimenActivationDate = getSpecimenActivationDate ();
+            timer.Wait ();
+            refresh ();
+            specimenActivationDate = getSpecimenActivationDate ();
             if (isBlank (specimenActivationDate) || specimenActivationDate.equals (PENDING.label)) {
-                timer.Wait ();
-                refresh ();
+                continue;
             } else if (specimenActivationDate.equals (FAILED_ACTIVATION.label) || specimenActivationDate.equals (FAILED.label)) {
                 fail (format ("Specimen activation failed , Order No: %s, Specimen Activation: %s",
                               getOrderNumber (),
@@ -294,7 +296,7 @@ public class NewOrderClonoSeq extends NewOrder {
         }
         fail (format ("Specimen did not activate in time, Order No: %s, Specimen Activation: %s",
                       getOrderNumber (),
-                      getSpecimenActivationDate ()));
+                      specimenActivationDate));
         return null;
     }
 
