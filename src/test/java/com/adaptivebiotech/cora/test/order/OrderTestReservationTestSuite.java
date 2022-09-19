@@ -3,6 +3,10 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.test.order;
 
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraCSAdminTestPass;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraCSAdminTestUser;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraNonPHITestPass;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraNonPHITestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -68,6 +72,30 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         assertFalse (otReservationModule.rowIsSelected (1));
         assertFalse (otReservationModule.rowIsSelected (2));
         testLog ("Closing and opening reservation ui deselected order tests");
+    }
+
+    /**
+     * NOTE: SR-T4337
+     * 
+     * @sdlc.requirements SR-8336:R2
+     */
+    public void orderTestsListPermissions () {
+        assertTrue (otReservationModule.manageReservationsButtonDisplayed ());
+        testLog ("Reservation ui was available for Clinical Laboratory Directors");
+        orderTestsList.clickSignOut ();
+        login.doLogin (coraCSAdminTestUser, coraCSAdminTestPass);
+        ordersList.isCorrectPage ();
+        ordersList.goToOrderTests ();
+        orderTestsList.doOrderTestSearch (PhysicianType.big_shot.accountName);
+        assertTrue (otReservationModule.manageReservationsButtonDisplayed ());
+        testLog ("Reservation ui was available for CS Admins");
+        orderTestsList.clickSignOut ();
+        login.doLogin (coraNonPHITestUser, coraNonPHITestPass);
+        ordersList.isCorrectPage ();
+        ordersList.goToOrderTests ();
+        orderTestsList.doOrderTestSearch (PhysicianType.big_shot.accountName);
+        assertFalse (otReservationModule.manageReservationsButtonDisplayed ());
+        testLog ("Reservation ui was not available for other user groups");
     }
 
 }
