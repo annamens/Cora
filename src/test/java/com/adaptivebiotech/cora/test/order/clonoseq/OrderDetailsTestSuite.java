@@ -24,7 +24,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CANCELLED
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,7 +41,6 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.ReservationModule;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
@@ -64,7 +62,6 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
     private ShipmentDetail      shipmentDetail      = new ShipmentDetail ();
     private Accession           accession           = new Accession ();
     private PatientDetail       patientDetail       = new PatientDetail ();
-    private ReservationModule   reservationModule   = new ReservationModule ();
 
     /**
      * Note: SR-T2166
@@ -217,38 +214,5 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
         assertEquals (orderStatus.getCancelOrderMessages (),
                       asList (CANCELLED + " - Other - Internal. Specimen - Not Rejected. Other.", "this is a test"));
         testLog ("STEP 15 - Cancelled messaging displays Reason1, SStatus1, Disposition1, and Comment1");
-    }
-
-    /**
-     * NOTE: TEST PLACEHOLDER
-     * 
-     * @sdlc.requirements REQ PLACEHOLDER
-     */
-    // cannot assume there will be order tests by default
-    // what search can assure we'll always get order tests?
-    // can search for an existing patient
-    @Test (groups = "jack-russell")
-    public void reservationUI () {
-        assertTrue (reservationModule.manageReservationsButtonDisplayed ());
-        reservationModule.clickManageReservations ();
-        assertFalse (reservationModule.reserveAndOpenButtonDisplayed ());
-        assertTrue (reservationModule.reserveButtonDisplayed ());
-        assertTrue (reservationModule.removeReservationButtonDisplayed ());
-        assertTrue (reservationModule.doneButtonDisplayed ());
-        assertTrue (reservationModule.reserveCheckboxesDisplayed ());
-        reservationModule.selectCheckbox (0);
-        reservationModule.selectCheckbox (1);
-        assertTrue (reservationModule.rowIsSelected (0));
-        assertTrue (reservationModule.rowIsSelected (1));
-        reservationModule.clickDone ();
-        assertTrue (reservationModule.manageReservationsButtonDisplayed ());
-        assertFalse (reservationModule.reserveAndOpenButtonDisplayed ());
-        assertFalse (reservationModule.reserveButtonDisplayed ());
-        assertFalse (reservationModule.removeReservationButtonDisplayed ());
-        assertFalse (reservationModule.doneButtonDisplayed ());
-        assertFalse (reservationModule.reserveCheckboxesDisplayed ());
-        reservationModule.clickManageReservations ();
-        assertFalse (reservationModule.rowIsSelected (0));
-        assertFalse (reservationModule.rowIsSelected (1));
     }
 }
