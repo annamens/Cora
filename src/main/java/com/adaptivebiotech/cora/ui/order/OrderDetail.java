@@ -475,6 +475,14 @@ public class OrderDetail extends OrderHeader {
         assertTrue (click ("[notes='ctrl.orderEntry.order.notes'] [ng-click='ctrl.save()']"));
     }
 
+    public void clickEditBilling () {
+        assertTrue (click ("[ng-if='!ctrl.isEditingBilling'] [ng-click='ctrl.editBilling()']"));
+    }
+
+    public String getMaxLengthEmail () {
+        return getAttribute ("[name='guarantorEmail'][type='email']", "ng-maxlength");
+    }
+
     public void uploadAttachments (String... files) {
         for (String file : files) {
             waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());

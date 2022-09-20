@@ -265,6 +265,10 @@ public abstract class NewOrder extends OrderHeader {
         return readInput (orderNotes);
     }
 
+    public boolean isOrderNotesErrorPresent () {
+        return waitUntilVisible (textDanger);
+    }
+
     public void enterInstruction (String instruction) {
         assertTrue (setText (instructions, instruction));
     }

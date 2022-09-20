@@ -72,4 +72,17 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         assertEquals (newOrderClonoSeq.getPatientDOB (), patient.dateOfBirth);
         testLog ("Patient was created");
     }
+
+    /**
+     * @sdlc.requirements SR-12902
+     */
+    public void orderNotesCharacterLimit () {
+        newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
+        newOrderClonoSeq.isCorrectPage ();
+        String notes = "foobar".repeat (2000);
+        newOrderClonoSeq.enterOrderNotes (notes);
+        assertFalse (newOrderClonoSeq.isOrderNotesErrorPresent ());
+        testLog ("Order notes character limit was removed");
+    }
+
 }

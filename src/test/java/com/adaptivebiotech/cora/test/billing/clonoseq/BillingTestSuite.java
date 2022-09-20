@@ -41,21 +41,23 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
 @Test (groups = "regression")
 public class BillingTestSuite extends BillingTestBase {
 
-    private final String        log         = "created an order with billing: %s";
-    private final String[]      icdCodes    = { "B40.0" };
-    private Login               login       = new Login ();
-    private OrdersList          ordersList  = new OrdersList ();
-    private NewOrderClonoSeq    diagnostic  = new NewOrderClonoSeq ();
-    private OrderDetailClonoSeq orderDetail = new OrderDetailClonoSeq ();
-    private Specimen            specimen    = bloodSpecimen ();
-    private NewShipment         shipment    = new NewShipment ();
-    private Accession           accession   = new Accession ();
+    private final String        log           = "created an order with billing: %s";
+    private final String[]      icdCodes      = { "B40.0" };
+    private Login               login         = new Login ();
+    private OrdersList          ordersList    = new OrdersList ();
+    private NewOrderClonoSeq    diagnostic    = new NewOrderClonoSeq ();
+    private OrderDetailClonoSeq orderDetail   = new OrderDetailClonoSeq ();
+    private Specimen            specimen      = bloodSpecimen ();
+    private NewShipment         shipment      = new NewShipment ();
+    private Accession           accession     = new Accession ();
+    private PatientDetail       patientDetail = new PatientDetail ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -64,7 +66,7 @@ public class BillingTestSuite extends BillingTestBase {
     }
 
     /**
-     * @sdlc.requirements SR-10644
+     * @sdlc.requirements SR-10644,SR-12907
      */
     @Test (groups = "fox-terrier")
     public void insurance () {
@@ -110,6 +112,21 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.activateOrder ();
         testLog ("there was no patient email validation error");
         testLog (format (log, patient.billingType.label));
+
+        diagnostic.clickOrderDetailsTab ();
+        orderDetail.clickEditBilling ();
+        assertEquals (orderDetail.getMaxLengthEmail (), "128");
+
+        diagnostic.clickPatientCode ();
+        patientDetail.clickEditPatientShippingAddress ();
+        String maxLength = patientDetail.getEmailFieldMaxLength ();
+        assertEquals (maxLength, "32");
+        patientDetail.clickCancel ();
+
+        patientDetail.clickEditPatientBillingAddress ();
+        String maxLengthbilling = patientDetail.getEmailFieldMaxLength ();
+        assertEquals (maxLengthbilling, "32");
+        patientDetail.clickCancel ();
     }
 
     /**

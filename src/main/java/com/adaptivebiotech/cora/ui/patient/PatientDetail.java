@@ -51,6 +51,13 @@ public class PatientDetail extends PatientHeader {
         assertTrue (isTextInElement (popupTitle, expectedTitle));
     }
 
+    public void clickEditPatientShippingAddress () {
+        String patientShipping = "//*[@class='shipment-address']/..//button//*[contains(@class,'glyphicon-pencil')]";
+        assertTrue (click (patientShipping));
+        String expectedTitle = "Edit Patient Shipping Address";
+        assertTrue (isTextInElement (popupTitle, expectedTitle));
+    }
+
     public void clickEditPatientInsurance () {
         String xpath = "//*[label='Billing Type']//ancestor::div[@class='editable-section']//button";
         assertTrue (click (xpath));
@@ -65,6 +72,10 @@ public class PatientDetail extends PatientHeader {
         assertTrue (isTextInElement (popupTitle, expectedTitle));
     }
 
+    public String getEmailFieldMaxLength () {
+        return getAttribute ("#email", "maxlength");
+    }
+
     public void enterPatientNotes (String notes) {
         String cssForTextField = ".patient-notes-section textarea";
         assertTrue (setText (cssForTextField, notes));
@@ -74,6 +85,11 @@ public class PatientDetail extends PatientHeader {
         String cssForSaveButton = ".patient-notes-section .btn-primary";
         assertTrue (click (cssForSaveButton));
         pageLoading ();
+    }
+
+    public void clickCancel () {
+        String cssForCancelButton = ".modal-footer .btn-link";
+        assertTrue (click (cssForCancelButton));
     }
 
     public String getPrimaryInsuranceProvider () {
