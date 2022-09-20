@@ -46,7 +46,7 @@
                         <sauce.user>automated.user3</sauce.user>
                         <sauce.key>e1a7d2b0-cdd5-4606-bfe9-9621da401859</sauce.key>
                         <sauce.tunnel>cora</sauce.tunnel>
-                        <db.tunnel>true</db.tunnel>
+                        <db.tunnel>false</db.tunnel>
                     </systemPropertyVariables>
                     <properties>
                         <surefire.testng.verbose>${testng.verbose}</surefire.testng.verbose>
