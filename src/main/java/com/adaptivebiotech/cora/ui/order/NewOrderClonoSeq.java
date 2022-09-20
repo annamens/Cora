@@ -14,7 +14,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -28,11 +27,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
-import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -60,7 +59,6 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           specimenSourceOther  = "#specimen-entry-specimen-source-other";
     private final String           uniqueSpecimenId     = "[formcontrolname='uniqueSpecimenId']";
     private final String           retrievalDate        = "#specimen-entry-retrieval-date";
-    private final String           option               = "option";
     private final String           compartment          = "[formcontrolname='compartment']";
     private final String           anticoagulantOther   = "[formcontrolname='anticoagulantOther']";
 
@@ -231,9 +229,9 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public List <Anticoagulant> getAntiCoagulantTypeList () {
         return getDropdownOptions (anticoagulant).stream ()
-                .filter (st -> st.length () > 0 && !st.contains ("Select..."))
-                .map (st -> {
-                    return Anticoagulant.valueOf (st);
+                .filter (optionText -> optionText.length () > 0 && !optionText.contains ("Select..."))
+                .map (optionText -> {
+                    return Anticoagulant.valueOf (optionText);
                 }).collect (toList ());
     }
 
