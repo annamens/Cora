@@ -11,7 +11,7 @@ import com.seleniumfy.test.utils.BasePage;
  * @author Spencer Fisco
  *         <a href="mailto:sfisco@adaptivebiotech.com">sfisco@adaptivebiotech.com</a>
  */
-public class ReservationModuleBase extends BasePage {
+public class ReservationModule extends BasePage {
 
     private final String manageReservationsButton = "//button[text()='Manage Reservations']";
     private final String reserveButton            = ".btn-reservation-action";

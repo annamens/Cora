@@ -13,7 +13,7 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.reservation.OrderTestsReservationModule;
+import com.adaptivebiotech.cora.ui.order.reservation.ReservationModule;
 
 /**
  * @author Spencer Fisco
@@ -21,10 +21,10 @@ import com.adaptivebiotech.cora.ui.order.reservation.OrderTestsReservationModule
  */
 @Test (groups = { "regression", "irish-wolfhound" })
 public class OrderTestReservationTestSuite extends CoraBaseBrowser {
-    private OrderTestsReservationModule otReservationModule = new OrderTestsReservationModule ();
-    private OrdersList                  ordersList          = new OrdersList ();
-    private OrderTestsList              orderTestsList      = new OrderTestsList ();
-    private Login                       login               = new Login ();
+    private ReservationModule reservationModule = new ReservationModule ();
+    private OrdersList        ordersList        = new OrdersList ();
+    private OrderTestsList    orderTestsList    = new OrderTestsList ();
+    private Login             login             = new Login ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -40,33 +40,33 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-8336:R3, SR-8336:R13, SR-8336:R26
      */
     public void orderTestsListReservationUI () {
-        assertTrue (otReservationModule.manageReservationsButtonDisplayed ());
-        assertFalse (otReservationModule.reserveButtonDisplayed ());
-        assertFalse (otReservationModule.doneButtonDisplayed ());
-        assertFalse (otReservationModule.reserveCheckboxesDisplayed ());
+        assertTrue (reservationModule.manageReservationsButtonDisplayed ());
+        assertFalse (reservationModule.reserveButtonDisplayed ());
+        assertFalse (reservationModule.doneButtonDisplayed ());
+        assertFalse (reservationModule.reserveCheckboxesDisplayed ());
         testLog ("Reservation ui was hidden by default");
-        otReservationModule.clickManageReservations ();
-        assertFalse (otReservationModule.manageReservationsButtonDisplayed ());
-        assertTrue (otReservationModule.reserveButtonDisplayed ());
-        assertTrue (otReservationModule.doneButtonDisplayed ());
-        assertTrue (otReservationModule.reserveCheckboxesDisplayed ());
+        reservationModule.clickManageReservations ();
+        assertFalse (reservationModule.manageReservationsButtonDisplayed ());
+        assertTrue (reservationModule.reserveButtonDisplayed ());
+        assertTrue (reservationModule.doneButtonDisplayed ());
+        assertTrue (reservationModule.reserveCheckboxesDisplayed ());
         testLog ("Reservation ui was displayed after clicking button");
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.selectCheckbox (2);
-        assertTrue (otReservationModule.rowIsSelected (1));
-        assertTrue (otReservationModule.rowIsSelected (2));
-        otReservationModule.selectCheckbox (1);
-        assertFalse (otReservationModule.rowIsSelected (1));
+        reservationModule.selectCheckbox (1);
+        reservationModule.selectCheckbox (2);
+        assertTrue (reservationModule.rowIsSelected (1));
+        assertTrue (reservationModule.rowIsSelected (2));
+        reservationModule.selectCheckbox (1);
+        assertFalse (reservationModule.rowIsSelected (1));
         testLog ("Multiple order tests could be selected and deselected");
-        otReservationModule.clickDone ();
-        assertTrue (otReservationModule.manageReservationsButtonDisplayed ());
-        assertFalse (otReservationModule.reserveButtonDisplayed ());
-        assertFalse (otReservationModule.doneButtonDisplayed ());
-        assertFalse (otReservationModule.reserveCheckboxesDisplayed ());
+        reservationModule.clickDone ();
+        assertTrue (reservationModule.manageReservationsButtonDisplayed ());
+        assertFalse (reservationModule.reserveButtonDisplayed ());
+        assertFalse (reservationModule.doneButtonDisplayed ());
+        assertFalse (reservationModule.reserveCheckboxesDisplayed ());
         testLog ("Reservation ui was hidden after clicking done");
-        otReservationModule.clickManageReservations ();
-        assertFalse (otReservationModule.rowIsSelected (1));
-        assertFalse (otReservationModule.rowIsSelected (2));
+        reservationModule.clickManageReservations ();
+        assertFalse (reservationModule.rowIsSelected (1));
+        assertFalse (reservationModule.rowIsSelected (2));
         testLog ("Closing and opening reservation ui deselected order tests");
     }
 
