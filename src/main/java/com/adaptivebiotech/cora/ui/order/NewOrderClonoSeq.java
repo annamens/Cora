@@ -16,6 +16,7 @@ import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
@@ -228,8 +229,12 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
     }
 
-    public List <String> getAntiCoagulantTypeList () {
-        return readInputList (join (" ", anticoagulant, option));
+    public List <Anticoagulant> getAntiCoagulantTypeList () {
+        return getDropdownOptions (anticoagulant).stream ()
+                .filter (st -> st.length () > 0 && !st.contains ("Select..."))
+                .map (st -> {
+                    return Anticoagulant.valueOf (st);
+                }).collect (toList ());
     }
 
     public void enterAntiCoagulantOther (String anticoagulant) {
