@@ -72,8 +72,9 @@ public class PatientDetail extends PatientHeader {
         assertTrue (isTextInElement (popupTitle, expectedTitle));
     }
 
-    public String getEmailFieldMaxLength () {
-        return getAttribute ("#email", "maxlength");
+    public String getEmailEntered () {
+        String enteredEmail = ".shipment-address [label='Email Address']>div div:nth-child(2)";
+        return getText (enteredEmail);
     }
 
     public void enterPatientNotes (String notes) {

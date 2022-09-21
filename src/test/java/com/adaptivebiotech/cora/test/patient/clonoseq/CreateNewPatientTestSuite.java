@@ -3,19 +3,24 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.test.patient.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
+import com.adaptivebiotech.test.utils.TestHelper;
 
 @Test (groups = "regression")
 public class CreateNewPatientTestSuite extends CoraBaseBrowser {
@@ -25,6 +30,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     private NewOrderClonoSeq  newOrderClonoSeq = new NewOrderClonoSeq ();
     private Patient           patient          = newPatient ();
     private PickPatientModule createNewPatient = new PickPatientModule ();
+    private PatientDetail     patientDetail    = new PatientDetail ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -36,7 +42,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-9302
      */
     @Test (groups = "entlebucher")
-    public void verifyPatientBirthdateValidation () {
+    public void verifyPatientBirthdateValidation1 () {
         newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.clickPickPatient ();
@@ -74,15 +80,54 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc.requirements SR-12902
+     * @sdlc.requirements SR-12902,SR-12907
      */
-    public void orderNotesCharacterLimit () {
+    public void characterLimitEmailAndorderNotes () {
+
         newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
         newOrderClonoSeq.isCorrectPage ();
-        String notes = "foobar".repeat (2000);
+        newOrderClonoSeq.selectPhysician (coraApi.getPhysician (clonoSEQ_selfpay));
+        newOrderClonoSeq.clickPickPatient ();
+        createNewPatient.clickCreateNewPatient ();
+        createNewPatient.fillPatientInfo (patient);
+        createNewPatient.clickSave ();
+        newOrderClonoSeq.isCorrectPage ();
+
+        int maxlength = 1000;
+        String notes = TestHelper.randomString (maxlength + 1);
         newOrderClonoSeq.enterOrderNotes (notes);
-        assertFalse (newOrderClonoSeq.isOrderNotesErrorPresent ());
+        assertTrue (newOrderClonoSeq.isOrderNotesErrorPresent ());
+        notes = notes.substring (0, 1000); // remove after test env changes
+        newOrderClonoSeq.enterOrderNotes (notes);
         testLog ("Order notes character limit was removed");
+
+        newOrderClonoSeq.billing.selectBilling (ChargeType.PatientSelfPay);
+        String email = TestHelper.randomString (64) + "@" + TestHelper.randomString (64);
+        newOrderClonoSeq.billing.enterPatientEmail (email);
+        newOrderClonoSeq.clickSave ();
+        testLog ("Length of string: " + email.length ());
+        assertEquals (newOrderClonoSeq.getToastError (), "Please fix errors in the form");
+        email = email.substring (0, 128);
+        newOrderClonoSeq.billing.enterPatientEmail (email);
+        newOrderClonoSeq.clickSave ();
+        assertEquals (email.length (), 128);
+        assertFalse (newOrderClonoSeq.isToastErrorPresent ());
+
+        newOrderClonoSeq.clickPatientCode ();
+        patientDetail.clickEditPatientShippingAddress ();
+        String patientEmail = TestHelper.randomString (12) + "@" + TestHelper.randomString (24);
+        patientDetail.enterEmail (patientEmail);
+        patientDetail.clickSavePatientInsurance ();
+        int maxLength = patientDetail.getEmailEntered ().length ();
+        testLog ("Entered email is: " + patientDetail.getEmailEntered ());
+        assertEquals (maxLength, 32);
+
+        patientDetail.clickEditPatientBillingAddress ();
+        patientDetail.enterEmail (patientEmail);
+        patientDetail.clickSavePatientInsurance ();
+        int length = patientDetail.getEmailEntered ().length ();
+        testLog ("Entered email is: " + patientDetail.getEmailEntered ());
+        assertEquals (length, 32);
     }
 
 }

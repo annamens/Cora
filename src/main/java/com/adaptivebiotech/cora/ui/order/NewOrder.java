@@ -22,6 +22,7 @@ import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -238,6 +239,10 @@ public abstract class NewOrder extends OrderHeader {
         return message;
     }
 
+    public boolean isToastErrorPresent () {
+        return isElementVisible (toastError);
+    }
+
     public String getToastSuccess () {
         String message = getText (toastSuccess);
         assertTrue (waitForElementInvisible (toastContainer));
@@ -258,7 +263,10 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterOrderNotes (String notes) {
-        assertTrue (setText (orderNotes, notes));
+        if (isNotNullAndNotEmpty (notes)) {
+            assertTrue (clear (orderNotes));
+            assertTrue (setText (orderNotes, notes));
+        }
     }
 
     public String getOrderNotes () {
@@ -266,7 +274,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public boolean isOrderNotesErrorPresent () {
-        return waitUntilVisible (textDanger);
+        return isElementVisible (textDanger);
     }
 
     public void enterInstruction (String instruction) {
@@ -360,7 +368,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void clickRemovePatient () {
-        assertTrue (click ("[ng-click='ctrl.removePatient()']"));
+        assertTrue (click ("//button[text()='Remove Patient']"));// "[ng-click='ctrl.removePatient()']"));
     }
 
     public void clickPatientCode () {
