@@ -213,7 +213,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
 
         String extractedText = getTextFromPDF (pdfFileLocation, 1);
-        testLog (extractedText);
         assertTrue (extractedText.contains ("Cell-free DNA (cfDNA)1 was extracted from plasma isolated from a blood sample."));
         assertTrue (extractedText.contains ("Circulating tumor DNA (ctDNA)2 is an indirect measure of residual disease and the mechanisms that contribute to the presence of ctDNA in the blood (and hence plasma) are complex."));
         assertTrue (extractedText.contains ("ctDNA levels are best assessed in the context of multiple measurements rather than at individual time points."));
@@ -231,7 +230,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertTrue (extractedText.contains ("5 Total Sequences"));
         assertTrue (extractedText.contains ("6 Total Unique Sequences"));
         assertTrue (extractedText.contains ("7 Limit of Detection (LOD)"));
-        assertTrue (extractedText.contains ("8 Limit of Quantitaiton (LOQ)"));
+        assertTrue (extractedText.contains ("8 Limit of Quantitation (LOQ)"));
     }
 
     /**
