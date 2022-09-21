@@ -26,9 +26,9 @@ import com.adaptivebiotech.cora.ui.order.reservation.ReservationModule;
 @Test (groups = { "regression", "irish-wolfhound" })
 public class OrderTestReservationTestSuite extends CoraBaseBrowser {
     private ReservationModule reservationModule = new ReservationModule ();
-    private OrdersList        ordersList          = new OrdersList ();
-    private OrderTestsList    orderTestsList      = new OrderTestsList ();
-    private Login             login               = new Login ();
+    private OrdersList        ordersList        = new OrdersList ();
+    private OrderTestsList    orderTestsList    = new OrderTestsList ();
+    private Login             login             = new Login ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
