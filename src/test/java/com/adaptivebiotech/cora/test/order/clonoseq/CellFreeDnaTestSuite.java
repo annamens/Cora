@@ -509,9 +509,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
         shipment.createShipment (order.orderNumber, Tube);
         UUID shipmentId = accession.getShipmentId ();
-        accession.clickAddContainerSpecimenDiscrepancy ();
-        accession.addDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
-        accession.clickDiscrepancySave ();
+        accession.createDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
         accession.clickIntakeComplete ();
         accession.clickLabelingComplete ();
         accession.clickLabelVerificationComplete ();
@@ -570,9 +568,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
         shipment.createShipment (order.orderNumber, Tube);
         UUID shipmentId = accession.getShipmentId ();
-        accession.clickAddContainerSpecimenDiscrepancy ();
-        accession.addDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
-        accession.clickDiscrepancySave ();
+        accession.createDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
         accession.clickIntakeComplete ();
         accession.clickLabelingComplete ();
         accession.clickLabelVerificationComplete ();
@@ -648,9 +644,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         shipment.createShipment (order.orderNumber, Tube);
         UUID shipmentId = accession.getShipmentId ();
         asList (majorDiscrepancy1, majorDiscrepancy2).forEach (d -> {
-            accession.clickAddContainerSpecimenDiscrepancy ();
-            accession.addDiscrepancy (d, "Major Discrepancy: " + d.text, CLINICAL_TRIALS);
-            accession.clickDiscrepancySave ();
+            accession.createDiscrepancy (d, "Major Discrepancy: " + d.text, CLINICAL_TRIALS);
             testLog ("Add " + d.severity.name () + " discrepancy, name: " + d.text);
         });
         accession.clickIntakeComplete ();
@@ -731,9 +725,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         shipment.createShipment (order.orderNumber, Tube);
         UUID shipmentId = accession.getShipmentId ();
         asList (majorDiscrepancy, minorDiscrepancy).forEach (d -> {
-            accession.clickAddContainerSpecimenDiscrepancy ();
-            accession.addDiscrepancy (d, "Discrepancy: " + d.text, CLINICAL_TRIALS);
-            accession.clickDiscrepancySave ();
+            accession.createDiscrepancy (d, "Discrepancy: " + d.text, CLINICAL_TRIALS);
             testLog ("Add " + d.severity.name () + " discrepancy, name: " + d.text);
         });
         accession.clickIntakeComplete ();
@@ -1069,9 +1061,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
         shipment.createShipment (order.orderNumber, Tube);
         UUID shipmentId = accession.getShipmentId ();
-        accession.clickAddContainerSpecimenDiscrepancy ();
-        accession.addDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
-        accession.clickDiscrepancySave ();
+        accession.createDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
         accession.clickDiscrepancyResolutionsTab ();
         discrepancyRes.resolveAllDiscrepancies ();
         discrepancyRes.clickSave ();

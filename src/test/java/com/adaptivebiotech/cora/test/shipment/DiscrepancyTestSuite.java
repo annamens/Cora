@@ -37,6 +37,7 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -71,29 +72,6 @@ public class DiscrepancyTestSuite extends CoraBaseBrowser {
 
     private ThreadLocal <Boolean>                        cfDna              = new ThreadLocal <> ();
     private ThreadLocal <Boolean>                        specimenActivation = new ThreadLocal <> ();
-
-    private final Map <Discrepancy, DiscrepancyHoldType> nonStreckOrder     = Stream.of (new Object[][] {
-            { ShippingConditions, SPECIMEN_HOLD },
-            { ContainerIntegrity, SPECIMEN_HOLD },
-            { General, SPECIMEN_HOLD },
-            { TRFHandwritten, SPECIMEN_HOLD },
-            { NoTRF, SPECIMEN_HOLD },
-            { SpecimenStabilityIntegrity, SPECIMEN_HOLD },
-            { SpecimenType, SPECIMEN_HOLD },
-            { CollectionDate, SPECIMEN_HOLD },
-            { Anticoagulant, SPECIMEN_HOLD },
-            { NumberOfSamples, SPECIMEN_HOLD },
-            { SampleAmount, SPECIMEN_HOLD },
-            { MajorPatientName, SPECIMEN_HOLD },
-            { MinorPatientName, SPECIMEN_HOLD },
-            { MRN, SPECIMEN_HOLD },
-            { UniqueSpecimenId, SPECIMEN_HOLD },
-            { ContainerUnlabeled, SPECIMEN_HOLD },
-            { MajorDateOfBirth, SPECIMEN_HOLD },
-            { MinorDateOfBirth, SPECIMEN_HOLD },
-            { InsufficientMatchingIdentifiers, SPECIMEN_HOLD },
-            { PHIPresent, SPECIMEN_HOLD }
-    }).collect (Collectors.toMap (data -> (Discrepancy) data[0], data -> (DiscrepancyHoldType) data[1]));
 
     private final Map <Discrepancy, DiscrepancyHoldType> streckOrder        = Stream.of (new Object[][] {
             { ShippingConditions, SPECIMEN_HOLD },
@@ -158,10 +136,7 @@ public class DiscrepancyTestSuite extends CoraBaseBrowser {
             String jsonStr = queryResults.get (0).get ("properties").toString ();
             String severity = getDataFromJsonString (jsonStr, "Severity");
             assertEquals (severity, d.severity.name (), d.text);
-            assertEquals (holdType.text, nonStreckOrder.get (d).text, "Accession page, Non Streck " + d.text);
-            assertEquals (holdType.color,
-                          nonStreckOrder.get (d).color,
-                          "Accession page, Non Streck " + d.text);
+            assertNull (holdType.text, "Accession page, Non Streck " + d.text);
         });
         testLog ("validate Major/Minor discrepancy  and specimen/order hold on accession page");
 
@@ -169,8 +144,7 @@ public class DiscrepancyTestSuite extends CoraBaseBrowser {
         discrepancyRes.isCorrectPage ();
         Arrays.stream (Discrepancy.values ()).forEach (d -> {
             Element holdType = discrepancyRes.getDiscrepancyHoldType (d);
-            assertEquals (holdType.text, nonStreckOrder.get (d).text, "Discrepancy page, Non Streck " + d.text);
-            assertEquals (holdType.color, nonStreckOrder.get (d).color, "Discrepancy page, Non Streck " + d.text);
+            assertNull (holdType.text, "Discrepancy page, Non Streck " + d.text);
         });
         testLog ("validate specimen/order hold on discrepany page");
 

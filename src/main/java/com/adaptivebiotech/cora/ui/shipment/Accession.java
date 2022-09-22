@@ -176,9 +176,7 @@ public class Accession extends ShipmentHeader {
         assertTrue (isTextInElement (popupTitle, "Discrepancy"));
     }
 
-    public void addDiscrepancy (Discrepancy discrepancy,
-                                String notes,
-                                DiscrepancyAssignee assignee) {
+    public void addDiscrepancy (Discrepancy discrepancy, String notes, DiscrepancyAssignee assignee) {
         String cssAdd = "#dropdownDiscrepancy";
         assertTrue (click (cssAdd));
 
@@ -204,6 +202,12 @@ public class Accession extends ShipmentHeader {
         String cssSave = "[ng-click='ctrl.save()']";
         assertTrue (click (cssSave));
         transactionInProgress ();
+    }
+
+    public void createDiscrepancy (Discrepancy discrepancy, String notes, DiscrepancyAssignee assignee) {
+        clickAddContainerSpecimenDiscrepancy ();
+        addDiscrepancy (discrepancy, notes, assignee);
+        clickDiscrepancySave ();
     }
 
     public boolean specimenApprovalPassEnabled () {
