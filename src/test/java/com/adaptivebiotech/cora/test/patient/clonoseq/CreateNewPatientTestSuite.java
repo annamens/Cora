@@ -10,6 +10,7 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import org.apache.commons.lang.RandomStringUtils;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
@@ -42,7 +43,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-9302
      */
     @Test (groups = "entlebucher")
-    public void verifyPatientBirthdateValidation1 () {
+    public void verifyPatientBirthdateValidation () {
         newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.clickPickPatient ();
@@ -82,8 +83,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-12902,SR-12907
      */
-    public void characterLimitEmailAndorderNotes () {
-
+    public void characterLimitEmailAndOrderNotes () {
         newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.selectPhysician (coraApi.getPhysician (clonoSEQ_selfpay));
@@ -93,41 +93,57 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         createNewPatient.clickSave ();
         newOrderClonoSeq.isCorrectPage ();
 
-        int maxlength = 1000;
-        String notes = TestHelper.randomString (maxlength + 1);
+        String notes = TestHelper.randomString (50000);
         newOrderClonoSeq.enterOrderNotes (notes);
-        assertTrue (newOrderClonoSeq.isOrderNotesErrorPresent ());
-        notes = notes.substring (0, 1000); // remove after test env changes
-        newOrderClonoSeq.enterOrderNotes (notes);
-        testLog ("Order notes character limit was removed");
+        testLog ("Order notes character length is: " + notes.length ());
 
         newOrderClonoSeq.billing.selectBilling (ChargeType.PatientSelfPay);
-        String email = TestHelper.randomString (64) + "@" + TestHelper.randomString (64);
+        String x = TestHelper.randomString (63);
+        String email = TestHelper.randomString (64) + "@" + x + "." + x + "." + TestHelper.randomString (62);
         newOrderClonoSeq.billing.enterPatientEmail (email);
         newOrderClonoSeq.clickSave ();
         testLog ("Length of string: " + email.length ());
         assertEquals (newOrderClonoSeq.getToastError (), "Please fix errors in the form");
-        email = email.substring (0, 128);
+        email = email.substring (0, 254);
         newOrderClonoSeq.billing.enterPatientEmail (email);
         newOrderClonoSeq.clickSave ();
-        assertEquals (email.length (), 128);
+        assertEquals (email.length (), 254);
         assertFalse (newOrderClonoSeq.isToastErrorPresent ());
 
         newOrderClonoSeq.clickPatientCode ();
         patientDetail.clickEditPatientShippingAddress ();
-        String patientEmail = TestHelper.randomString (12) + "@" + TestHelper.randomString (24);
-        patientDetail.enterEmail (patientEmail);
+        patientDetail.enterEmail (email);
         patientDetail.clickSavePatientInsurance ();
-        int maxLength = patientDetail.getEmailEntered ().length ();
-        testLog ("Entered email is: " + patientDetail.getEmailEntered ());
-        assertEquals (maxLength, 32);
+        int maxLength = patientDetail.getShippingEmailEntered ().length ();
+        testLog ("Entered email length is: " + maxLength);
+        assertEquals (maxLength, 254);
 
         patientDetail.clickEditPatientBillingAddress ();
-        patientDetail.enterEmail (patientEmail);
+        patientDetail.enterEmail (email);
         patientDetail.clickSavePatientInsurance ();
-        int length = patientDetail.getEmailEntered ().length ();
-        testLog ("Entered email is: " + patientDetail.getEmailEntered ());
-        assertEquals (length, 32);
+        int length = patientDetail.getBillingEmailEntered ().length ();
+        testLog ("Entered email length is: " + length);
+        assertEquals (length, 254);
+    }
+
+    /**
+     * @sdlc.requirements SR-12904
+     */
+    public void patientLastNameSearch () {
+        newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
+        newOrderClonoSeq.isCorrectPage ();
+
+        newOrderClonoSeq.clickPickPatient ();
+        patient.lastName = RandomStringUtils.randomNumeric (6);
+        createNewPatient.searchOrCreatePatient (patient);
+        createNewPatient.clickRemovePatient ();
+        newOrderClonoSeq.clickPickPatient ();
+        createNewPatient.searchPatientWithLastName (patient);
+        assertTrue (createNewPatient.isPickPatientRowPresent ());
+        assertFalse (createNewPatient.isNoPatientsFound ());
+        String patientDetails = createNewPatient.getFirstRowPatient ();
+        testLog ("Patient details searched with last name are: " + patientDetails);
+        testLog ("Patient search with numeric lastname is working");
     }
 
 }

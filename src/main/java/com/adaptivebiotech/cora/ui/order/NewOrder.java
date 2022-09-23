@@ -368,7 +368,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void clickRemovePatient () {
-        assertTrue (click ("//button[text()='Remove Patient']"));// "[ng-click='ctrl.removePatient()']"));
+        assertTrue (click ("//button[text()='Remove Patient']"));
     }
 
     public void clickPatientCode () {

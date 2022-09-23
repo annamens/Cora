@@ -72,8 +72,13 @@ public class PatientDetail extends PatientHeader {
         assertTrue (isTextInElement (popupTitle, expectedTitle));
     }
 
-    public String getEmailEntered () {
-        String enteredEmail = ".shipment-address [label='Email Address']>div div:nth-child(2)";
+    public String getShippingEmailEntered () {
+        String enteredEmail = "//*[div='Patient Shipping Address']//*[label='Email Address']/following-sibling::div";
+        return getText (enteredEmail);
+    }
+
+    public String getBillingEmailEntered () {
+        String enteredEmail = "//*[div='Patient Billing Address']//*[label='Email Address']/following-sibling::div";
         return getText (enteredEmail);
     }
 
