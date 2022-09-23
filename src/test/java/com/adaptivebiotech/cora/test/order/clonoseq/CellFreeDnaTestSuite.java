@@ -9,7 +9,6 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Pending;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.PendingCancellation;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.MrdEnabled;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
