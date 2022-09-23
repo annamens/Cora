@@ -20,6 +20,13 @@ import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Advisory;
 import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Alarm;
 import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Expired;
 import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Warning;
+import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.ContainerIntegrity;
+import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.General;
+import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.ShippingConditions;
+import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenStabilityIntegrity;
+import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenType;
+import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.TRFHandwritten;
+import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee.CLINICAL_TRIALS;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
@@ -76,7 +83,9 @@ import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.patient.PatientOrderHistory;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
+import com.adaptivebiotech.cora.ui.shipment.DiscrepancyResolutions;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
+import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.DateHelper;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -91,39 +100,41 @@ import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 @Test (groups = { "clonoSeq", "regression", "golden-retriever" })
 public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
-    private Login                 login                   = new Login ();
-    private OrdersList            ordersList              = new OrdersList ();
-    private NewOrderClonoSeq      newOrderClonoSeq        = new NewOrderClonoSeq ();
-    private NewShipment           shipment                = new NewShipment ();
-    private Accession             accession               = new Accession ();
-    private OrderDetailClonoSeq   orderDetailClonoSeq     = new OrderDetailClonoSeq ();
-    private ReportClonoSeq        reportClonoSeq          = new ReportClonoSeq ();
-    private OrcaHistory           orcaHistory             = new OrcaHistory ();
-    private PatientDetail         patientDetail           = new PatientDetail ();
-    private PatientOrderHistory   patientHistory          = new PatientOrderHistory ();
-    private ThreadLocal <String>  downloadDir             = new ThreadLocal <> ();
+    private Login                  login                   = new Login ();
+    private OrdersList             ordersList              = new OrdersList ();
+    private NewOrderClonoSeq       newOrderClonoSeq        = new NewOrderClonoSeq ();
+    private NewShipment            shipment                = new NewShipment ();
+    private Accession              accession               = new Accession ();
+    private DiscrepancyResolutions discrepancyRes          = new DiscrepancyResolutions ();
+    private OrderDetailClonoSeq    orderDetailClonoSeq     = new OrderDetailClonoSeq ();
+    private ReportClonoSeq         reportClonoSeq          = new ReportClonoSeq ();
+    private OrcaHistory            orcaHistory             = new OrcaHistory ();
+    private PatientDetail          patientDetail           = new PatientDetail ();
+    private PatientOrderHistory    patientHistory          = new PatientOrderHistory ();
+    private ThreadLocal <String>   downloadDir             = new ThreadLocal <> ();
 
-    private final String          noResultsAvailable      = "No result available";
-    private final String          mrdResultDescription    = "This sample failed the quality control criteria despite multiple sequencing attempts, exceeded the sample stability time period, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
-    private final String          tsvPathOverride         = azTsvPath + "/H2YHWBGXL_0_CLINICAL-CLINICAL_77898-27PC-AJP-012.adap.txt.results.tsv.gz";
+    private final String           noResultsAvailable      = "No result available";
+    private final String           mrdResultDescription    = "This sample failed the quality control criteria despite multiple sequencing attempts, exceeded the sample stability time period, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
+    private final String           tsvPathOverride         = azTsvPath + "/H2YHWBGXL_0_CLINICAL-CLINICAL_77898-27PC-AJP-012.adap.txt.results.tsv.gz";
 
-    private final String[]        icdCodes                = { "V00.218S" };
-    private final String          acceptedPathOverride    = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
-    private final String          updateActivationDate    = "UPDATE cora.specimens SET activation_date = null WHERE specimen_number = '%s'";
-    private final String          updateActivationStatus  = "UPDATE cora.specimen_activations SET activation_status = '%s' WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')";
-    private final String          specimenActivationQuery = "SELECT * FROM cora.specimen_activations WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')";
+    private final String[]         icdCodes                = { "V00.218S" };
+    private final String           acceptedPathOverride    = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
+    private final String           updateActivationDate    = "UPDATE cora.specimens SET activation_date = null WHERE specimen_number = '%s'";
+    private final String           updateActivationStatus  = "UPDATE cora.specimen_activations SET activation_status = '%s' WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')";
+    private final String           specimenActivationQuery = "SELECT * FROM cora.specimen_activations WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')";
+    private final String           specimenRequiredMsg     = "Specimen is required and needs to be approved!";
 
-    private ThreadLocal <Boolean> cfDna                   = new ThreadLocal <> ();
-    private ThreadLocal <Boolean> specimenActivation      = new ThreadLocal <> ();
-    private final List <String>   deleteOrders            = asList ("delete from cora.specimen_order_xref where order_id IN (%s)",
-                                                                    "delete from cora.order_tests where order_id IN (%s)",
-                                                                    "delete from cora.order_billing where order_id IN (%s)",
-                                                                    "delete from cora.order_panel_xref where order_id IN (%s)",
-                                                                    "delete from cora.order_messages where order_id IN (%s)");
-    private final List <String>   deletePatient           = asList ("delete from cora.orders where patient_id = '%s'",
-                                                                    "delete from cora.providers_patients where patient_id = '%s'",
-                                                                    "delete from cora.patient_billing where patient_id = '%s'",
-                                                                    "delete from cora.patients where id = '%s'");
+    private ThreadLocal <Boolean>  cfDna                   = new ThreadLocal <> ();
+    private ThreadLocal <Boolean>  specimenActivation      = new ThreadLocal <> ();
+    private final List <String>    deleteOrders            = asList ("delete from cora.specimen_order_xref where order_id IN (%s)",
+                                                                     "delete from cora.order_tests where order_id IN (%s)",
+                                                                     "delete from cora.order_billing where order_id IN (%s)",
+                                                                     "delete from cora.order_panel_xref where order_id IN (%s)",
+                                                                     "delete from cora.order_messages where order_id IN (%s)");
+    private final List <String>    deletePatient           = asList ("delete from cora.orders where patient_id = '%s'",
+                                                                     "delete from cora.providers_patients where patient_id = '%s'",
+                                                                     "delete from cora.patient_billing where patient_id = '%s'",
+                                                                     "delete from cora.patients where id = '%s'");
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
@@ -221,7 +232,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     /**
      * NOTE: SR-T4235
      * 
-     * @sdlc.requirements SR-11228:R2, R3
+     * @sdlc.requirements SR-11228:R2, R3, SR-11721: R4
      */
     @Test (groups = "irish-wolfhound")
     public void validateSpecimenActivationPresent () {
@@ -271,7 +282,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
         testLog ("Specimen Activation Date is present and specimen fields are disabled");
 
-        // TODO uncomment below after SR-12693 is resolved
+        // TODO uncomment below once SR-13054 is resolved
         // newOrderClonoSeq.activateOrder ();
         // testLog ("Activate Order");
         //
@@ -347,7 +358,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
         testLog ("Specimen Activation Date is present and specimen fields are disabled");
 
-        // TODO uncomment below after SR-12693 is resolved
+        // TODO uncomment below once SR-13054 is resolved
         // newOrderClonoSeq.activateOrder ();
         // testLog ("Activate Order");
         //
@@ -409,7 +420,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), FAILED_ACTIVATION.label);
         testLog ("Validate Specimen Activation Faield Activation Label");
 
-        // TODO uncomment below after SR-12693 is resolved
+        // TODO uncomment below once SR-13054 is resolved
         // newOrderClonoSeq.activateOrder ();
         // testLog ("Specimen Activation fail order can be activated");
     }
@@ -470,6 +481,293 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
         assertNull (orderDetailClonoSeq.getSpecimenActivationDate ());
         testLog ("Specimen Activation Date is not present");
+    }
+
+    /**
+     * NOTE: SR-T4324
+     * 
+     * @sdlc.requirements SR-12635:R4, SR-11721:R4
+     */
+    @Test (groups = "irish-wolfhound")
+    public void majorDiscrepancyResolvedAfterLabelVerify () {
+        skipTestIfFeatureFlagOff (cfDna.get ());
+        skipTestIfFeatureFlagOff (specimenActivation.get ());
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.compartment = CellFree;
+        specimenDto.anticoagulant = Streck;
+        Assay assayTest = ID_BCell2_CLIA;
+        Discrepancy discrepancy = ShippingConditions;
+
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            newTrialProtocolPatient (),
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenDto);
+        testLog ("Order No: " + order.orderNumber);
+
+        shipment.createShipment (order.orderNumber, Tube);
+        UUID shipmentId = accession.getShipmentId ();
+        accession.createDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
+        accession.clickIntakeComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
+        testLog ("Label verification complete, Major discrepancy is not resolved");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        String specimenNo = newOrderClonoSeq.getSpecimenId ();
+        List <Map <String, Object>> queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 0);
+        assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
+        testLog ("Specimen is not sent for activation as Major discrepancy is not resolved");
+
+        discrepancyRes.gotoDiscrepancy (shipmentId);
+        discrepancyRes.resolveAllDiscrepancies ();
+        discrepancyRes.clickSave ();
+        testLog ("Major discrepancy is resolved, thus specimen sent for activation");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 1);
+        newOrderClonoSeq.waitUntilSpecimenActivated ();
+        testLog ("Specimen activated after Major discrepancy is resolved");
+
+        accession.gotoAccession (shipmentId);
+        accession.clickPass ();
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        // TODO uncomment below once SR-13054 is resolved
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
+    }
+
+    /**
+     * NOTE: SR-T4324
+     * 
+     * @sdlc.requirements SR-12635:R4, SR-11721:R4
+     */
+    @Test (groups = "irish-wolfhound")
+    public void minorDiscrepancyResolvedAfterLabelVerify () {
+        skipTestIfFeatureFlagOff (cfDna.get ());
+        skipTestIfFeatureFlagOff (specimenActivation.get ());
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.compartment = CellFree;
+        specimenDto.anticoagulant = Streck;
+        Assay assayTest = ID_BCell2_CLIA;
+        Discrepancy discrepancy = General;
+
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            newTrialProtocolPatient (),
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenDto);
+        testLog ("Order No: " + order.orderNumber);
+
+        shipment.createShipment (order.orderNumber, Tube);
+        UUID shipmentId = accession.getShipmentId ();
+        accession.createDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
+        accession.clickIntakeComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
+        testLog ("Label verification complete, Minor discrepancy is not resolved");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        String specimenNo = newOrderClonoSeq.getSpecimenId ();
+        List <Map <String, Object>> queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 1);
+        newOrderClonoSeq.waitUntilSpecimenActivated ();
+        testLog ("Specimen activated, does not require minor discrepancy to be resolved");
+
+        discrepancyRes.gotoDiscrepancy (shipmentId);
+        discrepancyRes.resolveAllDiscrepancies ();
+        discrepancyRes.clickSave ();
+        testLog ("minor discrepancy resolved");
+
+        accession.gotoAccession (shipmentId);
+        accession.clickPass ();
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        // TODO uncomment below once SR-13054 is resolved
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
+
+    }
+
+    /**
+     * NOTE: SR-T4324
+     * 
+     * @sdlc.requirements SR-12635:R4, SR-11721:R4
+     */
+    @Test (groups = "irish-wolfhound")
+    public void majorDiscrepancyResolvedBeforeLabelVerify () {
+        discrepancyResolvedBeforeLabelVerify (ShippingConditions);
+    }
+
+    /**
+     * NOTE: SR-T4324
+     * 
+     * @sdlc.requirements SR-12635:R4, SR-11721:R4
+     */
+    @Test (groups = "irish-wolfhound")
+    public void minorDiscrepancyResolvedBeforeLabelVerify () {
+        discrepancyResolvedBeforeLabelVerify (General);
+    }
+
+    /**
+     * NOTE: SR-T4324
+     * 
+     * @sdlc.requirements SR-12635:R4, SR-11721:R4
+     */
+    @Test (groups = "irish-wolfhound")
+    public void multipleMajorDiscrepancyResolvedAfterLabelVerify () {
+        skipTestIfFeatureFlagOff (cfDna.get ());
+        skipTestIfFeatureFlagOff (specimenActivation.get ());
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.compartment = CellFree;
+        specimenDto.anticoagulant = Streck;
+        Assay assayTest = ID_BCell2_CLIA;
+        Discrepancy majorDiscrepancy1 = SpecimenStabilityIntegrity;
+        Discrepancy majorDiscrepancy2 = SpecimenType;
+
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            newTrialProtocolPatient (),
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenDto);
+        testLog ("Order No: " + order.orderNumber);
+
+        shipment.createShipment (order.orderNumber, Tube);
+        UUID shipmentId = accession.getShipmentId ();
+        asList (majorDiscrepancy1, majorDiscrepancy2).forEach (d -> {
+            accession.createDiscrepancy (d, "Major Discrepancy: " + d.text, CLINICAL_TRIALS);
+            testLog ("Add " + d.severity.name () + " discrepancy, name: " + d.text);
+        });
+        accession.clickIntakeComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
+        testLog ("Label verification complete, Two Major discrepancies are not resolved");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        String specimenNo = newOrderClonoSeq.getSpecimenId ();
+        List <Map <String, Object>> queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 0);
+        assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
+        testLog ("Specimen is not sent for activation as Major discrepancies are not resolved");
+
+        discrepancyRes.gotoDiscrepancy (shipmentId);
+        discrepancyRes.resolveDiscrepancy (majorDiscrepancy1);
+        discrepancyRes.clickSave ();
+        testLog ("Resolve First Major discrepancy " + majorDiscrepancy1.text);
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 0);
+        assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
+        testLog ("Specimen is not sent for activation as one major discrepancy is still not resolved");
+        newOrderClonoSeq.clickSaveAndActivate ();
+        assertEquals (newOrderClonoSeq.getRequiredFieldMsgs (), asList (specimenRequiredMsg));
+        testLog ("order acctivation displays error as one major discrepancy is still not resolved");
+
+        discrepancyRes.gotoDiscrepancy (shipmentId);
+        discrepancyRes.resolveDiscrepancy (majorDiscrepancy2);
+        discrepancyRes.clickSave ();
+        testLog ("Resolve Second Major discrepancy " + majorDiscrepancy2.text);
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 1);
+        newOrderClonoSeq.waitUntilSpecimenActivated ();
+        testLog ("Specimen activated as all major discrepancies are resolved");
+        newOrderClonoSeq.clickSaveAndActivate ();
+        assertEquals (newOrderClonoSeq.getRequiredFieldMsgs (), asList (specimenRequiredMsg));
+        testLog ("Order activation displays error as specimen is not approved");
+
+        accession.gotoAccession (shipmentId);
+        accession.clickPass ();
+        testLog ("specimen approved");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        // TODO uncomment below once SR-13054 is resolved
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
+    }
+
+    /**
+     * NOTE: SR-T4324
+     * 
+     * @sdlc.requirements SR-12635:R4, SR-11721:R4
+     */
+    @Test (groups = "irish-wolfhound")
+    public void majorMinorDiscrepancyResolvedAfterLabelVerify () {
+        skipTestIfFeatureFlagOff (cfDna.get ());
+        skipTestIfFeatureFlagOff (specimenActivation.get ());
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.compartment = CellFree;
+        specimenDto.anticoagulant = Streck;
+        Assay assayTest = ID_BCell2_CLIA;
+        Discrepancy majorDiscrepancy = ContainerIntegrity;
+        Discrepancy minorDiscrepancy = TRFHandwritten;
+
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            newTrialProtocolPatient (),
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenDto);
+        testLog ("Order No: " + order.orderNumber);
+
+        shipment.createShipment (order.orderNumber, Tube);
+        UUID shipmentId = accession.getShipmentId ();
+        asList (majorDiscrepancy, minorDiscrepancy).forEach (d -> {
+            accession.createDiscrepancy (d, "Discrepancy: " + d.text, CLINICAL_TRIALS);
+            testLog ("Add " + d.severity.name () + " discrepancy, name: " + d.text);
+        });
+        accession.clickIntakeComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
+        testLog ("Label verification complete, One Major and one minor discrepancies are not resolved");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        String specimenNo = newOrderClonoSeq.getSpecimenId ();
+        List <Map <String, Object>> queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 0);
+        assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
+        testLog ("Specimen is not sent for activation as Major discrepancy is not resolved");
+
+        discrepancyRes.gotoDiscrepancy (shipmentId);
+        discrepancyRes.resolveDiscrepancy (majorDiscrepancy);
+        discrepancyRes.clickSave ();
+        testLog ("Major discrepancy resolved");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 1);
+        newOrderClonoSeq.waitUntilSpecimenActivated ();
+        testLog ("Specimen activated as one major discrepancy is resolved, and minor discrepany is open");
+        newOrderClonoSeq.clickSaveAndActivate ();
+        List <String> errors = newOrderClonoSeq.getRequiredFieldMsgs ();
+        assertEquals (errors, asList (specimenRequiredMsg));
+        testLog ("Order activation error as one minor discrepancy is open and specimen is not approved");
+
+        discrepancyRes.gotoDiscrepancy (shipmentId);
+        discrepancyRes.resolveDiscrepancy (minorDiscrepancy);
+        discrepancyRes.clickSave ();
+        testLog ("Minor discrepancy resolved");
+
+        accession.gotoAccession (shipmentId);
+        accession.clickPass ();
+        testLog ("specimen approved");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        // TODO uncomment below once SR-13054 is resolved
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
     }
 
     /**
@@ -742,5 +1040,55 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
             orcaHistory.waitFor (ReportDelivery, Finished);
             orcaHistory.clickOrderTest ();
         }
+    }
+
+    private void discrepancyResolvedBeforeLabelVerify (Discrepancy discrepancy) {
+        skipTestIfFeatureFlagOff (cfDna.get ());
+        skipTestIfFeatureFlagOff (specimenActivation.get ());
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.compartment = CellFree;
+        specimenDto.anticoagulant = Streck;
+        Assay assayTest = ID_BCell2_CLIA;
+
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            newTrialProtocolPatient (),
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenDto);
+        testLog ("Order No: " + order.orderNumber);
+
+        shipment.createShipment (order.orderNumber, Tube);
+        UUID shipmentId = accession.getShipmentId ();
+        accession.createDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
+        accession.clickDiscrepancyResolutionsTab ();
+        discrepancyRes.resolveAllDiscrepancies ();
+        discrepancyRes.clickSave ();
+        testLog ("Resolve discrepancy");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        String specimenNo = newOrderClonoSeq.getSpecimenId ();
+        List <Map <String, Object>> queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 0);
+        assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
+
+        accession.gotoAccession (shipmentId);
+        accession.clickIntakeComplete ();
+        accession.clickLabelingComplete ();
+        accession.clickLabelVerificationComplete ();
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 1);
+        newOrderClonoSeq.waitUntilSpecimenActivated ();
+
+        accession.gotoAccession (shipmentId);
+        accession.clickPass ();
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        // TODO uncomment below once SR-13054 is resolved
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
     }
 }
