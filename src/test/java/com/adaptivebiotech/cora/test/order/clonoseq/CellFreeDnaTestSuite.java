@@ -111,7 +111,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private Accession              accession               = new Accession ();
     private DiscrepancyResolutions discrepancyRes          = new DiscrepancyResolutions ();
     private OrderDetailClonoSeq    orderDetailClonoSeq     = new OrderDetailClonoSeq ();
-    private OrderStatus           orderStatus             = new OrderStatus ();
+    private OrderStatus            orderStatus             = new OrderStatus ();
     private ReportClonoSeq         reportClonoSeq          = new ReportClonoSeq ();
     private OrcaHistory            orcaHistory             = new OrcaHistory ();
     private PatientDetail          patientDetail           = new PatientDetail ();
