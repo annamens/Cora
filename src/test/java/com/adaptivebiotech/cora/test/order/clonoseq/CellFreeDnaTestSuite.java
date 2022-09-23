@@ -944,6 +944,14 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         reportClonoSeq.releaseReport (assayTest, QC.Pass);
         testLog ("Order 2: Released Report, waiting for delivery finished");
 
+        // Order 2: Verify Report type is No Result Available
+        String pdfFileLocation = join ("/", downloadDir.get (), specimenStreck.sampleName + ".pdf");
+        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
+
+        String extractedText = getTextFromPDF (pdfFileLocation, 1);
+        assertTrue (extractedText.contains (noResultsAvailable));
+        testLog ("Order 2: Report displays No Result Available");
+
         // Order 2: Verify Order Cancelled after Report Release
         newOrderClonoSeq.clickOrderStatusTab ();
         orderStatus.waitFor (specimenStreck.sampleName, ReportDelivery, Finished);
@@ -951,6 +959,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         newOrderClonoSeq.refresh ();
         assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
         testLog ("Order 2: Order Status is Cancelled");
+
     }
 
     /**
