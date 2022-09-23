@@ -3,6 +3,8 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.utils;
 
+import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyMajorMinor.Major;
+import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyMajorMinor.Minor;
 import static java.util.EnumSet.allOf;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -168,12 +170,55 @@ public class PageHelper {
 
     public enum Discrepancy {
 
-        ShippingConditions ("Shipping Conditions"), SpecimenType ("Specimen Type"); // lots of these
+        ShippingConditions ("Shipping Conditions", Major),
+        ContainerIntegrity ("Container Integrity", Major),
+        General ("General", Minor),
+        TRFHandwritten ("TRF Handwritten", Minor),
+        NoTRF ("No TRF", Minor),
+        SpecimenStabilityIntegrity ("Specimen Stability/Integrity", Major),
+        SpecimenType ("Specimen Type", Major),
+        CollectionDate ("Collection Date", Minor),
+        Anticoagulant ("Anticoagulant", Major),
+        NumberOfSamples ("Number of Samples", Minor),
+        SampleAmount ("Sample Amount", Major),
+        MajorPatientName ("Major Patient Name", Major),
+        MinorPatientName ("Minor Patient Name", Minor),
+        MRN ("MRN", Minor),
+        UniqueSpecimenId ("Unique Specimen ID", Minor),
+        ContainerUnlabeled ("Container Unlabeled", Major),
+        MajorDateOfBirth ("Major Date of Birth", Major),
+        MinorDateOfBirth ("Minor Date of Birth", Minor),
+        InsufficientMatchingIdentifiers ("Insufficient Matching Identifiers", Minor),
+        PHIPresent ("PHI Present", Minor);
+
+        public final String                text;
+        public final DiscrepancyMajorMinor severity;
+
+        private Discrepancy (String text, DiscrepancyMajorMinor severity) {
+            this.text = text;
+            this.severity = severity;
+        }
+    }
+
+    public enum DiscrepancyMajorMinor {
+        Major, Minor
+    }
+
+    public enum DiscrepancyHoldType {
+        SPECIMEN_HOLD ("SPECIMEN HOLD", "#ef3a39"),
+        ORDER_HOLD ("ORDER HOLD", "#0089c4");
 
         public final String text;
+        public final String color;
 
-        private Discrepancy (String name) {
-            this.text = name;
+        private DiscrepancyHoldType (String text, String color) {
+            this.text = text;
+            this.color = color;
+        }
+
+        public static DiscrepancyHoldType getDiscrepancyHoldType (String label) {
+            return allOf (DiscrepancyHoldType.class).parallelStream ().filter (ct -> ct.text.equals (label)).findAny ()
+                                                    .orElse (null);
         }
     }
 
