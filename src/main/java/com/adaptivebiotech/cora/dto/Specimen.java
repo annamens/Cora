@@ -45,6 +45,7 @@ public final class Specimen {
     public SpecimenProperties properties;
     public Anticoagulant      anticoagulant;
     public ProjectProperties  projectProperties;
+    public Boolean            isStreck;
 
     @Override
     public String toString () {

@@ -74,6 +74,7 @@ public abstract class NewOrder extends OrderHeader {
     private final String   collectionDate      = "[formcontrolname='collectionDate']";
     private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
     private final String   shipmentArrivalLink = "[ng-reflect-state='main.shipment.entry']";
+    private final String   cancellationAction  = "#cancellationAction";
     protected final String specimenType        = "[formcontrolname='sampleType']";
     protected final String specimenSource      = "[formcontrolname='source']";
     protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
@@ -209,7 +210,7 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
-    public void cancelOrder () {
+    public void cancelOrder (boolean isStreckOrder) {
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
         assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
         assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
@@ -219,25 +220,23 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
         moduleLoading ();
         checkOrderForErrors ();
-        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+
+        if (isStreckOrder) {
+            assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "PendingCancellation"));
+        } else {
+            assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+        }
+
     }
 
-    // UPDATE WITH CSS
     public boolean isCancelActionDropdownVisible () {
-        String css = "#PLACEHOLDER";
-        return isElementVisible (css);
+        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
+        return isElementVisible (cancellationAction);
     }
 
-    // UPDATE WITH CSS
     public String getCancelActionValue () {
-        String css = "#PLACEHOLDER";
-        return getText (css);
-    }
-
-    // UPDATE WITH CSS
-    public void setCancelActionValue (String value) {
-        String css = "#PLACEHOLDER";
-        assertTrue (clickAndSelectValue (css, value));
+        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
+        return getFirstSelectedText (cancellationAction);
     }
 
     protected void checkOrderForErrors () {
