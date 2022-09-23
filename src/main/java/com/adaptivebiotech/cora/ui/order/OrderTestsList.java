@@ -15,9 +15,10 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 public class OrderTestsList extends CoraPage {
 
     private final String confirmRequeueButton = "[data-ng-click=\"ctrl.confirm()\"]";
+    private final String downloadCSVbutton    = ".download-list .glyphicon-save";
 
     public OrderTestsList () {
-        staticNavBarHeight = 90;
+        staticNavBarHeight = 50;
     }
 
     @Override
@@ -31,6 +32,14 @@ public class OrderTestsList extends CoraPage {
         assertTrue (click (css));
     }
 
+    public void clickSKUproperties () {
+        String sku = "//a[text()='SKU Properties']";
+        assertTrue (click (sku));
+        pageLoading ();
+        assertTrue (waitUntilVisible (".container-fluid"));
+        assertTrue (waitUntilVisible (downloadCSVbutton));
+    }
+
     public void querySamplesPendingRequeue () {
         clickQueriesButton ();
         String css = "[href=\"/cora/requeues\"]";
@@ -38,6 +47,10 @@ public class OrderTestsList extends CoraPage {
         pageLoading ();
         waitForElementVisible (confirmRequeueButton);
         waitForElementVisible ("[data-ng-click=\"ctrl.fail()\"]");
+    }
+
+    public void clickCSVdownloadButton () {
+        assertTrue (click (downloadCSVbutton));
     }
 
     public void requeueSample (String flowcellId) {
