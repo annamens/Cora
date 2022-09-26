@@ -51,11 +51,11 @@ public class AlertTestSuite extends CoraBaseBrowser {
     }
 
     private void fullyCheckBoxes () {
-        assertFalse (orderAlert.boxesChecked ());
+        assertFalse (orderAlert.isAnyEmailBoxChecked ());
         orderAlert.clickSaveNewAlert ();
         orderAlert.expandTopAlert ();
         orderAlert.expandEmailsFromTopAlert ();
-        assertFalse (orderAlert.boxesChecked ());
+        assertFalse (orderAlert.isAnyEmailBoxChecked ());
         orderAlert.clickClose ();
         orderAlert.resolveTopAlert ();
     }

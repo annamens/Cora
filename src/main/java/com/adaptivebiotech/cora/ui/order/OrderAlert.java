@@ -7,9 +7,7 @@ import static java.lang.String.join;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.openqa.selenium.WebElement;
-
 import com.adaptivebiotech.cora.dto.Alerts.AlertOptions;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
@@ -47,8 +45,7 @@ public class OrderAlert extends CoraPage {
 
     public void addAlert (AlertOptions alert) {
         clickNewAlert ();
-        assertTrue (clickAndSelectText ("[name='select-alert-type'] select",
-                                        alert.getLabel ()));
+        assertTrue (clickAndSelectText ("[name='select-alert-type'] select", alert.getLabel ()));
         pageLoading ();
     }
 
@@ -57,26 +54,25 @@ public class OrderAlert extends CoraPage {
     }
 
     public void expandTopAlert () {
-        assertTrue (click ("//div[@class='panel-title']//span[@class='alert-expand glyphicon glyphicon-triangle-right'][@ng-reflect-klass='alert-expand glyphicon']"));
+        assertTrue (click (".panel-title .alert-expand"));
         pageLoading ();
-
     }
 
     public void expandEmailsFromTopAlert () {
-        assertTrue (click ("//div[@class='edit-recipients-header']//span[@aria-controls='editRecipients'][@role='button'][@ng-reflect-klass][@aria-expanded]"));
+        assertTrue (click (".edit-recipients [ng-reflect-klass]"));
         pageLoading ();
     }
 
     public void resolveTopAlert () {
         clickNewAlert ();
-        assertTrue (click ("//div[@class='pull-right']//button[@class='btn btn-primary resolve-alert-button'][text()='Resolve']"));
+        assertTrue (click (".pull-right .resolve-alert-button"));
         clickClose ();
     }
 
-    public boolean boxesChecked () {
-        for (WebElement i : waitForElements ("//div[@class='recipients-list-box']//input[@ng-reflect-model]")) {
-            if (i.isSelected()) {
-            	return true;
+    public boolean isAnyEmailBoxChecked () {
+        for (WebElement i : waitForElements (".recipients-list-box [ng-reflect-model]")) {
+            if (i.isSelected ()) {
+                return true;
             }
         }
         return false;
