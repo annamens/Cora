@@ -28,11 +28,10 @@ import com.adaptivebiotech.cora.dto.Alerts.AlertOptions;
 @Test (groups = "regression")
 public class AlertTestSuite extends CoraBaseBrowser {
     private Login      login      = new Login ();
-    private Physician  physician;
     private OrderAlert orderAlert = new OrderAlert ();
 
     public void verifyEmailNotificationsUnchecked () {
-        physician = coraApi.getPhysician (clonoSEQ_client);
+        Physician physician = coraApi.getPhysician (clonoSEQ_client);
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildDiagnosticOrder (physician, patient, null, genCDxTest (ID_BCell2_CLIA, null));
         HttpResponse response = coraApi.newBcellOrder (diagnostic);
