@@ -16,6 +16,7 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static org.testng.Assert.assertTrue;
 import static org.testng.ITestResult.SKIP;
 import static org.testng.Reporter.getCurrentTestResult;
 import java.lang.reflect.Method;
@@ -133,5 +134,11 @@ public class CoraBaseBrowser extends TestBase {
             getCurrentTestResult ().setStatus (SKIP);
             throw new SkipException ("Required feature Flag is true, expected false");
         }
+    }
+
+    protected void validatePdfContent (String fileContent, String stringToValidate) {
+        fileContent = fileContent.replace ("\n", " ");
+        info ("Validate: " + stringToValidate + ", in: " + fileContent);
+        assertTrue (fileContent.contains (stringToValidate));
     }
 }

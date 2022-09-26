@@ -97,7 +97,7 @@ import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
  * @author jpatel
  *
  */
-@Test (groups = { "clonoSeq", "regression", "golden-retriever" })
+@Test (groups = { "clonoSeq", "regression", "irish-wolfhound" })
 public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
     private Login                  login                   = new Login ();
@@ -176,7 +176,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     /**
      * NOTE: SR-T4212
      * 
-     * @sdlc.requirements SR-10414:R2
+     * @sdlc.requirements SR-10414:R4
      */
     public void cfDnaBCellTrackingReport () {
         skipTestIfFeatureFlagOff (cfDna.get ());
@@ -224,9 +224,30 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
 
         String extractedText = getTextFromPDF (pdfFileLocation, 1);
-        assertTrue (extractedText.contains ("Cell-free DNA was extracted from plasma isolated from a blood sample."));
-        assertTrue (extractedText.contains ("Cell-free DNA (cfDNA) derived from plasma isolated from blood is an indirect measure of residual disease and the mechanisms that contribute to the presence of tumor cfDNA in the blood (and hence plasma) are complex."));
-
+        validatePdfContent (extractedText,
+                            "Cell-free DNA (cfDNA)1 was extracted from plasma isolated from a blood sample.");
+        validatePdfContent (extractedText,
+                            "Circulating tumor DNA (ctDNA)2 is an indirect measure of residual disease and the mechanisms that contribute to the presence of ctDNA in the blood (and hence plasma) are complex.");
+        validatePdfContent (extractedText,
+                            "ctDNA levels are best assessed in the context of multiple measurements rather than at individual time points.");
+        validatePdfContent (extractedText, "New dominant sequences are not assessed when evaluating ctDNA.");
+        validatePdfContent (extractedText, "SAMPLE-LEVEL MRD TRACKING: CIRCULATING TUMOR DNA");
+        validatePdfContent (extractedText, "SEQUENCE-LEVEL MRD TRACKING: CIRCULATING TUMOR DNA");
+        validatePdfContent (extractedText,
+                            "Patients with detectable disease in a primary tumor sample may not have detectable ctDNA in a plasma sample; the amount of ctDNA in a plasma sample may not correlate with the amount in a primary tumor.");
+        validatePdfContent (extractedText,
+                            "Any dominant sequence identified in a Clonality (ID) sample that is subsequently detected in a ctDNA Tracking (MRD) test and is above the assay's LOB is reported as a residual sequence.");
+        validatePdfContent (extractedText, "1 Cell-free DNA (cfDNA)");
+        validatePdfContent (extractedText,
+                            "Comprises short (hundreds of base pairs) DNA fragments found in a variety of acellular biological fluids, including blood plasma.");
+        validatePdfContent (extractedText, "2 Circulating tumor DNA (ctDNA)");
+        validatePdfContent (extractedText, "The subset of cfDNA in plasma derived from tumor cells.");
+        validatePdfContent (extractedText, "3 Sample Clonality");
+        validatePdfContent (extractedText, "4 Total Volume (mL)");
+        validatePdfContent (extractedText, "5 Total Sequences");
+        validatePdfContent (extractedText, "6 Total Unique Sequences");
+        validatePdfContent (extractedText, "7 Limit of Detection (LOD)");
+        validatePdfContent (extractedText, "8 Limit of Quantitation (LOQ)");
     }
 
     /**
@@ -234,7 +255,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-11228:R2, R3, SR-11721: R4
      */
-    @Test (groups = "irish-wolfhound")
     public void validateSpecimenActivationPresent () {
         skipTestIfFeatureFlagOff (cfDna.get ());
         skipTestIfFeatureFlagOff (specimenActivation.get ());
@@ -298,7 +318,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-11228:R2, R3
      */
-    @Test (groups = "irish-wolfhound")
     public void specimenActivationContainersLabelVerify () {
         skipTestIfFeatureFlagOff (cfDna.get ());
         skipTestIfFeatureFlagOff (specimenActivation.get ());
@@ -374,7 +393,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-11228:R5
      */
-    @Test (groups = "irish-wolfhound")
     public void validateSpecimenActivationStatus () {
         skipTestIfFeatureFlagOff (cfDna.get ());
         skipTestIfFeatureFlagOff (specimenActivation.get ());
@@ -430,7 +448,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-11228:R3
      */
-    @Test (groups = "irish-wolfhound")
     public void validateSpecimenActivationNotPresent () {
         Specimen specimenDto = bloodSpecimen ();
         Assay assayTest = ID_BCell2_CLIA;
@@ -775,7 +792,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-11228:R7
      */
-    @Test (groups = "irish-wolfhound")
     public void specimenActivation_featureFlagOff () {
         skipTestIfFeatureFlagOff (cfDna.get ());
         skipTestIfFeatureFlagOn (specimenActivation.get ());
@@ -967,8 +983,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
 
         String extractedText = getTextFromPDF (pdfFileLocation, 1);
-        assertTrue (extractedText.contains (noResultsAvailable));
-        assertTrue (extractedText.contains (mrdResultDescription));
+        validatePdfContent (extractedText, noResultsAvailable);
+        validatePdfContent (extractedText, mrdResultDescription);
     }
 
     private void validateSpecimenSectionFields (boolean allFields, boolean specimenSource) {

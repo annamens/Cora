@@ -229,10 +229,10 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public List <Anticoagulant> getAntiCoagulantTypeList () {
         return getDropdownOptions (anticoagulant).stream ()
-                .filter (optionText -> optionText.length () > 0 && !optionText.contains ("Select..."))
-                .map (optionText -> {
-                    return Anticoagulant.valueOf (optionText);
-                }).collect (toList ());
+                                                 .filter (optionText -> optionText.length () > 0 && !optionText.contains ("Select..."))
+                                                 .map (optionText -> {
+                                                     return Anticoagulant.valueOf (optionText);
+                                                 }).collect (toList ());
     }
 
     public void enterAntiCoagulantOther (String anticoagulant) {
