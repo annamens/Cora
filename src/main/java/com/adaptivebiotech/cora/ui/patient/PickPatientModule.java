@@ -11,6 +11,7 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 public class PickPatientModule extends CoraPage {
 
     private final String birthDate = "#dateOfBirth";
+    private final String firstrow  = ".ab-panel.matches .row:nth-child(1)";
 
     public void clickCreateNewPatient () {
         assertTrue (click ("#new-patient"));
@@ -89,6 +90,13 @@ public class PickPatientModule extends CoraPage {
         return isElementVisible ("//*[text()='No patients found.']");
     }
 
+    public void clickSelectPatient () {
+        assertTrue (click (firstrow));
+        assertTrue (click ("#select-patient"));
+        pageLoading ();
+
+    }
+
     public String getFirstRowPatient () {
         return getText (".ab-panel.matches .row:nth-child(1)");
     }
@@ -97,7 +105,6 @@ public class PickPatientModule extends CoraPage {
         searchPatient (patient);
 
         boolean matchFound = false;
-        String firstrow = ".ab-panel.matches .row:nth-child(1)";
         if (getText (firstrow).matches ("No patients found.")) // ("No patient(s)? found\\."))
             createNewPatient (patient);
         else {

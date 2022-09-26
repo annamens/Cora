@@ -20,6 +20,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
+import com.adaptivebiotech.cora.ui.patient.PatientsList;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.test.utils.TestHelper;
 
@@ -32,6 +33,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     private Patient           patient          = newPatient ();
     private PickPatientModule createNewPatient = new PickPatientModule ();
     private PatientDetail     patientDetail    = new PatientDetail ();
+    private PatientsList      patientsList     = new PatientsList ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -81,7 +83,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc.requirements SR-12902,SR-12907
+     * @sdlc.requirements SR-8370 ,SR-8369
      */
     public void characterLimitEmailAndOrderNotes () {
         newOrderTDetect.selectNewTDetectDiagnosticOrder ();
@@ -104,10 +106,10 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         newOrderTDetect.clickSave ();
         testLog ("Length of string: " + email.length ());
         assertEquals (newOrderTDetect.getToastError (), "Please fix errors in the form");
-        email = email.substring (0, 254);
-        newOrderTDetect.billing.enterPatientEmail (email);
+        String trimmedEmail = email.substring (0, 254);
+        newOrderTDetect.billing.enterPatientEmail (trimmedEmail);
         newOrderTDetect.clickSave ();
-        assertEquals (email.length (), 254);
+        assertEquals (trimmedEmail.length (), 254);
         assertFalse (newOrderTDetect.isToastErrorPresent ());
 
         newOrderTDetect.clickPatientCode ();
@@ -127,11 +129,12 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     }
 
     /**
-     * @sdlc.requirements SR-12904
+     * @sdlc.requirements SR-4934
      */
     public void patientLastNameSearch () {
         newOrderTDetect.selectNewTDetectDiagnosticOrder ();
         newOrderTDetect.isCorrectPage ();
+        newOrderTDetect.selectPhysician (coraApi.getPhysician (clonoSEQ_selfpay));
 
         newOrderTDetect.clickPickPatient ();
         patient.lastName = RandomStringUtils.randomNumeric (6);
@@ -143,6 +146,13 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         assertFalse (createNewPatient.isNoPatientsFound ());
         String patientDetails = createNewPatient.getFirstRowPatient ();
         testLog ("Patient details searched with last name are: " + patientDetails);
+        createNewPatient.clickSelectPatient ();
+        newOrderTDetect.clickSave ();
+
+        createNewPatient.clickPatients ();
+        patientsList.searchPatient (patient.lastName);
+        assertTrue (patientsList.isPatientListPresent ());
+        assertFalse (patientsList.isNoResultsFoundPresent ());
         testLog ("Patient search with numeric lastname is working");
     }
 

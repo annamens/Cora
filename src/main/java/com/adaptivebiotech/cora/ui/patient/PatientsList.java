@@ -69,4 +69,12 @@ public class PatientsList extends CoraPage {
         assertTrue (click (details));
         pageLoading ();
     }
+
+    public boolean isPatientListPresent () {
+        return isElementVisible (".list-section");
+    }
+
+    public boolean isNoResultsFoundPresent () {
+        return isElementVisible ("//*[text()='Sorry, no results found.']");
+    }
 }
