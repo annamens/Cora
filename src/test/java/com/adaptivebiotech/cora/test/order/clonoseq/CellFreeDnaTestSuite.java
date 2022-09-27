@@ -921,7 +921,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         testLog ("Order 1: Cancel Action dropdown not visible");
         newOrderClonoSeq.cancelOrder ();
         assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
-        newOrderClonoSeq.clickOrderStatusTab ();
         testLog ("Order 1: Order Status is Cancelled");
 
         // Order 2: Streck sample, With Fastlane
@@ -973,6 +972,22 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         newOrderClonoSeq.refresh ();
         assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
         testLog ("Order 2: Order Status is Cancelled");
+        
+        // Order 3: Streck sample, Without Fastlane
+        Order orderThree = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                               patient,
+                                                               icdCodes,
+                                                               assayTest,
+                                                               specimenStreck);
+        testLog ("Order 3, Streck sample, Without Fastlane: " + orderThree.orderNumber);
+        newOrderClonoSeq.clickCancelOrder ();
+        
+        // TO-DO PENDING SR-13228 BUG RESOLUTION: Verify New Cancel Action Non-Default Option
+        newOrderClonoSeq.setCancelActionValue ("PLACEHOLDER");
+        testLog ("Order 3: Cancel Action dropdown set to PLACEHOLDER VALUE");
+        newOrderClonoSeq.cancelStreckOrder ();
+        assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
+        testLog ("Order 3: Order Status is Cancelled");
     }
 
     /**

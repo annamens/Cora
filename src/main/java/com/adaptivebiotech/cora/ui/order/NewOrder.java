@@ -245,6 +245,10 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
         return getFirstSelectedText (cancellationAction);
     }
+    
+    public void setCancelActionValue (String value) {
+        clickAndSelectValue(cancellationAction, value);
+    }
 
     protected void checkOrderForErrors () {
         if (isElementVisible (toastContainer)) {
