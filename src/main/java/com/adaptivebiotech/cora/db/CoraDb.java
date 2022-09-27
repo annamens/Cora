@@ -5,8 +5,10 @@ package com.adaptivebiotech.cora.db;
 
 import static com.seleniumfy.test.utils.Logging.error;
 import static com.seleniumfy.test.utils.Logging.info;
+import static java.util.Arrays.asList;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 import java.util.UUID;
 import com.adaptivebiotech.common.dto.Server;
 import com.adaptivebiotech.cora.dto.Shipment;
@@ -18,6 +20,16 @@ import com.adaptivebiotech.test.utils.DbClientHelper;
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 public class CoraDb extends DbClientHelper {
+
+    public final List <String> deleteOrders  = asList ("delete from cora.specimen_order_xref where order_id IN (%s)",
+                                                       "delete from cora.order_tests where order_id IN (%s)",
+                                                       "delete from cora.order_billing where order_id IN (%s)",
+                                                       "delete from cora.order_panel_xref where order_id IN (%s)",
+                                                       "delete from cora.order_messages where order_id IN (%s)");
+    public final List <String> deletePatient = asList ("delete from cora.orders where patient_id = '%s'",
+                                                       "delete from cora.providers_patients where patient_id = '%s'",
+                                                       "delete from cora.patient_billing where patient_id = '%s'",
+                                                       "delete from cora.patients where id = '%s'");
 
     public CoraDb (Server database, Server jumpbox) {
         super (database, jumpbox);

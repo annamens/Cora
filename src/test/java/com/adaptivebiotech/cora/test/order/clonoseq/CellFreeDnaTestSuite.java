@@ -126,15 +126,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
     private ThreadLocal <Boolean>  cfDna                   = new ThreadLocal <> ();
     private ThreadLocal <Boolean>  specimenActivation      = new ThreadLocal <> ();
-    private final List <String>    deleteOrders            = asList ("delete from cora.specimen_order_xref where order_id IN (%s)",
-                                                                     "delete from cora.order_tests where order_id IN (%s)",
-                                                                     "delete from cora.order_billing where order_id IN (%s)",
-                                                                     "delete from cora.order_panel_xref where order_id IN (%s)",
-                                                                     "delete from cora.order_messages where order_id IN (%s)");
-    private final List <String>    deletePatient           = asList ("delete from cora.orders where patient_id = '%s'",
-                                                                     "delete from cora.providers_patients where patient_id = '%s'",
-                                                                     "delete from cora.patient_billing where patient_id = '%s'",
-                                                                     "delete from cora.patients where id = '%s'");
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
@@ -541,7 +532,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
         discrepancyRes.gotoDiscrepancy (shipmentId);
         discrepancyRes.resolveAllDiscrepancies ();
-        discrepancyRes.clickSave ();
         testLog ("Major discrepancy is resolved, thus specimen sent for activation");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
@@ -600,7 +590,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
         discrepancyRes.gotoDiscrepancy (shipmentId);
         discrepancyRes.resolveAllDiscrepancies ();
-        discrepancyRes.clickSave ();
         testLog ("minor discrepancy resolved");
 
         accession.gotoAccession (shipmentId);
@@ -1016,11 +1005,11 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                 Order[] orders = coraApi.getOrdersForPatient (patients.get (0).id);
                 if (orders.length > 0) {
                     String orderIds = stream (orders).map (o -> o.id.toString ()).collect (joining ("','", "'", "'"));
-                    for (String deleteQuery : deleteOrders)
+                    for (String deleteQuery : coraDb.deleteOrders)
                         coraDb.executeUpdate (format (deleteQuery, orderIds));
                 }
 
-                for (String deleteQuery : deletePatient)
+                for (String deleteQuery : coraDb.deletePatient)
                     coraDb.executeUpdate (format (deleteQuery, patients.get (0).id));
 
                 needToCreateOrder = true;
@@ -1080,7 +1069,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.createDiscrepancy (discrepancy, discrepancy.severity + " Discrepancy", CLINICAL_TRIALS);
         accession.clickDiscrepancyResolutionsTab ();
         discrepancyRes.resolveAllDiscrepancies ();
-        discrepancyRes.clickSave ();
         testLog ("Resolve discrepancy");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
