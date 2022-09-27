@@ -17,6 +17,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
+import static org.apache.commons.lang3.EnumUtils.getEnum;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -39,6 +40,7 @@ import com.adaptivebiotech.cora.dto.Specimen.Anticoagulant;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
+import com.adaptivebiotech.cora.utils.PageHelper.AbnStatus;
 import com.adaptivebiotech.test.utils.PageHelper.Compartment;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenSource;
 import com.adaptivebiotech.test.utils.PageHelper.SpecimenType;
@@ -61,6 +63,7 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           retrievalDate        = "#specimen-entry-retrieval-date";
     private final String           compartment          = "[formcontrolname='compartment']";
     private final String           anticoagulantOther   = "[formcontrolname='anticoagulantOther']";
+    private final String           abnStatus            = "#abn-status-type";
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -107,6 +110,14 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (click ("[ng-click='ctrl.ok()']"));
         moduleLoading ();
         assertTrue (isTextInElement (specimenNumber, id));
+    }
+
+    public String getAbnStatus () {
+        if (isElementVisible (abnStatus)) {
+            return getFirstSelectedValue (abnStatus);
+        } else {
+            return null;
+        }
     }
 
     public void deselectAllTests () {
@@ -444,5 +455,14 @@ public class NewOrderClonoSeq extends NewOrder {
         }
 
         return order;
+    }
+
+    /**
+     * @param requiredincludedbillmedicare
+     */
+    public void changeABNStatus (AbnStatus requiredIncludedBillMedicare) {
+        // TODO Auto-generated method stub
+        billing.enterABNstatus (requiredIncludedBillMedicare);
+
     }
 }
