@@ -7,9 +7,11 @@ import static java.lang.String.join;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-import com.seleniumfy.test.utils.BasePage;
+import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Alerts.AlertOptions;
+import com.adaptivebiotech.cora.ui.CoraPage;
 
-public class OrderAlert extends BasePage {
+public class OrderAlert extends CoraPage {
 
     private final String alertModal       = ".modal-content";
     private final String alertTitle       = ".modal-title";
@@ -35,6 +37,45 @@ public class OrderAlert extends BasePage {
     public void isCorrectPage (String orderNo) {
         isCorrectPage ();
         assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order #" + orderNo));
+    }
+
+    public void clickNewAlert () {
+        assertTrue (click (".new-alert"));
+    }
+
+    public void addAlert (AlertOptions alert) {
+        clickNewAlert ();
+        assertTrue (clickAndSelectText ("[name='select-alert-type'] select", alert.getLabel ()));
+        pageLoading ();
+    }
+
+    public void clickSaveNewAlert () {
+        assertTrue (click (saveBtn));
+    }
+
+    public void expandTopAlert () {
+        assertTrue (click (".panel-title .alert-expand"));
+        pageLoading ();
+    }
+
+    public void expandEmailsFromTopAlert () {
+        assertTrue (click (".edit-recipients [ng-reflect-klass]"));
+        pageLoading ();
+    }
+
+    public void resolveTopAlert () {
+        clickNewAlert ();
+        assertTrue (click (".pull-right .resolve-alert-button"));
+        clickClose ();
+    }
+
+    public boolean isAnyEmailBoxChecked () {
+        for (WebElement i : waitForElements (".recipients-list-box [ng-reflect-model]")) {
+            if (i.isSelected ()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isAlertModalPresent () {

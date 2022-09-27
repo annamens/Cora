@@ -48,6 +48,11 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
     }
 
+    /**
+     * NOTE: SR-T4204
+     * 
+     * @sdlc.requirements SR-10414:R3
+     */
     @Test (groups = "irish-wolfhound")
     public void verify_clia_eos_report () {
         Patient patient = scenarioBuilderPatient ();
@@ -109,6 +114,11 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
         testLog ("[CLIA] the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }
 
+    /**
+     * NOTE: SR-T4204
+     * 
+     * @sdlc.requirements SR-10414:R3
+     */
     @Test (groups = "irish-wolfhound")
     public void verify_ivd_eos_report () {
         Patient patient = scenarioBuilderPatient ();
