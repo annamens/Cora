@@ -26,19 +26,17 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
  */
 public class AttachmentTestBase extends CoraBaseBrowser {
 
+    protected final List <String> previewPDFfile     = Arrays.asList ("PDFtypebelow15MB.pdf");
+    protected final List <String> PDFfile            = Arrays.asList (getSystemResource ("uploadFiles/PDFtypebelow15MB.PDF").getPath ());
+
     protected final List <String> previewFiles       = Arrays.asList ("gifBelow15MB.gif",
                                                                       "jpgBelow15MB.jpg",
                                                                       "pdfBelow15MB.pdf",
-                                                                      "pngBelow15MB.png",
-                                                                      "PDFtypebelow15MB.pdf");
-    protected final List <String> previewFiles1      = Arrays.asList ("gifBelow15MB.gif",
-                                                                      "jpgBelow15MB.jpg",
-                                                                      "pdfBelow15MB.pdf",
-                                                                      "pngBelow15MB.png",
-                                                                      "PDFtypebelow15MB.PDF");
-    protected final List <String> uploadPreviewFiles = previewFiles1.stream ()
-                                                                    .map (e -> getSystemResource ("uploadFiles/" + e).getPath ())
-                                                                    .collect (Collectors.toList ());
+                                                                      "pngBelow15MB.png");
+
+    protected final List <String> uploadPreviewFiles = previewFiles.stream ()
+                                                                   .map (e -> getSystemResource ("uploadFiles/" + e).getPath ())
+                                                                   .collect (Collectors.toList ());
 
     protected final String[]      icdCodes           = { "A20.0" };
 

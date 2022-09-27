@@ -33,7 +33,6 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     private Patient           patient          = newPatient ();
     private PickPatientModule createNewPatient = new PickPatientModule ();
     private PatientDetail     patientDetail    = new PatientDetail ();
-    private PatientsList      patientsList     = new PatientsList ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -85,6 +84,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-8370 ,SR-8369
      */
+    @Test (groups = "irish-wolfhound")
     public void characterLimitEmailAndOrderNotes () {
         newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
         newOrderClonoSeq.isCorrectPage ();
@@ -100,8 +100,8 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         testLog ("Order notes character length is: " + notes.length ());
 
         newOrderClonoSeq.billing.selectBilling (ChargeType.PatientSelfPay);
-        String x = TestHelper.randomString (63);
-        String email = TestHelper.randomString (64) + "@" + x + "." + x + "." + TestHelper.randomString (62);
+        String chars63 = TestHelper.randomString (63);
+        String email = TestHelper.randomString (64) + "@" + chars63 + "." + chars63 + "." + TestHelper.randomString (62);
         newOrderClonoSeq.billing.enterPatientEmail (email);
         newOrderClonoSeq.clickSave ();
         testLog ("Length of string: " + email.length ());
@@ -131,6 +131,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-4934
      */
+    @Test (groups = "irish-wolfhound")
     public void patientLastNameSearch () {
         newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
         newOrderClonoSeq.isCorrectPage ();
@@ -146,13 +147,6 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         assertFalse (createNewPatient.isNoPatientsFound ());
         String patientDetails = createNewPatient.getFirstRowPatient ();
         testLog ("Patient details searched with last name are: " + patientDetails);
-        createNewPatient.clickSelectPatient ();
-        newOrderClonoSeq.clickSave ();
-
-        createNewPatient.clickPatients ();
-        patientsList.searchPatient (patient.lastName);
-        assertTrue (patientsList.isPatientListPresent ());
-        assertFalse (patientsList.isNoResultsFoundPresent ());
         testLog ("Patient search with numeric lastname is working");
     }
 

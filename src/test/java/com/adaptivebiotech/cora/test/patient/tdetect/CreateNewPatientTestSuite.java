@@ -20,7 +20,6 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
-import com.adaptivebiotech.cora.ui.patient.PatientsList;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.test.utils.TestHelper;
 
@@ -33,7 +32,6 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     private Patient           patient          = newPatient ();
     private PickPatientModule createNewPatient = new PickPatientModule ();
     private PatientDetail     patientDetail    = new PatientDetail ();
-    private PatientsList      patientsList     = new PatientsList ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -85,6 +83,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-8370 ,SR-8369
      */
+    @Test (groups = "irish-wolfhound")
     public void characterLimitEmailAndOrderNotes () {
         newOrderTDetect.selectNewTDetectDiagnosticOrder ();
         newOrderTDetect.isCorrectPage ();
@@ -100,8 +99,8 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         testLog ("Order notes character length is: " + notes.length ());
 
         newOrderTDetect.billing.selectBilling (ChargeType.PatientSelfPay);
-        String x = TestHelper.randomString (63);
-        String email = TestHelper.randomString (64) + "@" + x + "." + x + "." + TestHelper.randomString (62);
+        String char63 = TestHelper.randomString (63);
+        String email = TestHelper.randomString (64) + "@" + char63 + "." + char63 + "." + TestHelper.randomString (62);
         newOrderTDetect.billing.enterPatientEmail (email);
         newOrderTDetect.clickSave ();
         testLog ("Length of string: " + email.length ());
@@ -131,6 +130,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-4934
      */
+    @Test (groups = "irish-wolfhound")
     public void patientLastNameSearch () {
         newOrderTDetect.selectNewTDetectDiagnosticOrder ();
         newOrderTDetect.isCorrectPage ();
@@ -146,13 +146,6 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         assertFalse (createNewPatient.isNoPatientsFound ());
         String patientDetails = createNewPatient.getFirstRowPatient ();
         testLog ("Patient details searched with last name are: " + patientDetails);
-        createNewPatient.clickSelectPatient ();
-        newOrderTDetect.clickSave ();
-
-        createNewPatient.clickPatients ();
-        patientsList.searchPatient (patient.lastName);
-        assertTrue (patientsList.isPatientListPresent ());
-        assertFalse (patientsList.isNoResultsFoundPresent ());
         testLog ("Patient search with numeric lastname is working");
     }
 
