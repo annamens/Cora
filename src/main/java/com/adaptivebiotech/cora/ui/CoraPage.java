@@ -4,12 +4,14 @@
 package com.adaptivebiotech.cora.ui;
 
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
+import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertTrue;
 import static org.testng.util.Strings.isNullOrEmpty;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -358,5 +360,9 @@ public class CoraPage extends BasePage {
     public void closeFilePreview () {
         assertTrue (click (".modal-header button.close"));
         moduleLoading ();
+    }
+
+    public void uploadFile (String locator, String file) {
+        waitForElement (locator).sendKeys (new File (getSystemResource (file).getPath ()).getAbsolutePath ());
     }
 }

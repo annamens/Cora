@@ -4,7 +4,6 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static org.testng.Assert.assertTrue;
-import java.io.File;
 
 /**
  * @author Harry Soehalim
@@ -15,7 +14,7 @@ public class BatchAccession extends Accession {
     private final String intakeRow = "[ng-if='ctrl.entry.shipment.intakeInitialized']";
 
     public void uploadIntakeManifest (String file) {
-        waitForElement ("input[name='intakeManifestFiles']").sendKeys (new File (file).getAbsolutePath ());
+        uploadFile ("input[name='intakeManifestFiles']", file);
         transactionInProgress ();
         assertTrue (isTextInElement ("#proceed-ui span", "Containers successfully created."));
         assertTrue (click ("#proceed-ui button"));

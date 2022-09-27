@@ -4,7 +4,6 @@
 package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -84,7 +83,7 @@ public class Detail extends CoraPage {
 
     public void uploadAttachments (String... files) {
         for (String file : files) {
-            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            uploadFile ("input[ngf-select*='ctrl.onUpload']", file);
             transactionInProgress ();
         }
     }

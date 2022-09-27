@@ -10,7 +10,6 @@ import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSp
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
@@ -506,7 +505,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public void uploadAttachments (List <String> files) {
         for (String file : files) {
-            waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
+            uploadFile (fileUpload, file);
             transactionInProgress ();
             waitForElement (fileUpload).clear ();
         }
