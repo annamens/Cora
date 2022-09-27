@@ -910,7 +910,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
         // Order 1: Non-Streck, Without Fastlane
         Specimen specimenNonStreck = bloodSpecimen ();
-        specimenNonStreck.isStreck = false;
         Order orderOne = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
                                                                patient,
                                                                icdCodes,
@@ -920,7 +919,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         newOrderClonoSeq.clickCancelOrder ();
         assertFalse (newOrderClonoSeq.isCancelActionDropdownVisible ());
         testLog ("Order 1: Cancel Action dropdown not visible");
-        newOrderClonoSeq.cancelOrder (specimenNonStreck.isStreck);
+        newOrderClonoSeq.cancelOrder ();
         assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
         newOrderClonoSeq.clickOrderStatusTab ();
         testLog ("Order 1: Order Status is Cancelled");
@@ -929,7 +928,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         Specimen specimenStreck = bloodSpecimen ();
         specimenStreck.compartment = CellFree;
         specimenStreck.anticoagulant = Streck;
-        specimenStreck.isStreck = true;
         Order orderTwo = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
                                                                patient,
                                                                icdCodes,
@@ -942,7 +940,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertTrue (newOrderClonoSeq.isCancelActionDropdownVisible ());
         assertEquals (newOrderClonoSeq.getCancelActionValue (), "Generate Failure Report");
         testLog ("Order 2: Cancel Action dropdown visible and set to Generate Failure Report");
-        newOrderClonoSeq.cancelOrder (specimenStreck.isStreck);
+        newOrderClonoSeq.cancelStreckOrder ();
 
         // Order 2: Verify No Result Report can be released
         assertEquals (newOrderClonoSeq.getOrderStatus (), PendingCancellation);
@@ -975,7 +973,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         newOrderClonoSeq.refresh ();
         assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
         testLog ("Order 2: Order Status is Cancelled");
-
     }
 
     /**

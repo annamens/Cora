@@ -210,7 +210,7 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
-    public void cancelOrder (boolean isStreckOrder) {
+    public void cancelOrder () {
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
         assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
         assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
@@ -220,13 +220,20 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
         moduleLoading ();
         checkOrderForErrors ();
+        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+    }
 
-        if (isStreckOrder) {
-            assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "PendingCancellation"));
-        } else {
-            assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
-        }
-
+    public void cancelStreckOrder () {
+        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
+        assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
+        assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
+        assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
+        assertTrue (setText ("#cancellationNotes", "this is a test"));
+        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
+        pageLoading ();
+        moduleLoading ();
+        checkOrderForErrors ();
+        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "PendingCancellation"));
     }
 
     public boolean isCancelActionDropdownVisible () {
