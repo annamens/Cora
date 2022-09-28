@@ -5,7 +5,6 @@ package com.adaptivebiotech.cora.ui.shipment;
 
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
@@ -13,6 +12,7 @@ import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
 import static org.testng.util.Strings.isNotNullAndNotEmpty;
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -214,7 +214,7 @@ public class NewShipment extends ShipmentHeader {
     public void uploadAttachments (List <String> files) {
         String fileUpload = "input[ngf-select*='ctrl.onUpload'][ng-bind='ctrl.btnText']";
         for (String file : files) {
-            waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
+            waitForElement (fileUpload).sendKeys (new File (file).getAbsolutePath ());
             transactionInProgress ();
             assertTrue (clear (fileUpload));
         }
