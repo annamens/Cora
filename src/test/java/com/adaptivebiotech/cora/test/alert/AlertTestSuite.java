@@ -9,9 +9,9 @@ import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.buildDiagnosticOrder;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertFalse;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Alerts.AlertOptions;
 import com.adaptivebiotech.cora.dto.Diagnostic;
 import com.adaptivebiotech.cora.dto.HttpResponse;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -19,7 +19,6 @@ import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.OrderAlert;
-import com.adaptivebiotech.cora.dto.Alerts.AlertOptions;
 
 /**
  * @author Mitch Parsons

@@ -22,7 +22,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import static org.testng.util.Strings.isNotNullAndNotEmpty;
-import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -518,7 +517,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public void uploadAttachments (List <String> files) {
         for (String file : files) {
-            waitForElement (fileUpload).sendKeys (new File (file).getAbsolutePath ());
+            uploadFile (fileUpload, file);
             transactionInProgress ();
             waitForElement (fileUpload).clear ();
         }

@@ -59,7 +59,7 @@ public class DiscrepancyResolutions extends ShipmentHeader {
         for (WebElement statusDropdown : statusDropdowns) {
             assertTrue (clickAndSelectText (statusDropdown, "Resolved - Yes"));
         }
-
+        clickSave ();
     }
 
     public void clickSave () {
