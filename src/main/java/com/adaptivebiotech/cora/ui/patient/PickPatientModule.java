@@ -105,7 +105,7 @@ public class PickPatientModule extends CoraPage {
         searchPatient (patient);
 
         boolean matchFound = false;
-        if (getText (firstrow).matches ("No patients found.")) // ("No patient(s)? found\\."))
+        if (getText (firstrow).matches ("No patients found."))
             createNewPatient (patient);
         else {
             assertTrue (click (firstrow));
