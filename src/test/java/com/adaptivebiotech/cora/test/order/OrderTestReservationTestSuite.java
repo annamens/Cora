@@ -34,7 +34,6 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
     public void beforeMethod () {
         login.doLogin ();
         ordersList.isCorrectPage ();
-        ordersList.goToOrderTests ();
         orderTestsList.doOrderTestSearch (PhysicianType.big_shot.accountName);
     }
 
