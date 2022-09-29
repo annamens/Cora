@@ -275,6 +275,12 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
+    public void gotoDiscrepancy (UUID shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=discrepancy"));
+        assertTrue (hasPageLoaded ());
+        pageLoading ();
+    }
+
     // click on (X) icon
     public void closePopup () {
         assertTrue (click ("[ng-click='ctrl.cancel()'] .glyphicon-remove"));
@@ -353,4 +359,5 @@ public class CoraPage extends BasePage {
         assertTrue (click (".modal-header button.close"));
         moduleLoading ();
     }
+
 }

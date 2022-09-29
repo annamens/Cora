@@ -7,7 +7,6 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Slide;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
@@ -145,7 +144,7 @@ public class ScanTestSuite extends ContainerTestBase {
 
         BatchAccession accession = new BatchAccession ();
         accession.isCorrectPage ();
-        accession.uploadIntakeManifest (getSystemResource ("batch/intakemanifest_full_slidebox.xlsx").getPath ());
+        accession.uploadIntakeManifest ("batch/intakemanifest_full_slidebox.xlsx");
         accession.clickIntakeComplete ();
         accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();

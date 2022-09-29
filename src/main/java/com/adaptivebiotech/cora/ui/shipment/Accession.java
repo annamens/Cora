@@ -11,7 +11,10 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.openqa.selenium.support.Color;
 import com.adaptivebiotech.cora.dto.Element;
+import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
+import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -171,6 +174,40 @@ public class Accession extends ShipmentHeader {
     public void clickAddContainerSpecimenDiscrepancy () {
         assertTrue (click ("[title='Add Container/Specimen Discrepancy']"));
         assertTrue (isTextInElement (popupTitle, "Discrepancy"));
+    }
+
+    public void addDiscrepancy (Discrepancy discrepancy, String notes, DiscrepancyAssignee assignee) {
+        String cssAdd = "#dropdownDiscrepancy";
+        assertTrue (click (cssAdd));
+
+        String menuItemFmtString = "//*[@class='discrepancies-options']/ul/li[text()='%s']";
+        String menuItem = String.format (menuItemFmtString, discrepancy.text);
+
+        assertTrue (click (menuItem));
+        String cssTextArea = "[ng-repeat='discrepancy in ctrl.discrepancies'] textarea";
+        assertTrue (setText (cssTextArea, notes));
+        String cssAssignee = "[ng-repeat='discrepancy in ctrl.discrepancies'] select";
+        assertTrue (clickAndSelectText (cssAssignee, assignee.text));
+    }
+
+    public Element getDiscrepancyHoldType () {
+        Element el = new Element ();
+        String css = "[ng-class='ctrl.discrepancyTypeClass']";
+        el.text = getText (css);
+        el.color = Color.fromString (getCssValue (css, "background-color")).asHex ();
+        return el;
+    }
+
+    public void clickDiscrepancySave () {
+        String cssSave = "[ng-click='ctrl.save()']";
+        assertTrue (click (cssSave));
+        transactionInProgress ();
+    }
+
+    public void createDiscrepancy (Discrepancy discrepancy, String notes, DiscrepancyAssignee assignee) {
+        clickAddContainerSpecimenDiscrepancy ();
+        addDiscrepancy (discrepancy, notes, assignee);
+        clickDiscrepancySave ();
     }
 
     public boolean specimenApprovalPassEnabled () {

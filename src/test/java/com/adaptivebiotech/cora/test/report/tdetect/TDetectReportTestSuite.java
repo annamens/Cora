@@ -34,7 +34,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
-import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.join;
 import static java.util.Locale.US;
 import static org.apache.commons.text.WordUtils.capitalize;
@@ -360,11 +359,5 @@ public class TDetectReportTestSuite extends ReportTestBase {
         coraDebugApi.login ();
         coraDebugApi.get (fileUrl, reportDataJson);
         return mapper.readValue (new File (reportDataJson), ReportRender.class);
-    }
-
-    private void validatePdfContent (String fileContent, String stringToValidate) {
-        fileContent = fileContent.replace ("\n", " ");
-        info ("Validate: " + stringToValidate + ", in: " + fileContent);
-        assertTrue (fileContent.contains (stringToValidate));
     }
 }
