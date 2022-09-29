@@ -53,7 +53,6 @@ import static java.lang.String.join;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -1004,13 +1003,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
             if (!isPatientMrdEnabled) {
                 Order[] orders = coraApi.getOrdersForPatient (patients.get (0).id);
                 if (orders.length > 0) {
-                    String orderIds = stream (orders).map (o -> o.id.toString ()).collect (joining ("','", "'", "'"));
-                    for (String deleteQuery : coraDb.deleteOrders)
-                        coraDb.executeUpdate (format (deleteQuery, orderIds));
+                    List <String> orderIds = stream (orders).map (o -> o.id.toString ()).collect (toList ());
+                    coraDb.deleteOrdersFromDB (orderIds);
                 }
-
-                for (String deleteQuery : coraDb.deletePatient)
-                    coraDb.executeUpdate (format (deleteQuery, patients.get (0).id));
+                coraDb.deletePatientFromDB (patients.get (0).id.toString ());
 
                 needToCreateOrder = true;
             }
