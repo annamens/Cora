@@ -84,14 +84,12 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         orderTestsList.clickSignOut ();
         login.doLogin (coraCSAdminTestUser, coraCSAdminTestPass);
         ordersList.isCorrectPage ();
-        ordersList.goToOrderTests ();
         orderTestsList.doOrderTestSearch (PhysicianType.big_shot.accountName);
         assertTrue (reservationModule.manageReservationsButtonDisplayed ());
         testLog ("Reservation ui was available for CS Admins");
         orderTestsList.clickSignOut ();
         login.doLogin (coraNonPHITestUser, coraNonPHITestPass);
         ordersList.isCorrectPage ();
-        ordersList.goToOrderTests ();
         orderTestsList.doOrderTestSearch (PhysicianType.big_shot.accountName);
         assertFalse (reservationModule.manageReservationsButtonDisplayed ());
         testLog ("Reservation ui was not available for other user groups");
