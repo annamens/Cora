@@ -64,6 +64,7 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           compartment          = "[formcontrolname='compartment']";
     private final String           anticoagulantOther   = "[formcontrolname='anticoagulantOther']";
     private final String           abnStatus            = "#abn-status-type";
+    private final String           abnStatusResultLabel = "//label[contains(text(),'ABN Status')]/../div";
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -115,6 +116,14 @@ public class NewOrderClonoSeq extends NewOrder {
     public String getAbnStatus () {
         if (isElementVisible (abnStatus)) {
             return getFirstSelectedValue (abnStatus);
+        } else {
+            return null;
+        }
+    }
+
+    public String getAbnStatusSelectionLabel () {
+        if (isElementVisible (abnStatusResultLabel)) {
+            return getText (abnStatusResultLabel);
         } else {
             return null;
         }
@@ -240,10 +249,10 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public List <Anticoagulant> getAntiCoagulantTypeList () {
         return getDropdownOptions (anticoagulant).stream ()
-                .filter (optionText -> optionText.length () > 0 && !optionText.contains ("Select..."))
-                .map (optionText -> {
-                    return Anticoagulant.valueOf (optionText);
-                }).collect (toList ());
+                                                 .filter (optionText -> optionText.length () > 0 && !optionText.contains ("Select..."))
+                                                 .map (optionText -> {
+                                                     return Anticoagulant.valueOf (optionText);
+                                                 }).collect (toList ());
     }
 
     public void enterAntiCoagulantOther (String anticoagulant) {
@@ -464,5 +473,11 @@ public class NewOrderClonoSeq extends NewOrder {
         // TODO Auto-generated method stub
         billing.enterABNstatus (requiredIncludedBillMedicare);
 
+    }
+
+    // click on (X) icon
+    public void closePopup () {
+        assertTrue (click (".glyphicon-remove"));
+        moduleLoading ();
     }
 }
