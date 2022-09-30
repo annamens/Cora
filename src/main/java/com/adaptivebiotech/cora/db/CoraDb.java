@@ -63,16 +63,16 @@ public class CoraDb extends DbClientHelper {
         }
     }
 
-    public void deleteOrdersFromDB (List <String> id) {
-        String orderIds = id.stream ().collect (joining ("','", "'", "'"));
+    public void deleteOrdersFromDB (List <UUID> id) {
+        String orderIds = id.stream ().map (o -> o.toString ()).collect (joining ("','", "'", "'"));
         for (String deleteQuery : deleteOrders) {
             executeUpdate (format (deleteQuery, orderIds));
         }
     }
 
-    public void deletePatientFromDB (String id) {
+    public void deletePatientFromDB (UUID id) {
         for (String deleteQuery : deletePatient) {
-            executeUpdate (format (deleteQuery, id));
+            executeUpdate (format (deleteQuery, id.toString ()));
         }
     }
 }

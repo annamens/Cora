@@ -1003,10 +1003,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
             if (!isPatientMrdEnabled) {
                 Order[] orders = coraApi.getOrdersForPatient (patients.get (0).id);
                 if (orders.length > 0) {
-                    List <String> orderIds = stream (orders).map (o -> o.id.toString ()).collect (toList ());
+                    List <UUID> orderIds = stream (orders).map (o -> o.id).collect (toList ());
                     coraDb.deleteOrdersFromDB (orderIds);
                 }
-                coraDb.deletePatientFromDB (patients.get (0).id.toString ());
+                coraDb.deletePatientFromDB (patients.get (0).id);
 
                 needToCreateOrder = true;
             }
