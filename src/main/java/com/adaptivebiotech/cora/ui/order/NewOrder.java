@@ -74,7 +74,6 @@ public abstract class NewOrder extends OrderHeader {
     private final String   collectionDate      = "[formcontrolname='collectionDate']";
     private final String   collectionDateLabel = "//label[contains(text(),'Collection Date')]";
     private final String   shipmentArrivalLink = "[ng-reflect-state='main.shipment.entry']";
-    private final String   cancellationAction  = "#cancellationAction";
     protected final String specimenType        = "[formcontrolname='sampleType']";
     protected final String specimenSource      = "[formcontrolname='source']";
     protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
@@ -207,11 +206,10 @@ public abstract class NewOrder extends OrderHeader {
 
     public void clickCancelOrder () {
         assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
-        pageLoading ();
+        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
     }
 
     public void cancelOrder () {
-        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
         assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
         assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
         assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
@@ -223,31 +221,9 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
     }
 
-    public void cancelStreckOrder () {
-        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
-        assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
-        assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
-        assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
-        assertTrue (setText ("#cancellationNotes", "this is a test"));
-        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
-        pageLoading ();
-        moduleLoading ();
-        checkOrderForErrors ();
-        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "PendingCancellation"));
-    }
-
-    public boolean isCancelActionDropdownVisible () {
-        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
-        return isElementVisible (cancellationAction);
-    }
-
-    public String getCancelActionValue () {
-        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
-        return getFirstSelectedText (cancellationAction);
-    }
-    
-    public void setCancelActionValue (String value) {
-        clickAndSelectValue(cancellationAction, value);
+    public void clickAndCancelOrder () {
+        clickCancelOrder ();
+        cancelOrder ();
     }
 
     protected void checkOrderForErrors () {

@@ -408,4 +408,20 @@ public final class Orders {
         }
     }
 
+    public enum CancelOrderAction {
+        GenerateFailureReport ("Generate Failure Report"),
+        Placeholder ("Placeholder");
+
+        public String label;
+
+        private CancelOrderAction (String label) {
+            this.label = label;
+        }
+
+        public static CancelOrderAction getCancelOrderAction (String label) {
+            return allOf (CancelOrderAction.class).parallelStream ().filter (st -> st.label.equals (label))
+                                                  .findAny ().orElse (null);
+        }
+    }
+
 }

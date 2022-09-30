@@ -7,8 +7,9 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.GenerateFailureReport;
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.Placeholder;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.PendingCancellation;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.MrdEnabled;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
@@ -42,6 +43,7 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.Finalize;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ReportDelivery;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
@@ -59,7 +61,6 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -71,6 +72,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -902,92 +904,88 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * @sdlc.requirements SR-11341
      */
     @Test (groups = "irish-wolfhound")
-    public void verifyCancelOrderFastLane () {
+    public void verifyCancelStreckOrderWithFastLane () {
         login.doLogin ();
         ordersList.isCorrectPage ();
         Assay assayTest = MRD_BCell2_CLIA;
         Patient patient = newTrialProtocolPatient ();
 
-        // Order 1: Non-Streck, Without Fastlane
-        Specimen specimenNonStreck = bloodSpecimen ();
-        Order orderOne = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
-                                                               patient,
-                                                               icdCodes,
-                                                               assayTest,
-                                                               specimenNonStreck);
-        testLog ("Order 1, Non-Streck, Without Fastlane: " + orderOne.orderNumber);
-        newOrderClonoSeq.clickCancelOrder ();
-        assertFalse (newOrderClonoSeq.isCancelActionDropdownVisible ());
-        testLog ("Order 1: Cancel Action dropdown not visible");
-        newOrderClonoSeq.cancelOrder ();
-        assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
-        testLog ("Order 1: Order Status is Cancelled");
-
-        // Order 2: Streck sample, With Fastlane
+        // Streck sample, With Fastlane
         Specimen specimenStreck = bloodSpecimen ();
         specimenStreck.compartment = CellFree;
         specimenStreck.anticoagulant = Streck;
-        Order orderTwo = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
                                                                patient,
                                                                icdCodes,
                                                                assayTest,
                                                                specimenStreck);
-        testLog ("Order 2, Streck sample, With Fastlane: " + orderTwo.orderNumber);
+        testLog ("Streck sample, With Fastlane: " + order.orderNumber);
         newOrderClonoSeq.clickCancelOrder ();
 
-        // Order 2: Verify New Cancel Action Default Option
+        // Verify New Cancel Action Default Option
         assertTrue (newOrderClonoSeq.isCancelActionDropdownVisible ());
-        assertEquals (newOrderClonoSeq.getCancelActionValue (), "Generate Failure Report");
-        testLog ("Order 2: Cancel Action dropdown visible and set to Generate Failure Report");
-        newOrderClonoSeq.cancelStreckOrder ();
+        assertEquals (newOrderClonoSeq.getCancelActionValue (), GenerateFailureReport);
+        testLog ("Cancel Action dropdown visible and set to Generate Failure Report");
+        newOrderClonoSeq.cancelStreckOrder (true);
 
-        // Order 2: Verify No Result Report can be released
+        // Verify No Result Report can be released
         assertEquals (newOrderClonoSeq.getOrderStatus (), PendingCancellation);
-        testLog ("Order 2: Order cancelled and status is PendingCancellation, waiting for Awaiting Clinical QC");
+        testLog ("Order cancelled and status is PendingCancellation, waiting for Awaiting Clinical QC");
         specimenStreck.sampleName = orderStatus.getWorkflowId ();
         orderStatus.waitFor (specimenStreck.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
-        orderStatus.clickHistory (specimenStreck.sampleName);
-        assertTrue (orderStatus.isStagePresent (specimenStreck.sampleName,
-                                                ClonoSEQReport,
-                                                Awaiting,
-                                                CLINICAL_QC));
-        testLog ("Order 2: Awaiting Clinical QC Reached");
-        newOrderClonoSeq.refresh ();
-        newOrderClonoSeq.clickReportTab (assayTest);
+        testLog ("Awaiting Clinical QC Reached");
+        orderDetailClonoSeq.gotoOrderEntry (order.id);
+        orderDetailClonoSeq.clickReportTab (assayTest);
         reportClonoSeq.releaseReport (assayTest, QC.Pass);
-        testLog ("Order 2: Released Report, waiting for delivery finished");
+        testLog ("Released Report, waiting for delivery finished");
 
-        // Order 2: Verify Report type is No Result Available
+        // Verify Report type is No Result Available
         String pdfFileLocation = join ("/", downloadDir.get (), specimenStreck.sampleName + ".pdf");
         coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
 
         String extractedText = getTextFromPDF (pdfFileLocation, 1);
         assertTrue (extractedText.contains (noResultsAvailable));
-        testLog ("Order 2: Report displays No Result Available");
+        testLog ("Report displays No Result Available");
 
-        // Order 2: Verify Order Cancelled after Report Release
-        newOrderClonoSeq.clickOrderStatusTab ();
-        orderStatus.waitFor (specimenStreck.sampleName, ReportDelivery, Finished);
-        testLog ("Order 2: Report Delivery Finished");
-        newOrderClonoSeq.refresh ();
-        assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
-        testLog ("Order 2: Order Status is Cancelled");
-        
-        // Order 3: Streck sample, Without Fastlane
-        Order orderThree = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
-                                                               patient,
-                                                               icdCodes,
-                                                               assayTest,
-                                                               specimenStreck);
-        testLog ("Order 3, Streck sample, Without Fastlane: " + orderThree.orderNumber);
+        // Verify Order Cancelled after Report Release
+        orderDetailClonoSeq.clickOrderStatusTab ();
+        orderStatus.waitFor (specimenStreck.sampleName, Finalize, StageStatus.Cancelled);
+        testLog ("Report Delivery Finished");
+        orderDetailClonoSeq.refresh ();
+        assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.Cancelled);
+        testLog ("Order Status is Cancelled");
+    }
+
+    /**
+     * NOTE: SR-T4291
+     * 
+     * @sdlc.requirements SR-11341
+     */
+    @Test (groups = "irish-wolfhound")
+    public void verifyCancelStreckOrderWithoutFastLane () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Assay assayTest = MRD_BCell2_CLIA;
+        Patient patient = newTrialProtocolPatient ();
+        Specimen specimenStreck = bloodSpecimen ();
+        specimenStreck.compartment = CellFree;
+        specimenStreck.anticoagulant = Streck;
+
+        // Streck sample, Without Fastlane
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                                 patient,
+                                                                 icdCodes,
+                                                                 assayTest,
+                                                                 specimenStreck);
+        testLog ("Streck sample, Without Fastlane: " + order.orderNumber);
         newOrderClonoSeq.clickCancelOrder ();
-        
+
         // TO-DO PENDING SR-13228 BUG RESOLUTION: Verify New Cancel Action Non-Default Option
-        newOrderClonoSeq.setCancelActionValue ("PLACEHOLDER");
-        testLog ("Order 3: Cancel Action dropdown set to PLACEHOLDER VALUE");
-        newOrderClonoSeq.cancelStreckOrder ();
-        assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
-        testLog ("Order 3: Order Status is Cancelled");
+        newOrderClonoSeq.setCancelActionValue (Placeholder);
+        testLog ("Cancel Action dropdown set to PLACEHOLDER VALUE");
+        newOrderClonoSeq.cancelStreckOrder (false);
+        assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.Cancelled);
+        testLog ("Order Status is Cancelled");
     }
 
     /**
