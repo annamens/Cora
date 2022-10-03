@@ -311,7 +311,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void closeTestSelectionWarningModal () {
         String expectedModalTitle = "Test Selection Warning";
-        String modalHeader = "[ng-bind-html=\"ctrl.dialogOptions.headerText\"]";
+        String modalHeader = "//confirm-dialog//h4";
         assertTrue (isTextInElement (modalHeader, expectedModalTitle));
         clickPopupOK ();
     }
@@ -446,9 +446,4 @@ public class NewOrderClonoSeq extends NewOrder {
         return order;
     }
 
-    // click on (X) icon
-    public void closePopup () {
-        assertTrue (click (".glyphicon-remove"));
-        moduleLoading ();
-    }
 }
