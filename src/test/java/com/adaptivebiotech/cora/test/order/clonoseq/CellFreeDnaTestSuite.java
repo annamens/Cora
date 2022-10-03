@@ -881,6 +881,92 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     }
 
     /**
+     * NOTE: SR-T4290
+     * 
+     * @sdlc.requirements SR-11721:R
+     */
+    public void verifyUpdatedOrderActivationBlood () {
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.compartment = CellFree;
+        specimenDto.anticoagulant = Streck;
+        specimenDto.collectionDate = genLocalDate (-6);
+        Assay assayTest = MRD_BCell2_CLIA;
+
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            newTrialProtocolPatient (),
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenDto);
+        testLog ("Order No: " + order.orderNumber);
+        shipment.createShipment (order.orderNumber, Vacutainer);
+        accession.completeAccession ();
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        
+        // Collection date = today - 7, activation fail
+        newOrderClonoSeq.enterCollectionDate (genLocalDate (-7));
+        assertEquals (newOrderClonoSeq.activateOrderAndGetToastMessage (),
+                      "Order save failed with reason: Streck (Blood) was not isolated within 7 days from the collection date.");
+        testLog ("Streck Blood Collection Date = Today - 7, Order Activation Blocked");
+        
+        // Collection date = today - 6, activation pass
+        newOrderClonoSeq.enterCollectionDate (genLocalDate (-6));
+        newOrderClonoSeq.activateOrder ();
+        testLog ("Streck Blood Collection Date = Today - 6, Order Activation Successful");
+    }
+
+    /**
+     * NOTE: SR-T4289
+     * 
+     * @sdlc.requirements SR-11721:R2
+     */
+    public void verifyUpdatedOrderActivationPlasma () {
+        Specimen specimenDto = bloodSpecimen ();
+        specimenDto.compartment = CellFree;
+        specimenDto.anticoagulant = Streck;
+        specimenDto.collectionDate = genLocalDate (-6);
+        Assay assayTest = MRD_BCell2_CLIA;
+
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            newTrialProtocolPatient (),
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenDto);
+        specimenDto.specimenNumber = newOrderClonoSeq.getSpecimenId ();
+        testLog ("Order No: " + order.orderNumber);
+        shipment.createShipment (order.orderNumber, Vacutainer);
+        accession.completeAccession ();
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+
+        // Isolation date = today - 45, activation fail
+        String query = "UPDATE cora.specimens SET isolation_date = '%s' where specimen_number = '%s';";
+        coraDb.executeUpdate (format (query,
+                                      DateHelper.genDate (-45,
+                                                          ISO_LOCAL_DATE_TIME,
+                                                          pstZoneId),
+                                      specimenDto.specimenNumber));
+        newOrderClonoSeq.refresh ();
+        newOrderClonoSeq.isCorrectPage ();
+        assertEquals (newOrderClonoSeq.activateOrderAndGetToastMessage (),
+                      "Order save failed with reason: Streck (Plasma) was not extracted within 45 days from the isolation date.");
+        testLog ("Streck Plasma Isolation Date = Today - 45, Order Activation Blocked");
+
+        // Isolation date = today - 44, activation pass
+        coraDb.executeUpdate (format (query,
+                                      DateHelper.genDate (-44,
+                                                          ISO_LOCAL_DATE_TIME,
+                                                          pstZoneId),
+                                      specimenDto.specimenNumber));
+        newOrderClonoSeq.refresh ();
+        newOrderClonoSeq.isCorrectPage ();
+        newOrderClonoSeq.activateOrder ();
+        testLog ("Streck Plasma Isolation Date = Today - 44, Order Activation Successful");
+    }
+
+    /**
      * Updates the Collection Date on the Order Details tab and verifies the stability window
      * styling based off params
      * 
