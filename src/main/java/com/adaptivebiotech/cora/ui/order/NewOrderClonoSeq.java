@@ -376,7 +376,6 @@ public class NewOrderClonoSeq extends NewOrder {
         if (!matchFound && patient.hasAddress ())
             billing.enterPatientAddress (patient);
 
-        clickSave ();
         clickEnterSpecimenDetails ();
         enterSpecimenType (specimen.sampleType);
 
