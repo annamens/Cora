@@ -10,6 +10,7 @@ import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import java.lang.reflect.Method;
 import org.testng.annotations.BeforeMethod;
@@ -58,9 +59,9 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
     }
 
     /**
-     * NOTE: SR-T4318
+     * NOTE: SR-T4318, SR-T4354
      * 
-     * @sdlc.requirements SR-11342
+     * @sdlc.requirements SR-11342, SR-12995
      */
     public void priorityFlagNonStreckOrder () {
         Specimen specimenDto = bloodSpecimen ();
@@ -77,7 +78,6 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
 
         // Verify Flag visible but unselected by default in UI
         shipment.clickShipmentTab ();
-        shipment.clickSave ();
         assertTrue (shipment.isHighPriorityFlagVisible ());
         assertFalse (shipment.isHighPriorityFlagSelected ());
         testLog ("High Priority Flag is visible and not selected by default");
@@ -96,9 +96,9 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
     }
 
     /**
-     * NOTE: SR-T4318
+     * NOTE: SR-T4318, SR-T4354
      * 
-     * @sdlc.requirements SR-11342
+     * @sdlc.requirements SR-11342, SR-12995
      */
     public void priorityFlagStreckOrder () {
         Specimen specimenDto = bloodSpecimen ();
@@ -118,7 +118,6 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
 
         // Verify Flag visible but selected by default in UI
         shipment.clickShipmentTab ();
-        shipment.clickSave ();
         assertTrue (shipment.isHighPriorityFlagVisible ());
         assertTrue (shipment.isHighPriorityFlagSelected ());
         testLog ("High Priority Flag is visible and selected by default");
@@ -139,6 +138,10 @@ public class ShipmentPriorityFlag extends CoraBaseBrowser {
     private void verifyCoraShipmentProperties (String shipmentNumber, boolean expectedValue) {
         Shipment shipData = coraDb.getShipmentProperties (shipmentNumber);
 
+        assertNotNull (shipData.properties);
+        assertFalse (shipData.properties.ManifestProblem);
+        assertFalse (shipData.properties.SpecimenMissing);
+        assertFalse (shipData.properties.TrfProblem);
         if (expectedValue) {
             assertTrue (shipData.properties.HighPriority);
         } else {
