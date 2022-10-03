@@ -311,8 +311,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void closeTestSelectionWarningModal () {
         String expectedModalTitle = "Test Selection Warning";
-        String modalHeader = "//confirm-dialog//h4";
-        assertTrue (isTextInElement (modalHeader, expectedModalTitle));
+        assertTrue (isTextInElement (popupTitle, expectedModalTitle));
         clickPopupOK ();
     }
 

@@ -302,7 +302,7 @@ public class CoraPage extends BasePage {
     }
 
     protected void clickPopupOK () {
-        assertTrue (click ("//button[contains(text(),'Ok')]"));
+        assertTrue (click ("//*[text()='Ok']"));
         moduleLoading ();
     }
 
