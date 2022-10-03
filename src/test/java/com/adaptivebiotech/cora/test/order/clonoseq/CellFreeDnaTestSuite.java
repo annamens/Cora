@@ -883,7 +883,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     /**
      * NOTE: SR-T4290
      * 
-     * @sdlc.requirements SR-11721:R
+     * @sdlc.requirements SR-11721:R1
      */
     public void verifyUpdatedOrderActivationBlood () {
         Specimen specimenDto = bloodSpecimen ();
