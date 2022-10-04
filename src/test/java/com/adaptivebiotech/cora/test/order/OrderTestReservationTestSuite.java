@@ -3,11 +3,22 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.test.order;
 
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraCSAdminTestPass;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraCSAdminTestUser;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraNonPHITestPass;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraNonPHITestUser;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static java.lang.String.format;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import org.testng.annotations.BeforeMethod;
+import java.util.List;
+import java.util.Map;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
@@ -26,28 +37,45 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
     private OrderTestsList              orderTestsList      = new OrderTestsList ();
     private Login                       login               = new Login ();
 
-    @BeforeMethod (alwaysRun = true)
-    public void beforeMethod () {
+    @BeforeSuite (alwaysRun = true)
+    public void setupReservations () {
+        String test = Assay.COVID19_DX_IVD.test;
         login.doLogin ();
         ordersList.isCorrectPage ();
-        ordersList.goToOrderTests ();
-        orderTestsList.doOrderTestSearch (PhysicianType.big_shot.accountName);
+        ordersList.doOrderTestSearch (test);
+        otReservationModule.clickManageReservations ();
+        otReservationModule.selectCheckbox (1);
+        otReservationModule.selectCheckbox (2);
+        otReservationModule.clickReserve ();
+        orderTestsList.clickSignOut ();
+        login.doLogin (coraCSAdminTestUser, coraCSAdminTestPass);
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (test);
+        otReservationModule.clickManageReservations ();
+        otReservationModule.selectCheckbox (3);
+        otReservationModule.selectCheckbox (4);
+        otReservationModule.clickReserve ();
     }
 
     /**
      * NOTE: SR-T4319
      * 
-     * @sdlc.requirements SR-8336:R3, SR-8336:R13, SR-8336:R26
+     * @sdlc.requirements SR-8336:R3, SR-8336:R4, SR-8336:R26
      */
     public void orderTestsListReservationUI () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
         assertTrue (otReservationModule.manageReservationsButtonDisplayed ());
         assertFalse (otReservationModule.reserveButtonDisplayed ());
+        assertFalse (otReservationModule.removeReservationButtonDisplayed ());
         assertFalse (otReservationModule.doneButtonDisplayed ());
         assertFalse (otReservationModule.reserveCheckboxesDisplayed ());
         testLog ("Reservation ui was hidden by default");
         otReservationModule.clickManageReservations ();
         assertFalse (otReservationModule.manageReservationsButtonDisplayed ());
         assertTrue (otReservationModule.reserveButtonDisplayed ());
+        assertTrue (otReservationModule.removeReservationButtonDisplayed ());
         assertTrue (otReservationModule.doneButtonDisplayed ());
         assertTrue (otReservationModule.reserveCheckboxesDisplayed ());
         testLog ("Reservation ui was displayed after clicking button");
@@ -58,16 +86,204 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         otReservationModule.selectCheckbox (1);
         assertFalse (otReservationModule.rowIsSelected (1));
         testLog ("Multiple order tests could be selected and deselected");
+    }
+
+    /**
+     * NOTE: SR-T4337
+     * 
+     * @sdlc.requirements SR-8336:R2
+     */
+    public void cldHasUI () {
+        assertTrue (userSeesReservationUI (coraTestUser, coraTestPass));
+        testLog ("Reservation ui was available for Clinical Laboratory Directors");
+    }
+
+    /**
+     * NOTE: SR-T4337
+     * 
+     * @sdlc.requirements SR-8336:R2
+     */
+    public void csAdminHasUI () {
+        assertTrue (userSeesReservationUI (coraCSAdminTestUser, coraCSAdminTestPass));
+        testLog ("Reservation ui was available for CS Admins");
+    }
+
+    /**
+     * NOTE: SR-T4337
+     * 
+     * @sdlc.requirements SR-8336:R2
+     */
+    public void otherUserHasNoUI () {
+        assertFalse (userSeesReservationUI (coraNonPHITestUser, coraNonPHITestPass));
+        testLog ("Reservation ui was not available for other user groups");
+    }
+
+    /**
+     * NOTE: SR-T4360
+     * 
+     * @sdlc.requirements SR-8336:R13
+     */
+    public void exitReservation () {
+        String sampleName = getUnreservedSampleName ();
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (sampleName);
+        otReservationModule.clickManageReservations ();
+        otReservationModule.selectCheckbox (1);
         otReservationModule.clickDone ();
+        assertFalse (orderTestsReserved (sampleName, coraTestUser));
+        testLog ("Clicking Done with order test selected did not reserve");
         assertTrue (otReservationModule.manageReservationsButtonDisplayed ());
         assertFalse (otReservationModule.reserveButtonDisplayed ());
+        assertFalse (otReservationModule.removeReservationButtonDisplayed ());
         assertFalse (otReservationModule.doneButtonDisplayed ());
         assertFalse (otReservationModule.reserveCheckboxesDisplayed ());
         testLog ("Reservation ui was hidden after clicking done");
         otReservationModule.clickManageReservations ();
         assertFalse (otReservationModule.rowIsSelected (1));
-        assertFalse (otReservationModule.rowIsSelected (2));
         testLog ("Closing and opening reservation ui deselected order tests");
     }
 
+    /**
+     * NOTE: SR-T4356
+     * 
+     * @sdlc.requirements SR-8336:R19
+     */
+    public void reserveSuccessMessage () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
+        otReservationModule.clickManageReservations ();
+        otReservationModule.selectCheckbox (1);
+        otReservationModule.selectCheckbox (2);
+        otReservationModule.clickReserve ();
+        otReservationModule.waitForToastMessage ();
+        assertTrue (otReservationModule.toastSuccessDisplayed ());
+        assertEquals (otReservationModule.getToastMessage (), "Reserved 2 tests.");
+        testLog ("User was notified of the number of order tests reserved");
+    }
+
+    /**
+     * NOTE: SR-T4357
+     * 
+     * @sdlc.requirements SR-8336:R18
+     */
+    public void removeReservationSuccessMessage () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
+        otReservationModule.clickManageReservations ();
+        otReservationModule.selectCheckbox (1);
+        otReservationModule.selectCheckbox (2);
+        otReservationModule.clickRemoveReservation ();
+        otReservationModule.waitForToastMessage ();
+        assertTrue (otReservationModule.toastSuccessDisplayed ());
+        assertEquals (otReservationModule.getToastMessage (), "2 reservation(s) removed.");
+        testLog ("User was notified of the number of order tests reservations removed");
+    }
+
+    /**
+     * NOTE: SR-T4358
+     * 
+     * @sdlc.requirements SR-8336:R10
+     */
+    public void reserveUnreserved () {
+        String sampleName = getUnreservedSampleName ();
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (sampleName);
+        otReservationModule.clickManageReservations ();
+        otReservationModule.selectCheckbox (1);
+        otReservationModule.clickReserve ();
+        otReservationModule.waitForToastMessage ();
+        assertTrue (orderTestsReserved (sampleName, coraTestUser));
+        testLog ("Unreserved order test was reserved");
+    }
+
+    /**
+     * NOTE: SR-T4358
+     * 
+     * @sdlc.requirements SR-8336:R10
+     */
+    public void overrideReserve () {
+        String sampleName = getReservedSampleName (coraCSAdminTestUser);
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (sampleName);
+        otReservationModule.clickManageReservations ();
+        otReservationModule.selectCheckbox (1);
+        otReservationModule.clickReserve ();
+        otReservationModule.waitForToastMessage ();
+        assertTrue (orderTestsReserved (sampleName, coraTestUser));
+        testLog ("Order test reservation was overridden by user");
+    }
+
+    /**
+     * NOTE: SR-T4359
+     * 
+     * @sdlc.requirements SR-8336:R12
+     */
+    public void removeOwnReservation () {
+        String sampleName = getReservedSampleName (coraTestUser);
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (sampleName);
+        otReservationModule.clickManageReservations ();
+        otReservationModule.selectCheckbox (1);
+        otReservationModule.clickRemoveReservation ();
+        otReservationModule.waitForToastMessage ();
+        assertTrue (otReservationModule.toastSuccessDisplayed ());
+        assertFalse (orderTestsReserved (sampleName, coraTestUser));
+        testLog ("User's own order test reservation was removed");
+    }
+
+    /**
+     * NOTE: SR-T4359
+     * 
+     * @sdlc.requirements SR-8336:R12
+     */
+    public void removeOtherReservation () {
+        String sampleName = getReservedSampleName (coraCSAdminTestUser);
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (sampleName);
+        otReservationModule.clickManageReservations ();
+        otReservationModule.selectCheckbox (1);
+        otReservationModule.clickRemoveReservation ();
+        otReservationModule.waitForToastMessage ();
+        assertTrue (otReservationModule.toastSuccessDisplayed ());
+        assertFalse (orderTestsReserved (sampleName, coraTestUser));
+        testLog ("Other user's order test reservation was removed");
+    }
+
+    private boolean userSeesReservationUI (String user, String pass) {
+        login.doLogin (user, pass);
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
+        return otReservationModule.manageReservationsButtonDisplayed ();
+    }
+
+    private String getUnreservedSampleName () {
+        String query = "SELECT sample_name FROM cora.order_tests WHERE test_id = '1d298f94-74ed-474f-b12c-89e07295b1b4' AND properties->>'ReservedBy' IS NULL AND properties IS NOT NULL ORDER BY RANDOM() LIMIT 1;";
+        List <Map <String, Object>> queryResult = coraDb.executeSelect (query);
+        assertEquals (queryResult.size (), 1, "Unable to find unreserved order test");
+        return String.valueOf (queryResult.get (0).get ("sample_name"));
+    }
+
+    private String getReservedSampleName (String reservedBy) {
+        String query = format ("SELECT sample_name FROM cora.order_tests WHERE test_id = '1d298f94-74ed-474f-b12c-89e07295b1b4' AND properties->>'ReservedBy' != '%s' ORDER BY RANDOM() limit 1;",
+                               reservedBy);
+        List <Map <String, Object>> queryResult = coraDb.executeSelect (query);
+        assertEquals (queryResult.size (), 1, "Unable to order test reserved by " + reservedBy);
+        return String.valueOf (queryResult.get (0).get ("sample_name"));
+    }
+
+    // will be replaced when reservation visible on front end
+    private boolean orderTestsReserved (String sampleName, String user) {
+        String query = "SELECT properties->>'ReservedBy' AS reserved_by FROM cora.order_tests WHERE sample_name = '%s';";
+        List <Map <String, Object>> queryResult = coraDb.executeSelect (format (query,
+                                                                                sampleName));
+        assertFalse (queryResult.isEmpty (), "Order test not found");
+        return String.valueOf (queryResult.get (0).get ("reserved_by")).equals (user) ? true : false;
+    }
 }

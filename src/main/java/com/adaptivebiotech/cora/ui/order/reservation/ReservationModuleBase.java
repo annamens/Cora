@@ -14,8 +14,9 @@ import com.seleniumfy.test.utils.BasePage;
 public class ReservationModuleBase extends BasePage {
 
     private final String manageReservationsButton = "//button[text()='Manage Reservations']";
-    private final String reserveButton            = ".btn-reservation-action";
+    private final String reserveButton            = "//button[text()='Reserve']";
     private final String doneButton               = ".btn-reservation-done";
+    private final String removeReservationButton  = "//button[text()='Remove Reservation']";
     private final String checkbox                 = "tr:nth-of-type(%s) td input[type='checkbox']";
 
     public boolean manageReservationsButtonDisplayed () {
@@ -28,6 +29,10 @@ public class ReservationModuleBase extends BasePage {
 
     public boolean doneButtonDisplayed () {
         return isElementPresent (doneButton);
+    }
+
+    public boolean removeReservationButtonDisplayed () {
+        return isElementPresent (removeReservationButton);
     }
 
     public void clickManageReservations () {
@@ -49,4 +54,25 @@ public class ReservationModuleBase extends BasePage {
     public void clickDone () {
         assertTrue (click (doneButton));
     }
+
+    public void clickReserve () {
+        assertTrue (click (reserveButton));
+    }
+
+    public void clickRemoveReservation () {
+        assertTrue (click (removeReservationButton));
+    }
+
+    public void waitForToastMessage () {
+        waitForElementVisible (".toast-error, .toast-success");
+    }
+
+    public boolean toastSuccessDisplayed () {
+        return isElementPresent (".toast-success");
+    }
+
+    public String getToastMessage () {
+        return getText ("#toast-container .toast-message");
+    }
+
 }
