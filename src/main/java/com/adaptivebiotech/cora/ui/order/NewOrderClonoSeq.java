@@ -74,16 +74,6 @@ public class NewOrderClonoSeq extends NewOrder {
         waitUntilActivated ();
     }
 
-    public String activateOrderAndGetToastMessage () {
-        clickSaveAndActivate ();
-        checkOrderForErrors ();
-        confirmActivate ();
-        moduleLoading ();
-        pageLoading ();
-        assertTrue (isToastErrorPresent ());
-        return (getToastError ());
-    }
-
     public void clickSaveAndActivate () {
         assertTrue (click ("#order-entry-save-and-activate"));
     }

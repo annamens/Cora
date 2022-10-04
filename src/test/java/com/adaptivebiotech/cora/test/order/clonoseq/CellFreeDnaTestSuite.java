@@ -903,13 +903,15 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         shipment.createShipment (order.orderNumber, Vacutainer);
         accession.completeAccession ();
         newOrderClonoSeq.gotoOrderEntry (order.id);
-        
+
         // Collection date = today - 7, activation fail
         newOrderClonoSeq.enterCollectionDate (genLocalDate (-7));
-        assertEquals (newOrderClonoSeq.activateOrderAndGetToastMessage (),
+        newOrderClonoSeq.clickSaveAndActivate ();
+        newOrderClonoSeq.confirmActivate ();
+        assertEquals (newOrderClonoSeq.getToastError (),
                       "Order save failed with reason: Streck (Blood) was not isolated within 7 days from the collection date.");
         testLog ("Streck Blood Collection Date = Today - 7, Order Activation Blocked");
-        
+
         // Collection date = today - 6, activation pass
         newOrderClonoSeq.enterCollectionDate (genLocalDate (-6));
         newOrderClonoSeq.activateOrder ();
@@ -939,7 +941,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         testLog ("Order No: " + order.orderNumber);
         shipment.createShipment (order.orderNumber, Vacutainer);
         accession.completeAccession ();
-        
+
         // Isolation date = today - 45, activation fail
         String query = "UPDATE cora.specimens SET isolation_date = '%s' where specimen_number = '%s';";
         coraDb.executeUpdate (format (query,
@@ -948,7 +950,9 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                                                           pstZoneId),
                                       specimenDto.specimenNumber));
         newOrderClonoSeq.gotoOrderEntry (order.id);
-        assertEquals (newOrderClonoSeq.activateOrderAndGetToastMessage (),
+        newOrderClonoSeq.clickSaveAndActivate ();
+        newOrderClonoSeq.confirmActivate ();
+        assertEquals (newOrderClonoSeq.getToastError (),
                       "Order save failed with reason: Streck (Plasma) was not extracted within 45 days from the isolation date.");
         testLog ("Streck Plasma Isolation Date = Today - 45, Order Activation Blocked");
 
