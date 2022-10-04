@@ -3,15 +3,19 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.test.order;
 
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraCSAdminTestPass;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraCSAdminTestUser;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraNonPHITestPass;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraNonPHITestUser;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.reservation.ReservationModule;
 
@@ -23,16 +27,7 @@ import com.adaptivebiotech.cora.ui.order.reservation.ReservationModule;
 public class OrderTestReservationTestSuite extends CoraBaseBrowser {
     private ReservationModule reservationModule = new ReservationModule ();
     private OrdersList        ordersList        = new OrdersList ();
-    private OrderTestsList    orderTestsList    = new OrderTestsList ();
     private Login             login             = new Login ();
-
-    @BeforeMethod (alwaysRun = true)
-    public void beforeMethod () {
-        login.doLogin ();
-        ordersList.isCorrectPage ();
-        ordersList.goToOrderTests ();
-        orderTestsList.doOrderTestSearch (PhysicianType.big_shot.accountName);
-    }
 
     /**
      * NOTE: SR-T4319
@@ -40,6 +35,9 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-8336:R3, SR-8336:R13, SR-8336:R26
      */
     public void orderTestsListReservationUI () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
         assertTrue (reservationModule.manageReservationsButtonDisplayed ());
         assertFalse (reservationModule.reserveButtonDisplayed ());
         assertFalse (reservationModule.doneButtonDisplayed ());
@@ -68,6 +66,43 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         assertFalse (reservationModule.rowIsSelected (1));
         assertFalse (reservationModule.rowIsSelected (2));
         testLog ("Closing and opening reservation ui deselected order tests");
+    }
+
+    /**
+     * NOTE: SR-T4337
+     * 
+     * @sdlc.requirements SR-8336:R2
+     */
+    public void cldHasUI () {
+        assertTrue (userSeesReservationUI (coraTestUser, coraTestPass));
+        testLog ("Reservation ui was available for Clinical Laboratory Directors");
+    }
+
+    /**
+     * NOTE: SR-T4337
+     * 
+     * @sdlc.requirements SR-8336:R2
+     */
+    public void csAdminHasUI () {
+        assertTrue (userSeesReservationUI (coraCSAdminTestUser, coraCSAdminTestPass));
+        testLog ("Reservation ui was available for CS Admins");
+    }
+
+    /**
+     * NOTE: SR-T4337
+     * 
+     * @sdlc.requirements SR-8336:R2
+     */
+    public void otherUserHasNoUI () {
+        assertFalse (userSeesReservationUI (coraNonPHITestUser, coraNonPHITestPass));
+        testLog ("Reservation ui was not available for other user groups");
+    }
+
+    private boolean userSeesReservationUI (String user, String pass) {
+        login.doLogin (user, pass);
+        ordersList.isCorrectPage ();
+        ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
+        return reservationModule.manageReservationsButtonDisplayed ();
     }
 
 }

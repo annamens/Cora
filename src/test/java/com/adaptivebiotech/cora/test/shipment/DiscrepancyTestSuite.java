@@ -145,7 +145,9 @@ public class DiscrepancyTestSuite extends CoraBaseBrowser {
         Arrays.stream (Discrepancy.values ()).forEach (d -> {
             Element holdType = discrepancyRes.getDiscrepancyHoldType (d);
             assertNull (holdType.text, "Discrepancy page, Non Streck " + d.text);
+            discrepancyRes.resolveDiscrepancy (d);
         });
+        discrepancyRes.clickSave ();
         testLog ("validate specimen/order hold on discrepany page");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
@@ -180,6 +182,17 @@ public class DiscrepancyTestSuite extends CoraBaseBrowser {
             assertEquals (holdType.color, streckOrder.get (d).color, "Accession page, Streck " + d.text);
         });
         testLog ("validate Major/Minor discrepancy  and specimen/order hold on accession page");
+
+        accession.clickDiscrepancyResolutionsTab ();
+        discrepancyRes.isCorrectPage ();
+        Arrays.stream (Discrepancy.values ()).forEach (d -> {
+            Element holdType = discrepancyRes.getDiscrepancyHoldType (d);
+            assertEquals (holdType.text, streckOrder.get (d).text, "Discrepancy page, Streck " + d.text);
+            assertEquals (holdType.color, streckOrder.get (d).color, "Discrepancy page, Streck " + d.text);
+            discrepancyRes.resolveDiscrepancy (d);
+        });
+        discrepancyRes.clickSave ();
+        testLog ("validate specimen/order hold on discrepany page");
     }
 
 }

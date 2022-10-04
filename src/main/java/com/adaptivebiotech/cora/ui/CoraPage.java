@@ -359,4 +359,5 @@ public class CoraPage extends BasePage {
         assertTrue (click (".modal-header button.close"));
         moduleLoading ();
     }
+
 }

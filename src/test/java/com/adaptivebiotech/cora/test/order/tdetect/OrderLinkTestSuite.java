@@ -87,7 +87,6 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         accession.clickLabelVerificationComplete ();
         accession.clickDiscrepancyResolutionsTab ();
         discrepancyResolutions.resolveAllDiscrepancies ();
-        discrepancyResolutions.clickSave ();
         testLog ("Resolve discrepancy");
 
         discrepancyResolutions.clickAccessionTab ();

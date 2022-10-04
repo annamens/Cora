@@ -10,7 +10,6 @@ import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSp
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
@@ -22,6 +21,7 @@ import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -246,6 +246,10 @@ public abstract class NewOrder extends OrderHeader {
         return message;
     }
 
+    public boolean isToastErrorPresent () {
+        return isElementVisible (toastError);
+    }
+
     public String getToastSuccess () {
         String message = getText (toastSuccess);
         assertTrue (waitForElementInvisible (toastContainer));
@@ -266,11 +270,18 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterOrderNotes (String notes) {
-        assertTrue (setText (orderNotes, notes));
+        if (isNotNullAndNotEmpty (notes)) {
+            assertTrue (clear (orderNotes));
+            assertTrue (setText (orderNotes, notes));
+        }
     }
 
     public String getOrderNotes () {
         return readInput (orderNotes);
+    }
+
+    public boolean isOrderNotesErrorPresent () {
+        return isElementVisible (textDanger);
     }
 
     public void enterInstruction (String instruction) {
@@ -364,7 +375,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void clickRemovePatient () {
-        assertTrue (click ("[ng-click='ctrl.removePatient()']"));
+        assertTrue (click ("//button[text()='Remove Patient']"));
     }
 
     public void clickPatientCode () {
@@ -514,7 +525,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public void uploadAttachments (List <String> files) {
         for (String file : files) {
-            waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
+            uploadFile (fileUpload, file);
             transactionInProgress ();
             waitForElement (fileUpload).clear ();
         }
