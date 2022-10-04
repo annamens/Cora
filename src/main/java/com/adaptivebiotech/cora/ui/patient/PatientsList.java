@@ -6,9 +6,12 @@ package com.adaptivebiotech.cora.ui.patient;
 import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import java.util.List;
+import org.openqa.selenium.TimeoutException;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author Harry Soehalim
@@ -27,7 +30,9 @@ public class PatientsList extends CoraPage {
     }
 
     public void searchPatient (Object term) {
-        assertTrue (setText ("[type='search']", term.toString ()));
+        String css = "[type='search']";
+        assertTrue (clear (css));
+        assertTrue (setText (css, term.toString ()));
         assertTrue (pressKey (ENTER));
         pageLoading ();
     }
@@ -77,4 +82,21 @@ public class PatientsList extends CoraPage {
     public boolean isNoResultsFoundPresent () {
         return isElementVisible ("//*[text()='Sorry, no results found.']");
     }
+
+    public void waitForNewPatientToAppear (String term) {
+        Timeout timer = new Timeout (millisDuration * 60, millisPoll * 60);
+        while (!timer.Timedout ()) {
+            searchPatient (term);
+            try {
+                clickPatient (term);
+                return;
+            } catch (TimeoutException e) {
+                timer.Wait ();
+                refresh ();
+                isCorrectPage ();
+            }
+        }
+        fail ("not able to find patient on patients page, search term: " + term);
+    }
+
 }
