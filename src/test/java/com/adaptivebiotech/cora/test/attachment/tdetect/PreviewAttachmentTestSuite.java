@@ -40,8 +40,9 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
     /**
      * NOTE: SR-T4205
      * 
-     * @sdlc.requirements SR-11381
+     * @sdlc.requirements SR-11381, SR-9398
      */
+    @Test (groups = "irish-wolfhound")
     public void previewOrderShipmentAttachment () {
         login.doLogin ();
         ordersList.isCorrectPage ();
@@ -57,8 +58,8 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
         shipment.clickShipmentTab ();
         UUID shipmentId = shipment.getShipmentId ();
         shipment.uploadAttachments (uploadPreviewFiles);
-
-        for (String file : previewFiles) {
+        shipment.uploadAttachments (uploadPDFfile);
+        for (String file : allPreviewFiles) {
             shipment.clickFilePreviewLink (file);
             shipment.closeFilePreview ();
         }
@@ -66,25 +67,25 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
         newOrderTDetect.gotoOrderEntry (order.id);
         newOrderTDetect.uploadAttachments (uploadPreviewFiles);
+        newOrderTDetect.uploadAttachments (uploadPDFfile);
         newOrderTDetect.gotoOrderEntry (order.id);
 
-        previewFilesPendingOrder ("Orders", previewFiles);
-        validateAttachments (newOrderTDetect.getCoraAttachments (), previewFiles, Pending);
+        previewFilesPendingOrder ("Orders", allPreviewFiles);
+        validateAttachments (newOrderTDetect.getCoraAttachments (), allPreviewFiles, Pending);
 
-        previewFilesPendingOrder ("Shipments", previewFiles);
-        validateAttachments (newOrderTDetect.getShipmentAttachments (), previewFiles, Pending);
+        previewFilesPendingOrder ("Shipments", allPreviewFiles);
+        validateAttachments (newOrderTDetect.getShipmentAttachments (), allPreviewFiles, Pending);
 
         accession.gotoAccession (shipmentId);
         accession.completeAccession ();
         newOrderTDetect.activateOrder ();
         orderDetailTDetect.gotoOrderDetailsPage (order.id);
 
-        previewFilesActiveOrder ("Orders", previewFiles);
-        validateAttachments (orderDetailTDetect.getCoraAttachments (), previewFiles, Active);
+        previewFilesActiveOrder ("Orders", allPreviewFiles);
+        validateAttachments (orderDetailTDetect.getCoraAttachments (), allPreviewFiles, Active);
 
-        previewFilesActiveOrder ("Shipments", previewFiles);
-        validateAttachments (orderDetailTDetect.getShipmentAttachments (), previewFiles, Active);
-
+        previewFilesActiveOrder ("Shipments", allPreviewFiles);
+        validateAttachments (orderDetailTDetect.getShipmentAttachments (), allPreviewFiles, Active);
     }
 
     private void previewFilesPendingOrder (String attachmentSection, List <String> previewFiles) {
@@ -100,45 +101,4 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
             orderDetailTDetect.closeFilePreview ();
         }
     }
-
-    /**
-     * @sdlc.requirements SR-9398
-     */
-    @Test (groups = "irish-wolfhound")
-    public void previewPDFfile () {
-        login.doLogin ();
-        ordersList.isCorrectPage ();
-
-        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (clonoSEQ_trial),
-                                                          newTrialProtocolPatient (),
-                                                          icdCodes,
-                                                          COVID19_DX_IVD,
-                                                          bloodSpecimen ());
-        testLog ("Order created: " + order.orderNumber);
-        shipment.createShipment (order.orderNumber, Tube);
-        shipment.clickShipmentTab ();
-        UUID shipmentId = shipment.getShipmentId ();
-        shipment.uploadAttachments (PDFfile);
-        shipment.clickFilePreviewLink ("PDFtypebelow15MB.pdf");
-        shipment.closeFilePreview ();
-        testLog ("Shipment attachment PDF type can be previewed");
-        newOrderTDetect.gotoOrderEntry (order.id);
-        newOrderTDetect.uploadAttachments (PDFfile);
-
-        previewFilesPendingOrder ("Orders", previewPDFfile);
-        validateAttachments (newOrderTDetect.getCoraAttachments (), previewPDFfile, Pending);
-        previewFilesPendingOrder ("Shipments", previewPDFfile);
-        validateAttachments (newOrderTDetect.getShipmentAttachments (), previewPDFfile, Pending);
-        accession.gotoAccession (shipmentId);
-        accession.completeAccession ();
-        newOrderTDetect.activateOrder ();
-        orderDetailTDetect.gotoOrderDetailsPage (order.id);
-
-        previewFilesActiveOrder ("Orders", previewPDFfile);
-        validateAttachments (orderDetailTDetect.getCoraAttachments (), previewPDFfile, Active);
-
-        previewFilesActiveOrder ("Shipments", previewPDFfile);
-        validateAttachments (orderDetailTDetect.getShipmentAttachments (), previewPDFfile, Active);
-    }
-
 }
