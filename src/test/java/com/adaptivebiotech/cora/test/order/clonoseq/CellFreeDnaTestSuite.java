@@ -939,8 +939,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         testLog ("Order No: " + order.orderNumber);
         shipment.createShipment (order.orderNumber, Vacutainer);
         accession.completeAccession ();
-        newOrderClonoSeq.gotoOrderEntry (order.id);
-
+        
         // Isolation date = today - 45, activation fail
         String query = "UPDATE cora.specimens SET isolation_date = '%s' where specimen_number = '%s';";
         coraDb.executeUpdate (format (query,
@@ -948,8 +947,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                                                           ISO_LOCAL_DATE_TIME,
                                                           pstZoneId),
                                       specimenDto.specimenNumber));
-        newOrderClonoSeq.refresh ();
-        newOrderClonoSeq.isCorrectPage ();
+        newOrderClonoSeq.gotoOrderEntry (order.id);
         assertEquals (newOrderClonoSeq.activateOrderAndGetToastMessage (),
                       "Order save failed with reason: Streck (Plasma) was not extracted within 45 days from the isolation date.");
         testLog ("Streck Plasma Isolation Date = Today - 45, Order Activation Blocked");
