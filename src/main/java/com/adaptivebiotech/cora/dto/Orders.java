@@ -335,7 +335,8 @@ public final class Orders {
         PathRequest ("Adaptive Assists with Specimen Retrieval"),
         Reflex ("Use Specimen Stored at Adaptive (Reflex)"),
         BloodDrawLabCorp ("Adaptive Schedules Patient Blood Draw with LabCorp"),
-        BloodDrawHome ("Adaptive Schedules Patient In-Home Blood Draw");
+        BloodDrawHome ("Adaptive Schedules Patient In-Home Blood Draw"),
+        BloodPlasmaLabCorp ("Adaptive Schedules Patient Blood Draw and Plasma Isolation with LabCorp");
 
         public String label;
 

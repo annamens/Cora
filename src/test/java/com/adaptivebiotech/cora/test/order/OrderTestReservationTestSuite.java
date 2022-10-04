@@ -24,7 +24,7 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.reservation.OrderTestsReservationModule;
+import com.adaptivebiotech.cora.ui.order.reservation.ReservationModule;
 
 /**
  * @author Spencer Fisco
@@ -32,10 +32,10 @@ import com.adaptivebiotech.cora.ui.order.reservation.OrderTestsReservationModule
  */
 @Test (groups = { "regression", "irish-wolfhound" })
 public class OrderTestReservationTestSuite extends CoraBaseBrowser {
-    private OrderTestsReservationModule otReservationModule = new OrderTestsReservationModule ();
-    private OrdersList                  ordersList          = new OrdersList ();
-    private OrderTestsList              orderTestsList      = new OrderTestsList ();
-    private Login                       login               = new Login ();
+    private ReservationModule reservationModule = new ReservationModule ();
+    private OrdersList        ordersList        = new OrdersList ();
+    private OrderTestsList    orderTestsList    = new OrderTestsList ();
+    private Login             login             = new Login ();
 
     @BeforeSuite (alwaysRun = true)
     public void setupReservations () {
@@ -43,18 +43,18 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (test);
-        otReservationModule.clickManageReservations ();
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.selectCheckbox (2);
-        otReservationModule.clickReserve ();
+        reservationModule.clickManageReservations ();
+        reservationModule.selectCheckbox (1);
+        reservationModule.selectCheckbox (2);
+        reservationModule.clickReserve ();
         orderTestsList.clickSignOut ();
         login.doLogin (coraCSAdminTestUser, coraCSAdminTestPass);
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (test);
-        otReservationModule.clickManageReservations ();
-        otReservationModule.selectCheckbox (3);
-        otReservationModule.selectCheckbox (4);
-        otReservationModule.clickReserve ();
+        reservationModule.clickManageReservations ();
+        reservationModule.selectCheckbox (3);
+        reservationModule.selectCheckbox (4);
+        reservationModule.clickReserve ();
     }
 
     /**
@@ -66,25 +66,25 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
-        assertTrue (otReservationModule.manageReservationsButtonDisplayed ());
-        assertFalse (otReservationModule.reserveButtonDisplayed ());
-        assertFalse (otReservationModule.removeReservationButtonDisplayed ());
-        assertFalse (otReservationModule.doneButtonDisplayed ());
-        assertFalse (otReservationModule.reserveCheckboxesDisplayed ());
+        assertTrue (reservationModule.manageReservationsButtonDisplayed ());
+        assertFalse (reservationModule.reserveButtonDisplayed ());
+        assertFalse (reservationModule.removeReservationButtonDisplayed ());
+        assertFalse (reservationModule.doneButtonDisplayed ());
+        assertFalse (reservationModule.reserveCheckboxesDisplayed ());
         testLog ("Reservation ui was hidden by default");
-        otReservationModule.clickManageReservations ();
-        assertFalse (otReservationModule.manageReservationsButtonDisplayed ());
-        assertTrue (otReservationModule.reserveButtonDisplayed ());
-        assertTrue (otReservationModule.removeReservationButtonDisplayed ());
-        assertTrue (otReservationModule.doneButtonDisplayed ());
-        assertTrue (otReservationModule.reserveCheckboxesDisplayed ());
+        reservationModule.clickManageReservations ();
+        assertFalse (reservationModule.manageReservationsButtonDisplayed ());
+        assertTrue (reservationModule.reserveButtonDisplayed ());
+        assertTrue (reservationModule.removeReservationButtonDisplayed ());
+        assertTrue (reservationModule.doneButtonDisplayed ());
+        assertTrue (reservationModule.reserveCheckboxesDisplayed ());
         testLog ("Reservation ui was displayed after clicking button");
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.selectCheckbox (2);
-        assertTrue (otReservationModule.rowIsSelected (1));
-        assertTrue (otReservationModule.rowIsSelected (2));
-        otReservationModule.selectCheckbox (1);
-        assertFalse (otReservationModule.rowIsSelected (1));
+        reservationModule.selectCheckbox (1);
+        reservationModule.selectCheckbox (2);
+        assertTrue (reservationModule.rowIsSelected (1));
+        assertTrue (reservationModule.rowIsSelected (2));
+        reservationModule.selectCheckbox (1);
+        assertFalse (reservationModule.rowIsSelected (1));
         testLog ("Multiple order tests could be selected and deselected");
     }
 
@@ -128,19 +128,19 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
-        otReservationModule.clickManageReservations ();
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.clickDone ();
+        reservationModule.clickManageReservations ();
+        reservationModule.selectCheckbox (1);
+        reservationModule.clickDone ();
         assertFalse (orderTestsReserved (sampleName, coraTestUser));
         testLog ("Clicking Done with order test selected did not reserve");
-        assertTrue (otReservationModule.manageReservationsButtonDisplayed ());
-        assertFalse (otReservationModule.reserveButtonDisplayed ());
-        assertFalse (otReservationModule.removeReservationButtonDisplayed ());
-        assertFalse (otReservationModule.doneButtonDisplayed ());
-        assertFalse (otReservationModule.reserveCheckboxesDisplayed ());
+        assertTrue (reservationModule.manageReservationsButtonDisplayed ());
+        assertFalse (reservationModule.reserveButtonDisplayed ());
+        assertFalse (reservationModule.removeReservationButtonDisplayed ());
+        assertFalse (reservationModule.doneButtonDisplayed ());
+        assertFalse (reservationModule.reserveCheckboxesDisplayed ());
         testLog ("Reservation ui was hidden after clicking done");
-        otReservationModule.clickManageReservations ();
-        assertFalse (otReservationModule.rowIsSelected (1));
+        reservationModule.clickManageReservations ();
+        assertFalse (reservationModule.rowIsSelected (1));
         testLog ("Closing and opening reservation ui deselected order tests");
     }
 
@@ -153,13 +153,13 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
-        otReservationModule.clickManageReservations ();
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.selectCheckbox (2);
-        otReservationModule.clickReserve ();
-        otReservationModule.waitForToastMessage ();
-        assertTrue (otReservationModule.toastSuccessDisplayed ());
-        assertEquals (otReservationModule.getToastMessage (), "Reserved 2 tests.");
+        reservationModule.clickManageReservations ();
+        reservationModule.selectCheckbox (1);
+        reservationModule.selectCheckbox (2);
+        reservationModule.clickReserve ();
+        reservationModule.waitForToastMessage ();
+        assertTrue (reservationModule.toastSuccessDisplayed ());
+        assertEquals (reservationModule.getToastMessage (), "Reserved 2 tests.");
         testLog ("User was notified of the number of order tests reserved");
     }
 
@@ -172,13 +172,13 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
-        otReservationModule.clickManageReservations ();
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.selectCheckbox (2);
-        otReservationModule.clickRemoveReservation ();
-        otReservationModule.waitForToastMessage ();
-        assertTrue (otReservationModule.toastSuccessDisplayed ());
-        assertEquals (otReservationModule.getToastMessage (), "2 reservation(s) removed.");
+        reservationModule.clickManageReservations ();
+        reservationModule.selectCheckbox (1);
+        reservationModule.selectCheckbox (2);
+        reservationModule.clickRemoveReservation ();
+        reservationModule.waitForToastMessage ();
+        assertTrue (reservationModule.toastSuccessDisplayed ());
+        assertEquals (reservationModule.getToastMessage (), "2 reservation(s) removed.");
         testLog ("User was notified of the number of order tests reservations removed");
     }
 
@@ -192,10 +192,10 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
-        otReservationModule.clickManageReservations ();
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.clickReserve ();
-        otReservationModule.waitForToastMessage ();
+        reservationModule.clickManageReservations ();
+        reservationModule.selectCheckbox (1);
+        reservationModule.clickReserve ();
+        reservationModule.waitForToastMessage ();
         assertTrue (orderTestsReserved (sampleName, coraTestUser));
         testLog ("Unreserved order test was reserved");
     }
@@ -210,10 +210,10 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
-        otReservationModule.clickManageReservations ();
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.clickReserve ();
-        otReservationModule.waitForToastMessage ();
+        reservationModule.clickManageReservations ();
+        reservationModule.selectCheckbox (1);
+        reservationModule.clickReserve ();
+        reservationModule.waitForToastMessage ();
         assertTrue (orderTestsReserved (sampleName, coraTestUser));
         testLog ("Order test reservation was overridden by user");
     }
@@ -228,11 +228,11 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
-        otReservationModule.clickManageReservations ();
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.clickRemoveReservation ();
-        otReservationModule.waitForToastMessage ();
-        assertTrue (otReservationModule.toastSuccessDisplayed ());
+        reservationModule.clickManageReservations ();
+        reservationModule.selectCheckbox (1);
+        reservationModule.clickRemoveReservation ();
+        reservationModule.waitForToastMessage ();
+        assertTrue (reservationModule.toastSuccessDisplayed ());
         assertFalse (orderTestsReserved (sampleName, coraTestUser));
         testLog ("User's own order test reservation was removed");
     }
@@ -247,11 +247,11 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
-        otReservationModule.clickManageReservations ();
-        otReservationModule.selectCheckbox (1);
-        otReservationModule.clickRemoveReservation ();
-        otReservationModule.waitForToastMessage ();
-        assertTrue (otReservationModule.toastSuccessDisplayed ());
+        reservationModule.clickManageReservations ();
+        reservationModule.selectCheckbox (1);
+        reservationModule.clickRemoveReservation ();
+        reservationModule.waitForToastMessage ();
+        assertTrue (reservationModule.toastSuccessDisplayed ());
         assertFalse (orderTestsReserved (sampleName, coraTestUser));
         testLog ("Other user's order test reservation was removed");
     }
@@ -260,7 +260,7 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         login.doLogin (user, pass);
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (PhysicianType.big_shot.accountName);
-        return otReservationModule.manageReservationsButtonDisplayed ();
+        return reservationModule.manageReservationsButtonDisplayed ();
     }
 
     private String getUnreservedSampleName () {

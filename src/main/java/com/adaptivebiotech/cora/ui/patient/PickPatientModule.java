@@ -11,6 +11,7 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 public class PickPatientModule extends CoraPage {
 
     private final String birthDate = "#dateOfBirth";
+    private final String firstrow  = ".ab-panel.matches .row:nth-child(1)";
 
     public void clickCreateNewPatient () {
         assertTrue (click ("#new-patient"));
@@ -71,12 +72,40 @@ public class PickPatientModule extends CoraPage {
         pageLoading ();
     }
 
+    public void searchPatientWithLastName (Patient patient) {
+        assertTrue (setText ("#patient-lastname", patient.lastName));
+        assertTrue (click ("#patient-search"));
+        pageLoading ();
+    }
+
+    public boolean isPickPatientRowPresent () {
+        return isElementVisible (".pick-patient-row");
+    }
+
+    public void clickRemovePatient () {
+        assertTrue (click ("//*[text()='Remove Patient']"));
+    }
+
+    public boolean isNoPatientsFound () {
+        return isElementVisible ("//*[text()='No patients found.']");
+    }
+
+    public void clickSelectPatient () {
+        assertTrue (click (firstrow));
+        assertTrue (click ("#select-patient"));
+        pageLoading ();
+
+    }
+
+    public String getFirstRowPatient () {
+        return getText (".ab-panel.matches .row:nth-child(1)");
+    }
+
     public boolean searchOrCreatePatient (Patient patient) {
         searchPatient (patient);
 
         boolean matchFound = false;
-        String firstrow = ".ab-panel.matches .row:nth-child(1)";
-        if (getText (firstrow).matches ("No patient(s)? found\\."))
+        if (getText (firstrow).matches ("No patients found."))
             createNewPatient (patient);
         else {
             assertTrue (click (firstrow));
