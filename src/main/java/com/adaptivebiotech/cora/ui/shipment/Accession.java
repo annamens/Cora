@@ -81,7 +81,8 @@ public class Accession extends ShipmentHeader {
     public void clickIntakeComplete () {
         assertTrue (click ("[data-ng-click*='intake-complete']"));
         assertTrue (isTextInElement (popupTitle, "Intake Complete Confirmation"));
-        clickPopupOK ();
+        assertTrue (click ("//*[text()='Intake Complete']"));
+        moduleLoading ();
         assertTrue (isTextInElement (shipmentStatus, "Intake Complete"));
     }
 
@@ -100,7 +101,8 @@ public class Accession extends ShipmentHeader {
     public void clickPass () {
         assertTrue (click ("[ng-click='ctrl.approveSpecimen(true)']"));
         assertTrue (isTextInElement (popupTitle, "Specimen Approval Confirmation"));
-        clickPopupOK ();
+        assertTrue (click ("//*[text()='PASS Specimen']"));
+        moduleLoading ();
         assertTrue (isTextInElement (shipmentStatus, "Specimen Approved (PASS)"));
     }
 
@@ -113,7 +115,8 @@ public class Accession extends ShipmentHeader {
         String locator = format ("(//*[@ng-click='ctrl.setLabelingComplete(container)'])[%s]", containerNo);
         assertTrue (click (locator));
         assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
-        clickPopupOK ();
+        assertTrue (click ("//*[text()='Labeling Complete']"));
+        moduleLoading ();
     }
 
     public void clickLabelVerificationComplete () {
@@ -125,7 +128,8 @@ public class Accession extends ShipmentHeader {
         String locator = format ("(//*[@ng-click='ctrl.setLabelVerificationComplete(container)'])[%s]", containerNo);
         assertTrue (click (locator));
         assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
-        clickPopupOK ();
+        assertTrue (click ("//*[text()='Label Verification Complete']"));
+        moduleLoading ();
     }
 
     public void clickPassAllDocumentations () {

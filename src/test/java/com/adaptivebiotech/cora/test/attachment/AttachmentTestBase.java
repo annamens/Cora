@@ -26,13 +26,13 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
  */
 public class AttachmentTestBase extends CoraBaseBrowser {
 
-    protected final List <String> uploadPDFfile      = asList ("uploadFiles/PDFtypebelow15MB.PDF");
+    protected final List <String> uploadPDFfile      = asList ("uploadFiles/upperExtension.PDF");
 
     protected final List <String> previewFiles       = asList ("gifBelow15MB.gif",
                                                                "jpgBelow15MB.jpg",
                                                                "pdfBelow15MB.pdf",
                                                                "pngBelow15MB.png");
-    protected final List <String> allPreviewFiles    = union (previewFiles, asList ("PDFtypebelow15MB.pdf"));
+    protected final List <String> allPreviewFiles    = union (previewFiles, asList ("upperExtension.pdf"));
 
     protected final List <String> uploadPreviewFiles = previewFiles.stream ().map (e -> "uploadFiles/" + e)
                                                                    .collect (Collectors.toList ());
