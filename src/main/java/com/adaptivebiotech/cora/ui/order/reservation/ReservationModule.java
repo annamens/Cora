@@ -68,7 +68,7 @@ public class ReservationModule extends BasePage {
     }
 
     public boolean toastSuccessDisplayed () {
-        return isElementPresent (".toast-success");
+        return isElementVisible (".toast-success");
     }
 
     public String getToastMessage () {

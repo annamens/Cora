@@ -16,13 +16,10 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
 import java.util.Map;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.reservation.ReservationModule;
 
@@ -34,28 +31,7 @@ import com.adaptivebiotech.cora.ui.order.reservation.ReservationModule;
 public class OrderTestReservationTestSuite extends CoraBaseBrowser {
     private ReservationModule reservationModule = new ReservationModule ();
     private OrdersList        ordersList        = new OrdersList ();
-    private OrderTestsList    orderTestsList    = new OrderTestsList ();
     private Login             login             = new Login ();
-
-    @BeforeSuite (alwaysRun = true)
-    public void setupReservations () {
-        String test = Assay.COVID19_DX_IVD.test;
-        login.doLogin ();
-        ordersList.isCorrectPage ();
-        ordersList.doOrderTestSearch (test);
-        reservationModule.clickManageReservations ();
-        reservationModule.selectCheckbox (1);
-        reservationModule.selectCheckbox (2);
-        reservationModule.clickReserve ();
-        orderTestsList.clickSignOut ();
-        login.doLogin (coraCSAdminTestUser, coraCSAdminTestPass);
-        ordersList.isCorrectPage ();
-        ordersList.doOrderTestSearch (test);
-        reservationModule.clickManageReservations ();
-        reservationModule.selectCheckbox (3);
-        reservationModule.selectCheckbox (4);
-        reservationModule.clickReserve ();
-    }
 
     /**
      * NOTE: SR-T4319
@@ -124,7 +100,8 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-8336:R13
      */
     public void exitReservation () {
-        String sampleName = getUnreservedSampleName ();
+        String sampleName = "104730-SN-4454";
+        clearReservationProperties (sampleName);
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
@@ -188,7 +165,8 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-8336:R10
      */
     public void reserveUnreserved () {
-        String sampleName = getUnreservedSampleName ();
+        String sampleName = "104204-SN-4145";
+        clearReservationProperties (sampleName);
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
@@ -206,7 +184,8 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-8336:R10
      */
     public void overrideReserve () {
-        String sampleName = getReservedSampleName (coraCSAdminTestUser);
+        String sampleName = "114744-SN-8680";
+        setReservationProperties (sampleName, coraCSAdminTestUser);
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
@@ -224,7 +203,8 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-8336:R12
      */
     public void removeOwnReservation () {
-        String sampleName = getReservedSampleName (coraTestUser);
+        String sampleName = "128977-SN-14854";
+        setReservationProperties (sampleName, coraTestUser);
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
@@ -243,7 +223,8 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-8336:R12
      */
     public void removeOtherReservation () {
-        String sampleName = getReservedSampleName (coraCSAdminTestUser);
+        String sampleName = "115475-SN-8988";
+        setReservationProperties (sampleName, coraCSAdminTestUser);
         login.doLogin ();
         ordersList.isCorrectPage ();
         ordersList.doOrderTestSearch (sampleName);
@@ -263,19 +244,17 @@ public class OrderTestReservationTestSuite extends CoraBaseBrowser {
         return reservationModule.manageReservationsButtonDisplayed ();
     }
 
-    private String getUnreservedSampleName () {
-        String query = "SELECT sample_name FROM cora.order_tests WHERE test_id = '1d298f94-74ed-474f-b12c-89e07295b1b4' AND properties->>'ReservedBy' IS NULL AND properties IS NOT NULL ORDER BY RANDOM() LIMIT 1;";
-        List <Map <String, Object>> queryResult = coraDb.executeSelect (query);
-        assertEquals (queryResult.size (), 1, "Unable to find unreserved order test");
-        return String.valueOf (queryResult.get (0).get ("sample_name"));
+    private void clearReservationProperties (String sampleName) {
+        String query = format ("update cora.order_tests set properties = properties - 'ReservedBy' - 'ReservedOn' where sample_name = '%s';",
+                               sampleName);
+        coraDb.executeUpdate (query);
     }
 
-    private String getReservedSampleName (String reservedBy) {
-        String query = format ("SELECT sample_name FROM cora.order_tests WHERE test_id = '1d298f94-74ed-474f-b12c-89e07295b1b4' AND properties->>'ReservedBy' != '%s' ORDER BY RANDOM() limit 1;",
-                               reservedBy);
-        List <Map <String, Object>> queryResult = coraDb.executeSelect (query);
-        assertEquals (queryResult.size (), 1, "Unable to order test reserved by " + reservedBy);
-        return String.valueOf (queryResult.get (0).get ("sample_name"));
+    private void setReservationProperties (String sampleName, String userName) {
+        String query = format ("update cora.order_tests set properties = jsonb_set(jsonb_set(properties, '{ReservedBy}', '\"%s\"'), '{ReservedOn}', '\"2022-10-04T22:14:19.594\"') where sample_name = '%s';",
+                               userName,
+                               sampleName);
+        coraDb.executeUpdate (query);
     }
 
     // will be replaced when reservation visible on front end
