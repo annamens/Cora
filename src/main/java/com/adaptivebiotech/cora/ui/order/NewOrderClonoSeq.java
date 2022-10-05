@@ -336,7 +336,7 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
         assertTrue (setText ("#cancellationNotes", "this is a test"));
         if (!releaseReport)
-            setCancelActionValue (CancelOrderAction.Placeholder);
+            setCancelActionValue (CancelOrderAction.NoActionRequired);
         assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
         pageLoading ();
         moduleLoading ();

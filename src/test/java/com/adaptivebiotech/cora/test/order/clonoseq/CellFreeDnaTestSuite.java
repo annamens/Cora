@@ -8,7 +8,7 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.GenerateFailureReport;
-import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.Placeholder;
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequired;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.PendingCancellation;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.MrdEnabled;
@@ -903,17 +903,17 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         specimenStreck.compartment = CellFree;
         specimenStreck.anticoagulant = Streck;
         Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
-                                                               patient,
-                                                               icdCodes,
-                                                               assayTest,
-                                                               specimenStreck);
+                                                            patient,
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenStreck);
         testLog ("Streck sample, With Fastlane: " + order.orderNumber);
         newOrderClonoSeq.clickCancelOrder ();
 
         // Verify New Cancel Action Default Option
         assertTrue (newOrderClonoSeq.isCancelActionDropdownVisible ());
-        assertEquals (newOrderClonoSeq.getCancelActionValue (), GenerateFailureReport);
-        testLog ("Cancel Action dropdown visible and set to Generate Failure Report");
+         assertEquals (newOrderClonoSeq.getCancelActionValue (), GenerateFailureReport);
+        testLog ("Cancel Action dropdown visible and set to " + GenerateFailureReport.label);
         newOrderClonoSeq.cancelStreckOrder (true);
 
         // Verify No Result Report can be released
@@ -961,16 +961,16 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
         // Streck sample, Without Fastlane
         Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
-                                                                 patient,
-                                                                 icdCodes,
-                                                                 assayTest,
-                                                                 specimenStreck);
+                                                            patient,
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenStreck);
         testLog ("Streck sample, Without Fastlane: " + order.orderNumber);
         newOrderClonoSeq.clickCancelOrder ();
 
         // TO-DO PENDING SR-13228 BUG RESOLUTION: Verify New Cancel Action Non-Default Option
-        newOrderClonoSeq.setCancelActionValue (Placeholder);
-        testLog ("Cancel Action dropdown set to PLACEHOLDER VALUE");
+        newOrderClonoSeq.setCancelActionValue (NoActionRequired);
+        testLog ("Cancel Action dropdown set to " + NoActionRequired.label);
         newOrderClonoSeq.cancelStreckOrder (false);
         assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.Cancelled);
         testLog ("Order Status is Cancelled");

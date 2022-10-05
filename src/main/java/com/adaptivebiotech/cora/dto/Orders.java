@@ -411,7 +411,7 @@ public final class Orders {
 
     public enum CancelOrderAction {
         GenerateFailureReport ("Generate Failure Report"),
-        Placeholder ("Placeholder");
+        NoActionRequired ("No Action Required");
 
         public String label;
 
