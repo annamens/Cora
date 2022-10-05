@@ -9,7 +9,6 @@ import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static java.util.Arrays.asList;
-import static org.apache.commons.collections4.ListUtils.union;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -26,15 +25,15 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
  */
 public class AttachmentTestBase extends CoraBaseBrowser {
 
-    protected final List <String> uploadPDFfile      = asList ("uploadFiles/upperExtension.PDF");
-
     protected final List <String> previewFiles       = asList ("gifBelow15MB.gif",
                                                                "jpgBelow15MB.jpg",
                                                                "pdfBelow15MB.pdf",
-                                                               "pngBelow15MB.png");
-    protected final List <String> allPreviewFiles    = union (previewFiles, asList ("upperExtension.pdf"));
+                                                               "pngBelow15MB.png",
+                                                               "upperExtension.pdf");
 
-    protected final List <String> uploadPreviewFiles = previewFiles.stream ().map (e -> "uploadFiles/" + e)
+    protected final List <String> uploadPreviewFiles = previewFiles.stream ()
+                                                                   .map (e -> "uploadFiles/" + (e.equals ("upperExtension.pdf") ? e.replace (".pdf",
+                                                                                                                                             ".PDF") : e))
                                                                    .collect (Collectors.toList ());
 
     protected final String[]      icdCodes           = { "A20.0" };

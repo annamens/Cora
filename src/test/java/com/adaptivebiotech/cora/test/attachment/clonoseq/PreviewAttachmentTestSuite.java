@@ -58,35 +58,32 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
         shipment.clickShipmentTab ();
         UUID shipmentId = shipment.getShipmentId ();
         shipment.uploadAttachments (uploadPreviewFiles);
-        shipment.uploadAttachments (uploadPDFfile);
-        for (String file : allPreviewFiles) {
+        for (String file : previewFiles) {
             shipment.clickFilePreviewLink (file);
             shipment.closeFilePreview ();
         }
         testLog ("Shipment attachments can be previewed");
-        testLog ("Shipment attachment PDF type can be previewed");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
         newOrderClonoSeq.uploadAttachments (uploadPreviewFiles);
-        newOrderClonoSeq.uploadAttachments (uploadPDFfile);
         newOrderClonoSeq.gotoOrderEntry (order.id);
 
-        previewFilesPendingOrder ("Orders", allPreviewFiles);
-        validateAttachments (newOrderClonoSeq.getCoraAttachments (), allPreviewFiles, Pending);
+        previewFilesPendingOrder ("Orders", previewFiles);
+        validateAttachments (newOrderClonoSeq.getCoraAttachments (), previewFiles, Pending);
 
-        previewFilesPendingOrder ("Shipments", allPreviewFiles);
-        validateAttachments (newOrderClonoSeq.getShipmentAttachments (), allPreviewFiles, Pending);
+        previewFilesPendingOrder ("Shipments", previewFiles);
+        validateAttachments (newOrderClonoSeq.getShipmentAttachments (), previewFiles, Pending);
 
         accession.gotoAccession (shipmentId);
         accession.completeAccession ();
         newOrderClonoSeq.activateOrder ();
         orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
 
-        previewFilesActiveOrder ("Orders", allPreviewFiles);
-        validateAttachments (orderDetailClonoSeq.getCoraAttachments (), allPreviewFiles, Active);
+        previewFilesActiveOrder ("Orders", previewFiles);
+        validateAttachments (orderDetailClonoSeq.getCoraAttachments (), previewFiles, Active);
 
-        previewFilesActiveOrder ("Shipments", allPreviewFiles);
-        validateAttachments (orderDetailClonoSeq.getShipmentAttachments (), allPreviewFiles, Active);
+        previewFilesActiveOrder ("Shipments", previewFiles);
+        validateAttachments (orderDetailClonoSeq.getShipmentAttachments (), previewFiles, Active);
     }
 
     private void previewFilesPendingOrder (String attachmentSection, List <String> previewFiles) {

@@ -58,8 +58,7 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
         shipment.clickShipmentTab ();
         UUID shipmentId = shipment.getShipmentId ();
         shipment.uploadAttachments (uploadPreviewFiles);
-        shipment.uploadAttachments (uploadPDFfile);
-        for (String file : allPreviewFiles) {
+        for (String file : previewFiles) {
             shipment.clickFilePreviewLink (file);
             shipment.closeFilePreview ();
         }
@@ -67,25 +66,24 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
         newOrderTDetect.gotoOrderEntry (order.id);
         newOrderTDetect.uploadAttachments (uploadPreviewFiles);
-        newOrderTDetect.uploadAttachments (uploadPDFfile);
         newOrderTDetect.gotoOrderEntry (order.id);
 
-        previewFilesPendingOrder ("Orders", allPreviewFiles);
-        validateAttachments (newOrderTDetect.getCoraAttachments (), allPreviewFiles, Pending);
+        previewFilesPendingOrder ("Orders", previewFiles);
+        validateAttachments (newOrderTDetect.getCoraAttachments (), previewFiles, Pending);
 
-        previewFilesPendingOrder ("Shipments", allPreviewFiles);
-        validateAttachments (newOrderTDetect.getShipmentAttachments (), allPreviewFiles, Pending);
+        previewFilesPendingOrder ("Shipments", previewFiles);
+        validateAttachments (newOrderTDetect.getShipmentAttachments (), previewFiles, Pending);
 
         accession.gotoAccession (shipmentId);
         accession.completeAccession ();
         newOrderTDetect.activateOrder ();
         orderDetailTDetect.gotoOrderDetailsPage (order.id);
 
-        previewFilesActiveOrder ("Orders", allPreviewFiles);
-        validateAttachments (orderDetailTDetect.getCoraAttachments (), allPreviewFiles, Active);
+        previewFilesActiveOrder ("Orders", previewFiles);
+        validateAttachments (orderDetailTDetect.getCoraAttachments (), previewFiles, Active);
 
-        previewFilesActiveOrder ("Shipments", allPreviewFiles);
-        validateAttachments (orderDetailTDetect.getShipmentAttachments (), allPreviewFiles, Active);
+        previewFilesActiveOrder ("Shipments", previewFiles);
+        validateAttachments (orderDetailTDetect.getShipmentAttachments (), previewFiles, Active);
     }
 
     private void previewFilesPendingOrder (String attachmentSection, List <String> previewFiles) {

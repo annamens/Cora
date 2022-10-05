@@ -29,8 +29,8 @@ public class SkuTestSuite extends CoraBaseBrowser {
      * @sdlc.requirements SR-12650:R5
      */
     public void CsvDownloadButton () {
-        String csvFile = otlist.getDownloadsDir () + "skuProperties.csv";
-        File f1 = new File (csvFile);
+        String csvFile = "skuProperties.csv";
+        File f1 = new File (otlist.getDownloadsDir () + csvFile);
         f1.delete ();
 
         login.doLogin ();
