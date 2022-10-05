@@ -308,7 +308,7 @@ public class CoraPage extends BasePage {
     }
 
     protected void clickPopupOK () {
-        assertTrue (click ("[data-ng-click='ctrl.ok();']"));
+        assertTrue (click ("//*[text()='Ok']"));
         moduleLoading ();
     }
 
