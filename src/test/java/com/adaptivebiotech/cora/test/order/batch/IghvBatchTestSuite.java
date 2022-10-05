@@ -20,7 +20,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastFin
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.sampleName;
 import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.workspaceName;
 import static java.lang.Boolean.TRUE;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.lang.System.nanoTime;
@@ -118,8 +117,8 @@ public class IghvBatchTestSuite extends BatchTestBase {
 
         String intakeManifest = join ("/", downloadDir.get (), "ighv-intakemanifest.xlsx");
         String preManifest = join ("/", downloadDir.get (), "ighv-premanifest.xlsx");
-        prepManifestFile (getSystemResource ("batch/ighv-intakemanifest.xlsx").getPath (), intakeManifest, samples);
-        prepManifestFile (getSystemResource ("batch/ighv-premanifest.xlsx").getPath (), preManifest, samples);
+        prepManifestFile ("batch/ighv-intakemanifest.xlsx", intakeManifest, samples);
+        prepManifestFile ("batch/ighv-premanifest.xlsx", preManifest, samples);
 
         login.doLogin ();
         ordersList.isCorrectPage ();

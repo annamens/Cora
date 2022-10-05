@@ -15,7 +15,7 @@ import static com.adaptivebiotech.pipeline.dto.dx.ClassifierOutput.DiseaseType.L
 import static com.adaptivebiotech.pipeline.utils.TestHelper.DxStatus.POSITIVE;
 import static com.adaptivebiotech.pipeline.utils.TestHelper.Locus.BCell;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.gDNA;
@@ -34,6 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 import com.adaptivebiotech.cora.dto.AssayResponse.CoraTest;
@@ -119,7 +120,7 @@ public class ReportTestBase extends CoraBaseBrowser {
         clonoseq.helper.report.commentInfo.clinicalConsultantName = coraTestUser + ", NBCDCH-PS";
         clonoseq.helper.report.commentInfo.labDirectorName = "John Alsobrook, II, PhD, DABCC";
         clonoseq.header.patientName = patient.fullname;
-        clonoseq.header.DOB = parse ("01/01/1999", formatDt1);
+        clonoseq.header.DOB = parse (patient.dateOfBirth, formatDt2);
         clonoseq.header.medicalRecord = patient.mrn;
         clonoseq.header.gender = patient.gender;
         clonoseq.header.reportDt = genLocalDate (0);
@@ -127,8 +128,10 @@ public class ReportTestBase extends CoraBaseBrowser {
         clonoseq.header.specimen = diagnostic.specimen.sampleType.label;
         if (diagnostic.specimen.properties.SourceType != null)
             clonoseq.header.specimen += " / " + diagnostic.specimen.properties.SourceType.label;
-        clonoseq.header.collectionDt = parse ("04/01/2019", formatDt1);
-        clonoseq.header.receivedDt = parse ("03/20/2019", formatDt1);
+
+        Integer[] dates = mapper.convertValue (diagnostic.specimen.collectionDate, Integer[].class);
+        clonoseq.header.collectionDt = LocalDate.of (dates[0], dates[1], dates[2]);
+        clonoseq.header.receivedDt = parse (diagnostic.specimen.properties.ArrivalDate, formatDt2);
         clonoseq.header.sampleId = orderTest.specimen.specimenNumber;
         clonoseq.header.icdCodes = fullIcdCodes (diagnostic);
         clonoseq.header.orderingPhysician = join (" ", diagnostic.provider.firstName, diagnostic.provider.lastName);
@@ -165,7 +168,9 @@ public class ReportTestBase extends CoraBaseBrowser {
         testLog ("found the correct Result");
 
         // Criteria
-        doCountMatches (texts, clonoseq.criteriaForDominant.text (), clonoseq.helper.isFailed ? 0 : 1);
+        doCountMatches (texts,
+                        clonoseq.criteriaForDominant.text (),
+                        clonoseq.helper.isCellfree || clonoseq.helper.isFailed ? 0 : 1);
         if (clonoseq.helper.isSHM)
             doCountMatches (texts, clonoseq.criteriaForDominant.shm (), 1);
         testLog ("found the correct Criteria For Defining Dominant Sequences");

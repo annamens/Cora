@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.test.order.batch;
 
+import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static org.apache.commons.io.FileUtils.openOutputStream;
 import static org.apache.poi.ss.usermodel.CellType.STRING;
@@ -32,7 +33,7 @@ public class BatchTestBase extends CoraBaseBrowser {
                                      Map <String, Map <String, String>> sampleName) {
         int maxRow = 20;
         int maxCell = 78;
-        try (FileInputStream inputStream = new FileInputStream (template);
+        try (FileInputStream inputStream = new FileInputStream (getSystemResource (template).getPath ());
                 Workbook workbook = WorkbookFactory.create (inputStream);
                 FileOutputStream outputStream = openOutputStream (new File (manifestFile))) {
 

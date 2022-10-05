@@ -74,6 +74,7 @@ public final class Specimen {
         public String         SampleTypeDisplayName;
         public String         Treatment;
         public Anticoagulant  Anticoagulant;
+        public Compartment    Compartment;
 
         public SpecimenProperties () {}
 

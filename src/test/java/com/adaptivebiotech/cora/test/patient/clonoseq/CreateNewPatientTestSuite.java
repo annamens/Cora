@@ -20,7 +20,6 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
-import com.adaptivebiotech.cora.ui.patient.PatientsList;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.test.utils.TestHelper;
 
@@ -95,9 +94,17 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         createNewPatient.clickSave ();
         newOrderClonoSeq.isCorrectPage ();
 
-        String notes = TestHelper.randomString (50000);
-        newOrderClonoSeq.enterOrderNotes (notes);
-        testLog ("Order notes character length is: " + notes.length ());
+        // sendKeys() has a limit for large string
+        String notes = TestHelper.randomString (1000);
+        int count = 70;
+        while (count > 0) {
+            newOrderClonoSeq.enterOrderNotes (notes);
+            --count;
+        }
+        newOrderClonoSeq.clickSave ();
+        int notesSize = newOrderClonoSeq.getOrderNotes ().length ();
+        assertEquals (notesSize, notes.length () * 70);
+        testLog ("Order notes character length is: " + notesSize);
 
         newOrderClonoSeq.billing.selectBilling (ChargeType.PatientSelfPay);
         String chars63 = TestHelper.randomString (63);

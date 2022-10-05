@@ -40,8 +40,9 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
     /**
      * NOTE: SR-T4205
      * 
-     * @sdlc.requirements SR-11381
+     * @sdlc.requirements SR-11381, SR-9398
      */
+    @Test (groups = "irish-wolfhound")
     public void previewOrderShipmentAttachment () {
         login.doLogin ();
         ordersList.isCorrectPage ();
@@ -83,7 +84,6 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
         previewFilesActiveOrder ("Shipments", previewFiles);
         validateAttachments (orderDetailClonoSeq.getShipmentAttachments (), previewFiles, Active);
-
     }
 
     private void previewFilesPendingOrder (String attachmentSection, List <String> previewFiles) {
@@ -99,45 +99,4 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
             orderDetailClonoSeq.closeFilePreview ();
         }
     }
-
-    /**
-     * @sdlc.requirements SR-9398
-     */
-    @Test (groups = "irish-wolfhound")
-    public void previewPDFfile () {
-        login.doLogin ();
-        ordersList.isCorrectPage ();
-
-        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
-                                                            newTrialProtocolPatient (),
-                                                            icdCodes,
-                                                            ID_BCell2_CLIA,
-                                                            bloodSpecimen ());
-        testLog ("Order created: " + order.orderNumber);
-        shipment.createShipment (order.orderNumber, Tube);
-        shipment.clickShipmentTab ();
-        UUID shipmentId = shipment.getShipmentId ();
-        shipment.uploadAttachments (PDFfile);
-        shipment.clickFilePreviewLink ("PDFtypebelow15MB.pdf");
-        shipment.closeFilePreview ();
-        testLog ("Shipment attachment PDF type can be previewed");
-        newOrderClonoSeq.gotoOrderEntry (order.id);
-        newOrderClonoSeq.uploadAttachments (PDFfile);
-
-        previewFilesPendingOrder ("Orders", previewPDFfile);
-        validateAttachments (newOrderClonoSeq.getCoraAttachments (), previewPDFfile, Pending);
-        previewFilesPendingOrder ("Shipments", previewPDFfile);
-        validateAttachments (newOrderClonoSeq.getShipmentAttachments (), previewPDFfile, Pending);
-        accession.gotoAccession (shipmentId);
-        accession.completeAccession ();
-        newOrderClonoSeq.activateOrder ();
-        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-
-        previewFilesActiveOrder ("Orders", previewPDFfile);
-        validateAttachments (orderDetailClonoSeq.getCoraAttachments (), previewPDFfile, Active);
-
-        previewFilesActiveOrder ("Shipments", previewPDFfile);
-        validateAttachments (orderDetailClonoSeq.getShipmentAttachments (), previewPDFfile, Active);
-    }
-
 }

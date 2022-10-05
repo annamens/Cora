@@ -5,7 +5,6 @@ package com.adaptivebiotech.cora.test.order.batch;
 
 import static com.adaptivebiotech.cora.utils.PageHelper.LinkShipment.SalesforceOrder;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.join;
 import static java.lang.System.nanoTime;
 import static java.util.Collections.singletonMap;
@@ -55,8 +54,8 @@ public class BatchTestSuite extends BatchTestBase {
 
         String intakeManifest = join ("/", downloadDir.get (), "eos-intakemanifest.xlsx");
         String preManifest = join ("/", downloadDir.get (), "eos-premanifest.xlsx");
-        prepManifestFile (getSystemResource ("batch/eos-intakemanifest.xlsx").getPath (), intakeManifest, sample);
-        prepManifestFile (getSystemResource ("batch/eos-premanifest.xlsx").getPath (), preManifest, sample);
+        prepManifestFile ("batch/eos-intakemanifest.xlsx", intakeManifest, sample);
+        prepManifestFile ("batch/eos-premanifest.xlsx", preManifest, sample);
 
         login.doLogin ();
         ordersList.isCorrectPage ();

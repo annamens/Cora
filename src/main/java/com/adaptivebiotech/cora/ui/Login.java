@@ -6,10 +6,9 @@ package com.adaptivebiotech.cora.ui;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestPass;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static com.adaptivebiotech.test.utils.Logging.info;
+import static com.seleniumfy.test.utils.Logging.info;
 import static org.testng.Assert.assertTrue;
 import com.seleniumfy.test.utils.BasePage;
-import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author Harry Soehalim
@@ -45,16 +44,7 @@ public class Login extends BasePage {
     }
 
     public void doLogin () {
-        // sometimes login is stuck, give it a retry
-        Timeout timer = new Timeout (millisDuration * 4, millisPoll * 5);
-        while (!timer.Timedout ()) {
-            doLogin (coraTestUser, coraTestPass);
-            if (getCurrentUrl ().equals (loginUrl)) {
-                timer.Wait ();
-                refresh ();
-            } else
-                break;
-        }
+        doLogin (coraTestUser, coraTestPass);
     }
 
     public void doLogin (String user, String pass) {

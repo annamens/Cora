@@ -183,14 +183,6 @@ public class NewOrderClonoSeq extends NewOrder {
         return order;
     }
 
-    public void addPatientICDCode (String icdCode) {
-        String expectedModalTitle = "Test Selection Warning";
-        this.enterPatientICD_Codes (icdCode);
-        String actualText = waitForElementVisible ("[ng-bind-html=\"ctrl.dialogOptions.headerText\"]").getText ();
-        assertEquals (actualText, expectedModalTitle);
-        assertTrue (click ("[data-ng-click='ctrl.ok();']"));
-    }
-
     public void clickEditPatient () {
         String editPatientLink = "//*[text()='Edit Patient Demographics']";
         assertTrue (click (editPatientLink));
@@ -316,8 +308,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void closeTestSelectionWarningModal () {
         String expectedModalTitle = "Test Selection Warning";
-        String modalHeader = "[ng-bind-html=\"ctrl.dialogOptions.headerText\"]";
-        assertTrue (isTextInElement (modalHeader, expectedModalTitle));
+        assertTrue (isTextInElement (popupTitle, expectedModalTitle));
         clickPopupOK ();
     }
 
@@ -405,7 +396,6 @@ public class NewOrderClonoSeq extends NewOrder {
         if (!matchFound && patient.hasAddress ())
             billing.enterPatientAddress (patient);
 
-        clickSave ();
         clickEnterSpecimenDetails ();
         enterSpecimenType (specimen.sampleType);
 
@@ -476,4 +466,5 @@ public class NewOrderClonoSeq extends NewOrder {
 
         return order;
     }
+
 }

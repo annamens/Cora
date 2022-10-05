@@ -21,7 +21,6 @@ import static org.apache.commons.lang3.StringUtils.substringBetween;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
-import static org.testng.util.Strings.isNotNullAndNotEmpty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -270,10 +269,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterOrderNotes (String notes) {
-        if (isNotNullAndNotEmpty (notes)) {
-            assertTrue (clear (orderNotes));
-            assertTrue (setText (orderNotes, notes));
-        }
+        assertTrue (setText (orderNotes, notes));
     }
 
     public String getOrderNotes () {
@@ -367,11 +363,6 @@ public abstract class NewOrder extends OrderHeader {
         clickRemovePatient ();
         assertTrue (isTextInElement (popupTitle, "Order Billing Warning"));
         assertTrue (click ("[data-ng-click='ctrl.ok();']"));
-    }
-
-    public void removePatientTest () {
-        assertTrue (isTextInElement (popupTitle, "Test Selection Warning"));
-        clickPopupOK ();
     }
 
     public void clickRemovePatient () {

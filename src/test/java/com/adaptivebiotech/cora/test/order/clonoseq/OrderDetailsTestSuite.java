@@ -4,7 +4,7 @@
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
-import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IUO_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilling;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
@@ -64,11 +64,14 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
     private PatientDetail       patientDetail       = new PatientDetail ();
 
     /**
-     * Note: SR-T2166
+     * Note: SR-T2166, SR-T4353
      * - we nolonger seeing Clarity/Awaiting/PROCESSING_SAMPLE
      * - now, we're getting Clarity/Awaiting/SAMPLE_NOT_FOUND, we can't check for Clarity link
      * - due date is in UTC, only reflex uses PST
+     * 
+     * @sdlc.requirements SR-13087
      */
+    @Test (groups = "irish-wolfhound")
     public void verifyOrderDetailsPage () {
         login.doLogin ();
         ordersList.isCorrectPage ();
@@ -76,9 +79,15 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
         Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
         Patient patient = newNoChargePatient ();
         String[] icdCode = new String[] { "A81.81" };
-        Assay orderTest = ID_BCell2_CLIA;
+        Assay orderTest = ID_BCell2_IUO_CLIA;
         Specimen specimen = bloodSpecimen ();
         Order order = diagnostic.createClonoSeqOrder (physician, patient, icdCode, orderTest, specimen);
+
+        // verify test selection (SR-T4353)
+        Assay testSelection = diagnostic.getTestSelection ();
+        assertEquals (testSelection, orderTest);
+        testLog ("Test Selection set to: " + testSelection + ", with no additional order tests selected");
+
         List <String> history = diagnostic.getHistory ();
         String createdDateTime = history.get (0).split ("Created by")[0].trim ();
 
