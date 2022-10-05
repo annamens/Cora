@@ -3,12 +3,12 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.patient;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.openqa.selenium.Keys.ENTER;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.List;
-import org.openqa.selenium.TimeoutException;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.seleniumfy.test.utils.Timeout;
@@ -18,6 +18,8 @@ import com.seleniumfy.test.utils.Timeout;
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
 public class PatientsList extends CoraPage {
+
+    private final String patientResult = "//*[contains (@class, 'list-section')]//*[text()='%s']";
 
     public PatientsList () {
         staticNavBarHeight = 90;
@@ -60,8 +62,7 @@ public class PatientsList extends CoraPage {
      *            patient name (first last) or patient code
      */
     public void clickPatient (String term) {
-        String css = "//*[contains (@class, 'list-section')]//*[text()='" + term + "']";
-        assertTrue (click (css));
+        assertTrue (click (format (patientResult, term)));
         pageLoading ();
     }
 
@@ -87,10 +88,10 @@ public class PatientsList extends CoraPage {
         Timeout timer = new Timeout (millisDuration * 60, millisPoll * 60);
         while (!timer.Timedout ()) {
             searchPatient (term);
-            try {
+            if (isElementPresent (format (patientResult, term))) {
                 clickPatient (term);
                 return;
-            } catch (TimeoutException e) {
+            } else {
                 timer.Wait ();
                 refresh ();
                 isCorrectPage ();
