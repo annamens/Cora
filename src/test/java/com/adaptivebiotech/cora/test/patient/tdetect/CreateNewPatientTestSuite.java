@@ -13,8 +13,8 @@ import static org.testng.Assert.assertTrue;
 import org.apache.commons.lang.RandomStringUtils;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
+import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
@@ -94,13 +94,21 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         createNewPatient.clickSave ();
         newOrderTDetect.isCorrectPage ();
 
-        String notes = TestHelper.randomString (50000);
-        newOrderTDetect.enterOrderNotes (notes);
-        testLog ("Order notes character length is: " + notes.length ());
+        // sendKeys() has a limit for large string
+        String notes = TestHelper.randomString (1000);
+        int count = 70;
+        while (count > 0) {
+            newOrderTDetect.enterOrderNotes (notes);
+            --count;
+        }
+        newOrderTDetect.clickSave ();
+        int notesSize = newOrderTDetect.getOrderNotes ().length ();
+        assertEquals (notesSize, notes.length () * 70);
+        testLog ("Order notes character length is: " + notesSize);
 
         newOrderTDetect.billing.selectBilling (ChargeType.PatientSelfPay);
-        String char63 = TestHelper.randomString (63);
-        String email = TestHelper.randomString (64) + "@" + char63 + "." + char63 + "." + TestHelper.randomString (62);
+        String chars63 = TestHelper.randomString (63);
+        String email = TestHelper.randomString (64) + "@" + chars63 + "." + chars63 + "." + TestHelper.randomString (62);
         newOrderTDetect.billing.enterPatientEmail (email);
         newOrderTDetect.clickSave ();
         testLog ("Length of string: " + email.length ());

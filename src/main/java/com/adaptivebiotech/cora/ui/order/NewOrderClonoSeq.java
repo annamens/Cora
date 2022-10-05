@@ -180,14 +180,6 @@ public class NewOrderClonoSeq extends NewOrder {
         return order;
     }
 
-    public void addPatientICDCode (String icdCode) {
-        String expectedModalTitle = "Test Selection Warning";
-        this.enterPatientICD_Codes (icdCode);
-        String actualText = waitForElementVisible ("[ng-bind-html=\"ctrl.dialogOptions.headerText\"]").getText ();
-        assertEquals (actualText, expectedModalTitle);
-        assertTrue (click ("[data-ng-click='ctrl.ok();']"));
-    }
-
     public void clickEditPatient () {
         String editPatientLink = "//*[text()='Edit Patient Demographics']";
         assertTrue (click (editPatientLink));

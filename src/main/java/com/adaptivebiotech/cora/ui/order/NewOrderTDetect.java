@@ -112,27 +112,6 @@ public class NewOrderTDetect extends NewOrder {
         return order;
     }
 
-    public void addPatientICDCode (String code) {
-        String addButton = "//button[text()='Add Code']";
-        String icdInput = "//label[text()='ICD Codes']/../input";
-        String topmostListItem = "//label[text()='ICD Codes']/../ul/li[2]/a";
-        String topmostListItemCode = "//label[text()='ICD Codes']/../ul/li[2]/a/span[1]";
-
-        assertTrue (click (addButton));
-        assertTrue (setText (icdInput, code));
-        pageLoading ();
-        waitForElementVisible (topmostListItemCode);
-        waitForAjaxCalls (); // wait for the menu to finish shuffling
-        assertTrue (isTextInElement (topmostListItemCode, code));
-        assertTrue (click (topmostListItem));
-        verifyICDCodeAdded (code);
-    }
-
-    private void verifyICDCodeAdded (String code) {
-        String xpath = "//label[text()='ICD Codes']/..";
-        assertTrue (isTextInElement (xpath, code));
-    }
-
     /**
      * Create TDetect Pending Order by filling out all the required fields and passed arguments on
      * New Order TDetect page, and returns order no.
