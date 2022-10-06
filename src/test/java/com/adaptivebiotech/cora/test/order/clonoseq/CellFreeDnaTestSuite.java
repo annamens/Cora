@@ -1028,7 +1028,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         orderStatus.waitFor (specimenStreck.sampleName, Finalize, StageStatus.Cancelled);
         testLog ("Report Delivery Finished");
         orderDetailClonoSeq.refresh ();
-        assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.Cancelled);
+        assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.CancelledWithReport);
         testLog ("Order Status is Cancelled");
     }
 
