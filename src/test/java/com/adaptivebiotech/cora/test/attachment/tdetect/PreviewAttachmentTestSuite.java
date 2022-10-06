@@ -66,7 +66,6 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
         newOrderTDetect.gotoOrderEntry (order.id);
         newOrderTDetect.uploadAttachments (uploadPreviewFiles);
-        newOrderTDetect.gotoOrderEntry (order.id);
 
         previewFilesPendingOrder ("Orders", previewFiles);
         validateAttachments (newOrderTDetect.getCoraAttachments (), previewFiles, Pending);

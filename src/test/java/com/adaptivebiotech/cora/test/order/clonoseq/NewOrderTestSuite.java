@@ -3,14 +3,23 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.CommercialInsurance;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
+import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
+import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static java.lang.String.format;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Patient;
+import com.adaptivebiotech.cora.dto.Specimen;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -54,4 +63,30 @@ public class NewOrderTestSuite extends NewOrderTestBase {
         testLog (format (log, Medicare.label));
     }
 
+    /**
+     * NOTE: SR-T4291
+     * 
+     * @sdlc.requirements SR-11341
+     */
+    @Test (groups = "irish-wolfhound")
+    public void verifyCancelOrder () {
+        String[] icdCodes = { "V00.218S" };
+        Assay assayTest = MRD_BCell2_CLIA;
+        Patient patient = newTrialProtocolPatient ();
+
+        // Order 1: Non-Streck, Without Fastlane
+        Specimen specimenNonStreck = bloodSpecimen ();
+        Order orderOne = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                               patient,
+                                                               icdCodes,
+                                                               assayTest,
+                                                               specimenNonStreck);
+        testLog ("Order 1, Non-Streck, Without Fastlane: " + orderOne.orderNumber);
+        newOrderClonoSeq.clickCancelOrder ();
+        assertFalse (newOrderClonoSeq.isCancelActionDropdownVisible ());
+        testLog ("Order 1: Cancel Action dropdown not visible");
+        newOrderClonoSeq.cancelOrder ();
+        assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
+        testLog ("Order 1: Order Status is Cancelled");
+    }
 }

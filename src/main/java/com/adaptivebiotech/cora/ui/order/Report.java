@@ -25,7 +25,6 @@ public class Report extends OrderHeader {
     private final String additionalComments = "[ng-model=\"ctrl.reportEntry.report.commentInfo.comments\"]";
     private final String editJson           = "[ng-click='ctrl.editReportData()']";
     private final String reportDataJson     = "[ng-model='ctrl.reportDataJSON']";
-    private final String modalOk            = "[data-ng-click='ctrl.ok();']";
 
     public Report () {
         staticNavBarHeight = 200;
@@ -72,8 +71,8 @@ public class Report extends OrderHeader {
     public void setReportDataJson (String jsonData) {
         assertTrue (clear (reportDataJson));
         assertTrue (setText (reportDataJson, jsonData));
-        assertTrue (click (modalOk));
-        transactionInProgress ();
+        assertTrue (click ("//*[text()='Save & Update']"));
+        moduleLoading ();
     }
 
     public void clickSaveAndUpdate () {
@@ -110,7 +109,8 @@ public class Report extends OrderHeader {
     public void clickReleaseReport () {
         assertTrue (click ("//*[text()='Release Report']"));
         assertTrue (isTextInElement (popupTitle, "Release Report"));
-        clickPopupOK ();
+        assertTrue (click ("//*[contains (@class, 'modal-footer')]//*[text()='Release Report']"));
+        moduleLoading ();
     }
 
     public void generateReport (Assay assay) {

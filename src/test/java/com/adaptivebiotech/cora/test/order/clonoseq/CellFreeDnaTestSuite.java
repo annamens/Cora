@@ -7,7 +7,10 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.GenerateFailureReport;
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequired;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.PendingCancellation;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.MrdEnabled;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
@@ -28,6 +31,7 @@ import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenType
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.TRFHandwritten;
 import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee.CLINICAL_TRIALS;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
@@ -39,6 +43,7 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.Finalize;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ReportDelivery;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
@@ -66,6 +71,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -77,6 +83,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
+import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
@@ -90,7 +97,6 @@ import com.adaptivebiotech.test.utils.DateHelper;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
-import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 
 /**
  * @author jpatel
@@ -106,6 +112,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private Accession              accession               = new Accession ();
     private DiscrepancyResolutions discrepancyRes          = new DiscrepancyResolutions ();
     private OrderDetailClonoSeq    orderDetailClonoSeq     = new OrderDetailClonoSeq ();
+    private OrderStatus            orderStatus             = new OrderStatus ();
     private ReportClonoSeq         reportClonoSeq          = new ReportClonoSeq ();
     private OrcaHistory            orcaHistory             = new OrcaHistory ();
     private PatientDetail          patientDetail           = new PatientDetail ();
@@ -967,6 +974,95 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.activateOrder ();
         testLog ("Streck Plasma Isolation Date = Today - 44, Order Activation Successful");
+    }
+
+    /**
+     * NOTE: SR-T4291
+     * 
+     * @sdlc.requirements SR-11341
+     */
+    @Test (groups = "irish-wolfhound")
+    public void verifyCancelStreckOrderWithFastLane () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Assay assayTest = MRD_BCell2_CLIA;
+        Patient patient = newTrialProtocolPatient ();
+
+        // Streck sample, With Fastlane
+        Specimen specimenStreck = bloodSpecimen ();
+        specimenStreck.compartment = CellFree;
+        specimenStreck.anticoagulant = Streck;
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            patient,
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenStreck);
+        testLog ("Streck sample, With Fastlane: " + order.orderNumber);
+        newOrderClonoSeq.clickCancelOrder ();
+
+        // Verify New Cancel Action Default Option
+        assertTrue (newOrderClonoSeq.isCancelActionDropdownVisible ());
+        assertEquals (newOrderClonoSeq.getCancelActionValue (), GenerateFailureReport);
+        testLog ("Cancel Action dropdown visible and set to " + GenerateFailureReport.label);
+        newOrderClonoSeq.cancelStreckOrder (GenerateFailureReport);
+
+        // Verify No Result Report can be released
+        assertEquals (newOrderClonoSeq.getOrderStatus (), PendingCancellation);
+        testLog ("Order cancelled and status is PendingCancellation, waiting for Awaiting Clinical QC");
+        specimenStreck.sampleName = orderStatus.getWorkflowId ();
+        orderStatus.waitFor (specimenStreck.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
+        testLog ("Awaiting Clinical QC Reached");
+        orderDetailClonoSeq.gotoOrderEntry (order.id);
+        orderDetailClonoSeq.clickReportTab (assayTest);
+        reportClonoSeq.releaseReport (assayTest, QC.Pass);
+        testLog ("Released Report, waiting for delivery finished");
+
+        // Verify Report type is No Result Available
+        String pdfFileLocation = join ("/", downloadDir.get (), specimenStreck.sampleName + ".pdf");
+        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
+
+        String extractedText = getTextFromPDF (pdfFileLocation, 1);
+        assertTrue (extractedText.contains (noResultsAvailable));
+        testLog ("Report displays No Result Available");
+
+        // Verify Order Cancelled after Report Release
+        orderDetailClonoSeq.clickOrderStatusTab ();
+        orderStatus.waitFor (specimenStreck.sampleName, Finalize, StageStatus.Cancelled);
+        testLog ("Report Delivery Finished");
+        orderDetailClonoSeq.refresh ();
+        assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.Cancelled);
+        testLog ("Order Status is Cancelled");
+    }
+
+    /**
+     * NOTE: SR-T4291
+     * 
+     * @sdlc.requirements SR-11341
+     */
+    @Test (groups = "irish-wolfhound")
+    public void verifyCancelStreckOrderWithoutFastLane () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        Assay assayTest = MRD_BCell2_CLIA;
+        Patient patient = newTrialProtocolPatient ();
+        Specimen specimenStreck = bloodSpecimen ();
+        specimenStreck.compartment = CellFree;
+        specimenStreck.anticoagulant = Streck;
+
+        // Streck sample, Without Fastlane
+        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
+                                                            patient,
+                                                            icdCodes,
+                                                            assayTest,
+                                                            specimenStreck);
+        testLog ("Streck sample, Without Fastlane: " + order.orderNumber);
+        newOrderClonoSeq.clickCancelOrder ();
+
+        // Verify New Cancel Action Non-Default Option
+        newOrderClonoSeq.cancelStreckOrder (NoActionRequired);
+        testLog ("Cancel Action dropdown set to " + NoActionRequired.label);
+        assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.Cancelled);
+        testLog ("Order Status is Cancelled");
     }
 
     /**
