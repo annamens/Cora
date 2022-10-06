@@ -3,6 +3,8 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequired;
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.getCancelOrderAction;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED;
@@ -29,6 +31,7 @@ import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.CancelOrderAction;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
@@ -61,6 +64,7 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           retrievalDate        = "#specimen-entry-retrieval-date";
     private final String           compartment          = "[formcontrolname='compartment']";
     private final String           anticoagulantOther   = "[formcontrolname='anticoagulantOther']";
+    private final String           cancellationAction   = "#cancellationAction";
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -315,6 +319,32 @@ public class NewOrderClonoSeq extends NewOrder {
         el.text = getText (xpath + "//strong");
         el.color = getCssValue (xpath, "background-color");
         return el;
+    }
+
+    public void cancelStreckOrder (CancelOrderAction cancelAction) {
+        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
+        assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
+        assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
+        assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
+        assertTrue (setText ("#cancellationNotes", "this is a test"));
+        if (cancelAction == NoActionRequired)
+            setCancelActionValue (cancelAction);
+        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
+        pageLoading ();
+        moduleLoading ();
+        checkOrderForErrors ();
+    }
+
+    public boolean isCancelActionDropdownVisible () {
+        return isElementVisible (cancellationAction);
+    }
+
+    public CancelOrderAction getCancelActionValue () {
+        return getCancelOrderAction (getFirstSelectedText (cancellationAction));
+    }
+
+    public void setCancelActionValue (CancelOrderAction value) {
+        clickAndSelectText (cancellationAction, value.label);
     }
 
     /**

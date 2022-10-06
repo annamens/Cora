@@ -198,23 +198,26 @@ public abstract class NewOrder extends OrderHeader {
 
     public abstract void clickSaveAndActivate ();
 
-    public void clickCancel () {
-        assertTrue (click ("[ng-click='ctrl.cancel();']"));
-        moduleLoading ();
+    public void clickCancelOrder () {
+        assertTrue (click ("//button[text()=' Cancel Order ']"));
+        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
     }
 
-    public void clickCancelOrder () {
-        assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
-        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
+    public void cancelOrder () {
         assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
         assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
         assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
         assertTrue (setText ("#cancellationNotes", "this is a test"));
-        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
+        assertTrue (click ("//button[text()='Yes. Cancel Order']"));
         pageLoading ();
         moduleLoading ();
         checkOrderForErrors ();
         assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+    }
+
+    public void clickAndCancelOrder () {
+        clickCancelOrder ();
+        cancelOrder ();
     }
 
     protected void checkOrderForErrors () {

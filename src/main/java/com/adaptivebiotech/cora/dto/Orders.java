@@ -355,7 +355,7 @@ public final class Orders {
     }
 
     public enum OrderStatus {
-        All, Pending, Active, Completed, Cancelled, Failed, FailedActivation, PendingActivation
+        All, Pending, Active, Completed, Cancelled, Failed, FailedActivation, PendingActivation, PendingCancellation
     }
 
     public enum Assay {
@@ -406,6 +406,22 @@ public final class Orders {
         public static OrderAuthorization getOrderAuthorization (String coraLabel) {
             return allOf (OrderAuthorization.class).parallelStream ().filter (st -> st.coraLabel.equals (coraLabel))
                                                    .findAny ().orElse (null);
+        }
+    }
+
+    public enum CancelOrderAction {
+        GenerateFailureReport ("Generate Failure Report"),
+        NoActionRequired ("No Action Required");
+
+        public String label;
+
+        private CancelOrderAction (String label) {
+            this.label = label;
+        }
+
+        public static CancelOrderAction getCancelOrderAction (String label) {
+            return allOf (CancelOrderAction.class).parallelStream ().filter (st -> st.label.equals (label))
+                                                  .findAny ().orElse (null);
         }
     }
 
