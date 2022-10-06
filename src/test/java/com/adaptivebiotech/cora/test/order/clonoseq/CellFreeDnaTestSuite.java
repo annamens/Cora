@@ -918,6 +918,11 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                       "Order save failed with reason: Streck (Blood) was not isolated within 7 days from the collection date.");
         testLog ("Streck Blood Collection Date = Today - 7, Order Activation Blocked");
 
+        // Need to wait for Specimen Activation and then another ~5 minutes to ensure LIMS crons has
+        // pushed the sample from Step 2 to Step 3 Assign Workflow
+        newOrderClonoSeq.waitUntilSpecimenActivated ();
+        newOrderClonoSeq.doWait (millisPoll * 300);
+
         // Collection date = today - 6, activation pass
         newOrderClonoSeq.enterCollectionDate (genLocalDate (-6));
         newOrderClonoSeq.activateOrder ();
@@ -970,6 +975,11 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                                       specimenDto.specimenNumber));
         newOrderClonoSeq.refresh ();
         newOrderClonoSeq.isCorrectPage ();
+
+        // Need to wait for Specimen Activation and then another ~5 minutes to ensure LIMS crons has
+        // pushed the sample from Step 2 to Step 3 Assign Workflow
+        newOrderClonoSeq.waitUntilSpecimenActivated ();
+        newOrderClonoSeq.doWait (millisPoll * 300);
         newOrderClonoSeq.activateOrder ();
         testLog ("Streck Plasma Isolation Date = Today - 44, Order Activation Successful");
     }
