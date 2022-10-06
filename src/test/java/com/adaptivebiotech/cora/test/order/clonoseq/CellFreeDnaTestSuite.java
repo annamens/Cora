@@ -31,7 +31,6 @@ import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenType
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.TRFHandwritten;
 import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee.CLINICAL_TRIALS;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
-import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
@@ -97,6 +96,7 @@ import com.adaptivebiotech.test.utils.DateHelper;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 
 /**
  * @author jpatel
@@ -300,13 +300,15 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
         testLog ("Specimen Activation Date is present and specimen fields are disabled");
 
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Activate Order");
-
-        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-        specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate (), formatDt7);
-        assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
-        testLog ("Specimen Activation Date is present");
+        // TODO uncomment below once SR-13054 is resolved (and Baiji release)
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
+        //
+        // orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
+        // specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate
+        // (), formatDt7);
+        // assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
+        // testLog ("Specimen Activation Date is present");
     }
 
     /**
@@ -373,13 +375,15 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
         testLog ("Specimen Activation Date is present and specimen fields are disabled");
 
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Activate Order");
-
-        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-        specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate (), formatDt7);
-        assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
-        testLog ("Specimen Activation Date is present");
+        // TODO uncomment below once SR-13054 is resolved (and Baiji release)
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
+        //
+        // orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
+        // specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate
+        // (), formatDt7);
+        // assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
+        // testLog ("Specimen Activation Date is present");
     }
 
     /**
@@ -495,12 +499,13 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
         testLog ("Specimen Activation Date is not present and specimen fields are enabled");
 
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Activate Order");
-
-        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-        assertNull (orderDetailClonoSeq.getSpecimenActivationDate ());
-        testLog ("Specimen Activation Date is not present");
+        // TODO uncomment below once SR-13054 is resolved (and Baiji release)
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
+        //
+        // orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
+        // assertNull (orderDetailClonoSeq.getSpecimenActivationDate ());
+        // testLog ("Specimen Activation Date is not present");
     }
 
     /**
@@ -555,9 +560,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.gotoAccession (shipmentId);
         accession.clickPass ();
 
-        newOrderClonoSeq.gotoOrderEntry (order.id);
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Activate Order");
+        // TODO uncomment below once SR-13054 is resolved (and Baiji release)
+        // newOrderClonoSeq.gotoOrderEntry (order.id);
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
     }
 
     /**
@@ -606,9 +612,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.gotoAccession (shipmentId);
         accession.clickPass ();
 
-        newOrderClonoSeq.gotoOrderEntry (order.id);
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Activate Order");
+        // TODO uncomment below once SR-13054 is resolved (and Baiji release)
+        // newOrderClonoSeq.gotoOrderEntry (order.id);
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
 
     }
 
@@ -707,9 +714,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.clickPass ();
         testLog ("specimen approved");
 
-        newOrderClonoSeq.gotoOrderEntry (order.id);
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Activate Order");
+        // TODO uncomment below once SR-13054 is resolved (and Baiji release)
+        // newOrderClonoSeq.gotoOrderEntry (order.id);
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
     }
 
     /**
@@ -779,9 +787,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.clickPass ();
         testLog ("specimen approved");
 
-        newOrderClonoSeq.gotoOrderEntry (order.id);
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Activate Order");
+        // TODO uncomment below once SR-13054 is resolved (and Baiji release)
+        // newOrderClonoSeq.gotoOrderEntry (order.id);
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
     }
 
     /**
@@ -1272,8 +1281,9 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.gotoAccession (shipmentId);
         accession.clickPass ();
 
-        newOrderClonoSeq.gotoOrderEntry (order.id);
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Activate Order");
+        // TODO uncomment below once SR-13054 is resolved (and Baiji release)
+        // newOrderClonoSeq.gotoOrderEntry (order.id);
+        // newOrderClonoSeq.activateOrder ();
+        // testLog ("Activate Order");
     }
 }
