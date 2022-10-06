@@ -10,7 +10,6 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import org.apache.commons.lang.RandomStringUtils;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.ChargeType;
@@ -20,6 +19,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
+import com.adaptivebiotech.cora.ui.patient.PatientsList;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.test.utils.TestHelper;
 
@@ -29,6 +29,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     private Login             login            = new Login ();
     private OrdersList        ordersList       = new OrdersList ();
     private NewOrderTDetect   newOrderTDetect  = new NewOrderTDetect ();
+    private PatientsList      patientsList     = new PatientsList ();
     private Patient           patient          = newPatient ();
     private PickPatientModule createNewPatient = new PickPatientModule ();
     private PatientDetail     patientDetail    = new PatientDetail ();
@@ -140,21 +141,37 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
      */
     @Test (groups = "irish-wolfhound")
     public void patientLastNameSearch () {
+        Patient patientDigit = newPatient ();
+        patientDigit.firstName = "T-Detect";
+        patient.lastName = "493402";
         newOrderTDetect.selectNewTDetectDiagnosticOrder ();
         newOrderTDetect.isCorrectPage ();
         newOrderTDetect.selectPhysician (coraApi.getPhysician (clonoSEQ_selfpay));
 
         newOrderTDetect.clickPickPatient ();
-        patient.lastName = RandomStringUtils.randomNumeric (6);
-        createNewPatient.searchOrCreatePatient (patient);
+        createNewPatient.searchOrCreatePatient (patientDigit);
         createNewPatient.clickRemovePatient ();
         newOrderTDetect.clickPickPatient ();
-        createNewPatient.searchPatientWithLastName (patient);
+        createNewPatient.searchPatientWithLastName (patientDigit);
         assertTrue (createNewPatient.isPickPatientRowPresent ());
         assertFalse (createNewPatient.isNoPatientsFound ());
         String patientDetails = createNewPatient.getFirstRowPatient ();
+        assertEquals (patientDetails.split ("\n")[0], patientDigit.firstName);
+        assertEquals (patientDetails.split ("\n")[1], patientDigit.lastName);
+        assertEquals (patientDetails.split ("\n")[2], patientDigit.dateOfBirth);
         testLog ("Patient details searched with last name are: " + patientDetails);
         testLog ("Patient search with numeric lastname is working");
+
+        createNewPatient.clickCancel ();
+        newOrderTDetect.clickPatients ();
+        patientsList.ignoredUnsavedChanges ();
+        patientsList.waitForNewPatientToAppear (patientDetails.split ("\n")[3]);
+        testLog ("numeric lastname patient is searchable on Patient List page");
+
+        assertEquals (patientDetail.getFirstName (), patientDigit.firstName);
+        assertEquals (patientDetail.getLastName (), patientDigit.lastName);
+        assertEquals (patientDetail.getDateOfBirth (), patientDigit.dateOfBirth);
+        testLog ("validate numeric lastname patient on Patient Details page");
     }
 
 }

@@ -314,7 +314,8 @@ public class CoraPage extends BasePage {
 
     public void ignoredUnsavedChanges () {
         assertTrue (isTextInElement (popupTitle, "Unsaved Changes"));
-        clickPopupOK ();
+        assertTrue (click ("//button[text()='Ignore changes and leave the page']"));
+        moduleLoading ();
     }
 
     public void clickFilter () {
