@@ -96,14 +96,14 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
 
         // sendKeys() has a limit for large string
         String notes = TestHelper.randomString (1000);
-        int count = 70;
+        int count = 50;
         while (count > 0) {
             newOrderClonoSeq.enterOrderNotes (notes);
             --count;
         }
         newOrderClonoSeq.clickSave ();
         int notesSize = newOrderClonoSeq.getOrderNotes ().length ();
-        assertEquals (notesSize, notes.length () * 70);
+        assertEquals (notesSize, notes.length () * 50);
         testLog ("Order notes character length is: " + notesSize);
 
         newOrderClonoSeq.billing.selectBilling (ChargeType.PatientSelfPay);
