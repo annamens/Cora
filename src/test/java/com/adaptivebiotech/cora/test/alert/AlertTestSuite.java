@@ -22,7 +22,7 @@ import com.adaptivebiotech.cora.ui.order.OrderAlert;
 
 /**
  * @author Mitch Parsons
- *         <a href="mailto:<wparsons@adaptivebiotech.com">wparsons@adaptivebiotech.com</a>
+ *         <a href="mailto:wparsons@adaptivebiotech.com">wparsons@adaptivebiotech.com</a>
  */
 @Test (groups = "regression")
 public class AlertTestSuite extends CoraBaseBrowser {
