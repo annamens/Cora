@@ -122,6 +122,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private final String           updateActivationStatus  = "UPDATE cora.specimen_activations SET activation_status = '%s' WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')";
     private final String           specimenActivationQuery = "SELECT * FROM cora.specimen_activations WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')";
     private final String           specimenRequiredMsg     = "Specimen is required and needs to be approved!";
+    private final String           specimenActivationMsg   = "Order save failed with reason: Specimen Activation is Pending. Wait until the Specimen Activation Completes.";
 
     private ThreadLocal <Boolean>  cfDna                   = new ThreadLocal <> ();
     private ThreadLocal <Boolean>  specimenActivation      = new ThreadLocal <> ();
@@ -292,15 +293,13 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
         testLog ("Specimen Activation Date is present and specimen fields are disabled");
 
-        // TODO uncomment below once SR-13054 is resolved
-        // newOrderClonoSeq.activateOrder ();
-        // testLog ("Activate Order");
-        //
-        // orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-        // specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate
-        // (), formatDt7);
-        // assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
-        // testLog ("Specimen Activation Date is present");
+        newOrderClonoSeq.activateOrder ();
+        testLog ("Activate Order");
+
+        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
+        specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate (), formatDt7);
+        assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
+        testLog ("Specimen Activation Date is present");
     }
 
     /**
@@ -367,15 +366,13 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
         testLog ("Specimen Activation Date is present and specimen fields are disabled");
 
-        // TODO uncomment below once SR-13054 is resolved
-        // newOrderClonoSeq.activateOrder ();
-        // testLog ("Activate Order");
-        //
-        // orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-        // specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate
-        // (), formatDt7);
-        // assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
-        // testLog ("Specimen Activation Date is present");
+        newOrderClonoSeq.activateOrder ();
+        testLog ("Activate Order");
+
+        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
+        specimenActivation = LocalDateTime.parse (orderDetailClonoSeq.getSpecimenActivationDate (), formatDt7);
+        assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
+        testLog ("Specimen Activation Date is present");
     }
 
     /**
@@ -407,6 +404,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), PENDING.label);
         testLog ("Validate Specimen Activation Pending Label");
 
+        newOrderClonoSeq.clickSaveAndActivate ();
+        newOrderClonoSeq.confirmActivate ();
+        assertEquals (newOrderClonoSeq.getToastError (), specimenActivationMsg);
+
         LocalDateTime specimenActivation = newOrderClonoSeq.waitUntilSpecimenActivated ();
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
 
@@ -421,6 +422,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), FAILED.label);
         testLog ("Validate Specimen Activation Failed Label");
 
+        newOrderClonoSeq.clickSaveAndActivate ();
+        newOrderClonoSeq.confirmActivate ();
+        assertEquals (newOrderClonoSeq.getToastError (), specimenActivationMsg);
+
         updateCount = coraDb.executeUpdate (format (updateActivationStatus, "Terminal", specimenNo));
         assertEquals (updateCount, 1);
         newOrderClonoSeq.refresh ();
@@ -428,9 +433,10 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), FAILED_ACTIVATION.label);
         testLog ("Validate Specimen Activation Faield Activation Label");
 
-        // TODO uncomment below once SR-13054 is resolved
-        // newOrderClonoSeq.activateOrder ();
-        // testLog ("Specimen Activation fail order can be activated");
+        newOrderClonoSeq.clickSaveAndActivate ();
+        newOrderClonoSeq.confirmActivate ();
+        assertEquals (newOrderClonoSeq.getToastError (), specimenActivationMsg);
+
     }
 
     /**
@@ -543,9 +549,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.clickPass ();
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
-        // TODO uncomment below once SR-13054 is resolved
-        // newOrderClonoSeq.activateOrder ();
-        // testLog ("Activate Order");
+        newOrderClonoSeq.activateOrder ();
+        testLog ("Activate Order");
     }
 
     /**
@@ -595,9 +600,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.clickPass ();
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
-        // TODO uncomment below once SR-13054 is resolved
-        // newOrderClonoSeq.activateOrder ();
-        // testLog ("Activate Order");
+        newOrderClonoSeq.activateOrder ();
+        testLog ("Activate Order");
 
     }
 
@@ -697,9 +701,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         testLog ("specimen approved");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
-        // TODO uncomment below once SR-13054 is resolved
-        // newOrderClonoSeq.activateOrder ();
-        // testLog ("Activate Order");
+        newOrderClonoSeq.activateOrder ();
+        testLog ("Activate Order");
     }
 
     /**
@@ -770,9 +773,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         testLog ("specimen approved");
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
-        // TODO uncomment below once SR-13054 is resolved
-        // newOrderClonoSeq.activateOrder ();
-        // testLog ("Activate Order");
+        newOrderClonoSeq.activateOrder ();
+        testLog ("Activate Order");
     }
 
     /**
@@ -1175,8 +1177,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.clickPass ();
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
-        // TODO uncomment below once SR-13054 is resolved
-        // newOrderClonoSeq.activateOrder ();
-        // testLog ("Activate Order");
+        newOrderClonoSeq.activateOrder ();
+        testLog ("Activate Order");
     }
 }

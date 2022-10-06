@@ -387,7 +387,7 @@ public class OrderDetail extends OrderHeader {
     }
 
     public String getSpecimenActivationDate () {
-        String activationDate = "[ng-bind^='ctrl.orderEntry.specimen.activationDate']";
+        String activationDate = "specimen-activation-date";
         return isElementVisible (activationDate) ? getText (activationDate) : null;
     }
 

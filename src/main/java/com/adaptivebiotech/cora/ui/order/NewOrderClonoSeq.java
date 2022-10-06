@@ -9,7 +9,10 @@ import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED_ACTIVATION;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.PENDING;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt6;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
@@ -278,6 +281,7 @@ public class NewOrderClonoSeq extends NewOrder {
         while (!timer.Timedout ()) {
             timer.Wait ();
             refresh ();
+            isCorrectPage ();
             specimenActivationDate = getSpecimenActivationDate ();
             if (isBlank (specimenActivationDate) || specimenActivationDate.equals (PENDING.label)) {
                 continue;
@@ -289,9 +293,10 @@ public class NewOrderClonoSeq extends NewOrder {
                 return LocalDateTime.parse (specimenActivationDate, formatDt7);
             }
         }
-        fail (format ("Specimen did not activate in time, Order No: %s, Specimen Activation: %s",
+        fail (format ("Specimen did not activate in time, Order No: %s, Specimen Activation: %s, DateTime: %s",
                       getOrderNumber (),
-                      specimenActivationDate));
+                      specimenActivationDate,
+                      genDate (0, formatDt6, pstZoneId)));
         return null;
     }
 
