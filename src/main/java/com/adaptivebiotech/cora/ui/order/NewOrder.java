@@ -198,11 +198,6 @@ public abstract class NewOrder extends OrderHeader {
 
     public abstract void clickSaveAndActivate ();
 
-    public void clickCancel () {
-        assertTrue (click ("[ng-click='ctrl.cancel();']"));
-        moduleLoading ();
-    }
-
     public void clickCancelOrder () {
         assertTrue (click ("//button[text()=' Cancel Order ']"));
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
