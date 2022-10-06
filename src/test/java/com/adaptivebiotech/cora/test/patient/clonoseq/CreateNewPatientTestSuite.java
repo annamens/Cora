@@ -10,6 +10,7 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
+import java.util.stream.IntStream;
 import org.apache.commons.lang.RandomStringUtils;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -95,15 +96,12 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         newOrderClonoSeq.isCorrectPage ();
 
         // sendKeys() has a limit for large string
-        String notes = TestHelper.randomString (1000);
-        int count = 30;
-        while (count > 0) {
-            newOrderClonoSeq.enterOrderNotes (notes);
-            --count;
-        }
+        String notes = TestHelper.randomString (500);
+        int count = 120;
+        IntStream.range (0, count).forEach (i -> newOrderClonoSeq.enterOrderNotes (notes));
         newOrderClonoSeq.clickSave ();
         int notesSize = newOrderClonoSeq.getOrderNotes ().length ();
-        assertEquals (notesSize, notes.length () * 30);
+        assertEquals (notesSize, notes.length () * count);
         testLog ("Order notes character length is: " + notesSize);
 
         newOrderClonoSeq.billing.selectBilling (ChargeType.PatientSelfPay);
