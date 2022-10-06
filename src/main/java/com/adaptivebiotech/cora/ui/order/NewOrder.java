@@ -204,7 +204,7 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void clickCancelOrder () {
-        assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
+        assertTrue (click ("//button[text()=' Cancel Order ']"));
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
     }
 
@@ -213,7 +213,7 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
         assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
         assertTrue (setText ("#cancellationNotes", "this is a test"));
-        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
+        assertTrue (click ("//button[text()='Yes. Cancel Order']"));
         pageLoading ();
         moduleLoading ();
         checkOrderForErrors ();

@@ -886,8 +886,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         updateIsolationDateAndVerifyPlasmaStabilityWindow (-47, Expired, specimenDto.specimenNumber);
     }
 
-
-     /**
+    /**
      * NOTE: SR-T4290
      * 
      * @sdlc.requirements SR-11721:R1
@@ -974,7 +973,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         newOrderClonoSeq.activateOrder ();
         testLog ("Streck Plasma Isolation Date = Today - 44, Order Activation Successful");
     }
-    
+
     /**
      * NOTE: SR-T4291
      * 
@@ -1001,9 +1000,9 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
         // Verify New Cancel Action Default Option
         assertTrue (newOrderClonoSeq.isCancelActionDropdownVisible ());
-         assertEquals (newOrderClonoSeq.getCancelActionValue (), GenerateFailureReport);
+        assertEquals (newOrderClonoSeq.getCancelActionValue (), GenerateFailureReport);
         testLog ("Cancel Action dropdown visible and set to " + GenerateFailureReport.label);
-        newOrderClonoSeq.cancelStreckOrder (true);
+        newOrderClonoSeq.cancelStreckOrder (GenerateFailureReport);
 
         // Verify No Result Report can be released
         assertEquals (newOrderClonoSeq.getOrderStatus (), PendingCancellation);
@@ -1057,10 +1056,9 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         testLog ("Streck sample, Without Fastlane: " + order.orderNumber);
         newOrderClonoSeq.clickCancelOrder ();
 
-        // TO-DO PENDING SR-13228 BUG RESOLUTION: Verify New Cancel Action Non-Default Option
-        newOrderClonoSeq.setCancelActionValue (NoActionRequired);
+        // Verify New Cancel Action Non-Default Option
+        newOrderClonoSeq.cancelStreckOrder (NoActionRequired);
         testLog ("Cancel Action dropdown set to " + NoActionRequired.label);
-        newOrderClonoSeq.cancelStreckOrder (false);
         assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.Cancelled);
         testLog ("Order Status is Cancelled");
     }

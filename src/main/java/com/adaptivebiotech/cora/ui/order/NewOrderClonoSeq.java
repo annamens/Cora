@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequired;
 import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.getCancelOrderAction;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
@@ -320,14 +321,14 @@ public class NewOrderClonoSeq extends NewOrder {
         return el;
     }
 
-    public void cancelStreckOrder (boolean releaseReport) {
+    public void cancelStreckOrder (CancelOrderAction cancelAction) {
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
         assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
         assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
         assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
         assertTrue (setText ("#cancellationNotes", "this is a test"));
-        if (!releaseReport)
-            setCancelActionValue (CancelOrderAction.NoActionRequired);
+        if (cancelAction == NoActionRequired)
+            setCancelActionValue (cancelAction);
         assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
         pageLoading ();
         moduleLoading ();
@@ -343,7 +344,7 @@ public class NewOrderClonoSeq extends NewOrder {
     }
 
     public void setCancelActionValue (CancelOrderAction value) {
-        clickAndSelectValue (cancellationAction, value.label);
+        clickAndSelectText (cancellationAction, value.label);
     }
 
     /**
