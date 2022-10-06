@@ -19,6 +19,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
+import com.adaptivebiotech.cora.ui.patient.PatientsList;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
 import com.adaptivebiotech.test.utils.TestHelper;
 

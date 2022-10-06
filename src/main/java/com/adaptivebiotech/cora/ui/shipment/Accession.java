@@ -181,6 +181,8 @@ public class Accession extends ShipmentHeader {
     }
 
     public void addDiscrepancy (Discrepancy discrepancy, String notes, DiscrepancyAssignee assignee) {
+        assertTrue (click ("input[placeholder='Type keyword or quick code here']"));
+        
         String menuItemFmtString = "//*[@class='discrepancies-options']/ul/li[contains(text(),'%s')]";
         String menuItem = String.format (menuItemFmtString, discrepancy.text);
 
