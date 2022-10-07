@@ -354,16 +354,6 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (isTextInElement (popupTitle, "Pick Patient"));
     }
 
-    public void removePatient () {
-        clickRemovePatient ();
-        assertTrue (isTextInElement (popupTitle, "Order Billing Warning"));
-        assertTrue (click ("[data-ng-click='ctrl.ok();']"));
-    }
-
-    public void clickRemovePatient () {
-        assertTrue (click ("//button[text()='Remove Patient']"));
-    }
-
     public void clickPatientCode () {
         String css = "//*[text()='Patient Code']/parent::div//a";
         assertTrue (click (css));
