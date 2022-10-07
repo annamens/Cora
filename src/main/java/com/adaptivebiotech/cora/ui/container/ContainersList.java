@@ -384,7 +384,6 @@ public class ContainersList extends CoraPage {
     }
 
     public void clickClose () {
-        // One uses text close
         assertTrue (click ("//button[text()='Close']"));
         moduleLoading ();
     }
