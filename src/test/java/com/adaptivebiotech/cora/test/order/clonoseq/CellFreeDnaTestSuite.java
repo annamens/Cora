@@ -10,6 +10,7 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.GenerateFailureReport;
 import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequired;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.CancelledWithReport;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.PendingCancellation;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.MrdEnabled;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
@@ -1028,8 +1029,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         orderStatus.waitFor (specimenStreck.sampleName, Finalize, StageStatus.Cancelled);
         testLog ("Report Delivery Finished");
         orderDetailClonoSeq.refresh ();
-        assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.CancelledWithReport);
-        testLog ("Order Status is CancelledWithReport");
+        assertEquals (newOrderClonoSeq.getOrderStatus (), CancelledWithReport);
+        testLog ("Order Status is " + CancelledWithReport);
     }
 
     /**
