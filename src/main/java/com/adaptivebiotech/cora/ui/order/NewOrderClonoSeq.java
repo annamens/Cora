@@ -282,7 +282,6 @@ public class NewOrderClonoSeq extends NewOrder {
         while (!timer.Timedout ()) {
             timer.Wait ();
             refresh ();
-            isCorrectPage ();
             specimenActivationDate = getSpecimenActivationDate ();
             if (isBlank (specimenActivationDate) || specimenActivationDate.equals (PENDING.label)) {
                 continue;
