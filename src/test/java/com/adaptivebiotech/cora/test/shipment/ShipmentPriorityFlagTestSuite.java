@@ -27,10 +27,10 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 
 /**
  * @author cbragg
- *         <a href="mailto:<cbragg@adaptivebiotech.com">cbragg@adaptivebiotech.com</a>
+ *         <a href="mailto:cbragg@adaptivebiotech.com">cbragg@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "irish-wolfhound" })
-public class ShipmentPriorityFlag extends CoraBaseBrowser {
+public class ShipmentPriorityFlagTestSuite extends CoraBaseBrowser {
 
     private final String[]   icdCodes         = { "Z63.1" };
     private Login            login            = new Login ();
