@@ -918,15 +918,16 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                       "Order save failed with reason: Streck (Blood) was not isolated within 7 days from the collection date.");
         testLog ("Streck Blood Collection Date = Today - 7, Order Activation Blocked");
 
-        // Need to wait for Specimen Activation and then another ~5 minutes to ensure LIMS crons has
-        // pushed the sample from Step 2 to Step 3 Assign Workflow
-        newOrderClonoSeq.waitUntilSpecimenActivated ();
-        newOrderClonoSeq.doWait (millisPoll * 300);
-
-        // Collection date = today - 6, activation pass
-        newOrderClonoSeq.enterCollectionDate (genLocalDate (-6));
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Streck Blood Collection Date = Today - 6, Order Activation Successful");
+        /*
+         * Collection date = today - 6, activation pass
+         * TO DO: Pending SR-13054 in Baiji release which will allow order activation without
+         * pushing streck sample forward in LIMS
+         * 
+         * newOrderClonoSeq.waitUntilSpecimenActivated ();
+         * newOrderClonoSeq.enterCollectionDate (genLocalDate (-6));
+         * newOrderClonoSeq.activateOrder ();
+         * testLog ("Streck Blood Collection Date = Today - 6, Order Activation Successful");
+         */
     }
 
     /**
@@ -967,21 +968,22 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                       "Order save failed with reason: Streck (Plasma) was not extracted within 45 days from the isolation date.");
         testLog ("Streck Plasma Isolation Date = Today - 45, Order Activation Blocked");
 
-        // Isolation date = today - 44, activation pass
-        coraDb.executeUpdate (format (query,
-                                      DateHelper.genDate (-44,
-                                                          ISO_LOCAL_DATE_TIME,
-                                                          pstZoneId),
-                                      specimenDto.specimenNumber));
-        newOrderClonoSeq.refresh ();
-        newOrderClonoSeq.isCorrectPage ();
-
-        // Need to wait for Specimen Activation and then another ~5 minutes to ensure LIMS crons has
-        // pushed the sample from Step 2 to Step 3 Assign Workflow
-        newOrderClonoSeq.waitUntilSpecimenActivated ();
-        newOrderClonoSeq.doWait (millisPoll * 300);
-        newOrderClonoSeq.activateOrder ();
-        testLog ("Streck Plasma Isolation Date = Today - 44, Order Activation Successful");
+        /*
+         * Isolation date = today - 44, activation pass
+         * TO DO: Pending SR-13054 in Baiji release which will allow order activation without
+         * pushing streck sample forward in LIMS
+         * 
+         * coraDb.executeUpdate (format (query,
+         * DateHelper.genDate (-44,
+         * ISO_LOCAL_DATE_TIME,
+         * pstZoneId),
+         * specimenDto.specimenNumber));
+         * newOrderClonoSeq.refresh ();
+         * newOrderClonoSeq.isCorrectPage ();
+         * newOrderClonoSeq.waitUntilSpecimenActivated ();
+         * newOrderClonoSeq.activateOrder ();
+         * testLog ("Streck Plasma Isolation Date = Today - 44, Order Activation Successful");
+         */
     }
 
     /**
