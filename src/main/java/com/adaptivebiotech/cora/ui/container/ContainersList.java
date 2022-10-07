@@ -384,7 +384,8 @@ public class ContainersList extends CoraPage {
     }
 
     public void clickClose () {
-        assertTrue (click ("[ng-click='ctrl.ok()']"));
+        // One uses text close
+        assertTrue (click ("//button[text()='Close']"));
         moduleLoading ();
     }
 

@@ -100,15 +100,6 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (click (format ("//*[text()='%s']/ancestor::li//input", assay.test)));
     }
 
-    public void findSpecimenId (String id) {
-        assertTrue (setText ("[ng-model='ctrl.specimenNumber']", id));
-        assertTrue (click ("[ng-click='ctrl.reuseSpecimen(ctrl.specimenNumber)']"));
-        assertTrue (isTextInElement (popupTitle, "Patient Warning"));
-        assertTrue (click ("[ng-click='ctrl.ok()']"));
-        moduleLoading ();
-        assertTrue (isTextInElement (specimenNumber, id));
-    }
-
     public void deselectAllTests () {
         String tCellCheckbox = "#order-test-type-t-cell";
         String bCellCheckbox = "#order-test-type-b-cell";
@@ -178,14 +169,6 @@ public class NewOrderClonoSeq extends NewOrder {
         order.doraAttachments = getDoraAttachments ();
         order.notes = getOrderNotes ();
         return order;
-    }
-
-    public void addPatientICDCode (String icdCode) {
-        String expectedModalTitle = "Test Selection Warning";
-        this.enterPatientICD_Codes (icdCode);
-        String actualText = waitForElementVisible ("[ng-bind-html=\"ctrl.dialogOptions.headerText\"]").getText ();
-        assertEquals (actualText, expectedModalTitle);
-        assertTrue (click ("[data-ng-click='ctrl.ok();']"));
     }
 
     public void clickEditPatient () {
