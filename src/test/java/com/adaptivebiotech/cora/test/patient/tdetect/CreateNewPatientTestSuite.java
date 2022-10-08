@@ -32,7 +32,6 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     private OrdersList        ordersList       = new OrdersList ();
     private NewOrderTDetect   newOrderTDetect  = new NewOrderTDetect ();
     private PatientsList      patientsList     = new PatientsList ();
-
     private PickPatientModule createNewPatient = new PickPatientModule ();
     private PatientDetail     patientDetail    = new PatientDetail ();
 
