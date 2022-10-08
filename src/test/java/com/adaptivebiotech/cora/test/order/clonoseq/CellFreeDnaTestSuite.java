@@ -12,8 +12,6 @@ import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequ
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.CancelledWithReport;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.PendingCancellation;
-import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.MrdEnabled;
-import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
@@ -31,11 +29,9 @@ import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenStab
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenType;
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.TRFHandwritten;
 import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee.CLINICAL_TRIALS;
-import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
-import static com.adaptivebiotech.cora.utils.TestHelper.newSelfPayPatient;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
-import static com.adaptivebiotech.test.utils.DateHelper.convertDateFormat;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
@@ -44,25 +40,15 @@ import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Finalize;
-import static com.adaptivebiotech.test.utils.PageHelper.StageName.ReportDelivery;
-import static com.adaptivebiotech.test.utils.PageHelper.StageName.SecondaryAnalysis;
-import static com.adaptivebiotech.test.utils.PageHelper.StageName.ShmAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
-import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Finished;
-import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Ready;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
-import static com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty.lastAcceptedTsvPath;
-import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,7 +61,6 @@ import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.StabilityStatus;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
@@ -97,7 +82,6 @@ import com.adaptivebiotech.test.utils.DateHelper;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
-import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 
 /**
  * @author jpatel
@@ -122,10 +106,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
     private final String           noResultsAvailable      = "No result available";
     private final String           mrdResultDescription    = "This sample failed the quality control criteria despite multiple sequencing attempts, exceeded the sample stability time period, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
-    private final String           tsvPathOverride         = azTsvPath + "/H2YHWBGXL_0_CLINICAL-CLINICAL_77898-27PC-AJP-012.adap.txt.results.tsv.gz";
 
     private final String[]         icdCodes                = { "V00.218S" };
-    private final String           acceptedPathOverride    = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/postman-collection/HHTMTBGX5_0_EOS-VALIDATION_CPB_C4_L3_E11.adap.txt.results.tsv.gz";
     private final String           updateActivationDate    = "UPDATE cora.specimens SET activation_date = null WHERE specimen_number = '%s'";
     private final String           updateActivationStatus  = "UPDATE cora.specimen_activations SET activation_status = '%s' WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')";
     private final String           specimenActivationQuery = "SELECT * FROM cora.specimen_activations WHERE specimen_id = (SELECT id FROM cora.specimens WHERE specimen_number = '%s')";
@@ -170,83 +152,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
         createOrderAndValidateFailReport (specimenDto, assayTest);
 
-    }
-
-    /**
-     * NOTE: SR-T4212
-     * 
-     * @sdlc.requirements SR-10414:R4
-     */
-    public void cfDnaBCellTrackingReport () {
-        skipTestIfFeatureFlagOff (cfDna.get ());
-        skipTestIfFeatureFlagOff (specimenActivation.get ());
-        Patient patient = newSelfPayPatient ();
-        patient.firstName = "SR-T4212";
-        patient.lastName = "TrackingReport";
-        patient.middleName = "";
-        patient.dateOfBirth = "08/15/2001";
-        patient.mrn = "mrnsrt2412trackingreport";
-
-        Physician physician = coraApi.getPhysician (clonoSEQ_selfpay);
-        createMrdEnabledPatient (patient, physician);
-
-        Specimen specimenDto = new Specimen ();
-        specimenDto.sampleType = Plasma;
-        specimenDto.collectionDate = genLocalDate (-3);
-        Assay assayTest = MRD_BCell2_CLIA;
-
-        Order order = newOrderClonoSeq.createClonoSeqOrder (physician,
-                                                            patient,
-                                                            icdCodes,
-                                                            assayTest,
-                                                            specimenDto,
-                                                            Active,
-                                                            Tube);
-        String sampleName = orderDetailClonoSeq.getSampleName (assayTest);
-        orcaHistory.gotoOrderDebug (sampleName);
-        orcaHistory.setWorkflowProperty (lastAcceptedTsvPath, tsvPathOverride);
-        orcaHistory.forceStatusUpdate (StageName.SecondaryAnalysis, StageStatus.Ready);
-        testLog ("Order No: " + order.orderNumber + ", forced status updated to SecondaryAnalysis -> Ready");
-        orcaHistory.waitFor (StageName.ClonoSEQReport, StageStatus.Awaiting, StageSubstatus.CLINICAL_QC);
-        orcaHistory.clickOrderTest ();
-        orderDetailClonoSeq.clickReportTab (assayTest);
-        reportClonoSeq.releaseReport (assayTest, QC.Pass);
-        testLog ("Order Number: " + order.orderNumber + ", Released Report, Tracking Report Generated");
-
-        orcaHistory.gotoOrderDebug (sampleName);
-        orcaHistory.waitFor (StageName.ReportDelivery, StageStatus.Finished, StageSubstatus.ALL_SUCCEEDED);
-
-        orcaHistory.clickOrderTest ();
-        orderDetailClonoSeq.clickReportTab (assayTest);
-
-        String pdfFileLocation = join ("/", downloadDir.get (), sampleName + ".pdf");
-        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
-
-        String extractedText = getTextFromPDF (pdfFileLocation, 1);
-        validatePdfContent (extractedText,
-                            "Cell-free DNA (cfDNA)1 was extracted from plasma isolated from a blood sample.");
-        validatePdfContent (extractedText,
-                            "Circulating tumor DNA (ctDNA)2 is an indirect measure of residual disease and the mechanisms that contribute to the presence of ctDNA in the blood (and hence plasma) are complex.");
-        validatePdfContent (extractedText,
-                            "ctDNA levels are best assessed in the context of multiple measurements rather than at individual time points.");
-        validatePdfContent (extractedText, "New dominant sequences are not assessed when evaluating ctDNA.");
-        validatePdfContent (extractedText, "SAMPLE-LEVEL MRD TRACKING: CIRCULATING TUMOR DNA");
-        validatePdfContent (extractedText, "SEQUENCE-LEVEL MRD TRACKING: CIRCULATING TUMOR DNA");
-        validatePdfContent (extractedText,
-                            "Patients with detectable disease in a primary tumor sample may not have detectable ctDNA in a plasma sample; the amount of ctDNA in a plasma sample may not correlate with the amount in a primary tumor.");
-        validatePdfContent (extractedText,
-                            "Any dominant sequence identified in a Clonality (ID) sample that is subsequently detected in a ctDNA Tracking (MRD) test and is above the assay's LOB is reported as a residual sequence.");
-        validatePdfContent (extractedText, "1 Cell-free DNA (cfDNA)");
-        validatePdfContent (extractedText,
-                            "Comprises short (hundreds of base pairs) DNA fragments found in a variety of acellular biological fluids, including blood plasma.");
-        validatePdfContent (extractedText, "2 Circulating tumor DNA (ctDNA)");
-        validatePdfContent (extractedText, "The subset of cfDNA in plasma derived from tumor cells.");
-        validatePdfContent (extractedText, "3 Sample Clonality");
-        validatePdfContent (extractedText, "4 Total Volume (mL)");
-        validatePdfContent (extractedText, "5 Total Sequences");
-        validatePdfContent (extractedText, "6 Total Unique Sequences");
-        validatePdfContent (extractedText, "7 Limit of Detection (LOD)");
-        validatePdfContent (extractedText, "8 Limit of Quantitation (LOQ)");
     }
 
     /**
@@ -1191,63 +1096,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertTrue (newOrderClonoSeq.isUniqueSpecimenIdEnabled ());
         assertEquals (newOrderClonoSeq.isRetrievalDateEnabled (), allFields);
         assertEquals (newOrderClonoSeq.isSpecimenSourceEnabled (), specimenSource);
-    }
-
-    private void createMrdEnabledPatient (Patient patient, Physician physician) {
-        String patientDob = convertDateFormat (patient.dateOfBirth, "MM/dd/yyyy", "yyyy-MM-dd");
-        List <Patient> patients = stream (coraApi.getPatients (patient.firstName)).filter (p -> patient.lastName.equals (p.lastName))
-                                                                                  .filter (p -> patientDob.equals (p.dateOfBirth))
-                                                                                  .collect (toList ());
-        if (patients.size () > 1)
-            fail (format ("found [%s] patients, for search terms: %s", patients.size (), patient));
-
-        boolean needToCreateOrder = false;
-        if (patients.size () == 0)
-            needToCreateOrder = true;
-        else {
-            // patient exist, check if status is MrdEnabled
-            boolean isPatientMrdEnabled = MrdEnabled.equals (coraApi.getPatientStatus (patients.get (0).id));
-            if (!isPatientMrdEnabled) {
-                Order[] orders = coraApi.getOrdersForPatient (patients.get (0).id);
-                if (orders.length > 0) {
-                    List <UUID> orderIds = stream (orders).map (o -> o.id).collect (toList ());
-                    coraDb.deleteOrdersFromDB (orderIds);
-                }
-                coraDb.deletePatientFromDB (patients.get (0).id);
-
-                needToCreateOrder = true;
-            }
-        }
-
-        login.doLogin ();
-        ordersList.isCorrectPage ();
-
-        if (needToCreateOrder) {
-            Assay assayTest = ID_BCell2_CLIA;
-            Order order = newOrderClonoSeq.createClonoSeqOrder (physician,
-                                                                patient,
-                                                                icdCodes,
-                                                                assayTest,
-                                                                bloodSpecimen (),
-                                                                Active,
-                                                                Tube);
-            info ("Order Number: " + order.orderNumber);
-
-            String sampleName = orderDetailClonoSeq.getSampleName (assayTest);
-            orcaHistory.gotoOrderDebug (sampleName);
-            orcaHistory.setWorkflowProperty (lastAcceptedTsvPath, acceptedPathOverride);
-            orcaHistory.forceStatusUpdate (SecondaryAnalysis, Ready);
-            orcaHistory.waitFor (SecondaryAnalysis, Finished);
-            orcaHistory.waitFor (ShmAnalysis, Finished);
-            orcaHistory.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-            orcaHistory.clickOrderTest ();
-
-            reportClonoSeq.clickReportTab (assayTest);
-            reportClonoSeq.releaseReport (assayTest, Pass);
-            orcaHistory.gotoOrderDebug (sampleName);
-            orcaHistory.waitFor (ReportDelivery, Finished);
-            orcaHistory.clickOrderTest ();
-        }
     }
 
     private void discrepancyResolvedBeforeLabelVerify (Discrepancy discrepancy) {

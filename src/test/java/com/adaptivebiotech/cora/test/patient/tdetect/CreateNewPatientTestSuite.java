@@ -141,7 +141,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     public void patientLastNameSearch () {
         Patient patientDigit = newPatient ();
         patientDigit.firstName = "T-Detect";
-        patient.lastName = "493402";
+        patientDigit.lastName = "493402";
         newOrderTDetect.selectNewTDetectDiagnosticOrder ();
         newOrderTDetect.isCorrectPage ();
         newOrderTDetect.selectPhysician (coraApi.getPhysician (clonoSEQ_selfpay));
