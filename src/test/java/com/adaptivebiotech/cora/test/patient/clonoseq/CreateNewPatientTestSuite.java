@@ -27,11 +27,11 @@ import com.adaptivebiotech.test.utils.TestHelper;
 @Test (groups = "regression")
 public class CreateNewPatientTestSuite extends CoraBaseBrowser {
 
+    private final Patient     patient          = newPatient ();
     private Login             login            = new Login ();
     private OrdersList        ordersList       = new OrdersList ();
     private NewOrderClonoSeq  newOrderClonoSeq = new NewOrderClonoSeq ();
     private PatientsList      patientsList     = new PatientsList ();
-    private Patient           patient          = newPatient ();
     private PickPatientModule createNewPatient = new PickPatientModule ();
     private PatientDetail     patientDetail    = new PatientDetail ();
 
@@ -142,6 +142,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         Patient patientDigit = newPatient ();
         patientDigit.firstName = "ClonoSeq";
         patientDigit.lastName = "493401";
+
         newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.selectPhysician (coraApi.getPhysician (clonoSEQ_selfpay));
@@ -153,6 +154,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         createNewPatient.searchPatientWithLastName (patientDigit);
         assertTrue (createNewPatient.isPickPatientRowPresent ());
         assertFalse (createNewPatient.isNoPatientsFound ());
+
         String patientDetails = createNewPatient.getFirstRowPatient ();
         assertEquals (patientDetails.split ("\n")[0], patientDigit.firstName);
         assertEquals (patientDetails.split ("\n")[1], patientDigit.lastName);
@@ -171,5 +173,4 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         assertEquals (patientDetail.getDateOfBirth (), patientDigit.dateOfBirth);
         testLog ("validate numeric lastname patient on Patient Details page");
     }
-
 }

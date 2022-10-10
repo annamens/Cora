@@ -123,6 +123,31 @@ public class ReportCellfreeTestSuite extends ReportTestBase {
         ClonoSeq clonoseq = basicClonoSeq (parseReportData (actual), patient, diagnostic, orderTest);
         clonoseq.helper.isCLIA = true;
         clonoseq.pageSize = getPageCount (actualPdf);
-        verifyReport (clonoseq, getTextFromPDF (actualPdf));
+        String extractedText = getTextFromPDF (actualPdf);
+        verifyReport (clonoseq, extractedText);
+        validatePdfContent (extractedText,
+                            "Cell-free DNA (cfDNA)1 was extracted from plasma isolated from a blood sample.");
+        validatePdfContent (extractedText,
+                            "Circulating tumor DNA (ctDNA)2 is an indirect measure of residual disease and the mechanisms that contribute to the presence of ctDNA in the blood (and hence plasma) are complex.");
+        validatePdfContent (extractedText,
+                            "ctDNA levels are best assessed in the context of multiple measurements rather than at individual time points.");
+        validatePdfContent (extractedText, "New dominant sequences are not assessed when evaluating ctDNA.");
+        validatePdfContent (extractedText, "SAMPLE-LEVEL MRD TRACKING: CIRCULATING TUMOR DNA");
+        validatePdfContent (extractedText, "SEQUENCE-LEVEL MRD TRACKING: CIRCULATING TUMOR DNA");
+        validatePdfContent (extractedText,
+                            "Patients with detectable disease in a primary tumor sample may not have detectable ctDNA in a plasma sample; the amount of ctDNA in a plasma sample may not correlate with the amount in a primary tumor.");
+        validatePdfContent (extractedText,
+                            "Any dominant sequence identified in a Clonality (ID) sample that is subsequently detected in a ctDNA Tracking (MRD) test and is above the assay's LOB is reported as a residual sequence.");
+        validatePdfContent (extractedText, "1 Cell-free DNA (cfDNA)");
+        validatePdfContent (extractedText,
+                            "Comprises short (hundreds of base pairs) DNA fragments found in a variety of acellular biological fluids, including blood plasma.");
+        validatePdfContent (extractedText, "2 Circulating tumor DNA (ctDNA)");
+        validatePdfContent (extractedText, "The subset of cfDNA in plasma derived from tumor cells.");
+        validatePdfContent (extractedText, "3 Sample Clonality");
+        validatePdfContent (extractedText, "4 Total Volume (mL)");
+        validatePdfContent (extractedText, "5 Total Sequences");
+        validatePdfContent (extractedText, "6 Total Unique Sequences");
+        validatePdfContent (extractedText, "7 Limit of Detection (LOD)");
+        validatePdfContent (extractedText, "8 Limit of Quantitation (LOQ)");
     }
 }
