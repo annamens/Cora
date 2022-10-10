@@ -65,6 +65,8 @@ public class ReportCellfreeTestSuite extends ReportTestBase {
     }
 
     /**
+     * NOTE: SR-T4212
+     * 
      * @sdlc.requirements SR-10414:R4
      */
     @Test (groups = "irish-wolfhound")
