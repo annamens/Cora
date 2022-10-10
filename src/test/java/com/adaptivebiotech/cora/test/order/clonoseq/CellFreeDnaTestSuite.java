@@ -9,7 +9,6 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.GenerateFailureReport;
 import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequired;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.CancelledWithReport;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.PendingCancellation;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
@@ -37,7 +36,6 @@ import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
-import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.Plasma;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Finalize;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
@@ -65,7 +63,6 @@ import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.StabilityStatus;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
-import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
@@ -79,9 +76,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.DateHelper;
-import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
-import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
 
 /**
  * @author jpatel
@@ -99,13 +94,11 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private OrderDetailClonoSeq    orderDetailClonoSeq     = new OrderDetailClonoSeq ();
     private OrderStatus            orderStatus             = new OrderStatus ();
     private ReportClonoSeq         reportClonoSeq          = new ReportClonoSeq ();
-    private OrcaHistory            orcaHistory             = new OrcaHistory ();
     private PatientDetail          patientDetail           = new PatientDetail ();
     private PatientOrderHistory    patientHistory          = new PatientOrderHistory ();
     private ThreadLocal <String>   downloadDir             = new ThreadLocal <> ();
 
     private final String           noResultsAvailable      = "No result available";
-    private final String           mrdResultDescription    = "This sample failed the quality control criteria despite multiple sequencing attempts, exceeded the sample stability time period, or there was a problem processing the test. Please contact Adaptive Biotechnologies for more information, to provide sample disposition instructions, and/or to discuss whether sending a new sample (if one is available) should be considered.";
 
     private final String[]         icdCodes                = { "V00.218S" };
     private final String           updateActivationDate    = "UPDATE cora.specimens SET activation_date = null WHERE specimen_number = '%s'";
@@ -122,36 +115,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         cfDna.set (featureFlags.cfDNA);
         specimenActivation.set (featureFlags.specimenActivation);
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
-    }
-
-    /**
-     * NOTE: SR-T4204
-     * 
-     * @sdlc.requirements SR-10414:R1
-     */
-    public void cfDnaPlasmaNoResultAvailable () {
-        Specimen specimenDto = new Specimen ();
-        specimenDto.sampleType = Plasma;
-        specimenDto.collectionDate = genLocalDate (-3);
-        Assay assayTest = MRD_BCell2_CLIA;
-
-        createOrderAndValidateFailReport (specimenDto, assayTest);
-
-    }
-
-    /**
-     * NOTE: SR-T4204
-     * 
-     * @sdlc.requirements SR-10414:R1
-     */
-    public void cfDnaBloodNoResultAvailable () {
-        Specimen specimenDto = bloodSpecimen ();
-        specimenDto.compartment = CellFree;
-        specimenDto.anticoagulant = Streck;
-        Assay assayTest = MRD_BCell2_CLIA;
-
-        createOrderAndValidateFailReport (specimenDto, assayTest);
-
     }
 
     /**
@@ -1050,41 +1013,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         }
 
         testLog ("Order Details: " + newOrderClonoSeq.getStabilizationWindow ().text + ", Styling: " + stabilityWindow);
-    }
-
-    private void createOrderAndValidateFailReport (Specimen specimenDto, Assay assayTest) {
-        login.doLogin ();
-        ordersList.isCorrectPage ();
-        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
-                                                            newTrialProtocolPatient (),
-                                                            icdCodes,
-                                                            assayTest,
-                                                            specimenDto,
-                                                            Active,
-                                                            Tube);
-        String sampleName = orderDetailClonoSeq.getSampleName (assayTest);
-        orcaHistory.gotoOrderDebug (sampleName);
-        orcaHistory.forceStatusUpdate (StageName.Clarity, StageStatus.Failed);
-        testLog ("Order No: " + order.orderNumber + ", forced status updated to Clarity -> Failed");
-        orcaHistory.waitFor (StageName.ClonoSEQReport, StageStatus.Awaiting, StageSubstatus.CLINICAL_QC);
-        orcaHistory.clickOrderTest ();
-        orderDetailClonoSeq.clickReportTab (assayTest);
-        reportClonoSeq.releaseReport (assayTest, QC.Pass);
-        testLog ("Order Number: " + order.orderNumber + ", Released Report, Failure Report Generated");
-
-        orcaHistory.gotoOrderDebug (sampleName);
-        orcaHistory.waitFor (StageName.ReportDelivery, StageStatus.Finished, StageSubstatus.ALL_SUCCEEDED);
-        testLog ("New Clonality (ID) order needed alert should be triggered");
-
-        orcaHistory.clickOrderTest ();
-        orderDetailClonoSeq.clickReportTab (assayTest);
-
-        String pdfFileLocation = join ("/", downloadDir.get (), sampleName + ".pdf");
-        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
-
-        String extractedText = getTextFromPDF (pdfFileLocation, 1);
-        validatePdfContent (extractedText, noResultsAvailable);
-        validatePdfContent (extractedText, mrdResultDescription);
     }
 
     private void validateSpecimenSectionFields (boolean allFields, boolean specimenSource) {
