@@ -202,6 +202,7 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
      * 
      * @sdlc.requirements SR-10414:R1
      */
+    @Test (groups = "irish-wolfhound")
     public void cfDnaPlasmaNoResultAvailable () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
@@ -249,6 +250,7 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
      * 
      * @sdlc.requirements SR-10414:R1
      */
+    @Test (groups = "irish-wolfhound")
     public void cfDnaBloodNoResultAvailable () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,
