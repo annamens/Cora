@@ -52,18 +52,4 @@ public class OrderTestsList extends CoraPage {
     public void clickCSVdownloadButton () {
         assertTrue (click (downloadCSVbutton));
     }
-
-    public void requeueSample (String flowcellId) {
-        List <WebElement> requeueItems = waitForElementsVisible ("[ng-repeat-start=\"detail in ctrl.requeueDetails\"]");
-        for (WebElement row : requeueItems) {
-            String rowFlowcellId = getText (row, "[ng-bind=\"::detail.flowcell\"]");
-            if (flowcellId.equals (rowFlowcellId)) {
-                assertTrue (click (row, "input"));
-            }
-        }
-        assertTrue (click (confirmRequeueButton));
-        waitForElementVisible (".confirm-requeue-modal-dialog");
-        assertTrue (click ("[ng-click=\"ctrl.ok()\"]"));
-        pageLoading ();
-    }
 }
