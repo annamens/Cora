@@ -4,8 +4,6 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
-import java.util.List;
-import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
