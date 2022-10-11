@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
@@ -199,7 +200,7 @@ public abstract class NewOrder extends OrderHeader {
     public abstract void clickSaveAndActivate ();
 
     public void clickCancelOrder () {
-        assertTrue (click ("//button[text()=' Cancel Order ']"));
+        assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
     }
 
@@ -212,7 +213,7 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
         moduleLoading ();
         checkOrderForErrors ();
-        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", Cancelled.name ()));
     }
 
     public void clickAndCancelOrder () {
