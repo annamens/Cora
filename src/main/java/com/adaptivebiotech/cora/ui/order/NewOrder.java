@@ -385,16 +385,15 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterPatientICD_Codes (String... codes) {
-        String dropdown = ".icd-code-list-item .dropdown-item";
         String css = "//button[text()='Add Code']";
         for (String code : codes) {
             if (isElementVisible (css))
                 assertTrue (click (css));
 
             assertTrue (setText ("//*[*[text()='ICD Codes']]//input", code));
-            assertTrue (waitUntilVisible (dropdown));
+            pageLoading ();
             assertTrue (click ("//*[contains(text(),'" + code + "')]"));
-            assertTrue (waitForElementInvisible (dropdown));
+            assertTrue (waitForElementInvisible (".icd-code-list-item .dropdown-item"));
         }
     }
 
