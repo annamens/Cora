@@ -36,6 +36,7 @@ import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
+import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.picasso.dto.ReportRender;
 import com.adaptivebiotech.picasso.dto.verify.ClonoSeq;
@@ -48,6 +49,7 @@ import com.adaptivebiotech.picasso.dto.verify.ClonoSeq;
 public class NoResultAvailableTestSuite extends ReportTestBase {
 
     private Login                login                = new Login ();
+    private OrdersList           ordersList           = new OrdersList ();
     private OrderStatus          orderStatus          = new OrderStatus ();
     private OrderDetailClonoSeq  orderDetail          = new OrderDetailClonoSeq ();
     private OrcaHistory          history              = new OrcaHistory ();
@@ -78,12 +80,14 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         login.doLogin ();
-        orderStatus.gotoOrderStatusPage (orderTest.orderId);
+        ordersList.isCorrectPage ();
+        ordersList.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (ID_BCell2_CLIA);
+        report.isCorrectPage ();
         report.releaseReport (ID_BCell2_CLIA, Pass);
 
         String actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
@@ -104,12 +108,13 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
         testLog ("[CLIA] the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
-        orderStatus.gotoOrderStatusPage (orderTest.orderId);
+        history.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (MRD_BCell2_CLIA);
+        report.isCorrectPage ();
         report.releaseReport (MRD_BCell2_CLIA, Pass);
 
         actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
@@ -146,12 +151,14 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_IVD);
         login.doLogin ();
-        orderStatus.gotoOrderStatusPage (orderTest.orderId);
+        ordersList.isCorrectPage ();
+        ordersList.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (ID_BCell2_IVD);
+        report.isCorrectPage ();
         report.releaseReport (ID_BCell2_IVD, Pass);
 
         String actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
@@ -172,12 +179,13 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
         testLog ("[IVD] the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_IVD);
-        orderStatus.gotoOrderStatusPage (orderTest.orderId);
+        history.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (MRD_BCell2_IVD);
+        report.isCorrectPage ();
         report.releaseReport (MRD_BCell2_IVD, Pass);
 
         actualPdf = join ("/", downloadDir.get (), orderTest.sampleName + ".pdf");
@@ -218,12 +226,14 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
         testLog ("Order No: " + orderTest.orderName + ", forced status updated to Clarity -> Failed");
 
         login.doLogin ();
-        orderStatus.gotoOrderStatusPage (orderTest.orderId);
+        ordersList.isCorrectPage ();
+        ordersList.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (MRD_BCell2_CLIA);
+        report.isCorrectPage ();
         report.releaseReport (MRD_BCell2_CLIA, Pass);
         testLog ("Order Number: " + orderTest.orderName + ", Released Report, Failure Report Generated");
 
@@ -265,12 +275,14 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
         testLog ("Order No: " + orderTest.orderName + ", forced status updated to Clarity -> Failed");
 
         login.doLogin ();
-        orderStatus.gotoOrderStatusPage (orderTest.orderId);
+        ordersList.isCorrectPage ();
+        ordersList.gotoOrderStatusPage (orderTest.orderId);
         orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         orderStatus.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.isCorrectPage ();
         orderDetail.clickReportTab (MRD_BCell2_CLIA);
+        report.isCorrectPage ();
         report.releaseReport (MRD_BCell2_CLIA, Pass);
         testLog ("Order Number: " + orderTest.orderName + ", Released Report, Failure Report Generated");
 
