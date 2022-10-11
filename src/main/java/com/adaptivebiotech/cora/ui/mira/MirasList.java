@@ -234,13 +234,12 @@ public class MirasList extends MirasListBase {
         String reprocessMIRAsButton = "//button[text()='Reprocess MIRA(s)']";
         String dialog = ".mira-reprocess-dialog";
         String yesButton = "//button[text()='Yes, Reprocess MIRA(s)']";
-        String toast = ".toast-message";
 
         assertTrue (click (reprocessMIRAsButton));
         assertTrue (waitUntilVisible (dialog));
         assertTrue (click (yesButton));
-        assertTrue (waitUntilVisible (toast));
-        assertTrue (waitForElementInvisible (toast));
+        assertTrue (waitUntilVisible (toastMessage));
+        assertTrue (waitForElementInvisible (toastMessage));
         pageLoading ();
     }
 

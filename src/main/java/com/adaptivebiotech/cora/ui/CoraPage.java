@@ -27,11 +27,15 @@ import com.seleniumfy.test.utils.BasePage;
  */
 public class CoraPage extends BasePage {
 
-    private final String   newmenu     = "li:nth-child(1) .new-order #navNewDropdown";
-    private final String   utilities   = "li:nth-child(9) .new-order #navNewDropdown";
-    protected final String popupTitle  = ".modal-header .modal-title";
-    protected final String tabBase     = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
-    protected final String requiredMsg = ".text-danger";
+    private final String   newmenu        = "li:nth-child(1) .new-order #navNewDropdown";
+    private final String   utilities      = "li:nth-child(9) .new-order #navNewDropdown";
+    protected final String popupTitle     = ".modal-header .modal-title";
+    protected final String tabBase        = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
+    protected final String requiredMsg    = ".text-danger";
+    protected final String toastContainer = "#toast-container";
+    protected final String toastError     = ".toast-error";
+    protected final String toastSuccess   = ".toast-success";
+    protected final String toastMessage   = ".toast-message";
 
     public CoraPage () {
         staticNavBarHeight = 35;
