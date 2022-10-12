@@ -250,33 +250,10 @@ public class MirasList extends MirasListBase {
         assertTrue (waitUntilVisible (modal));
     }
 
-    public String clickAcceptMIRAQCExpectFailure () {
-        String button = "//button[text()='Accept MIRA QC']";
-        String toast = "//div[contains(@class, 'toast-message')]";
-
-        assertTrue (click (button));
-        assertTrue (waitUntilVisible (toast));
-        String toastText = getAttribute (toast, "aria-label");
-        assertTrue (waitForElementInvisible (toast));
-        return toastText;
-    }
-
     public boolean isMIRASelected (String miraId) {
         String miraCheckBoxBase = "//td[contains(@class, 'mira-name-description')]/a/span[text()='%s']/../../../td[1]/input[contains(@type, 'checkbox')]";
         String miraCheckBox = String.format (miraCheckBoxBase, miraId);
         return Boolean.parseBoolean (getAttribute (miraCheckBox, "checked"));
-    }
-
-    public void acceptMIRAQCWithComments (String comments) {
-        String commentsField = "//modal-content/div[contains(@class,'accept-mira-qc-dialog')]/div[contains(@class,'modal-body')]/div[3]/div/div/textarea";
-        String saveButton = "//modal-content/div[contains(@class,'accept-mira-qc-dialog')]/div[contains(@class,'modal-footer')]/button[text()='Save']";
-        String toast = "//div[contains(@class, 'toast-message')]";
-
-        assertTrue (setText (commentsField, comments));
-        assertTrue (click (saveButton));
-        pageLoading ();
-        assertTrue (waitUntilVisible (toast));
-        assertTrue (waitForElementInvisible (toast));
     }
 
     public void cancelAcceptMIRAQC () {
