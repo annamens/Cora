@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.CustomerService;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.utils.TestHelper.newInsurancePatient;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -215,6 +216,52 @@ public class NewOrderTDetect extends NewOrder {
             accession.clickOrderNumber ();
             isCorrectPage ();
         }
+
+        return order;
+    }
+
+    /**
+     * Create TDetect Order, before activating the order, Changing the TDectect Order Test
+     * or Active Order by passing orderStatus argument. Returns order no.
+     * 
+     * NOTE: Keep updating this method, and try to always use these methods to create TDetect
+     * Pending Or Active Order
+     * 
+     * @param physician
+     * @param icdCodes
+     * @param assayTest
+     * @param specimen
+     * @param orderStatus
+     * @param containerType
+     * @return order
+     */
+    public Order createTDetectOrderChangeAssayTypeBeforeActivatingOrder (Physician physician,
+                                                                         String[] icdCodes,
+                                                                         Assay assayTest,
+                                                                         Specimen specimen,
+                                                                         OrderStatus orderStatus,
+                                                                         ContainerType containerType) {
+        Patient patient = newInsurancePatient ();
+        // create T-Detect order
+        Order order = createTDetectOrder (physician, patient, icdCodes, assayTest, specimen);
+
+        // add diagnostic shipment
+        new NewShipment ().createShipment (order.orderNumber, containerType);
+
+        accession.completeAccession ();
+
+        // activate order
+        isCorrectPage ();
+
+        // Change Assay Test to LYME
+        clickAssayTest (Assay.LYME_DX);
+        activateOrder ();
+
+        // refreshing the page doesn't automatically take you to order detail
+        gotoOrderDetailsPage (order.id);
+        isCorrectPage ();
+
+        clickOrderDetailsTab ();
 
         return order;
     }

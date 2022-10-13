@@ -340,6 +340,11 @@ public class OrderDetail extends OrderHeader {
         return isElementVisible (css) ? SpecimenType.getSpecimenType (getText (css)) : null;
     }
 
+    public Assay getOrderTestType () {
+        String css = "[ng-bind^='orderTest.test.name']";
+        return isElementVisible (css) ? Assay.getAssay (getText (css)) : null;
+    }
+
     public SpecimenSource getSpecimenSource () {
         String css = "[ng-bind^='ctrl.orderEntry.specimen.sourceType']";
         return isElementVisible (css) ? SpecimenSource.getSpecimenSource (getText (css)) : null;

@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.test.billing.tdetect;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.COVID19_DX_IVD;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.LYME_DX;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Client;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.NoCharge;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.IncompleteDocumentation;
@@ -38,6 +39,7 @@ import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.billing.BillingTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
+import com.adaptivebiotech.cora.ui.order.OrderDetail;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
@@ -49,13 +51,14 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 @Test (groups = "regression")
 public class BillingTestSuite extends BillingTestBase {
 
-    private final String    log        = "created an order with billing: %s";
-    private Login           login      = new Login ();
-    private OrdersList      ordersList = new OrdersList ();
-    private NewOrderTDetect diagnostic = new NewOrderTDetect ();
-    private Specimen        specimen   = bloodSpecimen ();
-    private NewShipment     shipment   = new NewShipment ();
-    private Accession       accession  = new Accession ();
+    private final String    log         = "created an order with billing: %s";
+    private Login           login       = new Login ();
+    private OrdersList      ordersList  = new OrdersList ();
+    private NewOrderTDetect diagnostic  = new NewOrderTDetect ();
+    private Specimen        specimen    = bloodSpecimen ();
+    private NewShipment     shipment    = new NewShipment ();
+    private Accession       accession   = new Accession ();
+    private OrderDetail     orderDetail = new OrderDetail ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -77,6 +80,23 @@ public class BillingTestSuite extends BillingTestBase {
                                        Active,
                                        Tube);
         testLog (format (log, patient.billingType.label));
+    }
+
+    /**
+     * @sdlc.requirements SR-12843
+     *                    SR-T4317
+     */
+    @Test (groups = "irish-wolfhound")
+    public void changeTdetectCovidToLymeBeforeActivatingOrder () {
+
+        diagnostic.createTDetectOrderChangeAssayTypeBeforeActivatingOrder (coraApi.getPhysician (TDetect_insurance),
+                                                                           null,
+                                                                           COVID19_DX_IVD,
+                                                                           specimen,
+                                                                           Active,
+                                                                           Tube);
+        assertEquals (orderDetail.getOrderTestType (), LYME_DX);
+        testLog ("Order test type is displayed as expected " + LYME_DX.test);
     }
 
     /**
