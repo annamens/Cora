@@ -52,9 +52,7 @@ public class BatchAccession extends Accession {
         clickPassAllSpecimens ();
         clickLabelingComplete ();
         clickLabelVerificationComplete ();
-        System.out.println ("TEST: 1");
         clickAccessionComplete ();
-        System.out.println ("TEST: 2");
     }
 
     public void completeBatchAccession (String intakeManifest) {
