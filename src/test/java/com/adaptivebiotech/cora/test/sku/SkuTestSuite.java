@@ -44,4 +44,21 @@ public class SkuTestSuite extends CoraBaseBrowser {
         testLog ("The downloaded file is: skuProperties.csv");
 
     }
+
+    /**
+     * Note:SR-T4299
+     * 
+     * @sdlc.requirement SR-12650:R7
+     */
+    public void verifySkuPropertyColumnNames () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+        ordersList.clickOrderTests ();
+        otlist.clickQueriesButton ();
+        otlist.clickSKUproperties ();
+        otlist.verifyColumnNames ();
+        testLog ("All the SKU property column names displayed in Cora SKU Properties page");
+
+    }
+
 }

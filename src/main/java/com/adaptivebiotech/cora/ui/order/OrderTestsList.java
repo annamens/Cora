@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
+import com.adaptivebiotech.cora.dto.Orders.SkuProperties;
 
 /**
  * @author Harry Soehalim
@@ -12,7 +13,7 @@ import com.adaptivebiotech.cora.ui.CoraPage;
  */
 public class OrderTestsList extends CoraPage {
 
-    private final String confirmRequeueButton = "[data-ng-click=\"ctrl.confirm()\"]";
+    private final String confirmRequeueButton = "[data-ng-click='ctrl.confirm()']";
     private final String downloadCSVbutton    = ".download-list .glyphicon-save";
 
     public OrderTestsList () {
@@ -26,7 +27,7 @@ public class OrderTestsList extends CoraPage {
     }
 
     public void clickQueriesButton () {
-        String css = "[ng-click=\"ctrl.queryClick()\"]";
+        String css = "[ng-click='ctrl.queryClick()']";
         assertTrue (click (css));
     }
 
@@ -49,5 +50,13 @@ public class OrderTestsList extends CoraPage {
 
     public void clickCSVdownloadButton () {
         assertTrue (click (downloadCSVbutton));
+    }
+
+    public void verifyColumnNames () {
+        for (SkuProperties SkuPropertyName : SkuProperties.values ()) {
+            String cssString = String.format ("//th//span[text()='%s']", SkuPropertyName.skupropertyName);
+            assertTrue (isElementVisible (cssString));
+        }
+
     }
 }
