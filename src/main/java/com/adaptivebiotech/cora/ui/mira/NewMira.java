@@ -63,15 +63,6 @@ public class NewMira extends Mira {
         assertEquals (getText (displayedExpansionId), expansionId);
     }
 
-    public void clickRemoveSpecimen () {
-        String removeSpecimen = "button[ng-click='ctrl.removeSpecimen()']";
-        String specimenInput = "[ng-model='ctrl.specimenNumber']";
-        assertTrue (click (removeSpecimen));
-        clickPopupOK ();
-        pageLoading ();
-        assertTrue (waitUntilVisible (specimenInput));
-    }
-
     public void clickRemovePanel () {
         String trashIcon = "span[data-ng-click='ctrl.removePanel($index)']";
         String panelInput = "input[ng-model='ctrl.panelSearchText']";
