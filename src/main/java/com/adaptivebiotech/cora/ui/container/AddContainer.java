@@ -56,7 +56,7 @@ public class AddContainer extends CoraPage {
     public void clickSave () {
         assertTrue (click ("[data-ng-click='ctrl.save()']"));
         assertTrue (isTextInElement (popupTitle, "New Container Confirmation"));
-        clickPopupOK ();
+        assertTrue (click ("//button[text()='Yes']"));
     }
 
     public void isFailedValidation (String error) {
