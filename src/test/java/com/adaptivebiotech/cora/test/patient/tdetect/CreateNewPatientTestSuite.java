@@ -27,6 +27,7 @@ import com.adaptivebiotech.test.utils.TestHelper;
 @Test (groups = "regression")
 public class CreateNewPatientTestSuite extends CoraBaseBrowser {
 
+    private final int         emailMaxLength   = 254;
     private final Patient     patient          = newPatient ();
     private Login             login            = new Login ();
     private OrdersList        ordersList       = new OrdersList ();
@@ -109,29 +110,31 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         String chars63 = TestHelper.randomString (63);
         String email = TestHelper.randomString (64) + "@" + chars63 + "." + chars63 + "." + TestHelper.randomString (62);
         newOrderTDetect.billing.enterPatientEmail (email);
-        newOrderTDetect.clickSave ();
-        testLog ("Length of string: " + email.length ());
+        newOrderTDetect.clickOrderSave ();
         assertEquals (newOrderTDetect.getToastError (), "Please fix errors in the form");
-        String trimmedEmail = email.substring (0, 254);
+        testLog ("Length of string: " + email.length ());
+
+        String trimmedEmail = email.substring (0, emailMaxLength);
         newOrderTDetect.billing.enterPatientEmail (trimmedEmail);
         newOrderTDetect.clickSave ();
-        assertEquals (trimmedEmail.length (), 254);
+        assertEquals (trimmedEmail.length (), emailMaxLength);
         assertFalse (newOrderTDetect.isToastErrorPresent ());
+        testLog ("Length of string: " + trimmedEmail.length ());
 
         newOrderTDetect.clickPatientCode ();
         patientDetail.clickEditPatientShippingAddress ();
         patientDetail.enterEmail (email);
         patientDetail.clickSavePatientInsurance ();
-        int maxLength = patientDetail.getShippingEmailEntered ().length ();
-        testLog ("Entered email length is: " + maxLength);
-        assertEquals (maxLength, 254);
+        int savedEmailLength = patientDetail.getShippingEmailEntered ().length ();
+        assertEquals (savedEmailLength, emailMaxLength);
+        testLog ("Entered email length is: " + email.length () + ", saved email length is: " + savedEmailLength);
 
         patientDetail.clickEditPatientBillingAddress ();
         patientDetail.enterEmail (email);
         patientDetail.clickSavePatientInsurance ();
-        int length = patientDetail.getBillingEmailEntered ().length ();
-        testLog ("Entered email length is: " + length);
-        assertEquals (length, 254);
+        savedEmailLength = patientDetail.getBillingEmailEntered ().length ();
+        assertEquals (savedEmailLength, emailMaxLength);
+        testLog ("Entered email length is: " + email.length () + ", saved email length is: " + savedEmailLength);
     }
 
     /**
