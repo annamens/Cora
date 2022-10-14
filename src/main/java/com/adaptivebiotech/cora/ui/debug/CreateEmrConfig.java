@@ -51,7 +51,6 @@ public class CreateEmrConfig extends CoraPage {
     private final String accountSearch        = "[placeholder='Search...']";
     private final String newAccounts          = "//*[text()='New Accounts']/..//span[not(contains(@class, 'glyphicon'))]";
 
-    private final String overlayMessage       = "#toast-container .toast-message";
     private final String fieldError           = ".alert.alert-danger";
 
     @Override
@@ -243,8 +242,8 @@ public class CreateEmrConfig extends CoraPage {
     }
 
     public String getOverlayMessage () {
-        String overlayMsg = getText (overlayMessage);
-        waitForElementInvisible (overlayMessage);
+        String overlayMsg = getText (toastMessage);
+        waitForElementInvisible (toastMessage);
         return overlayMsg;
     }
 

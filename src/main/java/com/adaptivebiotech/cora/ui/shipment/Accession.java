@@ -111,12 +111,20 @@ public class Accession extends ShipmentHeader {
         assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
     }
 
+    public void clickLabelingCompleteButton () {
+        assertTrue (click ("//*[text()='Labeling Complete']"));
+    }
+
     public void clickLabelingComplete (int containerNo) {
         String locator = format ("(//*[@ng-click='ctrl.setLabelingComplete(container)'])[%s]", containerNo);
         assertTrue (click (locator));
         assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
-        assertTrue (click ("//*[text()='Labeling Complete']"));
+        clickLabelingCompleteButton ();
         moduleLoading ();
+    }
+
+    public void clickLabelVerificationCompleteButton () {
+        assertTrue (click ("//*[text()='Label Verification Complete']"));
     }
 
     public void clickLabelVerificationComplete () {
@@ -128,7 +136,7 @@ public class Accession extends ShipmentHeader {
         String locator = format ("(//*[@ng-click='ctrl.setLabelVerificationComplete(container)'])[%s]", containerNo);
         assertTrue (click (locator));
         assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
-        assertTrue (click ("//*[text()='Label Verification Complete']"));
+        clickLabelVerificationCompleteButton ();
         moduleLoading ();
     }
 
@@ -225,7 +233,7 @@ public class Accession extends ShipmentHeader {
     public void clickAccessionComplete () {
         String accessionComplete = "[data-ng-click='ctrl.$scope.$broadcast(\\'research-accession-complete\\')']";
         assertTrue (click (accessionComplete));
-        clickPopupOK ();
+        assertTrue (click ("//button[text()='Complete Accession']"));
     }
 
     public List <String> getSpecimenIds () {

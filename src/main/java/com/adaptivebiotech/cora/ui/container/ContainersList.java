@@ -42,8 +42,6 @@ public class ContainersList extends CoraPage {
     private final String   bulkComment            = "input[placeholder='Add Comment']";
     private final String   selectAllCheckbox      = ".containers-list th [type='checkbox']";
     private final String   bulkMoveActionDropdown = ".bulk-move-container select";
-    private final String   bulkMoveSuccess        = ".toast-success";
-    private final String   bulkMoveError          = ".toast-error";
 
     public ContainersList () {
         staticNavBarHeight = 90;
@@ -439,15 +437,15 @@ public class ContainersList extends CoraPage {
     }
 
     public boolean isBulkMoveSuccessMessageDisplayed () {
-        return isElementVisible (bulkMoveSuccess);
+        return isElementVisible (toastSuccess);
     }
 
     public String getBulkMoveErrorMessage () {
-        return getText (bulkMoveError);
+        return getText (toastError);
     }
 
     public void clickSuccessMessageLink () {
-        assertTrue (click (bulkMoveSuccess + " a"));
+        assertTrue (click (toastSuccess + " a"));
     }
 
     public boolean isFreezerDropdownEnabled () {
@@ -508,7 +506,7 @@ public class ContainersList extends CoraPage {
     public void waitForBulkMoveComplete () {
         assertTrue (waitForElementInvisible (".highlighted-blue"));
         transactionInProgress ();
-        assertTrue (waitUntilVisible ("#toast-container"));
+        assertTrue (waitUntilVisible (toastContainer));
     }
 
     private boolean containerRowsPresent () {

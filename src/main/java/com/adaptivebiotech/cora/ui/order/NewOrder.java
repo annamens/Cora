@@ -78,10 +78,6 @@ public abstract class NewOrder extends OrderHeader {
     protected final String specimenSource      = "[formcontrolname='source']";
     protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
     protected final String specimenNumber      = "//*[text()='Adaptive Specimen ID']/..//div";
-    protected final String toastContainer      = "#toast-container";
-    protected final String toastError          = ".toast-error";
-    protected final String toastSuccess        = ".toast-success";
-    protected final String toastMessage        = ".toast-message";
     protected final String textDanger          = ".text-danger";
 
     public NewOrder () {
