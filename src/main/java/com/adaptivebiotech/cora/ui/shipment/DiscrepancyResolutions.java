@@ -65,7 +65,7 @@ public class DiscrepancyResolutions extends ShipmentHeader {
     public void clickSave () {
         String css = "[data-ng-click=\"ctrl.$scope.$broadcast('discrepancy-save')\"]";
         assertTrue (click (css));
-        pageLoading ();
+        transactionInProgress ();
     }
 
 }
