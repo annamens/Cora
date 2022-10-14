@@ -33,7 +33,9 @@ import java.util.List;
 import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.billing.BillingTestBase;
@@ -84,18 +86,28 @@ public class BillingTestSuite extends BillingTestBase {
 
     /**
      * @sdlc.requirements SR-12843
-     *                    SR-T4317
+     * 
      */
     @Test (groups = "irish-wolfhound")
     public void changeTdetectCovidToLymeBeforeActivatingOrder () {
+        Patient patient = newInsurancePatient ();
+        Order order = diagnostic.createTDetectOrder (coraApi.getPhysician (TDetect_insurance),
+                                                     patient,
+                                                     null,
+                                                     COVID19_DX_IVD,
+                                                     specimen);
+        shipment.createShipment (order.orderNumber, Tube);
+        accession.completeAccession ();
+        diagnostic.isCorrectPage ();
+        diagnostic.clickAssayTest (Assay.LYME_DX);
+        diagnostic.activateOrder ();
+        diagnostic.gotoOrderDetailsPage (order.id);
+        diagnostic.isCorrectPage ();
+        diagnostic.clickOrderDetailsTab ();
 
-        diagnostic.createTDetectOrderChangeAssayTypeBeforeActivatingOrder (coraApi.getPhysician (TDetect_insurance),
-                                                                           null,
-                                                                           COVID19_DX_IVD,
-                                                                           specimen,
-                                                                           Active,
-                                                                           Tube);
-        assertEquals (orderDetail.getOrderTestType (), LYME_DX);
+        List <OrderTest> orderedTests = orderDetail.getOrderTests ();
+        assertTrue (orderedTests.size () == 1);
+        assertEquals (orderedTests.get (0).assay, LYME_DX);
         testLog ("Order test type is displayed as expected " + LYME_DX.test);
     }
 
