@@ -105,7 +105,7 @@ public class Detail extends CoraPage {
     public void deleteAttachment (int idx) {
         assertTrue (click (format (attachment, idx) + " .glyphicon-trash"));
         assertTrue (isTextInElement (popupTitle, "Delete Attachment"));
-        clickPopupOK ();
+        assertTrue (click ("//button[text()='Yes, delete attachment']"));
     }
 
     public List <String> getDetailHistory () {

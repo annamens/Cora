@@ -25,11 +25,6 @@ public class PatientOrderHistory extends PatientHeader {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "PATIENT ORDER HISTORY"));
     }
 
-    public void closeReportPreview () {
-        assertTrue (click (".modal-header button.close"));
-        moduleLoading ();
-    }
-
     public void clickReportPreviewLink (Order order) {
         assertTrue (click (format (icon, order.orderNumber, "ReportPDF.png")));
         assertTrue (isTextInElement (popupTitle, "Preview"));

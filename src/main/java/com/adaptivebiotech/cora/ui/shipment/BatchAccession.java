@@ -33,7 +33,7 @@ public class BatchAccession extends Accession {
         waitForElements (intakeRow).forEach (el -> {
             assertTrue (click (el, "[ng-click='ctrl.setLabelingComplete(container)']"));
             assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
-            clickPopupOK ();
+            clickLabelingCompleteButton ();
         });
         assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
     }
@@ -42,7 +42,7 @@ public class BatchAccession extends Accession {
         waitForElements (intakeRow).forEach (el -> {
             assertTrue (click (el, "[ng-click='ctrl.setLabelVerificationComplete(container)']"));
             assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
-            clickPopupOK ();
+            clickLabelVerificationCompleteButton ();
         });
         assertTrue (isTextInElement (shipmentStatus, "Label Verification Complete"));
     }

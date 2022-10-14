@@ -78,10 +78,6 @@ public abstract class NewOrder extends OrderHeader {
     protected final String specimenSource      = "[formcontrolname='source']";
     protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
     protected final String specimenNumber      = "//*[text()='Adaptive Specimen ID']/..//div";
-    protected final String toastContainer      = "#toast-container";
-    protected final String toastError          = ".toast-error";
-    protected final String toastSuccess        = ".toast-success";
-    protected final String toastMessage        = ".toast-message";
     protected final String textDanger          = ".text-danger";
 
     public NewOrder () {
@@ -385,16 +381,15 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterPatientICD_Codes (String... codes) {
-        String dropdown = ".icd-code-list-item .dropdown-item";
         String css = "//button[text()='Add Code']";
         for (String code : codes) {
             if (isElementVisible (css))
                 assertTrue (click (css));
 
             assertTrue (setText ("//*[*[text()='ICD Codes']]//input", code));
-            assertTrue (waitUntilVisible (dropdown));
+            pageLoading ();
             assertTrue (click ("//*[contains(text(),'" + code + "')]"));
-            assertTrue (waitForElementInvisible (dropdown));
+            assertTrue (waitForElementInvisible (".icd-code-list-item .dropdown-item"));
         }
     }
 
