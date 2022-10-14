@@ -4,6 +4,11 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Orders.SkuProperties;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
@@ -14,6 +19,7 @@ public class OrderTestsList extends CoraPage {
 
     private final String confirmRequeueButton = "[data-ng-click='ctrl.confirm()']";
     private final String downloadCSVbutton    = ".download-list .glyphicon-save";
+    private final String skuColumnNames       = "//th//span";
 
     public OrderTestsList () {
         staticNavBarHeight = 50;
@@ -49,6 +55,28 @@ public class OrderTestsList extends CoraPage {
 
     public void clickCSVdownloadButton () {
         assertTrue (click (downloadCSVbutton));
+    }
+
+    public List <String> listOfSkuColumnNames () {
+        List <WebElement> skuColumns = waitForElements (skuColumnNames);
+        List <String> skuColumnNames = new ArrayList <> ();
+        for (WebElement skuColumn : skuColumns) {
+            skuColumnNames.add (getText (skuColumn));
+        }
+        return skuColumnNames;
+    }
+
+
+    public boolean verifySkuNames (List <String> skuNames) {
+        HashSet <String> skuNameSet = new HashSet <> ();
+        for (SkuProperties skuProperty : SkuProperties.values ()) {
+            skuNameSet.add (skuProperty.skupropertyName);
+        }
+        for (String skuName : skuNames) {
+            assertTrue (skuNameSet.contains (skuName));;
+        }
+
+        return true;
     }
 
 }
