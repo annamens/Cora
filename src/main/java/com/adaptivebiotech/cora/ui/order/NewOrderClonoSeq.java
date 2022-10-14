@@ -303,6 +303,12 @@ public class NewOrderClonoSeq extends NewOrder {
         return findElement (specimenCoordination).isSelected ();
     }
 
+    public void closeTestSelectionWarningModal () {
+        String expectedModalTitle = "Test Selection Warning";
+        assertTrue (isTextInElement (popupTitle, expectedModalTitle));
+        clickPopupOK ();
+    }
+
     public Element getStabilizationWindow () {
         Element el = new Element ();
         String xpath = "//specimen-stabilization-window//div";
