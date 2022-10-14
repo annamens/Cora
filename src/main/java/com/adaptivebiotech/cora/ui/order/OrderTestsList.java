@@ -5,7 +5,6 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.ui.CoraPage;
-import com.adaptivebiotech.cora.dto.Orders.SkuProperties;
 
 /**
  * @author Harry Soehalim
@@ -52,11 +51,4 @@ public class OrderTestsList extends CoraPage {
         assertTrue (click (downloadCSVbutton));
     }
 
-    public void verifyColumnNames () {
-        for (SkuProperties SkuPropertyName : SkuProperties.values ()) {
-            String cssString = String.format ("//th//span[text()='%s']", SkuPropertyName.skupropertyName);
-            assertTrue (isElementVisible (cssString));
-        }
-
-    }
 }

@@ -11,6 +11,7 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.dto.Orders.SkuProperties;
 
 /**
  * @author Srinivas Annameni
@@ -56,7 +57,11 @@ public class SkuTestSuite extends CoraBaseBrowser {
         ordersList.clickOrderTests ();
         otlist.clickQueriesButton ();
         otlist.clickSKUproperties ();
-        otlist.verifyColumnNames ();
+        String sku = "//th//span[text()='%s']";
+        for (SkuProperties skuPropertyName : SkuProperties.values ()) {
+            String cssString = String.format (sku, skuPropertyName.skupropertyName);
+            assertTrue (otlist.isElementVisible (cssString));
+        }
         testLog ("All the SKU property column names displayed in Cora SKU Properties page");
 
     }
