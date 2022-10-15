@@ -37,6 +37,12 @@ public class PatientOrderHistory extends PatientHeader {
     public void clickAdditionalCommentsIcon (Order order) {
         assertTrue (click (format (icon, order.orderNumber, "ReportPDFAdditionalComments.png")));
     }
+    
+    public void closeReportPreview () {
+        assertTrue (click (".modal-header button.close"));
+        closePopup();
+        moduleLoading ();
+    }
 
     public String getTooltipText () {
         String css = ".selectable-tooltip-content";
