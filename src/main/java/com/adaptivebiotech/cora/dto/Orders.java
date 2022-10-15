@@ -481,6 +481,12 @@ public final class Orders {
             this.skupropertyName = skupropertyName;
         }
 
+        public static SkuProperties getSkuPropertyName (String skupropertyName) {
+            return allOf (SkuProperties.class).parallelStream ()
+                                              .filter (st -> st.skupropertyName.equals (skupropertyName))
+                                              .findAny ().orElse (null);
+        }
+
     }
 
 }

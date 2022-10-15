@@ -5,9 +5,7 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.Orders.SkuProperties;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
@@ -57,26 +55,12 @@ public class OrderTestsList extends CoraPage {
         assertTrue (click (downloadCSVbutton));
     }
 
-    public List <String> listOfSkuColumnNames () {
-        List <WebElement> skuColumns = waitForElements (skuColumnNames);
-        List <String> skuColumnNames = new ArrayList <> ();
-        for (WebElement skuColumn : skuColumns) {
-            skuColumnNames.add (getText (skuColumn));
+    public List <SkuProperties> listOfSkuColumnNames () {
+        List <SkuProperties> skuPropertiesEnumList = new ArrayList <> ();
+        for (String skuName : getTextList (skuColumnNames)) {
+            skuPropertiesEnumList.add (SkuProperties.getSkuPropertyName (skuName));
         }
-        return skuColumnNames;
-    }
-
-
-    public boolean verifySkuNames (List <String> skuNames) {
-        HashSet <String> skuNameSet = new HashSet <> ();
-        for (SkuProperties skuProperty : SkuProperties.values ()) {
-            skuNameSet.add (skuProperty.skupropertyName);
-        }
-        for (String skuName : skuNames) {
-            assertTrue (skuNameSet.contains (skuName));;
-        }
-
-        return true;
+        return skuPropertiesEnumList;
     }
 
 }

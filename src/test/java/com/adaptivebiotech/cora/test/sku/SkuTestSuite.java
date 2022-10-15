@@ -4,10 +4,13 @@
 package com.adaptivebiotech.cora.test.sku;
 
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.SkuProperties;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.OrderTestsList;
@@ -57,9 +60,10 @@ public class SkuTestSuite extends CoraBaseBrowser {
         ordersList.clickOrderTests ();
         otlist.clickQueriesButton ();
         otlist.clickSKUproperties ();
-        List <String> skuNameStrings = otlist.listOfSkuColumnNames ();
+        List <SkuProperties> skuNameEnumList = otlist.listOfSkuColumnNames ();
+        List <SkuProperties> skuEnumList = Arrays.asList (SkuProperties.values ());
 
-        assertTrue (otlist.verifySkuNames (skuNameStrings));
+        assertEquals (skuNameEnumList, skuEnumList);
 
         testLog ("All the SKU property column names displayed in Cora SKU Properties page");
 
