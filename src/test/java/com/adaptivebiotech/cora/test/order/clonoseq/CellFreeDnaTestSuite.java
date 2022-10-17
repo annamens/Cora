@@ -834,13 +834,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.completeAccession ();
 
         // Isolation date = today - 45, activation fail
-        String query = "UPDATE cora.specimens SET isolation_date = '%s' where specimen_number = '%s';";
-        coraDb.executeUpdate (format (query,
-                                      DateHelper.genDate (-45,
-                                                          ISO_LOCAL_DATE_TIME,
-                                                          pstZoneId),
-                                      specimenDto.specimenNumber));
-        newOrderClonoSeq.gotoOrderEntry (order.id);
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (-45, Expired, specimenDto.specimenNumber);
         newOrderClonoSeq.clickSaveAndActivate ();
         newOrderClonoSeq.confirmActivate ();
         assertEquals (newOrderClonoSeq.getToastError (),
@@ -995,11 +989,12 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                                                                     StabilityStatus stabilityWindow,
                                                                     String asid) {
         String query = "UPDATE cora.specimens SET isolation_date = '%s' where specimen_number = '%s';";
-        coraDb.executeUpdate (format (query,
-                                      DateHelper.genDate (dateDifference,
-                                                          ISO_LOCAL_DATE_TIME,
-                                                          pstZoneId),
-                                      asid));
+        int updateCount = coraDb.executeUpdate (format (query,
+                                                        DateHelper.genDate (dateDifference,
+                                                                            ISO_LOCAL_DATE_TIME,
+                                                                            pstZoneId),
+                                                        asid));
+        assertEquals (updateCount, 1);
         newOrderClonoSeq.refresh ();
         newOrderClonoSeq.isCorrectPage ();
         assertEquals (newOrderClonoSeq.getStabilizationWindow ().color, stabilityWindow.rgba);
