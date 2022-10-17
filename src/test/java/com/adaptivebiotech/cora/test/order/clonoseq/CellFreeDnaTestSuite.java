@@ -16,7 +16,6 @@ import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED_ACTIVATION;
-import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.PENDING;
 import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Advisory;
 import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Alarm;
 import static com.adaptivebiotech.cora.dto.Specimen.StabilityStatus.Expired;
@@ -28,7 +27,6 @@ import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenStab
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenType;
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.TRFHandwritten;
 import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee.CLINICAL_TRIALS;
-import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -77,6 +75,7 @@ import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.DateHelper;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 
 /**
  * @author jpatel
@@ -281,9 +280,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.completeAccession ();
 
         newOrderClonoSeq.isCorrectPage ();
-        assertEquals (newOrderClonoSeq.getSpecimenActivationDate (), PENDING.label);
-        testLog ("Validate Specimen Activation Pending Label");
-
         newOrderClonoSeq.clickSaveAndActivate ();
         newOrderClonoSeq.confirmActivate ();
         assertEquals (newOrderClonoSeq.getToastError (), specimenActivationMsg);
