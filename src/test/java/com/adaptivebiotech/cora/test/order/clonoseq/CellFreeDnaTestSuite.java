@@ -27,6 +27,7 @@ import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenStab
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenType;
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.TRFHandwritten;
 import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee.CLINICAL_TRIALS;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -75,7 +76,6 @@ import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
 import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.DateHelper;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
-import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 
 /**
  * @author jpatel
