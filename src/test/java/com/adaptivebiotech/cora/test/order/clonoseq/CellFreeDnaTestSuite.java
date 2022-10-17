@@ -119,7 +119,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     /**
      * NOTE: SR-T4235
      * 
-     * @sdlc.requirements SR-11228:R2, R3, SR-11721: R4
+     * @sdlc.requirements SR-11228:R3, R8, SR-11721: R4
      */
     public void validateSpecimenActivationPresent () {
         skipTestIfFeatureFlagOff (cfDna.get ());
@@ -182,7 +182,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     /**
      * NOTE: SR-T4235, SR-T4285
      * 
-     * @sdlc.requirements SR-11228:R2, R3
+     * @sdlc.requirements SR-12635:R2, SR-11228:R3
      */
     public void specimenActivationContainersLabelVerify () {
         skipTestIfFeatureFlagOff (cfDna.get ());
@@ -257,7 +257,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     /**
      * NOTE: SR-T4287
      * 
-     * @sdlc.requirements SR-11228:R5
+     * @sdlc.requirements SR-12635:R5
      */
     public void validateSpecimenActivationStatus () {
         skipTestIfFeatureFlagOff (cfDna.get ());
@@ -280,10 +280,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         accession.completeAccession ();
 
         newOrderClonoSeq.isCorrectPage ();
-        newOrderClonoSeq.clickSaveAndActivate ();
-        newOrderClonoSeq.confirmActivate ();
-        assertEquals (newOrderClonoSeq.getToastError (), specimenActivationMsg);
-
         LocalDateTime specimenActivation = newOrderClonoSeq.waitUntilSpecimenActivated ();
         assertEquals (specimenActivation.toLocalDate (), LocalDate.now (pstZoneId));
 
@@ -660,7 +656,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     /**
      * NOTE: SR-T4286
      * 
-     * @sdlc.requirements SR-11228:R7
+     * @sdlc.requirements SR-12635:R7
      */
     public void specimenActivation_featureFlagOff () {
         skipTestIfFeatureFlagOff (cfDna.get ());
