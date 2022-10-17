@@ -40,7 +40,6 @@ public class PatientOrderHistory extends PatientHeader {
     
     public void closeReportPreview () {
         assertTrue (click (".modal-header button.close"));
-        closePopup();
         moduleLoading ();
     }
 
