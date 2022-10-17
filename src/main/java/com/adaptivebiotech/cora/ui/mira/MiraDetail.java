@@ -19,7 +19,6 @@ import org.openqa.selenium.support.ui.Wait;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.PoolDetails;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
-import com.adaptivebiotech.cora.utils.PageHelper.MiraQCStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
