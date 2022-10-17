@@ -103,8 +103,6 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.activateOrder ();
         diagnostic.gotoOrderDetailsPage (order.id);
         diagnostic.isCorrectPage ();
-        diagnostic.clickOrderDetailsTab ();
-
         List <OrderTest> orderedTests = orderDetail.getOrderTests ();
         assertTrue (orderedTests.size () == 1);
         assertEquals (orderedTests.get (0).assay, LYME_DX);
