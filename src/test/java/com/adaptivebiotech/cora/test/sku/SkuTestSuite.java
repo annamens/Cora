@@ -62,9 +62,7 @@ public class SkuTestSuite extends CoraBaseBrowser {
         otlist.clickSKUproperties ();
         List <SkuProperties> skuNameEnumList = otlist.listOfSkuColumnNames ();
         List <SkuProperties> skuEnumList = Arrays.asList (SkuProperties.values ());
-
         assertEquals (skuNameEnumList, skuEnumList);
-
         testLog ("All the SKU property column names displayed in Cora SKU Properties page");
 
     }
