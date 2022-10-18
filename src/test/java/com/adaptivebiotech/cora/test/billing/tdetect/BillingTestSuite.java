@@ -102,7 +102,7 @@ public class BillingTestSuite extends BillingTestBase {
         diagnostic.clickAssayTest (Assay.LYME_DX);
         diagnostic.activateOrder ();
         List <OrderTest> orderedTests = orderDetail.getOrderTests ();
-        assertTrue (orderedTests.size () == 1);
+        assertEquals (orderedTests.size (), 1);
         assertEquals (orderedTests.get (0).assay, LYME_DX);
         testLog ("Order test type is displayed as expected " + LYME_DX.test);
     }
