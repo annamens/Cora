@@ -4,6 +4,9 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
+import com.adaptivebiotech.cora.dto.Orders.SkuProperties;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
@@ -12,8 +15,9 @@ import com.adaptivebiotech.cora.ui.CoraPage;
  */
 public class OrderTestsList extends CoraPage {
 
-    private final String confirmRequeueButton = "[data-ng-click=\"ctrl.confirm()\"]";
+    private final String confirmRequeueButton = "[data-ng-click='ctrl.confirm()']";
     private final String downloadCSVbutton    = ".download-list .glyphicon-save";
+    private final String skuColumnNames       = "//th//span";
 
     public OrderTestsList () {
         staticNavBarHeight = 50;
@@ -26,7 +30,7 @@ public class OrderTestsList extends CoraPage {
     }
 
     public void clickQueriesButton () {
-        String css = "[ng-click=\"ctrl.queryClick()\"]";
+        String css = "[ng-click='ctrl.queryClick()']";
         assertTrue (click (css));
     }
 
@@ -50,4 +54,13 @@ public class OrderTestsList extends CoraPage {
     public void clickCSVdownloadButton () {
         assertTrue (click (downloadCSVbutton));
     }
+
+    public List <SkuProperties> listOfSkuColumnNames () {
+        List <SkuProperties> skuPropertiesEnumList = new ArrayList <> ();
+        for (String skuName : getTextList (skuColumnNames)) {
+            skuPropertiesEnumList.add (SkuProperties.getSkuPropertyName (skuName));
+        }
+        return skuPropertiesEnumList;
+    }
+
 }

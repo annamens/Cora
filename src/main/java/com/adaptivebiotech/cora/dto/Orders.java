@@ -434,4 +434,59 @@ public final class Orders {
         }
     }
 
+    public enum SkuProperties {
+        Name ("Name"),
+        ReceptorFamily ("Receptor Family"),
+        ProductCode ("Product Code"),
+        Locus ("Locus"),
+        IsIUO ("Is IUO"),
+        Measure ("Measure"),
+        Resolution ("Resolution"),
+        LineClearance ("Line Clearance"),
+        PatientReport ("Patient Report"),
+        MoltagThreshold ("Moltag Threshold"),
+        RegulationLevel ("Regulation Level"),
+        ExtractionFamily ("Extraction Family"),
+        PortalDisplayName ("Portal Display Name"),
+        MinProcessingLevel ("Min Processing Level"),
+        AllowMrdCoProcessing ("Allow Mrd Co Processing"),
+        CheckExtractionBatch ("Check Extraction Batch"),
+        CheckCloneShareContamination ("Check Clone Share Contamination"),
+        AnalyzerLocus ("Analyzer Locus"),
+        AnalyzerResolution ("Analyzer Resolution"),
+        AutoCalibrating ("Auto Calibrating"),
+        AutoPublishToAnalyzer ("Auto Publish To Analyzer"),
+        ClarityWorkflow ("Clarity Workflow"),
+        ClinicalQcAutoAccept ("Clinical Qc Auto Accept"),
+        ClonoSeqV1 ("ClonoSeq V1"),
+        DepthEquivalent ("Depth Equivalent"),
+        Directives ("Directives"),
+        DisableMrdAwaitClonesTimeout ("Disable Mrd Await Clones Timeout"),
+        GenoWorkflow ("Geno Workflow"),
+        IsClonoSEQBlockable ("Is ClonoSEQ Blockable"),
+        IsDeprecated ("Is Deprecated"),
+        IsKit ("Is Kit"),
+        IsMiraEnabled ("Is Mira Enabled"),
+        IsQc ("Is Qc"),
+        PipelineConfigOverride ("Pipeline Config Override"),
+        SkipInterimTimePoints ("Skip Interim Time Points"),
+        Species ("Species"),
+        SSFAssayReceptors ("SSF Assay Receptors"),
+        Workflow ("Workflow"),
+        IghvAnalysisEnabled ("Ighv Analysis Enabled");
+
+        public String skupropertyName;
+
+        private SkuProperties (String skupropertyName) {
+            this.skupropertyName = skupropertyName;
+        }
+
+        public static SkuProperties getSkuPropertyName (String skupropertyName) {
+            return allOf (SkuProperties.class).parallelStream ()
+                                              .filter (st -> st.skupropertyName.equals (skupropertyName))
+                                              .findAny ().orElse (null);
+        }
+
+    }
+
 }
