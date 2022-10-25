@@ -13,8 +13,6 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 
 public class OrderAlert extends CoraPage {
 
-    private final String alertModal       = ".modal-content";
-    private final String alertTitle       = ".modal-title";
     private final String alertType        = "[name='select-alert-type'] select";
     private final String closeBtn         = "//button[text()='Close']";
     private final String activeTab        = "//span[contains(text(), 'ACTIVE')]";
@@ -30,13 +28,12 @@ public class OrderAlert extends CoraPage {
     private final String addAlertNote     = String.join (" ", panelOpen, ".add-alert-type textarea");
 
     public void isCorrectPage () {
-        assertTrue (waitUntilVisible (alertModal));
-        assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order"));
+        assertTrue (isTextInElement (popupTitle, "Alerts for Order"));
     }
 
     public void isCorrectPage (String orderNo) {
         isCorrectPage ();
-        assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order #" + orderNo));
+        assertTrue (isTextInElement (popupTitle, "Alerts for Order #" + orderNo));
     }
 
     public void clickNewAlert () {
@@ -79,7 +76,7 @@ public class OrderAlert extends CoraPage {
     }
 
     public boolean isAlertModalPresent () {
-        return isElementPresent (alertModal);
+        return isElementPresent (popupTitle);
     }
 
     public void selectAlertType (String alertName) {
