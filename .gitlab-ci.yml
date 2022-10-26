@@ -13,9 +13,6 @@ variables:
 
 Run Test:
   stage: test
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   script:
     # print out variables
     - echo "TEST_ENV is $TEST_ENV"
@@ -54,6 +51,4 @@ Sonar Analysis:
       -Dsonar.qualitygate.wait=$SONAR_GATE_WAIT
       -Dsonar.projectKey=$SONAR_PROJECT_KEY
       -Dsonar.sources=src
-      -Dsonar.test.inclusions=src/test/java/*
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      -Dsonar.test.inclusions=src/*/java/*
