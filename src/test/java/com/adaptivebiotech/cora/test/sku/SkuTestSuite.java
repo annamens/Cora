@@ -52,7 +52,7 @@ public class SkuTestSuite extends CoraBaseBrowser {
     /**
      * Note:SR-T4299
      * 
-     * @sdlc.requirement SR-12650:R7
+     * @sdlc.requirements SR-12650:R7
      */
     public void verifySkuPropertyColumnNames () {
         login.doLogin ();
