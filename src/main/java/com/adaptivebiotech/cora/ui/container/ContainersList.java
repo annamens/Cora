@@ -50,7 +50,6 @@ public class ContainersList extends CoraPage {
     @Override
     public void isCorrectPage () {
         assertTrue (waitUntilVisible ("[uisref='main.containers.list']"));
-        assertTrue (waitUntilVisible ("[uisref='main.containers.custody']"));
     }
 
     public static enum Category {
