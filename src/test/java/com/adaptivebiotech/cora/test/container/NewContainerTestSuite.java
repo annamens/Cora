@@ -224,7 +224,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         Containers newContainers = addContainer.getContainers ();
         String newContainerNo = newContainers.list.get (0).containerNumber;
         assertEquals (newContainers.list.size (), 1);
-        assertTrue (newContainerNo.matches ("CO-\\d{7}"));
+        assertTrue (newContainerNo.matches (containerNumberPattern));
         Logging.testLog ("STEP 3.4 - Adaptive Container ID is populated");
 
         addContainer.clickGenerateContainerLabels ();

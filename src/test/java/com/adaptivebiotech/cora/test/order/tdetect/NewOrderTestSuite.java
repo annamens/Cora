@@ -111,7 +111,6 @@ public class NewOrderTestSuite extends NewOrderTestBase {
         Containers containers = shipment.getPrimaryContainers (SlideBox5CS);
         assertEquals (containers.list.size (), 1);
 
-        String containerNumberPattern = "CO-\\d{7}";
         Container container = containers.list.get (0);
         assertTrue (container.containerNumber.matches (containerNumberPattern), container.containerNumber);
         assertEquals (container.children.size (), 3);
