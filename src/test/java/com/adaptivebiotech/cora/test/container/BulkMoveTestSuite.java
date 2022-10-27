@@ -301,7 +301,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         info ("bulk move error message: " + error);
         Pattern failedToMovePattern = Pattern.compile ("Failed to move containers .* to Freezer " + Pattern.quote (invalidFreezer.name));
         assertTrue (failedToMovePattern.matcher (error).find ());
-        Set <String> actualContainerNamesFailed = getSubstringsFromRegex ("CO-\\d{7}", error);
+        Set <String> actualContainerNamesFailed = getSubstringsFromRegex (containerNumberPattern, error);
         Set <String> expectedContainerNamesFailed = getContainerIDs (expectedContainersFailed).stream ()
                                                                                               .collect (toSet ());
         assertEquals (actualContainerNamesFailed, expectedContainerNamesFailed);

@@ -406,7 +406,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
 
         containers = addContainer.getContainers ();
         Container test = containers.list.get (0);
-        assertTrue (test.containerNumber.matches ("CO-\\d{6,7}"), test.containerNumber);
+        assertTrue (test.containerNumber.matches (containerNumberPattern), test.containerNumber);
         testLog (TubeBox5x5.label + " table displayed a " + test.containerNumber);
 
         addContainer.clickContainers ();
