@@ -5,13 +5,13 @@ package com.adaptivebiotech.cora.ui.order.reservation;
 
 import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
-import com.seleniumfy.test.utils.BasePage;
+import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
  * @author Spencer Fisco
  *         <a href="mailto:sfisco@adaptivebiotech.com">sfisco@adaptivebiotech.com</a>
  */
-public class ReservationModule extends BasePage {
+public class ReservationModule extends CoraPage {
 
     private final String manageReservationsButton = "//button[text()='Manage Reservations']";
     private final String reserveButton            = "//button[text()='Reserve']";
@@ -64,11 +64,11 @@ public class ReservationModule extends BasePage {
     }
 
     public void waitForToastMessage () {
-        waitForElementVisible (".toast-error, .toast-success");
+        waitForElementVisible (toastSuccess);
     }
 
     public String getToastMessage () {
-        return getText ("#toast-container .toast-message");
+        return getText (toastMessage);
     }
 
 }

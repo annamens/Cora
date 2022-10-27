@@ -13,11 +13,6 @@ import com.adaptivebiotech.cora.ui.CoraPage;
  */
 public class PatientHeader extends CoraPage {
 
-    public void clickClose () {
-        assertTrue (click ("go-back"));
-        pageLoading ();
-    }
-
     public void clickPatientDetailsTab () {
         assertTrue (click (format (tabBase, "Patient Details")));
     }

@@ -54,7 +54,7 @@ public class AlertTestSuite extends CoraBaseBrowser {
         orderAlert.expandTopAlert ();
         orderAlert.expandEmailsFromTopAlert ();
         assertFalse (orderAlert.isAnyEmailBoxChecked ());
-        orderAlert.clickClose ();
+        orderAlert.clickCloseButton ();
         orderAlert.resolveTopAlert ();
     }
 }

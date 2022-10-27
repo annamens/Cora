@@ -14,7 +14,6 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 public class OrderAlert extends CoraPage {
 
     private final String alertType        = "[name='select-alert-type'] select";
-    private final String closeBtn         = "//button[text()='Close']";
     private final String activeTab        = "//span[contains(text(), 'ACTIVE')]";
     private final String resolveTab       = "//span[contains(text(), 'RESOLVED')]";
     private final String activeAlerts     = ".panel.active-alerts";
@@ -63,7 +62,7 @@ public class OrderAlert extends CoraPage {
     public void resolveTopAlert () {
         clickNewAlert ();
         assertTrue (click (".pull-right .resolve-alert-button"));
-        clickClose ();
+        clickCloseButton ();
     }
 
     public boolean isAnyEmailBoxChecked () {
@@ -81,10 +80,6 @@ public class OrderAlert extends CoraPage {
 
     public void selectAlertType (String alertName) {
         assertTrue (clickAndSelectText (alertType, alertName));
-    }
-
-    public void clickClose () {
-        assertTrue (click (closeBtn));
     }
 
     public void clickActiveTab () {

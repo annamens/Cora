@@ -38,11 +38,6 @@ public class PatientOrderHistory extends PatientHeader {
         assertTrue (click (format (icon, order.orderNumber, "ReportPDFAdditionalComments.png")));
     }
 
-    public void closeReportPreview () {
-        assertTrue (click (".modal-header button.close"));
-        moduleLoading ();
-    }
-
     public String getTooltipText () {
         String css = ".selectable-tooltip-content";
         return getText (css);

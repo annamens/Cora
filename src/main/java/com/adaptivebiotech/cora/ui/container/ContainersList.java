@@ -169,6 +169,12 @@ public class ContainersList extends CoraPage {
         moveModal ();
     }
 
+    // click on (X) icon
+    public void closePopup () {
+        assertTrue (click ("[ng-click='ctrl.cancel()'] .glyphicon-remove"));
+        moduleLoading ();
+    }
+
     public void takeCustody (Container container) {
         String msg = format ("%s %s is in your custody", container.containerType.label, container.containerNumber);
         scan (container);
@@ -225,7 +231,7 @@ public class ContainersList extends CoraPage {
                 c.location = String.join (" : ", loc, c.containerType.label, c.location.replaceFirst (regex, "$2"));
             });
 
-        clickClose ();
+        clickCloseButton ();
         moduleLoading ();
         pageLoading ();
     }
@@ -334,7 +340,7 @@ public class ContainersList extends CoraPage {
         assertTrue (isTextInElement (pass, success));
         assertTrue (noSuchElementPresent (depleted));
         assertTrue (noSuchElementPresent (comments));
-        clickClose ();
+        clickCloseButton ();
         child.location = coraTestUser;
     }
 
@@ -353,7 +359,7 @@ public class ContainersList extends CoraPage {
         assertTrue (setText (comments, format ("verifying - %s", child.containerNumber)));
         scanToVerify (child);
         isVerified (child);
-        clickClose ();
+        clickCloseButton ();
     }
 
     public void scanToVerify (Container child) {
@@ -378,11 +384,6 @@ public class ContainersList extends CoraPage {
 
     private void clickMove () {
         assertTrue (click (moveBtn));
-    }
-
-    public void clickClose () {
-        assertTrue (click ("//button[text()='Close']"));
-        moduleLoading ();
     }
 
     private void moveModal () {

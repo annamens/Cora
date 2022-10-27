@@ -285,9 +285,8 @@ public class CoraPage extends BasePage {
         pageLoading ();
     }
 
-    // click on (X) icon
-    public void closePopup () {
-        assertTrue (click ("[ng-click='ctrl.cancel()'] .glyphicon-remove"));
+    public void clickCloseButton () {
+        assertTrue (click ("//button[text()='Close']"));
         moduleLoading ();
     }
 
