@@ -47,11 +47,6 @@ public class GenerateContainerLabels extends CoraPage {
         return isElementVisible (print);
     }
 
-    public void clickClose () {
-        assertTrue (click (close));
-        moduleLoading ();
-    }
-
     public boolean isCloseVisible () {
         executeJScript ("arguments[0].scrollIntoView()", findElement (close));
         return isElementVisible (close);

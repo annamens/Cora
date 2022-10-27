@@ -248,7 +248,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertTrue (generateContainerLabels.isCopyToClipboardVisible ());
         Logging.testLog ("STEP 5 - Validate Copy to Clipboard");
 
-        generateContainerLabels.clickClose ();
+        generateContainerLabels.clickCloseButton ();
         addContainer.clickContainerNo (newContainerNo);
         containerDetails.isCorrectPage ();
         Logging.testLog ("STEP 6.1 - Container details page for Container1 is displayed");
