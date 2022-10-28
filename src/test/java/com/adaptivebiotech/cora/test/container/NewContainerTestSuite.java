@@ -94,7 +94,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         Containers containers = addContainer.getContainers ();
 
         // test: verify we have 2 containers in my custody
-        addContainer.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         Containers myContainers = new Containers ();
         myContainers.list = new ArrayList <> ();
         for (Container c : myCustody.getContainers ().list)
@@ -118,7 +118,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         containers = addContainer.getContainers ();
 
         // test: verify we have 1 containers in my custody (duplicate names & incompatible freezer)
-        addContainer.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         myContainers = new Containers ();
         myContainers.list = new ArrayList <> ();
         for (Container c : myCustody.getContainers ().list)
@@ -177,7 +177,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
 
         // test: verify we have 1 containers in my custody
 
-        addContainer.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         myContainers = new Containers ();
         myContainers.list = new ArrayList <> ();
         myContainers.list.add (myCustody.getContainers ().findContainerByNumber (c2));
@@ -268,7 +268,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertTrue (historyRows.get (1).endsWith ("Last modified by " + coraTestUser));
         Logging.testLog ("STEP 6.3 - verify Container history rows");
 
-        containerDetails.gotoHistory ();
+        containerDetails.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> containerHistory = history.getHistories ();
         assertEquals (containerHistory.size (), 1);

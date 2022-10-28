@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -90,9 +91,9 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
-    @Override
     public void gotoOrderEntry (UUID orderId) {
-        super.gotoOrderEntry (orderId);
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/auto?id=" + orderId));
+        pageLoading ();
         isCorrectPage ();
     }
 

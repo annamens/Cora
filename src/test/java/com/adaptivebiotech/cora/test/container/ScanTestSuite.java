@@ -107,8 +107,7 @@ public class ScanTestSuite extends ContainerTestBase {
      * @sdlc.requirements 126.ContainersListValidScan
      */
     public void my_custody_view () {
-        ordersList.gotoMyCustody ();
-        myCustody.isCorrectPage ();
+        myCustody.gotoMyCustody ();
 
         // test: container doesn't exist
         myCustody.scan ("xxxxxx");
@@ -150,8 +149,7 @@ public class ScanTestSuite extends ContainerTestBase {
         Containers containers = shipment.getBatchContainers ();
 
         // test: container doesn't exist
-        ordersList.gotoMyCustody ();
-        myCustody.isCorrectPage ();
+        myCustody.gotoMyCustody ();
         myCustody.scanAndClickHoldingContainer (child);
         myCustody.chooseHoldingContainer ("xxxxxx");
         assertEquals (myCustody.getScanError (), format (error1, "xxxxxx"));

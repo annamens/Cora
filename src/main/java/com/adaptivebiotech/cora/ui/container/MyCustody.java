@@ -5,6 +5,7 @@ package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Freezer;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
@@ -23,6 +24,12 @@ public class MyCustody extends ContainersList {
     public void isCorrectPage () {
         assertTrue (waitUntilVisible (".active.highlight[uisref='main.containers.custody']"));
         assertTrue (waitUntilVisible (scan));
+    }
+
+    public void gotoMyCustody () {
+        assertTrue (navigateTo (coraTestUrl + "/cora/containers/custody"));
+        pageLoading ();
+        isCorrectPage ();
     }
 
     public Containers getContainers () {

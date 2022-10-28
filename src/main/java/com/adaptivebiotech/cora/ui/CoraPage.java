@@ -186,11 +186,6 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//a[text()='Barcode Comparison Tool']"));
     }
 
-    public void gotoOrderEntry (UUID orderId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/order/auto?id=" + orderId));
-        pageLoading ();
-    }
-
     public void searchAndClickOrder (String orderNum) {
         doOrderSearch (orderNum);
         clickOrder (orderNum);
@@ -228,61 +223,6 @@ public class CoraPage extends BasePage {
 
     public void searchContainer (Container container) {
         assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber + "&sort=HoldingContainer&ascending=true&searchType=Container&groupByHoldingContainer=false&includeChildSpecimen=false&offset=0"));
-    }
-
-    public void gotoMyCustody () {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/custody"));
-    }
-
-    public void gotoShipmentEntry (UUID shipmentId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId));
-        pageLoading ();
-    }
-
-    public void gotoContainerDetail (Container container) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/container/details/" + container.id));
-        pageLoading ();
-    }
-
-    public void gotoContainerHistory (Container container) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/container/details/" + container.id + "/history"));
-        pageLoading ();
-    }
-
-    public void gotoOrderDetailsPage (UUID orderId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/order/details/" + orderId));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    public void gotoOrderStatusPage (UUID orderId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/order/status/" + orderId));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    public void gotoTaskDetail (UUID taskId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    public void gotoTaskStatus (UUID taskId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId + "?p=status"));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    public void gotoAccession (UUID shipmentId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=accession"));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    public void gotoDiscrepancy (UUID shipmentId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=discrepancy"));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
     }
 
     public void clickCloseButton () {

@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
@@ -24,9 +25,9 @@ public class DiscrepancyResolutions extends ShipmentHeader {
         pageLoading ();
     }
 
-    @Override
     public void gotoDiscrepancy (UUID shipmentId) {
-        super.gotoDiscrepancy (shipmentId);
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=discrepancy"));
+        pageLoading ();
         isCorrectPage ();
     }
 

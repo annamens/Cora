@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
@@ -46,9 +47,9 @@ public class Accession extends ShipmentHeader {
         pageLoading ();
     }
 
-    @Override
     public void gotoAccession (UUID shipmentId) {
-        super.gotoAccession (shipmentId);
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=accession"));
+        pageLoading ();
         isCorrectPage ();
     }
 

@@ -215,7 +215,6 @@ public class TDetectReportTestSuite extends ReportTestBase {
         testLog ("STEP 7.2 - The report pdf Page 2 contains additional values for the following fields as listed below");
 
         taskDetail.gotoTaskDetail (reportTDetect.getCorrectedReportTaskId ());
-        taskDetail.isCorrectPage ();
         assertTrue (taskDetail.taskFiles ().containsKey ("reportData.json"));
 
         reportDataJson = parseReportDataJson (taskDetail.taskFiles ().get ("reportData.json"));
@@ -252,13 +251,11 @@ public class TDetectReportTestSuite extends ReportTestBase {
 
         OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.failWorkflow (orderTest.sampleName, "testing failure report");
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
 
         orderDetailTDetect.gotoOrderDetailsPage (orderTest.orderId);
-        orderDetailTDetect.isCorrectPage ();
         orderDetailTDetect.clickReportTab (assayTest);
         reportTDetect.isCorrectPage ();
         reportTDetect.setQCstatus (Pass);

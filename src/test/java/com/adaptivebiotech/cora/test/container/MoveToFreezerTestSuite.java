@@ -88,15 +88,14 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             containerList.moveToFreezer (primary, freezer);
 
             // test: go to detail page to verify location
-            ordersList.gotoContainerDetail (primary);
-            detail.isCorrectPage ();
+            detail.gotoContainerDetail (primary);
             Container actual = detail.parsePrimaryDetail ();
             actual.comment = comment;
             assertTrue (primary.location.startsWith (freezer.location));
             verifyDetails (actual, primary);
 
             // test: go to history page to verify location
-            detail.gotoHistory ();
+            detail.clickHistory ();
             history.isCorrectPage ();
             List <ContainerHistory> histories = history.getHistories ();
             assertEquals (histories.size (), 2);
@@ -195,15 +194,14 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
             containerList.moveToFreezer (child, freezer);
 
             // test: go to child detail page to verify location
-            containerList.gotoContainerDetail (child);
-            detail.isCorrectPage ();
+            detail.gotoContainerDetail (child);
             Container actual = detail.parsePrimaryDetail ();
             actual.comment = child.comment;
             assertTrue (actual.location.startsWith (freezer.location));
             verifyDetails (actual, child);
 
             // test: go to child history page to verify location
-            detail.gotoHistory ();
+            detail.clickHistory ();
             history.isCorrectPage ();
             List <ContainerHistory> histories = history.getHistories ();
             if (Plate.equals (actual.containerType)) {
@@ -222,8 +220,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
             if (!Plate.equals (actual.containerType)) {
                 // test: go to holding detail page to verify location
-                history.gotoContainerDetail (holding);
-                detail.isCorrectPage ();
+                detail.gotoContainerDetail (holding);
                 actual = detail.parseHoldingDetail ();
                 holding.location = coraTestUser;
                 assertEquals (actual.children.size (), holding.children.size () - 1);
@@ -231,7 +228,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
                 verifyDetailsChild (actual, holding);
 
                 // test: go to holding history page to verify location
-                detail.gotoHistory ();
+                detail.clickHistory ();
                 history.isCorrectPage ();
                 histories = history.getHistories ();
                 assertEquals (histories.size (), 1);
@@ -248,8 +245,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
         });
 
         // cleanup
-        ordersList.gotoMyCustody ();
-        myCustody.isCorrectPage ();
+        myCustody.gotoMyCustody ();
         containers.list.forEach (c -> {
             if (!coraTestUser.equals (c.location))
                 myCustody.takeCustody (c);

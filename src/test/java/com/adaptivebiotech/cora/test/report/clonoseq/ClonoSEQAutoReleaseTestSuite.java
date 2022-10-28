@@ -256,7 +256,6 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
                                                 validICD,
                                                 genCDxTest (ID_BCell2_CLIA, bCellIDTsv)).findOrderTest (ID_BCell2_CLIA);
         orderStatus.gotoOrderStatusPage (test.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.failWorkflow (test.sampleName, "testing prior no result autorelease");
         verifyAutoReleaseFailure (test,
                                   "Failed Auto Release Rules: IsSentToFailureTarget expected wasSentToFailureTarget not to be true.");

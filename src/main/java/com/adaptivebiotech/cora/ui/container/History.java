@@ -3,11 +3,13 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.container;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.ContainerHistory;
+import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
@@ -19,6 +21,12 @@ public class History extends CoraPage {
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active", "HISTORY"));
+    }
+
+    public void gotoContainerHistory (Container container) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/container/details/" + container.id + "/history"));
+        pageLoading ();
+        isCorrectPage ();
     }
 
     public List <ContainerHistory> getHistories () {

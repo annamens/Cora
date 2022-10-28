@@ -118,7 +118,6 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         testLog ("STEP 4 - clonoSEQ Order Form is displayed");
 
         shipmentList.goToShipments ();
-        shipmentList.isCorrectPage ();
         shipmentList.clickShipment (shipmentList.getShipmentForOrder (order.orderNumber).shipmentNumber);
         shipment.isDiagnostic ();
         assertEquals (shipment.getOrderNumber (), order.orderNumber);
@@ -132,7 +131,6 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         testLog ("STEP 6 - clonoSEQ Order Form is displayed");
 
         shipmentList.goToShipments ();
-        shipmentList.isCorrectPage ();
         shipmentList.clickShipment (shipmentList.getShipmentForOrder (order.orderNumber).shipmentNumber);
         shipment.isDiagnostic ();
         Containers containers = shipment.getPrimaryContainers (Tube);
@@ -187,7 +185,6 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         testLog ("STEP 11 - The generic order status page is displayed");
 
         shipmentList.goToShipments ();
-        shipmentList.isCorrectPage ();
         shipmentList.clickShipment (shipmentList.getShipmentForOrder (order.orderNumber).shipmentNumber);
         shipmentDetail.isCorrectPage ();
         shipmentDetail.clickOrderNumber ();
@@ -196,7 +193,6 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         testLog ("STEP 12 - The generic order status page is displayed");
 
         shipmentList.goToShipments ();
-        shipmentList.isCorrectPage ();
         shipmentList.clickShipment (shipmentList.getShipmentForOrder (order.orderNumber).shipmentNumber);
         shipmentDetail.isCorrectPage ();
         shipment.clickAccessionTab ();
@@ -207,7 +203,6 @@ public class OrderLinkTestSuite extends NewOrderTestBase {
         testLog ("STEP 13 - The generic order status page is displayed");
 
         shipmentList.goToShipments ();
-        shipmentList.isCorrectPage ();
         shipmentList.clickShipment (shipmentList.getShipmentForOrder (order.orderNumber).shipmentNumber);
         shipmentDetail.isCorrectPage ();
         Containers containers = shipmentDetail.getPrimaryContainers (Tube);

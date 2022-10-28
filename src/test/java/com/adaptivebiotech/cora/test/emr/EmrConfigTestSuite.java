@@ -68,7 +68,6 @@ public class EmrConfigTestSuite extends CoraBaseBrowser {
         ordersList.isCorrectPage ();
 
         emrConfigs.gotoEmrConfigPage ();
-        emrConfigs.isCorrectPage ();
 
         assertTrue (emrConfigs.isCreateEmrConfigPresent ());
         testLog ("STEP 2.1 - EMR Config page contains - Create EMR Config button.");

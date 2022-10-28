@@ -4,6 +4,7 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
@@ -39,6 +40,36 @@ public class NewShipment extends ShipmentHeader {
 
     public NewShipment () {
         staticNavBarHeight = 195;
+    }
+
+    public void gotoShipmentDiagnosticEntry () {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/?category=Diagnostic"));
+        pageLoading ();
+        isDiagnostic ();
+    }
+
+    public void gotoShipmentBatchEntry () {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/?category=Research"));
+        pageLoading ();
+        isBatchOrGeneral ();
+    }
+
+    public void gotoShipmentGeneralEntry () {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/?category=General"));
+        pageLoading ();
+        isBatchOrGeneral ();
+    }
+
+    public void gotoShipmentDiagnosticEntry (UUID shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId));
+        pageLoading ();
+        isDiagnostic ();
+    }
+
+    public void gotoShipmentBatchOrGeneralEntry (UUID shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId));
+        pageLoading ();
+        isBatchOrGeneral ();
     }
 
     public void isDiagnostic () {

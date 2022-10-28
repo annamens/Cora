@@ -121,8 +121,7 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
         // activate order
         diagnostic.isCorrectPage ();
         diagnostic.activateOrder ();
-        diagnostic.gotoOrderDetailsPage (order.id);
-        clonoSeqOrderDetail.isCorrectPage ();
+        clonoSeqOrderDetail.gotoOrderDetailsPage (order.id);
         List <String> activeHistory = clonoSeqOrderDetail.getHistory ();
         String activateDateTime = activeHistory.get (2).split ("Activated by")[0].trim ();
         Order activeOrder = clonoSeqOrderDetail.parseOrder ();
@@ -213,8 +212,7 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
 
         orderStatus.waitFor (editOrder.tests.get (0).sampleName, Clarity, Awaiting);
         // unable to cancel until we refresh the page
-        orderStatus.gotoOrderDetailsPage (activeOrder.id);
-        clonoSeqOrderDetail.isCorrectPage ();
+        clonoSeqOrderDetail.gotoOrderDetailsPage (activeOrder.id);
         clonoSeqOrderDetail.clickCancelOrder ();
         testLog ("STEP 14 - Cancel Order modal appears.");
 
