@@ -209,8 +209,7 @@ public class NewOrderTDetect extends NewOrder {
             activateOrder ();
 
             // refreshing the page doesn't automatically take you to order detail
-            gotoOrderDetailsPage (order.id);
-            isCorrectPage ();
+            new OrderDetail ().gotoOrderDetailsPage (order.id);
         } else {
             accession.clickOrderNumber ();
             isCorrectPage ();

@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
@@ -40,6 +41,12 @@ public class OrderStatus extends OrderHeader {
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "ORDER STATUS"));
         pageLoading ();
+    }
+
+    public void gotoOrderStatusPage (UUID orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/status/" + orderId));
+        pageLoading ();
+        isCorrectPage ();
     }
 
     public List <String> getCancelOrderMessages () {

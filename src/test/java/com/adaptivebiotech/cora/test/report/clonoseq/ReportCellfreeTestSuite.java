@@ -84,10 +84,8 @@ public class ReportCellfreeTestSuite extends ReportTestBase {
 
         login.doLogin ();
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (orderTest.orderId);
-        orderDetail.isCorrectPage ();
+        orderDetail.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.clickReportTab (ID_BCell2_CLIA);
         report.releaseReport (ID_BCell2_CLIA, Pass);
         testLog ("Order name: " + orderTest.orderName + ", Released Report, Clonality Report Generated");
@@ -105,10 +103,8 @@ public class ReportCellfreeTestSuite extends ReportTestBase {
         testLog ("Order name: " + orderTest.orderName + ", forced status updated to SecondaryAnalysis -> Ready");
 
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (orderTest.orderId);
-        orderDetail.isCorrectPage ();
+        orderDetail.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.clickReportTab (MRD_BCell2_CLIA);
         report.releaseReport (MRD_BCell2_CLIA, Pass);
         testLog ("Order name: " + orderTest.orderName + ", Released Report, Tracking Report Generated");

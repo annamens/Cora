@@ -283,7 +283,9 @@ public class PageHelper {
         SpecimenReceived ("Specimen Received"),
         SpecimenCoordination ("Specimen Coordination"),
         SpecimenProcessing ("Specimen Processing"),
-        ResultsAvailable ("Results Available");
+        ResultsAvailable ("Results Available"),
+        PendingCancellation ("Pending Cancellation"),
+        CancelledWithReport ("Cancelled With Report");
 
         public String label;
 

@@ -887,7 +887,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         specimenStreck.sampleName = orderStatus.getWorkflowId ();
         orderStatus.waitFor (specimenStreck.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         testLog ("Awaiting Clinical QC Reached");
-        orderDetailClonoSeq.gotoOrderEntry (order.id);
+        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
         orderDetailClonoSeq.clickReportTab (assayTest);
         reportClonoSeq.releaseReport (assayTest, QC.Pass);
         testLog ("Released Report, waiting for delivery finished");
