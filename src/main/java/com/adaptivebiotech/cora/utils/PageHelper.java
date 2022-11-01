@@ -222,6 +222,18 @@ public class PageHelper {
         }
     }
 
+    public enum DiscrepancyStatus {
+        Open ("Open"),
+        ResolvedYes ("Resolved - Yes"),
+        ResolvedNo ("Resolved - No");
+
+        public final String text;
+
+        private DiscrepancyStatus (String text) {
+            this.text = text;
+        }
+    }
+
     public enum Ethnicity {
 
         @JsonProperty ("Hispanic or Latino")
@@ -285,7 +297,7 @@ public class PageHelper {
         SpecimenProcessing ("Specimen Processing"),
         ResultsAvailable ("Results Available"),
         PendingCancellation ("Pending Cancellation"),
-        CancelledWithReport ("Cancelled With Report");
+        CancelledWithReport ("Cancelled");
 
         public String label;
 
@@ -295,7 +307,7 @@ public class PageHelper {
 
         public static FriendlyOrderStatus getFriendlyOrderStatus (String label) {
             return allOf (FriendlyOrderStatus.class).parallelStream ().filter (a -> a.label.equals (label)).findFirst ()
-                                                    .get ();
+                                                    .orElse (null);
         }
     }
 
