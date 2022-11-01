@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyStatus.ResolvedYes;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
@@ -12,8 +13,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.Color;
 import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
+import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyStatus;
 
 public class DiscrepancyResolutions extends ShipmentHeader {
+
+    private final String discrepancyStatus = "[ng-model='discrepancy.status']";
 
     public DiscrepancyResolutions () {
         staticNavBarHeight = 195;
@@ -52,13 +56,15 @@ public class DiscrepancyResolutions extends ShipmentHeader {
         return el;
     }
 
-    public void resolveAllDiscrepancies () {
-        String css = "[ng-model=\"discrepancy.status\"]";
+    public void setDiscrepancyStatus (DiscrepancyStatus status) {
+        assertTrue (clickAndSelectText (discrepancyStatus, status.text));
+    }
 
-        List <WebElement> statusDropdowns = waitForElementsVisible (css);
+    public void resolveAllDiscrepancies () {
+        List <WebElement> statusDropdowns = waitForElementsVisible (discrepancyStatus);
 
         for (WebElement statusDropdown : statusDropdowns) {
-            assertTrue (clickAndSelectText (statusDropdown, "Resolved - Yes"));
+            assertTrue (clickAndSelectText (statusDropdown, ResolvedYes.text));
         }
         clickSave ();
     }

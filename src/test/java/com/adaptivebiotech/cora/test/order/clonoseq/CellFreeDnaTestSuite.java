@@ -7,10 +7,7 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
-import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.GenerateFailureReport;
 import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequired;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.CancelledWithReport;
-import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.PendingCancellation;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
@@ -27,7 +24,7 @@ import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenStab
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.SpecimenType;
 import static com.adaptivebiotech.cora.utils.PageHelper.Discrepancy.TRFHandwritten;
 import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee.CLINICAL_TRIALS;
-import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
+import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyStatus.ResolvedNo;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newTrialProtocolPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
@@ -35,12 +32,7 @@ import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
-import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
-import static com.adaptivebiotech.test.utils.PageHelper.StageName.Finalize;
-import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
-import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
@@ -64,18 +56,14 @@ import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
-import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
-import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.patient.PatientOrderHistory;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.DiscrepancyResolutions;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
-import com.adaptivebiotech.cora.utils.PageHelper.QC;
 import com.adaptivebiotech.test.utils.DateHelper;
-import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 
 /**
  * @author jpatel
@@ -91,13 +79,9 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     private Accession              accession               = new Accession ();
     private DiscrepancyResolutions discrepancyRes          = new DiscrepancyResolutions ();
     private OrderDetailClonoSeq    orderDetailClonoSeq     = new OrderDetailClonoSeq ();
-    private OrderStatus            orderStatus             = new OrderStatus ();
-    private ReportClonoSeq         reportClonoSeq          = new ReportClonoSeq ();
     private PatientDetail          patientDetail           = new PatientDetail ();
     private PatientOrderHistory    patientHistory          = new PatientOrderHistory ();
     private ThreadLocal <String>   downloadDir             = new ThreadLocal <> ();
-
-    private final String           noResultsAvailable      = "No result available";
 
     private final String[]         icdCodes                = { "V00.218S" };
     private final String           updateActivationDate    = "UPDATE cora.specimens SET activation_date = null WHERE specimen_number = '%s'";
@@ -371,7 +355,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     /**
      * NOTE: SR-T4324
      * 
-     * @sdlc.requirements SR-12635:R4, SR-11721:R4
+     * @sdlc.requirements SR-12635:R4, SR-11721:R4, SR-13826
      */
     @Test (groups = "irish-wolfhound")
     public void majorDiscrepancyResolvedAfterLabelVerify () {
@@ -403,6 +387,17 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         newOrderClonoSeq.gotoOrderEntry (order.id);
         String specimenNo = newOrderClonoSeq.getSpecimenId ();
         List <Map <String, Object>> queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
+        assertEquals (queryRes.size (), 0);
+        assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
+        testLog ("Specimen is not sent for activation as Major discrepancy is not resolved");
+
+        discrepancyRes.gotoDiscrepancy (shipmentId);
+        discrepancyRes.setDiscrepancyStatus (ResolvedNo);
+        discrepancyRes.clickSave ();
+        testLog ("Major discrepancy is resolved using Resolved-No, thus specimen should not be sent for activation");
+
+        newOrderClonoSeq.gotoOrderEntry (order.id);
+        queryRes = coraDb.executeSelect (format (specimenActivationQuery, specimenNo));
         assertEquals (queryRes.size (), 0);
         assertNull (newOrderClonoSeq.getSpecimenActivationDate ());
         testLog ("Specimen is not sent for activation as Major discrepancy is not resolved");
@@ -849,64 +844,6 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
          * newOrderClonoSeq.activateOrder ();
          * testLog ("Streck Plasma Isolation Date = Today - 44, Order Activation Successful");
          */
-    }
-
-    /**
-     * NOTE: SR-T4291
-     * 
-     * @sdlc.requirements SR-11341
-     */
-    @Test (groups = "irish-wolfhound")
-    public void verifyCancelStreckOrderWithFastLane () {
-        login.doLogin ();
-        ordersList.isCorrectPage ();
-        Assay assayTest = MRD_BCell2_CLIA;
-        Patient patient = newTrialProtocolPatient ();
-
-        // Streck sample, With Fastlane
-        Specimen specimenStreck = bloodSpecimen ();
-        specimenStreck.compartment = CellFree;
-        specimenStreck.anticoagulant = Streck;
-        Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_trial),
-                                                            patient,
-                                                            icdCodes,
-                                                            assayTest,
-                                                            specimenStreck);
-        testLog ("Streck sample, With Fastlane: " + order.orderNumber);
-        newOrderClonoSeq.clickCancelOrder ();
-
-        // Verify New Cancel Action Default Option
-        assertTrue (newOrderClonoSeq.isCancelActionDropdownVisible ());
-        assertEquals (newOrderClonoSeq.getCancelActionValue (), GenerateFailureReport);
-        testLog ("Cancel Action dropdown visible and set to " + GenerateFailureReport.label);
-        newOrderClonoSeq.cancelStreckOrder (GenerateFailureReport);
-
-        // Verify No Result Report can be released
-        assertEquals (newOrderClonoSeq.getOrderStatus (), PendingCancellation);
-        testLog ("Order cancelled and status is PendingCancellation, waiting for Awaiting Clinical QC");
-        specimenStreck.sampleName = orderStatus.getWorkflowId ();
-        orderStatus.waitFor (specimenStreck.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
-        testLog ("Awaiting Clinical QC Reached");
-        orderDetailClonoSeq.gotoOrderDetailsPage (order.id);
-        orderDetailClonoSeq.clickReportTab (assayTest);
-        reportClonoSeq.releaseReport (assayTest, QC.Pass);
-        testLog ("Released Report, waiting for delivery finished");
-
-        // Verify Report type is No Result Available
-        String pdfFileLocation = join ("/", downloadDir.get (), specimenStreck.sampleName + ".pdf");
-        coraApi.get (reportClonoSeq.getReleasedReportPdfUrl (), pdfFileLocation);
-
-        String extractedText = getTextFromPDF (pdfFileLocation, 1);
-        assertTrue (extractedText.contains (noResultsAvailable));
-        testLog ("Report displays No Result Available");
-
-        // Verify Order Cancelled after Report Release
-        orderDetailClonoSeq.clickOrderStatusTab ();
-        orderStatus.waitFor (specimenStreck.sampleName, Finalize, StageStatus.Cancelled);
-        testLog ("Report Delivery Finished");
-        orderDetailClonoSeq.refresh ();
-        assertEquals (newOrderClonoSeq.getOrderStatus (), CancelledWithReport);
-        testLog ("Order Status is " + CancelledWithReport);
     }
 
     /**
