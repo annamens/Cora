@@ -48,6 +48,7 @@ public class BatchTestSuite extends BatchTestBase {
             resetBatchOrder (orderNumber.get ());
     }
 
+    @Test (groups = "smoke")
     public void happypath () {
         Map <String, Map <String, String>> sample = new HashMap <> ();
         sample.put ("SAMPLE_NAME", singletonMap ("workflow", "selenium-batch-eos-" + nanoTime ()));
