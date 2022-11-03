@@ -13,6 +13,7 @@ import com.adaptivebiotech.cora.ui.CoraPage;
 
 public class OrderAlert extends CoraPage {
 
+    private final String popupTitle       = "modal-container " + super.popupTitle;
     private final String alertType        = "[name='select-alert-type'] select";
     private final String activeTab        = "//span[contains(text(), 'ACTIVE')]";
     private final String resolveTab       = "//span[contains(text(), 'RESOLVED')]";
@@ -31,7 +32,6 @@ public class OrderAlert extends CoraPage {
     }
 
     public void isCorrectPage (String orderNo) {
-        isCorrectPage ();
         assertTrue (isTextInElement (popupTitle, "Alerts for Order #" + orderNo));
     }
 

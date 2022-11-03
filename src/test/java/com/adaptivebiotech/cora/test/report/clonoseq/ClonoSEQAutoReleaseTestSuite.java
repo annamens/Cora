@@ -361,9 +361,11 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     private void waitForReportGeneration (OrderTest orderTest) {
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        history.clickOrderTest ();
+        history.clickOrder ();
+
         Assay assay = Assay.getAssay (orderTest.test.name);
-        report.clickReportTab (assay);
+        orderStatus.isCorrectPage ();
+        orderStatus.clickReportTab (assay);
         if (orderTest.test.receptorFamily.equals ("TCell")) {
             report.generateReport (assay);
         }

@@ -123,6 +123,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
 
         containersList.clickSuccessMessageLink ();
+        containersList.isCorrectPage ();
         Containers parsedContainers = containersList.getContainers ();
         verifySuccessMessageLink (parsedContainers);
         testLog ("SR-3229:R2: User was able to add custom comment to the Bulk Move to Freezer action");

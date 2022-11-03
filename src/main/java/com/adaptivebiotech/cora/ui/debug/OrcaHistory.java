@@ -67,6 +67,7 @@ public class OrcaHistory extends CoraPage {
     }
 
     public String getFileLocation (String filename) {
+        assertTrue (isElementVisible (format ("//a[text()='%s']", filename)));
         return getAttribute (format ("//a[text()='%s']", filename), "href");
     }
 
@@ -79,11 +80,6 @@ public class OrcaHistory extends CoraPage {
             timer.Wait ();
         getDriver ().navigate ().back ();
         return report;
-    }
-
-    public String getFileUrl (String fileName) {
-        assertTrue (isElementVisible (format ("//a[text()='%s']", fileName)));
-        return getAttribute (format ("//a[text()='%s']", fileName), "href");
     }
 
     public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {
@@ -228,12 +224,17 @@ public class OrcaHistory extends CoraPage {
     }
 
     public void setWorkflowProperty (WorkflowProperty property, String value) {
-
+        String orcaHistoryUrl = getCurrentUrl ();
         String propXpath = "//th[text()='%s:']/../td[contains(.,'%s')]";
 
         enterWorkflowPropertyName (property);
         enterWorkflowPropertyValue (value);
         clickForceWorkflowProperty ();
+        if (getCurrentUrl ().contains ("forceWorkflowProperty")) {
+            navigateTo (orcaHistoryUrl);
+            isCorrectPage ();
+            setWorkflowProperty (property, value);
+        }
 
         assertTrue (waitUntilVisible (format (propXpath, property.name (), value)));
 
@@ -251,6 +252,7 @@ public class OrcaHistory extends CoraPage {
         String orcaHistoryUrl = getCurrentUrl ();
         String stageNameSelect = "select[name='stageName']";
         String stageStatusSelect = "select[name='stageStatus']";
+
         assertTrue (clickAndSelectValue (stageNameSelect, stageName.name ()));
         assertTrue (clickAndSelectValue (stageStatusSelect, stageStatus.name ()));
         assertTrue (click ("form[action*='forceWorkflowStatus'] input[type='submit']"));

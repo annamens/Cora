@@ -165,45 +165,6 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
     /**
      * Note:
      * - SR-T3689
-     * - non-CLEP physician
-     * - specimen type / source: Cell pellet / PBMC
-     * - icd codes: C83.00
-     */
-    public void verifyIgHVStageAndReportFeatureOrder1CLIA () {
-        Assay assayTest = ID_BCell2_CLIA;
-        Order orderDetails = createOrder (IgHVPhysician,
-                                          assayTest,
-                                          CellPellet,
-                                          PBMC,
-                                          new String[] { c83_00, c91_10 },
-                                          "Order 1 Flag On");
-
-        validateFlagsOnDebugPage (orderDetails.specimenDto.sampleName, true, true);
-        testLog ("step 1 - ighvAnalysisEnabled and ighvReportEnabled are true");
-
-        forceStatusUpdate (orderDetails.specimenDto.sampleName,
-                           tsvOverridePathO1O2,
-                           lastFinishedPipelineJobIdO1O2,
-                           sampleNameO1O2,
-                           null,
-                           null);
-        testLog ("step 2 - 1 - Workflow moved from SecondaryAnalysis -> SHM Analysis -> ClonoSEQReport");
-
-        validatePipelineStatusToComplete (history.getWorkflowProperties ().sampleName, assayTest);
-        testLog ("step 2 - 2 - An eos.shm analysis job was spawned and Completed in portal");
-
-        boolean isCLIAIGHVFlagPresent = releaseReport (assayTest);
-        assertTrue (isCLIAIGHVFlagPresent);
-        testLog ("step 3 - CLIA-IGHV flag appears just below the Report tab ");
-
-        ReportRender reportData = getReportDataJsonFile (orderDetails.specimenDto.sampleName);
-        assertNotNull (reportData.shmReportResult);
-        testLog ("step 4 - SHM analysis results are included in reportData.json within shmReportResult property");
-    }
-
-    /**
-     * Note:
-     * - SR-T3689
      * - CLEP physician
      * - specimen type / source: Cell pellet / PBMC
      * - icd codes: C83.00
@@ -1012,7 +973,7 @@ public class IghvOrderTestSuite extends NewOrderTestBase {
         // get file using get request
         history.gotoOrderDebug (sampleName);
         coraDebugApi.login ();
-        coraDebugApi.get (history.getFileUrl (reportData), localFile);
+        coraDebugApi.get (history.getFileLocation (reportData), localFile);
 
         ReportRender reportDataJson = mapper.readValue (new File (localFile), ReportRender.class);
         info ("Json File Data " + reportDataJson);

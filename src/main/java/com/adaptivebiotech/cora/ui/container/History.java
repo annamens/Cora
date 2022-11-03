@@ -21,6 +21,8 @@ public class History extends CoraPage {
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active", "HISTORY"));
+        assertTrue (waitUntilVisible (".history-header"));
+        pageLoading ();
     }
 
     public void gotoContainerHistory (Container container) {
