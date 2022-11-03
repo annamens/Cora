@@ -32,6 +32,8 @@ Run Test:
       - target/logs
       - target/saucelabs
       - target/surefire-reports
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
 
 Sonar Analysis:
   variables:
