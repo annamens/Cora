@@ -54,6 +54,7 @@ public class ShipmentsList extends CoraPage {
         String url = "/cora/shipments?sort=arrivaldate&ascending=true&arrivaldate=today";
         assertTrue (navigateTo (coraTestUrl + url));
         pageLoading ();
+        isCorrectPage ();
     }
 
     public void clickShipment (String shipmentId) {

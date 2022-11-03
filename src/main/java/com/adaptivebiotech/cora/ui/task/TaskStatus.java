@@ -3,11 +3,13 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.task;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.TaskHistory;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
@@ -31,6 +33,12 @@ public class TaskStatus extends Task {
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "TASK STATUS"));
+    }
+
+    public void gotoTaskStatus (UUID taskId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId + "?p=status"));
+        pageLoading ();
+        isCorrectPage ();
     }
 
     public void waitFor (StageName stage, StageStatus status, StageSubstatus substatus, String message) {

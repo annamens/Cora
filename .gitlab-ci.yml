@@ -1,0 +1,54 @@
+default:
+  tags:
+    - qa
+
+image: maven:3.8.6-eclipse-temurin-17
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  TEST_ENV: test
+  TEST_GROUP: smoke
+  TEST_THREADS: 4
+  TESTNG_VERBOSE: 1
+
+Run Test:
+  stage: test
+  script:
+    # print out variables
+    - echo "TEST_ENV is $TEST_ENV"
+    - echo "TEST_SUITE is $TEST_SUITE"
+    - echo "TEST_GROUP is $TEST_GROUP"
+    - echo "TEST_THREADS is $TEST_THREADS"
+    - echo "TESTNG_VERBOSE is $TESTNG_VERBOSE"
+    # get config files
+    - git clone -b cora-regression --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/adaptivebiotech/testing/config.git config-project
+    - mkdir config
+    - cp config-project/cora/* config/
+    # run test
+    - mvn --no-transfer-progress -U clean test $MAVEN_OPTS -Dtest.env=$TEST_ENV -Dgroups=$TEST_GROUP -Dtest=$TEST_SUITE -DuseSauceLabs=true -Dtest.threads=$TEST_THREADS -Dtestng.verbose=$TESTNG_VERBOSE
+  artifacts:
+    when: always
+    paths:
+      - target/logs
+      - target/saucelabs
+      - target/surefire-reports
+
+Sonar Analysis:
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0"
+    SONAR_PROJECT_KEY: "adaptivebiotech_cora_test_cora_AYP2vSZe_wYUIC1YzrWW"
+    SONAR_GATE_WAIT: "true"
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  stage: test
+  script:
+    - >
+      mvn clean install sonar:sonar
+      -Dmaven.test.skip=true
+      -Dsonar.qualitygate.wait=$SONAR_GATE_WAIT
+      -Dsonar.projectKey=$SONAR_PROJECT_KEY
+      -Dsonar.sources=src
+      -Dsonar.test.inclusions=src/*/java/*

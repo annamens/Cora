@@ -19,7 +19,6 @@ import org.openqa.selenium.support.ui.Wait;
 import org.testng.util.Strings;
 import com.adaptivebiotech.cora.dto.PoolDetails;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraLab;
-import com.adaptivebiotech.cora.utils.PageHelper.MiraQCStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStage;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraStatus;
 import com.adaptivebiotech.cora.utils.PageHelper.MiraType;
@@ -115,19 +114,6 @@ public class MiraDetail extends Mira {
         assertNotNull (containerNames.get (0));
     }
 
-    public void clickMiraPrepComplete () {
-        String miraPrepComplete = ".btn-activate";
-        assertTrue (click (miraPrepComplete));
-        waitForNotification ();
-        waitUntilVisible (popupTitle);
-        clickPopupOK ();
-        try {
-            waitForNotification ();
-        } catch (Throwable t) { // sometimes miss this b/c it disappears before the popup
-            info ("did not see notification after MiraPrepComplete, continuing...");
-        }
-    }
-
     public void clickStatusTab () {
         String statusTab = "a[data-ng-click='ctrl.setTab(\\'status\\')']";
         assertTrue (click (statusTab));
@@ -156,21 +142,6 @@ public class MiraDetail extends Mira {
         String miraIdField = "div[ng-bind='ctrl.mira.miraId']";
         assertTrue (waitUntilVisible (miraIdField));
         assertEquals (getText (miraIdField), miraId);
-    }
-
-    public void clickReadyToShip () {
-        String readyToShipButton = "button[data-ng-click='ctrl.$scope.$broadcast(\\'mira-ship\\')']";
-        assertTrue (click (readyToShipButton));
-        clickPopupOK ();
-        pageLoading ();
-    }
-
-    public void ignorePairseqResult () {
-        String ignorePairseqResultButton = "button[data-ng-click='ctrl.ignorePairSeqResult()']";
-        assertTrue (click (ignorePairseqResultButton));
-        clickPopupOK ();
-        pageLoading ();
-        assertTrue (waitUntilVisible ("div.label-ignored"));
     }
 
     public boolean waitForStage (MiraStage stage) {
@@ -225,16 +196,6 @@ public class MiraDetail extends Mira {
             }
         };
         return waitUntil (durationSeconds * 1000, pollingSeconds * 1000, func);
-    }
-
-    public void setQCStatus (MiraQCStatus status) {
-        String dropdown = "select[name='qcStatus']";
-        String button = "button[data-ng-click='ctrl.qcComplete(ctrl.mira.qcStatus)']";
-
-        assertTrue (clickAndSelectText (dropdown, status.toString ()));
-        assertTrue (click (button));
-        clickPopupOK (); // page reloads after you click ok
-        pageLoading ();
     }
 
     public void waitForSubstatusTextContains (String text) {
@@ -305,15 +266,6 @@ public class MiraDetail extends Mira {
             }
         };
         waitUntil (300000, 30000, func);
-    }
-
-    public void clickSave (boolean expectPopup) {
-        String saveButton = "//button[text()='Save']";
-        assertTrue (click (saveButton));
-        if (expectPopup) {
-            clickPopupOK ();
-        }
-        waitForNotification ();
     }
 
     public void clickMiraPrepCompleteExpectFailure () {

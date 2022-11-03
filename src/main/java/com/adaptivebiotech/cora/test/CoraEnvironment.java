@@ -19,6 +19,10 @@ public class CoraEnvironment extends BaseEnvironment {
     public static String limsTestUrl;
     public static Server jumpbox;
     public static Server coraDbInfo;
+    public static String coraCSAdminTestUser;
+    public static String coraCSAdminTestPass;
+    public static String coraNonPHITestUser;
+    public static String coraNonPHITestPass;
 
     public static void initialization () {
         try {
@@ -26,6 +30,10 @@ public class CoraEnvironment extends BaseEnvironment {
             coraTestUrl = format (getProperty ("cora.test.url"), env);
             coraTestUser = getProperty ("cora.test.user");
             coraTestPass = getPropertyEncrypted ("cora.test.pass");
+            coraCSAdminTestUser = getProperty ("cora.cs.admin.test.user");
+            coraCSAdminTestPass = getPropertyEncrypted ("cora.cs.admin.test.pass");
+            coraNonPHITestUser = getProperty ("cora.nonphi.test.user");
+            coraNonPHITestPass = getPropertyEncrypted ("cora.nonphi.test.pass");
 
             portalCliaTestUrl = format (getProperty ("portal.clia.test.url"), env);
             portalIvdTestUrl = format (getProperty ("portal.ivd.test.url"), env);

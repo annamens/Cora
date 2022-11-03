@@ -7,10 +7,10 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.time.LocalDateTime.parse;
 import static java.util.EnumSet.allOf;
@@ -82,9 +82,9 @@ public class OrderDetail extends OrderHeader {
         pageLoading ();
     }
 
-    @Override
     public void gotoOrderDetailsPage (UUID orderId) {
-        super.gotoOrderDetailsPage (orderId);
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/details/" + orderId));
+        pageLoading ();
         isCorrectPage ();
     }
 
@@ -388,7 +388,7 @@ public class OrderDetail extends OrderHeader {
     }
 
     public String getSpecimenActivationDate () {
-        String activationDate = "[ng-bind^='ctrl.orderEntry.specimen.activationDate']";
+        String activationDate = "specimen-activation-date";
         return isElementVisible (activationDate) ? getText (activationDate) : null;
     }
 
@@ -477,7 +477,7 @@ public class OrderDetail extends OrderHeader {
 
     public void uploadAttachments (String... files) {
         for (String file : files) {
-            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            uploadFile ("input[ngf-select*='ctrl.onUpload']", file);
             transactionInProgress ();
         }
     }

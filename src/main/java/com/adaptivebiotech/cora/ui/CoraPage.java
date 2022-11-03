@@ -27,11 +27,15 @@ import com.seleniumfy.test.utils.BasePage;
  */
 public class CoraPage extends BasePage {
 
-    private final String   newmenu     = "li:nth-child(1) .new-order #navNewDropdown";
-    private final String   utilities   = "li:nth-child(9) .new-order #navNewDropdown";
-    protected final String popupTitle  = ".modal-header .modal-title";
-    protected final String tabBase     = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
-    protected final String requiredMsg = ".text-danger";
+    private final String   newmenu        = "li:nth-child(1) .new-order #navNewDropdown";
+    private final String   utilities      = "li:nth-child(9) .new-order #navNewDropdown";
+    protected final String popupTitle     = ".modal-header .modal-title";
+    protected final String tabBase        = "//ul[contains(@class, 'nav-tabs')]//*[text()='%s']";
+    protected final String requiredMsg    = ".text-danger";
+    protected final String toastContainer = "#toast-container";
+    protected final String toastError     = ".toast-error";
+    protected final String toastSuccess   = ".toast-success";
+    protected final String toastMessage   = ".toast-message";
 
     public CoraPage () {
         staticNavBarHeight = 35;
@@ -182,11 +186,6 @@ public class CoraPage extends BasePage {
         assertTrue (click ("//a[text()='Barcode Comparison Tool']"));
     }
 
-    public void gotoOrderEntry (UUID orderId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/order/auto?id=" + orderId));
-        pageLoading ();
-    }
-
     public void searchAndClickOrder (String orderNum) {
         doOrderSearch (orderNum);
         clickOrder (orderNum);
@@ -226,58 +225,8 @@ public class CoraPage extends BasePage {
         assertTrue (navigateTo (coraTestUrl + "/cora/containers/list?searchText=" + container.containerNumber + "&sort=HoldingContainer&ascending=true&searchType=Container&groupByHoldingContainer=false&includeChildSpecimen=false&offset=0"));
     }
 
-    public void gotoMyCustody () {
-        assertTrue (navigateTo (coraTestUrl + "/cora/containers/custody"));
-    }
-
-    public void gotoShipmentEntry (UUID shipmentId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId));
-        pageLoading ();
-    }
-
-    public void gotoContainerDetail (Container container) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/container/details/" + container.id));
-        pageLoading ();
-    }
-
-    public void gotoContainerHistory (Container container) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/container/details/" + container.id + "/history"));
-        pageLoading ();
-    }
-
-    public void gotoOrderDetailsPage (UUID orderId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/order/details/" + orderId));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    public void gotoOrderStatusPage (UUID orderId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/order/status/" + orderId));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    public void gotoTaskDetail (UUID taskId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    public void gotoTaskStatus (UUID taskId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId + "?p=status"));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    public void gotoAccession (UUID shipmentId) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=accession"));
-        assertTrue (hasPageLoaded ());
-        pageLoading ();
-    }
-
-    // click on (X) icon
-    public void closePopup () {
-        assertTrue (click ("[ng-click='ctrl.cancel()'] .glyphicon-remove"));
+    public void clickCloseButton () {
+        assertTrue (click ("//button[text()='Close']"));
         moduleLoading ();
     }
 
@@ -302,13 +251,14 @@ public class CoraPage extends BasePage {
     }
 
     protected void clickPopupOK () {
-        assertTrue (click ("[data-ng-click='ctrl.ok();']"));
+        assertTrue (click ("//*[text()='Ok']"));
         moduleLoading ();
     }
 
     public void ignoredUnsavedChanges () {
         assertTrue (isTextInElement (popupTitle, "Unsaved Changes"));
-        clickPopupOK ();
+        assertTrue (click ("//button[text()='Ignore changes and leave the page']"));
+        moduleLoading ();
     }
 
     public void clickFilter () {
@@ -353,4 +303,5 @@ public class CoraPage extends BasePage {
         assertTrue (click (".modal-header button.close"));
         moduleLoading ();
     }
+
 }

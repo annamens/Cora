@@ -4,8 +4,8 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
@@ -36,9 +36,40 @@ public class NewShipment extends ShipmentHeader {
     private final String cssNotes               = "#shipment-notes";
     private final String fileLoc                = "//a//span[contains(text(),'%s')]";
     private final String initialStorageLocation = "//*[text()='Initial Storage Location']/following-sibling::select";
+    private final String highPriorityFlag       = "#highPriority";
 
     public NewShipment () {
         staticNavBarHeight = 195;
+    }
+
+    public void gotoShipmentDiagnosticEntry () {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/?category=Diagnostic"));
+        pageLoading ();
+        isDiagnostic ();
+    }
+
+    public void gotoShipmentBatchEntry () {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/?category=Research"));
+        pageLoading ();
+        isBatchOrGeneral ();
+    }
+
+    public void gotoShipmentGeneralEntry () {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/?category=General"));
+        pageLoading ();
+        isBatchOrGeneral ();
+    }
+
+    public void gotoShipmentDiagnosticEntry (UUID shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId));
+        pageLoading ();
+        isDiagnostic ();
+    }
+
+    public void gotoShipmentBatchOrGeneralEntry (UUID shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId));
+        pageLoading ();
+        isBatchOrGeneral ();
     }
 
     public void isDiagnostic () {
@@ -213,7 +244,7 @@ public class NewShipment extends ShipmentHeader {
     public void uploadAttachments (List <String> files) {
         String fileUpload = "input[ngf-select*='ctrl.onUpload'][ng-bind='ctrl.btnText']";
         for (String file : files) {
-            waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
+            uploadFile (fileUpload, file);
             transactionInProgress ();
             assertTrue (clear (fileUpload));
         }
@@ -302,6 +333,19 @@ public class NewShipment extends ShipmentHeader {
     public void clickFilePreviewLink (String fileName) {
         assertTrue (click (format (fileLoc, fileName)));
         assertTrue (isTextInElement (popupTitle, fileName));
+    }
+
+    public boolean isHighPriorityFlagVisible () {
+        String css = ".high-priority";
+        return isElementVisible (css);
+    }
+
+    public boolean isHighPriorityFlagSelected () {
+        return waitForElement (highPriorityFlag).isSelected ();
+    }
+
+    public void clickHighPriorityFlag () {
+        assertTrue (click (highPriorityFlag));
     }
 
     public String createShipment (String orderNumber, ContainerType containerType) {

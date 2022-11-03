@@ -5,12 +5,13 @@ package com.adaptivebiotech.cora.ui.order;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
 import static com.adaptivebiotech.cora.dto.Patient.PatientTestStatus.getPatientStatus;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus.getShipmentSpecimenStatus;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt2;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.EnumSet.allOf;
@@ -78,10 +79,6 @@ public abstract class NewOrder extends OrderHeader {
     protected final String specimenSource      = "[formcontrolname='source']";
     protected final String anticoagulant       = "[formcontrolname='anticoagulant']";
     protected final String specimenNumber      = "//*[text()='Adaptive Specimen ID']/..//div";
-    protected final String toastContainer      = "#toast-container";
-    protected final String toastError          = ".toast-error";
-    protected final String toastSuccess        = ".toast-success";
-    protected final String toastMessage        = ".toast-message";
     protected final String textDanger          = ".text-danger";
 
     public NewOrder () {
@@ -94,9 +91,9 @@ public abstract class NewOrder extends OrderHeader {
         pageLoading ();
     }
 
-    @Override
     public void gotoOrderEntry (UUID orderId) {
-        super.gotoOrderEntry (orderId);
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/auto?id=" + orderId));
+        pageLoading ();
         isCorrectPage ();
     }
 
@@ -199,23 +196,26 @@ public abstract class NewOrder extends OrderHeader {
 
     public abstract void clickSaveAndActivate ();
 
-    public void clickCancel () {
-        assertTrue (click ("[ng-click='ctrl.cancel();']"));
-        moduleLoading ();
-    }
-
     public void clickCancelOrder () {
         assertTrue (click ("//button[contains(text(),'Cancel Order')]"));
         assertTrue (isTextInElement (popupTitle, "Cancel Order"));
+    }
+
+    public void cancelOrder () {
         assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
         assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
         assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
         assertTrue (setText ("#cancellationNotes", "this is a test"));
-        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
+        assertTrue (click ("//button[text()='Yes. Cancel Order']"));
         pageLoading ();
         moduleLoading ();
         checkOrderForErrors ();
-        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", "Cancelled"));
+        assertTrue (isTextInElement ("[ng-bind='ctrl.orderEntry.order.status']", Cancelled.name ()));
+    }
+
+    public void clickAndCancelOrder () {
+        clickCancelOrder ();
+        cancelOrder ();
     }
 
     protected void checkOrderForErrors () {
@@ -236,6 +236,10 @@ public abstract class NewOrder extends OrderHeader {
         String message = getText (toastError);
         assertTrue (waitForElementInvisible (toastContainer));
         return message;
+    }
+
+    public boolean isToastErrorPresent () {
+        return isElementVisible (toastError);
     }
 
     public String getToastSuccess () {
@@ -263,6 +267,10 @@ public abstract class NewOrder extends OrderHeader {
 
     public String getOrderNotes () {
         return readInput (orderNotes);
+    }
+
+    public boolean isOrderNotesErrorPresent () {
+        return isElementVisible (textDanger);
     }
 
     public void enterInstruction (String instruction) {
@@ -344,21 +352,6 @@ public abstract class NewOrder extends OrderHeader {
         assertTrue (isTextInElement (popupTitle, "Pick Patient"));
     }
 
-    public void removePatient () {
-        clickRemovePatient ();
-        assertTrue (isTextInElement (popupTitle, "Order Billing Warning"));
-        assertTrue (click ("[data-ng-click='ctrl.ok();']"));
-    }
-
-    public void removePatientTest () {
-        assertTrue (isTextInElement (popupTitle, "Test Selection Warning"));
-        clickPopupOK ();
-    }
-
-    public void clickRemovePatient () {
-        assertTrue (click ("[ng-click='ctrl.removePatient()']"));
-    }
-
     public void clickPatientCode () {
         String css = "//*[text()='Patient Code']/parent::div//a";
         assertTrue (click (css));
@@ -389,16 +382,15 @@ public abstract class NewOrder extends OrderHeader {
     }
 
     public void enterPatientICD_Codes (String... codes) {
-        String dropdown = ".icd-code-list-item .dropdown-item";
         String css = "//button[text()='Add Code']";
         for (String code : codes) {
             if (isElementVisible (css))
                 assertTrue (click (css));
 
             assertTrue (setText ("//*[*[text()='ICD Codes']]//input", code));
-            assertTrue (waitUntilVisible (dropdown));
+            pageLoading ();
             assertTrue (click ("//*[contains(text(),'" + code + "')]"));
-            assertTrue (waitForElementInvisible (dropdown));
+            assertTrue (waitForElementInvisible (".icd-code-list-item .dropdown-item"));
         }
     }
 
@@ -506,7 +498,7 @@ public abstract class NewOrder extends OrderHeader {
 
     public void uploadAttachments (List <String> files) {
         for (String file : files) {
-            waitForElement (fileUpload).sendKeys (getSystemResource (file).getPath ());
+            uploadFile (fileUpload, file);
             transactionInProgress ();
             waitForElement (fileUpload).clear ();
         }

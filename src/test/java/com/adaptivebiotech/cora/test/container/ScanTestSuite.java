@@ -7,7 +7,6 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Slide;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.SlideBox5;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
@@ -108,8 +107,7 @@ public class ScanTestSuite extends ContainerTestBase {
      * @sdlc.requirements 126.ContainersListValidScan
      */
     public void my_custody_view () {
-        ordersList.gotoMyCustody ();
-        myCustody.isCorrectPage ();
+        myCustody.gotoMyCustody ();
 
         // test: container doesn't exist
         myCustody.scan ("xxxxxx");
@@ -145,14 +143,13 @@ public class ScanTestSuite extends ContainerTestBase {
 
         BatchAccession accession = new BatchAccession ();
         accession.isCorrectPage ();
-        accession.uploadIntakeManifest (getSystemResource ("batch/intakemanifest_full_slidebox.xlsx").getPath ());
+        accession.uploadIntakeManifest ("batch/intakemanifest_full_slidebox.xlsx");
         accession.clickIntakeComplete ();
         accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();
 
         // test: container doesn't exist
-        ordersList.gotoMyCustody ();
-        myCustody.isCorrectPage ();
+        myCustody.gotoMyCustody ();
         myCustody.scanAndClickHoldingContainer (child);
         myCustody.chooseHoldingContainer ("xxxxxx");
         assertEquals (myCustody.getScanError (), format (error1, "xxxxxx"));

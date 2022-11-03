@@ -8,11 +8,11 @@ import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
+import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
@@ -25,16 +25,21 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
  */
 public class AttachmentTestBase extends CoraBaseBrowser {
 
-    protected final List <String> previewFiles       = Arrays.asList ("gifBelow15MB.gif",
-                                                                      "jpgBelow15MB.jpg",
-                                                                      "pdfBelow15MB.pdf",
-                                                                      "pngBelow15MB.png");
-    protected final List <String> uploadPreviewFiles = previewFiles.stream ().map (e -> "uploadFiles/" + e)
+    protected final List <String> previewFiles       = asList ("gifBelow15MB.gif",
+                                                               "jpgBelow15MB.jpg",
+                                                               "pdfBelow15MB.pdf",
+                                                               "pngBelow15MB.png",
+                                                               "upperExtension.pdf");
+
+    protected final List <String> uploadPreviewFiles = previewFiles.stream ()
+                                                                   .map (e -> "uploadFiles/" + (e.equals ("upperExtension.pdf") ? e.replace (".pdf",
+                                                                                                                                             ".PDF") : e))
                                                                    .collect (Collectors.toList ());
 
     protected final String[]      icdCodes           = { "A20.0" };
 
-    protected void validateAttachments (List <UploadFile> actualAttachments, List <String> expFiles,
+    protected void validateAttachments (List <UploadFile> actualAttachments,
+                                        List <String> expFiles,
                                         OrderStatus status) {
         assertEquals (actualAttachments.size (), expFiles.size ());
         actualAttachments.forEach (actual -> {

@@ -3,7 +3,6 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.task;
 
-import static java.lang.ClassLoader.getSystemResource;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.openqa.selenium.Keys.ENTER;
@@ -86,7 +85,7 @@ public class Task extends CoraPage {
 
     public void attachedFiles (String... files) {
         asList (files).forEach (f -> {
-            waitForElement ("#taskFiles").sendKeys (getSystemResource (f).getPath ());
+            uploadFile ("#taskFiles", f);
         });
     }
 

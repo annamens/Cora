@@ -7,14 +7,13 @@ import static java.lang.String.join;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-import com.seleniumfy.test.utils.BasePage;
+import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Alerts.AlertOptions;
+import com.adaptivebiotech.cora.ui.CoraPage;
 
-public class OrderAlert extends BasePage {
+public class OrderAlert extends CoraPage {
 
-    private final String alertModal       = ".modal-content";
-    private final String alertTitle       = ".modal-title";
     private final String alertType        = "[name='select-alert-type'] select";
-    private final String closeBtn         = "//button[text()='Close']";
     private final String activeTab        = "//span[contains(text(), 'ACTIVE')]";
     private final String resolveTab       = "//span[contains(text(), 'RESOLVED')]";
     private final String activeAlerts     = ".panel.active-alerts";
@@ -28,25 +27,59 @@ public class OrderAlert extends BasePage {
     private final String addAlertNote     = String.join (" ", panelOpen, ".add-alert-type textarea");
 
     public void isCorrectPage () {
-        assertTrue (waitUntilVisible (alertModal));
-        assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order"));
+        assertTrue (isTextInElement (popupTitle, "Alerts for Order"));
     }
 
     public void isCorrectPage (String orderNo) {
         isCorrectPage ();
-        assertTrue (isTextInElement (alertModal + " " + alertTitle, "Alerts for Order #" + orderNo));
+        assertTrue (isTextInElement (popupTitle, "Alerts for Order #" + orderNo));
+    }
+
+    public void clickNewAlert () {
+        assertTrue (click (".new-alert"));
+    }
+
+    public void addAlert (AlertOptions alert) {
+        clickNewAlert ();
+        assertTrue (clickAndSelectText ("[name='select-alert-type'] select", alert.getLabel ()));
+        pageLoading ();
+    }
+
+    public void clickSaveNewAlert () {
+        assertTrue (click (saveBtn));
+    }
+
+    public void expandTopAlert () {
+        assertTrue (click (".panel-title .alert-expand"));
+        pageLoading ();
+    }
+
+    public void expandEmailsFromTopAlert () {
+        assertTrue (click (".edit-recipients [ng-reflect-klass]"));
+        pageLoading ();
+    }
+
+    public void resolveTopAlert () {
+        clickNewAlert ();
+        assertTrue (click (".pull-right .resolve-alert-button"));
+        clickCloseButton ();
+    }
+
+    public boolean isAnyEmailBoxChecked () {
+        for (WebElement i : waitForElements (".recipients-list-box [ng-reflect-model]")) {
+            if (i.isSelected ()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isAlertModalPresent () {
-        return isElementPresent (alertModal);
+        return isElementPresent (popupTitle);
     }
 
     public void selectAlertType (String alertName) {
         assertTrue (clickAndSelectText (alertType, alertName));
-    }
-
-    public void clickClose () {
-        assertTrue (click (closeBtn));
     }
 
     public void clickActiveTab () {

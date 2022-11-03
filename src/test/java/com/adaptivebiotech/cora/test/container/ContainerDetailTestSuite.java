@@ -30,6 +30,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
     private OrdersList               ordersList   = new OrdersList ();
     private Detail                   detail       = new Detail ();
     private MyCustody                myCustody    = new MyCustody ();
+    private History                  history      = new History ();
     private ThreadLocal <Containers> containers   = new ThreadLocal <> ();
 
     @BeforeMethod (alwaysRun = true)
@@ -51,8 +52,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
      * @sdlc.requirements 126.ContainerDetailsPage
      */
     public void extensionCheck () {
-        ordersList.gotoContainerDetail (containers.get ().list.get (0));
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (containers.get ().list.get (0));
         detail.uploadAttachments ("attachment.tiff");
         assertEquals (detail.getFileExtErr (), fileexterror);
     }
@@ -63,8 +63,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
      * @sdlc.requirements 126.ContainerDetailsPage
      */
     public void happyPath () {
-        ordersList.gotoContainerDetail (containers.get ().list.get (0));
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (containers.get ().list.get (0));
 
         String[] files = new String[] { "attachment.gif", "attachment.jpg", "attachment.pdf", "attachment.png" };
         detail.uploadAttachments (files);
@@ -75,13 +74,11 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
      * @sdlc.requirements 126.ContainerDetailsPage
      */
     public void history () {
-        ordersList.gotoMyCustody ();
-        myCustody.isCorrectPage ();
+        myCustody.gotoMyCustody ();
 
         // test: history section of container detail
         Container testContainer = containers.get ().list.get (0);
-        myCustody.gotoContainerDetail (testContainer);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (testContainer);
         List <String> detailHistories1 = detail.getDetailHistory ();
         assertTrue (detailHistories1.get (0).contains ("Created by " + coraTestUser));
         assertTrue (detailHistories1.get (1).contains ("Last modified by " + coraTestUser));
@@ -92,20 +89,16 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         activity1.activityBy = coraTestUser;
 
         // test: history section of history view
-        detail.gotoContainerHistory (testContainer);
-        History history = new History ();
-        history.isCorrectPage ();
+        history.gotoContainerHistory (testContainer);
         List <ContainerHistory> acivities = history.getActivities ();
         assertEquals (acivities, asList (activity1));
 
         // test: change modified time
-        history.gotoMyCustody ();
-        myCustody.isCorrectPage ();
+        myCustody.gotoMyCustody ();
         myCustody.moveToFreezer (testContainer, freezerAB018078);
 
         // test: check history section of container detail one more time
-        myCustody.gotoContainerDetail (testContainer);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (testContainer);
         List <String> detailHistories2 = detail.getDetailHistory ();
         assertTrue (detailHistories2.get (1).contains ("Last modified by " + coraTestUser));
         ContainerHistory activity2 = new ContainerHistory ();
@@ -115,8 +108,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
         activity2.activityBy = coraTestUser;
 
         // test: check history section of history view one more time
-        detail.gotoContainerHistory (testContainer);
-        history.isCorrectPage ();
+        history.gotoContainerHistory (testContainer);
         acivities = history.getActivities ();
         assertEquals (acivities, asList (activity2, activity1));
     }

@@ -42,8 +42,6 @@ public class ContainersList extends CoraPage {
     private final String   bulkComment            = "input[placeholder='Add Comment']";
     private final String   selectAllCheckbox      = ".containers-list th [type='checkbox']";
     private final String   bulkMoveActionDropdown = ".bulk-move-container select";
-    private final String   bulkMoveSuccess        = ".toast-success";
-    private final String   bulkMoveError          = ".toast-error";
 
     public ContainersList () {
         staticNavBarHeight = 90;
@@ -52,7 +50,6 @@ public class ContainersList extends CoraPage {
     @Override
     public void isCorrectPage () {
         assertTrue (waitUntilVisible ("[uisref='main.containers.list']"));
-        assertTrue (waitUntilVisible ("[uisref='main.containers.custody']"));
     }
 
     public static enum Category {
@@ -172,6 +169,12 @@ public class ContainersList extends CoraPage {
         moveModal ();
     }
 
+    // click on (X) icon
+    public void closePopup () {
+        assertTrue (click ("[ng-click='ctrl.cancel()'] .glyphicon-remove"));
+        moduleLoading ();
+    }
+
     public void takeCustody (Container container) {
         String msg = format ("%s %s is in your custody", container.containerType.label, container.containerNumber);
         scan (container);
@@ -228,7 +231,7 @@ public class ContainersList extends CoraPage {
                 c.location = String.join (" : ", loc, c.containerType.label, c.location.replaceFirst (regex, "$2"));
             });
 
-        clickClose ();
+        clickCloseButton ();
         moduleLoading ();
         pageLoading ();
     }
@@ -337,7 +340,7 @@ public class ContainersList extends CoraPage {
         assertTrue (isTextInElement (pass, success));
         assertTrue (noSuchElementPresent (depleted));
         assertTrue (noSuchElementPresent (comments));
-        clickClose ();
+        clickCloseButton ();
         child.location = coraTestUser;
     }
 
@@ -356,7 +359,7 @@ public class ContainersList extends CoraPage {
         assertTrue (setText (comments, format ("verifying - %s", child.containerNumber)));
         scanToVerify (child);
         isVerified (child);
-        clickClose ();
+        clickCloseButton ();
     }
 
     public void scanToVerify (Container child) {
@@ -381,11 +384,6 @@ public class ContainersList extends CoraPage {
 
     private void clickMove () {
         assertTrue (click (moveBtn));
-    }
-
-    public void clickClose () {
-        assertTrue (click ("[ng-click='ctrl.ok()']"));
-        moduleLoading ();
     }
 
     private void moveModal () {
@@ -439,15 +437,15 @@ public class ContainersList extends CoraPage {
     }
 
     public boolean isBulkMoveSuccessMessageDisplayed () {
-        return isElementVisible (bulkMoveSuccess);
+        return isElementVisible (toastSuccess);
     }
 
     public String getBulkMoveErrorMessage () {
-        return getText (bulkMoveError);
+        return getText (toastError);
     }
 
     public void clickSuccessMessageLink () {
-        assertTrue (click (bulkMoveSuccess + " a"));
+        assertTrue (click (toastSuccess + " a"));
     }
 
     public boolean isFreezerDropdownEnabled () {
@@ -508,7 +506,7 @@ public class ContainersList extends CoraPage {
     public void waitForBulkMoveComplete () {
         assertTrue (waitForElementInvisible (".highlighted-blue"));
         transactionInProgress ();
-        assertTrue (waitUntilVisible ("#toast-container"));
+        assertTrue (waitUntilVisible (toastContainer));
     }
 
     private boolean containerRowsPresent () {
