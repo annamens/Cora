@@ -136,6 +136,7 @@ public class BillingTestSuite extends BillingTestBase {
     /**
      * @sdlc.requirements 173.Medicare.required, SR-1516
      */
+    @Test (groups = "smoke")
     public void medicare_abn_not_required () {
         Patient patient = newMedicarePatient ();
         patient.race = null;

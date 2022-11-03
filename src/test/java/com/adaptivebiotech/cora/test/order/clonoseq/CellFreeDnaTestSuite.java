@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequired;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_trial;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
@@ -46,7 +47,6 @@ import java.util.Map;
 import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
@@ -56,6 +56,7 @@ import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
+import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
 import com.adaptivebiotech.cora.ui.patient.PatientOrderHistory;
@@ -74,6 +75,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
 
     private Login                  login                   = new Login ();
     private OrdersList             ordersList              = new OrdersList ();
+    private OrderStatus            orderStatus             = new OrderStatus ();
     private NewOrderClonoSeq       newOrderClonoSeq        = new NewOrderClonoSeq ();
     private NewShipment            shipment                = new NewShipment ();
     private Accession              accession               = new Accession ();
@@ -499,7 +501,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-12635:R4, SR-11721:R4
      */
-    @Test (groups = "irish-wolfhound")
+    @Test (groups = { "irish-wolfhound", "smoke" })
     public void multipleMajorDiscrepancyResolvedAfterLabelVerify () {
         skipTestIfFeatureFlagOff (cfDna.get ());
         skipTestIfFeatureFlagOff (specimenActivation.get ());
@@ -847,11 +849,11 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     }
 
     /**
-     * NOTE: SR-T4291
+     * NOTE: SR-T4291, SR-T4372
      * 
-     * @sdlc.requirements SR-11341
+     * @sdlc.requirements SR-11341, SR-13576
      */
-    @Test (groups = "irish-wolfhound")
+    @Test (groups = { "irish-wolfhound", "jack-russell" })
     public void verifyCancelStreckOrderWithoutFastLane () {
         login.doLogin ();
         ordersList.isCorrectPage ();
@@ -873,7 +875,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         // Verify New Cancel Action Non-Default Option
         newOrderClonoSeq.cancelStreckOrder (NoActionRequired);
         testLog ("Cancel Action dropdown set to " + NoActionRequired.label);
-        assertEquals (newOrderClonoSeq.getOrderStatus (), Orders.OrderStatus.Cancelled);
+        assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
+        assertEquals (orderStatus.getOrderTestStatus (), Cancelled);
         testLog ("Order Status is Cancelled");
     }
 

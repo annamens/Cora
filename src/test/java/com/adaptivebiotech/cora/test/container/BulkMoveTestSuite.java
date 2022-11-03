@@ -111,6 +111,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     /**
      * @sdlc.requirements SR-3229:R2, SR-3229:R3, SR-3229:R4, SR-3229:R6, SR-3229:R7, SR-3229:R11
      */
+    @Test (groups = "smoke")
     public void containersListHappyPath () {
         Containers containers = setupTwoPlates ();
         containersToDeactivate.set (containers);

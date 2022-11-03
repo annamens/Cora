@@ -100,6 +100,7 @@ public class ShipmentPriorityFlagTestSuite extends CoraBaseBrowser {
      * 
      * @sdlc.requirements SR-11342, SR-12995
      */
+    @Test (groups = "smoke")
     public void priorityFlagStreckOrder () {
         Specimen specimenDto = bloodSpecimen ();
         specimenDto.compartment = CellFree;

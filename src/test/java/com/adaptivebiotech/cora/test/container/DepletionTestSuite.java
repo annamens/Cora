@@ -51,6 +51,7 @@ public class DepletionTestSuite extends ContainerTestBase {
     /**
      * @sdlc.requirements 126.MoveMetadata
      */
+    @Test (groups = "smoke")
     public void move_primary_to_freezer () {
 
         // test: move primary to freezer, set depletion and comment
