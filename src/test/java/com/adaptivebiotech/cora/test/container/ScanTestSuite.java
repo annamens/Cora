@@ -106,6 +106,7 @@ public class ScanTestSuite extends ContainerTestBase {
     /**
      * @sdlc.requirements 126.ContainersListValidScan
      */
+    @Test (groups = "smoke")
     public void my_custody_view () {
         myCustody.gotoMyCustody ();
 

@@ -111,6 +111,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     /**
      * @sdlc.requirements SR-3229:R2, SR-3229:R3, SR-3229:R4, SR-3229:R6, SR-3229:R7, SR-3229:R11
      */
+    @Test (groups = "smoke")
     public void containersListHappyPath () {
         Containers containers = setupTwoPlates ();
         containersToDeactivate.set (containers);
@@ -123,6 +124,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
 
         containersList.clickSuccessMessageLink ();
+        containersList.isCorrectPage ();
         Containers parsedContainers = containersList.getContainers ();
         verifySuccessMessageLink (parsedContainers);
         testLog ("SR-3229:R2: User was able to add custom comment to the Bulk Move to Freezer action");

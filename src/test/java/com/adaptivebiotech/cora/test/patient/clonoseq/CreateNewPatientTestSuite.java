@@ -45,7 +45,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-9302
      */
-    @Test (groups = "entlebucher")
+    @Test (groups = { "entlebucher", "smoke" })
     public void verifyPatientBirthdateValidation () {
         newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
         newOrderClonoSeq.isCorrectPage ();

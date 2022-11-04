@@ -108,7 +108,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
         ReportRender report = parseReportData (reportJson);
         assertEquals (report.patientInfo.reportType, tracking);
-        assertEquals (report.patientInfo.reportSpecimenCompartment, Cellular.label);
+        assertEquals (report.patientInfo.reportSpecimenCompartment, Cellular);
         assertEquals (report.patientInfo.reportLocus, TCRB);
         assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimen.specimenNumber);
         report.data.resultClones.forEach (c -> assertEquals (c.locus, TCRB));
@@ -154,7 +154,7 @@ public class ReportTcellLiftedTestSuite extends ReportTestBase {
 
         ReportRender report = parseReportData (reportJson);
         assertEquals (report.patientInfo.reportType, tracking);
-        assertEquals (report.patientInfo.reportSpecimenCompartment, Cellular.label);
+        assertEquals (report.patientInfo.reportSpecimenCompartment, Cellular);
         assertEquals (report.patientInfo.reportLocus, TCRG);
         assertEquals (report.patientInfo.reportSpecimenId, orderTest.specimen.specimenNumber);
         report.data.resultClones.forEach (c -> assertEquals (c.locus, TCRG));

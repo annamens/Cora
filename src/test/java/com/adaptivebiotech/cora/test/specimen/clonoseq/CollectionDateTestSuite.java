@@ -136,6 +136,7 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
      * 
      * @sdlc.requirements SR-4420:R2
      */
+    @Test (groups = "smoke")
     public void collectionDatePatientDOB () {
         Specimen specimenDto = bloodSpecimen ();
         specimenDto.collectionDate = genLocalDate (-2);

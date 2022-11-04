@@ -62,6 +62,7 @@ public class ContainerDetailTestSuite extends ContainerTestBase {
      * 
      * @sdlc.requirements 126.ContainerDetailsPage
      */
+    @Test (groups = "smoke")
     public void happyPath () {
         detail.gotoContainerDetail (containers.get ().list.get (0));
 

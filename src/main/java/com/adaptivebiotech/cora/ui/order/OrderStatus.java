@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
@@ -65,6 +66,17 @@ public class OrderStatus extends OrderHeader {
 
     public String getTestName () {
         return getText ("[ng-bind='::orderTest.testName']");
+    }
+
+    // Active order status has different locator than OrderHeader
+    @Override
+    public Orders.OrderStatus getOrderStatus () {
+        return Orders.OrderStatus.valueOf (getText ("[ng-bind='ctrl.orderEntry.order.status']"));
+    }
+
+    // Returns order TEST status, different locator from order status in header
+    public Orders.OrderStatus getOrderTestStatus () {
+        return Orders.OrderStatus.valueOf (getText ("[ng-bind='::orderTest.status']"));
     }
 
     // aka sample name

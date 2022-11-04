@@ -68,7 +68,7 @@ public class NoResultAvailableTestSuite extends ReportTestBase {
      * 
      * @sdlc.requirements SR-10414:R3
      */
-    @Test (groups = "irish-wolfhound")
+    @Test (groups = { "irish-wolfhound", "smoke" })
     public void verify_clia_eos_report () {
         Patient patient = scenarioBuilderPatient ();
         Diagnostic diagnostic = buildCdxOrder (patient,

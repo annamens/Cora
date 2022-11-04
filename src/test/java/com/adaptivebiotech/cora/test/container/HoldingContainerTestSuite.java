@@ -81,6 +81,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
     /**
      * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
+    @Test (groups = "smoke")
     public void tube () {
         Container child = coraApi.addContainers (Tube, null, null, 1).list.get (0);
         child.depleted = true;

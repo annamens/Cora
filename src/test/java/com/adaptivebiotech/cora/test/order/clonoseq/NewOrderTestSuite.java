@@ -23,6 +23,7 @@ import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
+import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 
 @Test (groups = "regression")
@@ -30,6 +31,7 @@ public class NewOrderTestSuite extends NewOrderTestBase {
 
     private Login            login            = new Login ();
     private OrdersList       ordersList       = new OrdersList ();
+    private OrderStatus      orderStatus      = new OrderStatus ();
     private NewOrderClonoSeq newOrderClonoSeq = new NewOrderClonoSeq ();
 
     @BeforeMethod (alwaysRun = true)
@@ -64,11 +66,11 @@ public class NewOrderTestSuite extends NewOrderTestBase {
     }
 
     /**
-     * NOTE: SR-T4291
+     * NOTE: SR-T4291, SR-T4372
      * 
-     * @sdlc.requirements SR-11341
+     * @sdlc.requirements SR-11341, SR-13576
      */
-    @Test (groups = "irish-wolfhound")
+    @Test (groups = { "irish-wolfhound", "jack-russell", "smoke" })
     public void verifyCancelOrder () {
         String[] icdCodes = { "V00.218S" };
         Assay assayTest = MRD_BCell2_CLIA;
@@ -87,6 +89,7 @@ public class NewOrderTestSuite extends NewOrderTestBase {
         testLog ("Order 1: Cancel Action dropdown not visible");
         newOrderClonoSeq.cancelOrder ();
         assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
+        assertEquals (orderStatus.getOrderTestStatus (), Cancelled);
         testLog ("Order 1: Order Status is Cancelled");
     }
 }

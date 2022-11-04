@@ -42,7 +42,7 @@ public class ShipmentTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-9174
      */
-    @Test (groups = "entlebucher")
+    @Test (groups = { "entlebucher", "smoke" })
     public void diagnosticShipment () {
         login.doLogin ();
         ordersList.isCorrectPage ();
