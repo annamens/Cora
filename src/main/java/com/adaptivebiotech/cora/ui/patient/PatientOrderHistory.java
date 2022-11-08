@@ -7,6 +7,7 @@ import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Orders.Order;
+import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
 
 /**
  * @author jpatel
@@ -14,7 +15,8 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
  */
 public class PatientOrderHistory extends PatientHeader {
 
-    private final String icon = "//tr[td='%s']/td//*[contains (@src, '%s')]";
+    private final String icon           = "//tr[td='%s']/td//*[contains (@src, '%s')]";
+    private final String orderRowStatus = "//*[*[text()='%s']]/following-sibling::td";
 
     public PatientOrderHistory () {
         staticNavBarHeight = 200;
@@ -36,6 +38,20 @@ public class PatientOrderHistory extends PatientHeader {
 
     public void clickAdditionalCommentsIcon (Order order) {
         assertTrue (click (format (icon, order.orderNumber, "ReportPDFAdditionalComments.png")));
+    }
+
+    public boolean statusHeadersPresent () {
+        return isTextInElement ("thead th:nth-child(9)",
+                                "Test Status") && isTextInElement ("thead th:nth-child(10)",
+                                                                   "Order Status");
+    }
+
+    public OrderStatus getTestStatus (Order order) {
+        return OrderStatus.valueOf (getText (format (orderRowStatus + "[8]//span", order.orderNumber)));
+    }
+
+    public OrderStatus getOrderStatus (Order order) {
+        return OrderStatus.valueOf (getText (format (orderRowStatus + "[9]", order.orderNumber)));
     }
 
     public String getTooltipText () {
