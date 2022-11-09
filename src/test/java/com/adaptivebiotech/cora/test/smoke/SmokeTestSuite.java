@@ -101,8 +101,8 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         login.doLogin (coraCSAdminTestUser, coraCSAdminTestPass);
         oList.isCorrectTopNavRow1 ("svc_cora_test_cs_admin preprod");
         oList.isCorrectTopNavRow2 ();
-        testLog (join ("\n",
-                       "header nav contained the elements",
+        testLog (join ("\n\t",
+                       "header nav contained these elements:",
                        "CORA",
                        "+ New",
                        "Orders",
@@ -129,8 +129,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         oList.clickNew ();
         assertEquals (oList.getNewPopupMenu (), menu);
         oList.clickNew ();
-        testLog ("dropdown menu displayed the following options:");
-        testLog (join ("\n", menu));
+        testLog (join ("\n\t", "dropdown menu displayed the following options:", join ("\n\t", menu)));
 
         oList.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
@@ -222,8 +221,9 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         pList.clickUtilities ();
         assertEquals (pList.getUtilitiesMenu (), utilities);
         pList.clickUtilities ();
-        testLog ("Utilities dropdown menu was displayed and contained these options:");
-        testLog (join ("\n", utilities));
+        testLog (join ("\n\t",
+                       "Utilities dropdown menu was displayed and contained these options:",
+                       join ("\n\t", utilities)));
 
         pList.selectAuditTool ();
         AuditTool auditTool = new AuditTool ();
