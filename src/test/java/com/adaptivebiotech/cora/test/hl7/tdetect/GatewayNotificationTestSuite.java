@@ -156,10 +156,8 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         login.doLogin ();
         ordersList.isCorrectPage ();
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, DxReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (orderTest.orderId);
-        orderDetail.isCorrectPage ();
+        orderDetail.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.clickReportTab (LYME_DX);
         report.isCorrectPage ();
         report.releaseReport (LYME_DX, Pass);

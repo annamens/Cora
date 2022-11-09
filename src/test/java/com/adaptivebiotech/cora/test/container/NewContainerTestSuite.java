@@ -94,7 +94,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         Containers containers = addContainer.getContainers ();
 
         // test: verify we have 2 containers in my custody
-        addContainer.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         Containers myContainers = new Containers ();
         myContainers.list = new ArrayList <> ();
         for (Container c : myCustody.getContainers ().list)
@@ -118,7 +118,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         containers = addContainer.getContainers ();
 
         // test: verify we have 1 containers in my custody (duplicate names & incompatible freezer)
-        addContainer.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         myContainers = new Containers ();
         myContainers.list = new ArrayList <> ();
         for (Container c : myCustody.getContainers ().list)
@@ -177,7 +177,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
 
         // test: verify we have 1 containers in my custody
 
-        addContainer.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         myContainers = new Containers ();
         myContainers.list = new ArrayList <> ();
         myContainers.list.add (myCustody.getContainers ().findContainerByNumber (c2));
@@ -224,7 +224,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         Containers newContainers = addContainer.getContainers ();
         String newContainerNo = newContainers.list.get (0).containerNumber;
         assertEquals (newContainers.list.size (), 1);
-        assertTrue (newContainerNo.matches ("CO-\\d{7}"));
+        assertTrue (newContainerNo.matches (containerNumberPattern));
         Logging.testLog ("STEP 3.4 - Adaptive Container ID is populated");
 
         addContainer.clickGenerateContainerLabels ();
@@ -248,7 +248,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertTrue (generateContainerLabels.isCopyToClipboardVisible ());
         Logging.testLog ("STEP 5 - Validate Copy to Clipboard");
 
-        generateContainerLabels.clickClose ();
+        generateContainerLabels.clickCloseButton ();
         addContainer.clickContainerNo (newContainerNo);
         containerDetails.isCorrectPage ();
         Logging.testLog ("STEP 6.1 - Container details page for Container1 is displayed");
@@ -268,7 +268,7 @@ public class NewContainerTestSuite extends ContainerTestBase {
         assertTrue (historyRows.get (1).endsWith ("Last modified by " + coraTestUser));
         Logging.testLog ("STEP 6.3 - verify Container history rows");
 
-        containerDetails.gotoHistory ();
+        containerDetails.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> containerHistory = history.getHistories ();
         assertEquals (containerHistory.size (), 1);

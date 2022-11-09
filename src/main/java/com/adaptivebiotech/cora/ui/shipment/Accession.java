@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
@@ -11,7 +12,10 @@ import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.openqa.selenium.support.Color;
 import com.adaptivebiotech.cora.dto.Element;
+import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
+import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyAssignee;
 import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyType;
 
 /**
@@ -43,9 +47,9 @@ public class Accession extends ShipmentHeader {
         pageLoading ();
     }
 
-    @Override
     public void gotoAccession (UUID shipmentId) {
-        super.gotoAccession (shipmentId);
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=accession"));
+        pageLoading ();
         isCorrectPage ();
     }
 
@@ -78,7 +82,8 @@ public class Accession extends ShipmentHeader {
     public void clickIntakeComplete () {
         assertTrue (click ("[data-ng-click*='intake-complete']"));
         assertTrue (isTextInElement (popupTitle, "Intake Complete Confirmation"));
-        clickPopupOK ();
+        assertTrue (click ("//*[text()='Intake Complete']"));
+        moduleLoading ();
         assertTrue (isTextInElement (shipmentStatus, "Intake Complete"));
     }
 
@@ -97,7 +102,8 @@ public class Accession extends ShipmentHeader {
     public void clickPass () {
         assertTrue (click ("[ng-click='ctrl.approveSpecimen(true)']"));
         assertTrue (isTextInElement (popupTitle, "Specimen Approval Confirmation"));
-        clickPopupOK ();
+        assertTrue (click ("//*[text()='PASS Specimen']"));
+        moduleLoading ();
         assertTrue (isTextInElement (shipmentStatus, "Specimen Approved (PASS)"));
     }
 
@@ -106,11 +112,20 @@ public class Accession extends ShipmentHeader {
         assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
     }
 
+    public void clickLabelingCompleteButton () {
+        assertTrue (click ("//*[text()='Labeling Complete']"));
+    }
+
     public void clickLabelingComplete (int containerNo) {
         String locator = format ("(//*[@ng-click='ctrl.setLabelingComplete(container)'])[%s]", containerNo);
         assertTrue (click (locator));
         assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
-        clickPopupOK ();
+        clickLabelingCompleteButton ();
+        moduleLoading ();
+    }
+
+    public void clickLabelVerificationCompleteButton () {
+        assertTrue (click ("//*[text()='Label Verification Complete']"));
     }
 
     public void clickLabelVerificationComplete () {
@@ -122,7 +137,8 @@ public class Accession extends ShipmentHeader {
         String locator = format ("(//*[@ng-click='ctrl.setLabelVerificationComplete(container)'])[%s]", containerNo);
         assertTrue (click (locator));
         assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
-        clickPopupOK ();
+        clickLabelVerificationCompleteButton ();
+        moduleLoading ();
     }
 
     public void clickPassAllDocumentations () {
@@ -173,6 +189,40 @@ public class Accession extends ShipmentHeader {
         assertTrue (isTextInElement (popupTitle, "Discrepancy"));
     }
 
+    public void addDiscrepancy (Discrepancy discrepancy, String notes, DiscrepancyAssignee assignee) {
+        String cssAdd = "input[placeholder='Type keyword or quick code here']";
+        assertTrue (click (cssAdd));
+
+        String menuItemFmtString = "//*[@class='discrepancies-options']/ul/li[contains(text(),'%s')]";
+        String menuItem = String.format (menuItemFmtString, discrepancy.text);
+
+        assertTrue (click (menuItem));
+        String cssTextArea = "[ng-repeat='discrepancy in ctrl.discrepancies'] textarea";
+        assertTrue (setText (cssTextArea, notes));
+        String cssAssignee = "[ng-repeat='discrepancy in ctrl.discrepancies'] select";
+        assertTrue (clickAndSelectText (cssAssignee, assignee.text));
+    }
+
+    public Element getDiscrepancyHoldType () {
+        Element el = new Element ();
+        String css = "[ng-class='ctrl.discrepancyTypeClass']";
+        el.text = getText (css);
+        el.color = Color.fromString (getCssValue (css, "background-color")).asHex ();
+        return el;
+    }
+
+    public void clickDiscrepancySave () {
+        String cssSave = "[ng-click='ctrl.save()']";
+        assertTrue (click (cssSave));
+        transactionInProgress ();
+    }
+
+    public void createDiscrepancy (Discrepancy discrepancy, String notes, DiscrepancyAssignee assignee) {
+        clickAddContainerSpecimenDiscrepancy ();
+        addDiscrepancy (discrepancy, notes, assignee);
+        clickDiscrepancySave ();
+    }
+
     public boolean specimenApprovalPassEnabled () {
         return waitForElementVisible (specimenApprovalPass).isEnabled ();
     }
@@ -184,7 +234,7 @@ public class Accession extends ShipmentHeader {
     public void clickAccessionComplete () {
         String accessionComplete = "[data-ng-click='ctrl.$scope.$broadcast(\\'research-accession-complete\\')']";
         assertTrue (click (accessionComplete));
-        clickPopupOK ();
+        assertTrue (click ("//button[text()='Complete Accession']"));
     }
 
     public List <String> getSpecimenIds () {

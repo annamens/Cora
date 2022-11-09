@@ -22,6 +22,14 @@ public class PdfUtil {
 
     private static final PDFUtil pdfUtil = new PDFUtil ();
 
+    public static int getPageCount (String pdfFileLocation) {
+        try {
+            return pdfUtil.getPageCount (pdfFileLocation);
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
     /**
      * Open a pdf file and return the content as text
      * 

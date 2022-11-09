@@ -4,7 +4,7 @@
 package com.adaptivebiotech.cora.ui.container;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.getContainerType;
-import static java.lang.ClassLoader.getSystemResource;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
@@ -30,7 +30,13 @@ public class Detail extends CoraPage {
         pageLoading ();
     }
 
-    public void gotoHistory () {
+    public void gotoContainerDetail (Container container) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/container/details/" + container.id));
+        pageLoading ();
+        isCorrectPage ();
+    }
+
+    public void clickHistory () {
         assertTrue (click ("[ui-sref*='main.container.details.history']"));
         pageLoading ();
     }
@@ -84,7 +90,7 @@ public class Detail extends CoraPage {
 
     public void uploadAttachments (String... files) {
         for (String file : files) {
-            waitForElement ("input[ngf-select*='ctrl.onUpload']").sendKeys (getSystemResource (file).getPath ());
+            uploadFile ("input[ngf-select*='ctrl.onUpload']", file);
             transactionInProgress ();
         }
     }
@@ -106,7 +112,7 @@ public class Detail extends CoraPage {
     public void deleteAttachment (int idx) {
         assertTrue (click (format (attachment, idx) + " .glyphicon-trash"));
         assertTrue (isTextInElement (popupTitle, "Delete Attachment"));
-        clickPopupOK ();
+        assertTrue (click ("//button[text()='Yes, delete attachment']"));
     }
 
     public List <String> getDetailHistory () {

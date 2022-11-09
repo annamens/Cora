@@ -95,7 +95,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     public void myCustodyBulkMoveUI () {
         Containers containers = setupTwoPlates ();
         containersToDeactivate.set (containers);
-        containersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         myCustody.clickBulkMoveContainers ();
         assertFalse (myCustody.scanFieldDisplayed ());
         verifyContainerSelection (containers);
@@ -111,6 +111,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     /**
      * @sdlc.requirements SR-3229:R2, SR-3229:R3, SR-3229:R4, SR-3229:R6, SR-3229:R7, SR-3229:R11
      */
+    @Test (groups = "smoke")
     public void containersListHappyPath () {
         Containers containers = setupTwoPlates ();
         containersToDeactivate.set (containers);
@@ -123,6 +124,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         testLog ("SR-3229:R6: User was presented with a success message after bulk move completion");
 
         containersList.clickSuccessMessageLink ();
+        containersList.isCorrectPage ();
         Containers parsedContainers = containersList.getContainers ();
         verifySuccessMessageLink (parsedContainers);
         testLog ("SR-3229:R2: User was able to add custom comment to the Bulk Move to Freezer action");
@@ -172,7 +174,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     public void myCustodyHappyPath () {
         Containers containers = setupTwoPlates ();
         containersToDeactivate.set (containers);
-        containersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         String moveToFreezerComment = randomWords (10);
         myCustody.bulkMoveToFreezer (containers, catchAllFreezer, moveToFreezerComment);
         myCustody.waitForBulkMoveComplete ();
@@ -266,12 +268,11 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     }
 
     private void verifyMoveToFreezer (Container containerFromList, Container expectedFreezer, String expectedComment) {
-        ordersList.gotoContainerDetail (containerFromList);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (containerFromList);
         Container containerFromDetails = detail.parsePrimaryDetail ();
         assertEquals (containerFromDetails.location, containerFromList.location);
         assertTrue (containerFromDetails.location.contains (expectedFreezer.location));
-        detail.gotoHistory ();
+        detail.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         containerFromList.comment = expectedComment;
@@ -281,13 +282,12 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     }
 
     private void verifyMoveToCustody (Container containerFromList, String expectedComment) {
-        ordersList.gotoContainerDetail (containerFromList);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (containerFromList);
         Container containerFromDetails = detail.parsePrimaryDetail ();
         assertEquals (containerFromDetails.location, containerFromList.location);
         String expectedLocation = join (" : ", coraTestUser, containerFromList.containerNumber);
         assertEquals (containerFromDetails.location, expectedLocation);
-        detail.gotoHistory ();
+        detail.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         containerFromList.comment = expectedComment;
@@ -301,7 +301,7 @@ public class BulkMoveTestSuite extends ContainerTestBase {
         info ("bulk move error message: " + error);
         Pattern failedToMovePattern = Pattern.compile ("Failed to move containers .* to Freezer " + Pattern.quote (invalidFreezer.name));
         assertTrue (failedToMovePattern.matcher (error).find ());
-        Set <String> actualContainerNamesFailed = getSubstringsFromRegex ("CO-\\d{7}", error);
+        Set <String> actualContainerNamesFailed = getSubstringsFromRegex (containerNumberPattern, error);
         Set <String> expectedContainerNamesFailed = getContainerIDs (expectedContainersFailed).stream ()
                                                                                               .collect (toSet ());
         assertEquals (actualContainerNamesFailed, expectedContainerNamesFailed);
@@ -324,11 +324,10 @@ public class BulkMoveTestSuite extends ContainerTestBase {
     }
 
     private void verifyStillInCustody (Container container) {
-        ordersList.gotoContainerDetail (container);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (container);
         Container containerFromDetails = detail.parsePrimaryDetail ();
         assertEquals (containerFromDetails.location, String.join (" : ", coraTestUser, container.containerNumber));
-        detail.gotoHistory ();
+        detail.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         assertEquals (histories.size (), 1);

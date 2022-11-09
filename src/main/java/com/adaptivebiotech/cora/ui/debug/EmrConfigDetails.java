@@ -17,7 +17,6 @@ import org.openqa.selenium.WebElement;
 public class EmrConfigDetails extends CreateEmrConfig {
 
     private final String clone            = "//button[text()='Clone']";
-    private final String overlayMessage   = "#toast-container .toast-success";
     private final String attachedAccounts = "//*[text()='Attached Accounts']/..//span[not(contains(@class, 'glyphicon'))]";
 
     @Override
@@ -40,10 +39,10 @@ public class EmrConfigDetails extends CreateEmrConfig {
     }
 
     public List <String> getOverlayMessages (int numOfMessages) {
-        List <String> overlayMsg = waitForNumberOfElementsToBe (locateBy (overlayMessage), numOfMessages).stream ()
-                                                                                                         .map (el -> el.getText ())
-                                                                                                         .collect (toList ());
-        waitForElementInvisible (overlayMessage);
+        List <String> overlayMsg = waitForNumberOfElementsToBe (locateBy (toastSuccess), numOfMessages).stream ()
+                                                                                                       .map (el -> el.getText ())
+                                                                                                       .collect (toList ());
+        waitForElementInvisible (toastSuccess);
         return overlayMsg;
     }
 

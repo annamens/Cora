@@ -22,6 +22,7 @@ import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.PageHelper.Compartment.Cellular;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxAnalysis;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxContamination;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.DxReport;
@@ -34,7 +35,6 @@ import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_
 import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.test.utils.TestHelper.randomString;
 import static com.adaptivebiotech.test.utils.TestHelper.randomWords;
-import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.join;
 import static java.util.Locale.US;
 import static org.apache.commons.text.WordUtils.capitalize;
@@ -83,14 +83,14 @@ public class TDetectReportTestSuite extends ReportTestBase {
     private TaskDetail           taskDetail          = new TaskDetail ();
     private OrderStatus          orderStatus         = new OrderStatus ();
     private ThreadLocal <String> downloadDir         = new ThreadLocal <> ();
+    private final String         reportData          = "reportData.json";
     private final String         todaysDate          = genDate (0, formatDt1, pstZoneId);
     private final String         todaysDateDash      = convertDateFormat (todaysDate, "MM/dd/yyyy", "yyyy-MM-dd");
     private final String         result              = "RESULT";
     private final String         expTestResult       = "NEGATIVE";
-    private final String         reviewedReleasedBy  = "This report was released by an automated process.";
     private final String         approvedBy          = "John Alsobrook, II, PhD, DABCC";
-    private final String         reviewSignStr       = "RELEASED BY DATE & TIME";
-    private final String         approvedSignStr     = "APPROVED BY SIGNATURE DATE";
+    private final String         reviewSignStr       = "RELEASED BY This report was released by an automated process. DATE & TIME " + todaysDate;
+    private final String         approvedSignStr     = "APPROVED BY " + approvedBy + " SIGNATURE John Alsobrook DATE " + todaysDate;
     private final String         reasonCorrectionStr = "REASON FOR CORRECTION";
     private final Assay          assayTest           = COVID19_DX_IVD;
 
@@ -137,7 +137,7 @@ public class TDetectReportTestSuite extends ReportTestBase {
         orderStatus.waitFor (sample, DxContamination, Finished);
         orderStatus.waitFor (sample, DxReport, Finished);
         history.gotoOrderDebug (sample);
-        ReportRender reportDataJson = parseReportDataJson (history.getFileUrl ("reportData.json"));
+        ReportRender reportDataJson = parseReportDataJson (history.getFileLocation (reportData));
         validateReportDataJson (reportDataJson, order, patientId);
         assertFalse (reportDataJson.patientInfo.isCorrected);
         assertNull (reportDataJson.commentInfo.comments);
@@ -162,13 +162,11 @@ public class TDetectReportTestSuite extends ReportTestBase {
         validatePdfContent (fileContent, result);
         validatePdfContent (fileContent, expTestResult);
         validatePdfContent (fileContent, reviewSignStr);
-        validatePdfContent (fileContent, reviewedReleasedBy + " " + todaysDate);
         validatePdfContent (fileContent, approvedSignStr);
-        validatePdfContent (fileContent, approvedBy + " " + todaysDate);
         testLog ("STEP 3 - validate released report");
 
         history.gotoOrderDebug (sample);
-        assertEquals (parseReportDataJson (history.getFileUrl ("reportData.json")), reportDataJson);
+        assertEquals (parseReportDataJson (history.getFileLocation (reportData)), reportDataJson);
         testLog ("STEP 4 - validate released reportData.json file");
 
         history.waitFor (ReportDelivery, Finished);
@@ -210,13 +208,10 @@ public class TDetectReportTestSuite extends ReportTestBase {
         validatePdfContent (correctedReleasePdfContent, result);
         validatePdfContent (correctedReleasePdfContent, expTestResult);
         validatePdfContent (correctedReleasePdfContent, reviewSignStr);
-        validatePdfContent (correctedReleasePdfContent, reviewedReleasedBy + " " + todaysDate);
         validatePdfContent (correctedReleasePdfContent, approvedSignStr);
-        validatePdfContent (correctedReleasePdfContent, approvedBy + " " + todaysDate);
         testLog ("STEP 7.2 - The report pdf Page 2 contains additional values for the following fields as listed below");
 
         taskDetail.gotoTaskDetail (reportTDetect.getCorrectedReportTaskId ());
-        taskDetail.isCorrectPage ();
         assertTrue (taskDetail.taskFiles ().containsKey ("reportData.json"));
 
         reportDataJson = parseReportDataJson (taskDetail.taskFiles ().get ("reportData.json"));
@@ -253,19 +248,17 @@ public class TDetectReportTestSuite extends ReportTestBase {
 
         OrderTest orderTest = diagnostic.findOrderTest (COVID19_DX_IVD);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.failWorkflow (orderTest.sampleName, "testing failure report");
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (DxReport, Awaiting, CLINICAL_QC);
 
         orderDetailTDetect.gotoOrderDetailsPage (orderTest.orderId);
-        orderDetailTDetect.isCorrectPage ();
         orderDetailTDetect.clickReportTab (assayTest);
         reportTDetect.isCorrectPage ();
         reportTDetect.setQCstatus (Pass);
         reportTDetect.clickReleaseReport ();
         history.gotoOrderDebug (orderTest.sampleName);
-        ReportRender reportDataJson = parseReportDataJson (history.getFileUrl ("reportData.json"));
+        ReportRender reportDataJson = parseReportDataJson (history.getFileLocation (reportData));
         assertTrue (reportDataJson.isFailure);
         testLog ("STEP 11 - validate reportData.json displays isFailure as true");
     }
@@ -282,7 +275,7 @@ public class TDetectReportTestSuite extends ReportTestBase {
 
         assertEquals (reportDataJson.patientInfo.reportSpecimenSource, order.specimenDto.sampleSource);
         assertEquals (reportDataJson.patientInfo.reportSpecimenType, order.specimenDto.sampleType);
-        assertEquals (reportDataJson.patientInfo.reportSpecimenCompartment, "Cellular");
+        assertEquals (reportDataJson.patientInfo.reportSpecimenCompartment, Cellular);
         assertEquals (reportDataJson.patientInfo.reportSpecimenId, order.specimenDto.specimenNumber);
         assertEquals (reportDataJson.patientInfo.reportLocus, TCRB_v4b);
         assertEquals (reportDataJson.patientInfo.reportSpecimenCollectionDate, order.specimenDto.collectionDate);
@@ -316,28 +309,27 @@ public class TDetectReportTestSuite extends ReportTestBase {
         validatePdfContent (fileContent,
                             join (" ",
                                   "PATIENT NAME",
+                                  capitalize (order.patient.fullname),
                                   "DATE OF BIRTH",
+                                  order.patient.dateOfBirth,
                                   "MEDICAL RECORD #",
+                                  order.patient.mrn,
                                   "GENDER",
+                                  order.patient.gender,
                                   "REPORT DATE",
-                                  "ORDER #"));
-        validatePdfContent (fileContent, capitalize (order.patient.fullname));
-        validatePdfContent (fileContent, order.patient.dateOfBirth);
-        validatePdfContent (fileContent, order.patient.mrn);
-        validatePdfContent (fileContent, order.patient.gender);
-        validatePdfContent (fileContent, todaysDate + " " + order.orderNumber);
+                                  todaysDate,
+                                  "ORDER #",
+                                  order.orderNumber));
 
         validatePdfContent (fileContent,
                             join (" ",
                                   "SPECIMEN TYPE / SPECIMEN SOURCE",
-                                  "COLLECTION DATE",
-                                  "DATE RECEIVED",
-                                  "SAMPLE ID"));
-        validatePdfContent (fileContent,
-                            join (" ",
                                   SpecimenType.Blood + " / " + SpecimenSource.Blood,
+                                  "COLLECTION DATE",
                                   formatDt1.format ((LocalDate) order.specimenDto.collectionDate),
+                                  "DATE RECEIVED",
                                   formatDt1.format (order.specimenDto.approvedDate),
+                                  "SAMPLE ID",
                                   order.specimenDto.specimenNumber));
 
         validatePdfContent (fileContent, "ICD CODE(S)");
@@ -345,9 +337,12 @@ public class TDetectReportTestSuite extends ReportTestBase {
         validatePdfContent (fileContent, order.icdcodes.get (0).replaceAll ("\\s+", " "));
         validatePdfContent (fileContent, order.icdcodes.get (1).replaceAll ("\\s+", " "));
 
-        validatePdfContent (fileContent, "ORDERING PHYSICIAN INSTITUTION");
-        validatePdfContent (fileContent, order.physician.accountName);
-        validatePdfContent (fileContent, order.physician.providerFullName);
+        validatePdfContent (fileContent,
+                            join (" ",
+                                  "ORDERING PHYSICIAN",
+                                  order.physician.providerFullName,
+                                  "INSTITUTION",
+                                  order.physician.accountName));
     }
 
     /**
@@ -360,11 +355,5 @@ public class TDetectReportTestSuite extends ReportTestBase {
         coraDebugApi.login ();
         coraDebugApi.get (fileUrl, reportDataJson);
         return mapper.readValue (new File (reportDataJson), ReportRender.class);
-    }
-
-    private void validatePdfContent (String fileContent, String stringToValidate) {
-        fileContent = fileContent.replace ("\n", " ");
-        info ("Validate: " + stringToValidate + ", in: " + fileContent);
-        assertTrue (fileContent.contains (stringToValidate));
     }
 }

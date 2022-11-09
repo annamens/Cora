@@ -3,19 +3,24 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.NoActionRequired;
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.getCancelOrderAction;
 import static com.adaptivebiotech.cora.dto.Orders.NoChargeReason.NoReportIssued;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.FAILED_ACTIVATION;
 import static com.adaptivebiotech.cora.dto.Specimen.SpecimenActivation.PENDING;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt1;
+import static com.adaptivebiotech.test.utils.DateHelper.formatDt6;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
+import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellPellet;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenType.CellSuspension;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
@@ -27,11 +32,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
+import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Orders.Assay;
+import com.adaptivebiotech.cora.dto.Orders.CancelOrderAction;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
-import com.adaptivebiotech.cora.dto.Element;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
@@ -59,9 +65,9 @@ public class NewOrderClonoSeq extends NewOrder {
     private final String           specimenSourceOther  = "#specimen-entry-specimen-source-other";
     private final String           uniqueSpecimenId     = "[formcontrolname='uniqueSpecimenId']";
     private final String           retrievalDate        = "#specimen-entry-retrieval-date";
-    private final String           option               = "option";
     private final String           compartment          = "[formcontrolname='compartment']";
     private final String           anticoagulantOther   = "[formcontrolname='anticoagulantOther']";
+    private final String           cancellationAction   = "#cancellationAction";
 
     public void activateOrder () {
         String orderNumber = getOrderNumber ();
@@ -99,15 +105,6 @@ public class NewOrderClonoSeq extends NewOrder {
             assertTrue (click (showTestMenu));
 
         assertTrue (click (format ("//*[text()='%s']/ancestor::li//input", assay.test)));
-    }
-
-    public void findSpecimenId (String id) {
-        assertTrue (setText ("[ng-model='ctrl.specimenNumber']", id));
-        assertTrue (click ("[ng-click='ctrl.reuseSpecimen(ctrl.specimenNumber)']"));
-        assertTrue (isTextInElement (popupTitle, "Patient Warning"));
-        assertTrue (click ("[ng-click='ctrl.ok()']"));
-        moduleLoading ();
-        assertTrue (isTextInElement (specimenNumber, id));
     }
 
     public void deselectAllTests () {
@@ -181,14 +178,6 @@ public class NewOrderClonoSeq extends NewOrder {
         return order;
     }
 
-    public void addPatientICDCode (String icdCode) {
-        String expectedModalTitle = "Test Selection Warning";
-        this.enterPatientICD_Codes (icdCode);
-        String actualText = waitForElementVisible ("[ng-bind-html=\"ctrl.dialogOptions.headerText\"]").getText ();
-        assertEquals (actualText, expectedModalTitle);
-        assertTrue (click ("[data-ng-click='ctrl.ok();']"));
-    }
-
     public void clickEditPatient () {
         String editPatientLink = "//*[text()='Edit Patient Demographics']";
         assertTrue (click (editPatientLink));
@@ -228,8 +217,12 @@ public class NewOrderClonoSeq extends NewOrder {
         assertTrue (clickAndSelectValue (anticoagulant, anticoagulantEnum.name ()));
     }
 
-    public List <String> getAntiCoagulantTypeList () {
-        return readInputList (join (" ", anticoagulant, option));
+    public List <Anticoagulant> getAntiCoagulantTypeList () {
+        return getDropdownOptions (anticoagulant).stream ()
+                                                 .filter (optionText -> optionText.length () > 0 && !optionText.contains ("Select..."))
+                                                 .map (optionText -> {
+                                                     return Anticoagulant.valueOf (optionText);
+                                                 }).collect (toList ());
     }
 
     public void enterAntiCoagulantOther (String anticoagulant) {
@@ -279,11 +272,14 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public LocalDateTime waitUntilSpecimenActivated () {
         Timeout timer = new Timeout (millisDuration * 12, millisPoll * 30);
+        String specimenActivationDate = null;
         while (!timer.Timedout ()) {
-            String specimenActivationDate = getSpecimenActivationDate ();
+            timer.Wait ();
+            refresh ();
+            isCorrectPage ();
+            specimenActivationDate = getSpecimenActivationDate ();
             if (isBlank (specimenActivationDate) || specimenActivationDate.equals (PENDING.label)) {
-                timer.Wait ();
-                refresh ();
+                continue;
             } else if (specimenActivationDate.equals (FAILED_ACTIVATION.label) || specimenActivationDate.equals (FAILED.label)) {
                 fail (format ("Specimen activation failed , Order No: %s, Specimen Activation: %s",
                               getOrderNumber (),
@@ -292,9 +288,10 @@ public class NewOrderClonoSeq extends NewOrder {
                 return LocalDateTime.parse (specimenActivationDate, formatDt7);
             }
         }
-        fail (format ("Specimen did not activate in time, Order No: %s, Specimen Activation: %s",
+        fail (format ("Specimen did not activate in time, Order No: %s, Specimen Activation: %s, DateTime: %s",
                       getOrderNumber (),
-                      getSpecimenActivationDate ()));
+                      specimenActivationDate,
+                      genDate (0, formatDt6, pstZoneId)));
         return null;
     }
 
@@ -308,8 +305,7 @@ public class NewOrderClonoSeq extends NewOrder {
 
     public void closeTestSelectionWarningModal () {
         String expectedModalTitle = "Test Selection Warning";
-        String modalHeader = "[ng-bind-html=\"ctrl.dialogOptions.headerText\"]";
-        assertTrue (isTextInElement (modalHeader, expectedModalTitle));
+        assertTrue (isTextInElement (popupTitle, expectedModalTitle));
         clickPopupOK ();
     }
 
@@ -319,6 +315,32 @@ public class NewOrderClonoSeq extends NewOrder {
         el.text = getText (xpath + "//strong");
         el.color = getCssValue (xpath, "background-color");
         return el;
+    }
+
+    public void cancelStreckOrder (CancelOrderAction cancelAction) {
+        assertTrue (isTextInElement (popupTitle, "Cancel Order"));
+        assertTrue (clickAndSelectText ("#cancellationReason", "Other - Internal"));
+        assertTrue (clickAndSelectText ("#cancellationReason2", "Specimen - Not Rejected"));
+        assertTrue (clickAndSelectText ("#cancellationReason3", "Other"));
+        assertTrue (setText ("#cancellationNotes", "this is a test"));
+        if (cancelAction == NoActionRequired)
+            setCancelActionValue (cancelAction);
+        assertTrue (click ("//button[contains(text(),'Yes. Cancel Order')]"));
+        pageLoading ();
+        moduleLoading ();
+        checkOrderForErrors ();
+    }
+
+    public boolean isCancelActionDropdownVisible () {
+        return isElementVisible (cancellationAction);
+    }
+
+    public CancelOrderAction getCancelActionValue () {
+        return getCancelOrderAction (getFirstSelectedText (cancellationAction));
+    }
+
+    public void setCancelActionValue (CancelOrderAction value) {
+        clickAndSelectText (cancellationAction, value.label);
     }
 
     /**
@@ -371,7 +393,6 @@ public class NewOrderClonoSeq extends NewOrder {
         if (!matchFound && patient.hasAddress ())
             billing.enterPatientAddress (patient);
 
-        clickSave ();
         clickEnterSpecimenDetails ();
         enterSpecimenType (specimen.sampleType);
 
@@ -433,8 +454,7 @@ public class NewOrderClonoSeq extends NewOrder {
             activateOrder ();
 
             // refreshing the page doesn't automatically take you to order detail
-            gotoOrderDetailsPage (order.id);
-            isCorrectPage ();
+            new OrderDetail ().gotoOrderDetailsPage (order.id);
         } else {
             accession.clickOrderNumber ();
             isCorrectPage ();
@@ -442,4 +462,5 @@ public class NewOrderClonoSeq extends NewOrder {
 
         return order;
     }
+
 }

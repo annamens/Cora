@@ -3,11 +3,13 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.task;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.openqa.selenium.WebElement;
 import com.adaptivebiotech.cora.dto.TaskOutput;
 
@@ -24,6 +26,12 @@ public class TaskDetail extends Task {
     @Override
     public void isCorrectPage () {
         assertTrue (isTextInElement ("[role='tablist'] .active a", "TASK DETAIL"));
+    }
+
+    public void gotoTaskDetail (UUID taskId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/task/" + taskId));
+        pageLoading ();
+        isCorrectPage ();
     }
 
     public String getHeaderTaskName () {

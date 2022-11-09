@@ -60,4 +60,20 @@ public final class Alerts {
         New, Resolved, Unresolved
     }
 
+    public enum AlertOptions {
+        LetterOfMedicalNecessity ("Letter of Medical Necessity"),
+        PathologyReport ("Pathology report needed"),
+        CorrectedReport ("Corrected Report"),
+        ClinicalConsultation ("Clinical Consultation");
+
+        String label;
+
+        AlertOptions (String loc) {
+            this.label = loc;
+        }
+
+        public String getLabel () {
+            return this.label;
+        }
+    }
 }

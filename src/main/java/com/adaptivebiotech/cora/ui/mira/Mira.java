@@ -266,15 +266,6 @@ public abstract class Mira extends CoraPage {
         return truncatedOwnerName;
     }
 
-    /**
-     * go to the miras list from an edited MIRA
-     */
-    public void leaveEditedMIRA () {
-        clickMiras ();
-        clickPopupOK ();
-        new MirasList ().isCorrectPage ();
-    }
-
     protected void selectAndVerifySelection (String selector, String text) {
         CoraSelect dropdown = new CoraSelect (waitForElementClickable (selector));
         dropdown.selectByVisibleText (text);

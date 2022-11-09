@@ -57,8 +57,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
 
     @AfterMethod (alwaysRun = true)
     public void afterMethod () {
-        ordersList.gotoMyCustody ();
-        myCustody.isCorrectPage ();
+        myCustody.gotoMyCustody ();
         myCustody.bulkMoveToFreezer (containers.get (), freezerDestroyed, "HoldingContainerTestSuite.afterMethod");
         myCustody.waitForBulkMoveComplete ();
     }
@@ -75,19 +74,20 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         containers.get ().list.addAll (topContainers.list);
 
         // test: holding containers don't have Holding Container btn and no depleted dropdown
-        addContainer.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         topContainers.list.stream ().forEach (c -> myCustody.isHoldingContainer (c));
     }
 
     /**
      * @sdlc.requirements 126.MoveMetadata, 126.TransformHoldingContainer
      */
+    @Test (groups = "smoke")
     public void tube () {
         Container child = coraApi.addContainers (Tube, null, null, 1).list.get (0);
         child.depleted = true;
 
         // test: set holding container, depletion and add comment
-        ordersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         int pass = 0;
         for (Container holding : containers.get ().list) {
             child.comment = randomWords (10);
@@ -105,20 +105,19 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 }
 
                 // test: go to child detail page to verify location
-                myCustody.gotoContainerDetail (child);
-                detail.isCorrectPage ();
+                detail.gotoContainerDetail (child);
                 Container actual = detail.parsePrimaryDetail ();
                 actual.comment = child.comment;
                 verifyDetails (actual, child);
 
                 // test: go to child history page to verify comment
-                detail.gotoHistory ();
+                detail.clickHistory ();
                 history.isCorrectPage ();
                 List <ContainerHistory> histories = history.getHistories ();
                 verifyMovedTo (histories.get (0), actual);
                 verifyTookCustody (histories.get (1), pass == 0 ? null : actual);
 
-                history.gotoMyCustody ();
+                myCustody.gotoMyCustody ();
                 ++pass;
             }
         }
@@ -133,17 +132,16 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comments
-        ordersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
 
         // test: go to child detail page to verify location
-        myCustody.gotoContainerDetail (child);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (child);
         Container actual = detail.parsePrimaryDetail ();
         verifyDetails (actual, child);
 
         // test: go to child history page to verify comment
-        detail.gotoHistory ();
+        detail.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         assertEquals (histories.size (), 2);
@@ -160,18 +158,17 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comment
-        ordersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
         assertEquals (child.location, join (" : ", coraTestUser, child.root.containerNumber, "Position A:1"));
 
         // test: go to child detail page to verify location
-        myCustody.gotoContainerDetail (child);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (child);
         Container actual = detail.parsePrimaryDetail ();
         verifyDetails (actual, child);
 
         // test: go to child history page to verify comment
-        detail.gotoHistory ();
+        detail.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         assertEquals (histories.size (), 2);
@@ -188,19 +185,18 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comment
-        ordersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
         containers.get ().list.add (child);
 
         // test: go to child detail page to verify location
-        myCustody.gotoContainerDetail (child);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (child);
         Container actual = detail.parsePrimaryDetail ();
         child.depleted = false; // no successful move, depletion is not set
         verifyDetailsChild (actual, child);
 
         // test: go to child history page to verify comment
-        detail.gotoHistory ();
+        detail.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         assertEquals (histories.size (), 1);
@@ -216,18 +212,17 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comment
-        ordersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
         assertEquals (child.location, join (" : ", coraTestUser, child.root.containerNumber, "Position A:1"));
 
         // test: go to child detail page to verify location
-        myCustody.gotoContainerDetail (child);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (child);
         Container actual = detail.parsePrimaryDetail ();
         verifyDetails (actual, child);
 
         // test: go to child history page to verify comment
-        detail.gotoHistory ();
+        detail.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         assertEquals (histories.size (), 2);
@@ -244,17 +239,16 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.comment = randomWords (10);
 
         // test: set holding container, depletion and add comments
-        ordersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         containers.get ().list.stream ().forEach (h -> myCustody.setHoldingContainer (child, h));
 
         // test: go to child detail page to verify location
-        myCustody.gotoContainerDetail (child);
-        detail.isCorrectPage ();
+        detail.gotoContainerDetail (child);
         Container actual = detail.parsePrimaryDetail ();
         verifyDetails (actual, child);
 
         // test: go to child history page to verify comment
-        detail.gotoHistory ();
+        detail.clickHistory ();
         history.isCorrectPage ();
         List <ContainerHistory> histories = history.getHistories ();
         assertEquals (histories.size (), 2);
@@ -270,7 +264,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.depleted = true;
 
         // test: set holding container, depletion and add comment
-        ordersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         int pass = 0;
         for (Container holding : containers.get ().list) {
             child.comment = randomWords (10);
@@ -291,13 +285,12 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 }
 
                 // test: go to child detail page to verify location
-                myCustody.gotoContainerDetail (child);
-                detail.isCorrectPage ();
+                detail.gotoContainerDetail (child);
                 Container actual = detail.parsePrimaryDetail ();
                 actual.comment = child.comment;
 
                 // test: go to child history page to verify comment
-                detail.gotoHistory ();
+                detail.clickHistory ();
                 history.isCorrectPage ();
                 List <ContainerHistory> histories = history.getHistories ();
                 ContainerHistory historyRow = histories.get (0);
@@ -316,7 +309,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 }
                 verifyTookCustody (histories.get (1), pass == 0 ? null : actual);
 
-                history.gotoMyCustody ();
+                myCustody.gotoMyCustody ();
                 ++pass;
             }
         }
@@ -330,7 +323,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
         child.depleted = true;
 
         // test: set holding container, depletion and add comment
-        ordersList.gotoMyCustody ();
+        myCustody.gotoMyCustody ();
         int pass = 0;
         for (Container holding : containers.get ().list) {
             child.comment = randomWords (10);
@@ -351,8 +344,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 }
 
                 // test: go to child detail page to verify location
-                myCustody.gotoContainerDetail (child);
-                detail.isCorrectPage ();
+                detail.gotoContainerDetail (child);
                 Container actual = detail.parsePrimaryDetail ();
                 actual.comment = child.comment;
                 switch (holding.containerType) {
@@ -367,7 +359,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 }
 
                 // test: go to child history page to verify comment
-                detail.gotoHistory ();
+                detail.clickHistory ();
                 history.isCorrectPage ();
                 List <ContainerHistory> histories = history.getHistories ();
                 ContainerHistory historyRow = histories.get (0);
@@ -383,7 +375,7 @@ public class HoldingContainerTestSuite extends ContainerTestBase {
                 }
 
                 verifyTookCustody (histories.get (1), pass == 0 ? null : actual);
-                history.gotoMyCustody ();
+                myCustody.gotoMyCustody ();
                 ++pass;
             }
         }

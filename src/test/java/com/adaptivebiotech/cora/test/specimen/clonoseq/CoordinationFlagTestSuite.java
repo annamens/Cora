@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.specimen.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Vacutainer;
@@ -100,13 +103,11 @@ public class CoordinationFlagTestSuite extends SpecimenTestBase {
         testFlagVisibleAndChecked ();
 
         // Bring shipment to Accession Complete, Activate order, Test Flag invisible
-        newOrderClonoSeq.gotoShipmentEntry (shipmentId);
-        accession.clickAccessionTab ();
+        accession.gotoAccession (shipmentId);
         accession.completeAccession ();
         newOrderClonoSeq.isCorrectPage ();
         newOrderClonoSeq.activateOrder ();
         orderDetail.gotoOrderDetailsPage (order.id);
-        orderDetail.isCorrectPage ();
         testLog ("Activated order...");
         testFlagInvisible ();
 

@@ -3,11 +3,21 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyStatus.ResolvedYes;
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
+import static java.lang.String.format;
 import static org.testng.Assert.assertTrue;
 import java.util.List;
+import java.util.UUID;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.Color;
+import com.adaptivebiotech.cora.dto.Element;
+import com.adaptivebiotech.cora.utils.PageHelper.Discrepancy;
+import com.adaptivebiotech.cora.utils.PageHelper.DiscrepancyStatus;
 
 public class DiscrepancyResolutions extends ShipmentHeader {
+
+    private final String discrepancyStatus = "[ng-model='discrepancy.status']";
 
     public DiscrepancyResolutions () {
         staticNavBarHeight = 195;
@@ -19,27 +29,50 @@ public class DiscrepancyResolutions extends ShipmentHeader {
         pageLoading ();
     }
 
+    public void gotoDiscrepancy (UUID shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId + "?p=discrepancy"));
+        pageLoading ();
+        isCorrectPage ();
+    }
+
     public int getNumberOfDiscrepancies () {
         String css = "[ng-bind=\"ctrl.entry.discrepancies.length\"]";
         String text = getText (css);
         return Integer.parseInt (text);
     }
 
-    public void resolveAllDiscrepancies () {
-        String css = "[ng-model=\"discrepancy.status\"]";
+    public void resolveDiscrepancy (Discrepancy discrepancy) {
+        String css = "//*[text()='%s']//ancestor::div[contains(@class,'discrepancies-row')]//*[@ng-model='discrepancy.status']";
+        assertTrue (clickAndSelectText (format (css, discrepancy.text), "Resolved - Yes"));
+    }
 
-        List <WebElement> statusDropdowns = waitForElementsVisible (css);
+    public Element getDiscrepancyHoldType (Discrepancy discrepancy) {
+        Element el = new Element ();
+        String xpath = format ("//*[text()='%s']/following-sibling::discrepancy-severity", discrepancy.text);
+        el.text = getText (xpath);
+        el.color = Color.fromString (getCssValue (xpath + "//*[@ng-class='ctrl.discrepancyTypeClass']",
+                                                  "background-color"))
+                        .asHex ();
+        return el;
+    }
+
+    public void setDiscrepancyStatus (DiscrepancyStatus status) {
+        assertTrue (clickAndSelectText (discrepancyStatus, status.text));
+    }
+
+    public void resolveAllDiscrepancies () {
+        List <WebElement> statusDropdowns = waitForElementsVisible (discrepancyStatus);
 
         for (WebElement statusDropdown : statusDropdowns) {
-            assertTrue (clickAndSelectText (statusDropdown, "Resolved - Yes"));
+            assertTrue (clickAndSelectText (statusDropdown, ResolvedYes.text));
         }
-
+        clickSave ();
     }
 
     public void clickSave () {
         String css = "[data-ng-click=\"ctrl.$scope.$broadcast('discrepancy-save')\"]";
         assertTrue (click (css));
-        pageLoading ();
+        transactionInProgress ();
     }
 
 }
