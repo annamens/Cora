@@ -428,6 +428,9 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         testLog (format ("message displayed indicating %s is in my custody", test.containerNumber));
 
         int CUSTODYEND = cList.getMyCustodySize ();
+        // one more try, it takes few seconds to reflect the updated Custody Size
+        if (CUSTODYEND - CUSTODYBEGIN < 1)
+            CUSTODYEND = cList.getMyCustodySize ();
         assertTrue (CUSTODYEND - CUSTODYBEGIN >= 1);
         testLog ("the delta between before and after scan for My Custody size is 1");
     }
