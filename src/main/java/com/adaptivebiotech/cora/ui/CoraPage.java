@@ -144,7 +144,6 @@ public class CoraPage extends BasePage {
 
     public void clickOrderTests () {
         assertTrue (click ("#order-tests-tab"));
-        pageLoading ();
     }
 
     public void clickShipments () {
@@ -304,23 +303,4 @@ public class CoraPage extends BasePage {
         assertTrue (click (".modal-header button.close"));
         moduleLoading ();
     }
-
-    public String getPopUpConfirmationText () {
-        String parentWindow = getDriver ().getWindowHandle ();
-        String popUpConfirmationText = getDriver ().switchTo ().alert ().getText ();
-        getDriver ().switchTo ().window (parentWindow);
-        return popUpConfirmationText;
-    }
-
-    public boolean acceptPopUpAlert () {
-        getDriver ().switchTo ().alert ().accept ();
-        pageLoading ();
-        return true;
-    }
-
-    public boolean cancelPopUpAlert () {
-        getDriver ().switchTo ().alert ().dismiss ();
-        return true;
-    }
-
 }

@@ -163,7 +163,11 @@ public class OrderStatus extends OrderHeader {
         clickHide (sampleName);
     }
 
-    public void actionWorkflow (String workflowStateName, String message, String workflowConfirmationMessage) {
+    public void completeWorkflow (String message) {
+        actionWorkflow ("Complete workflow", message, "Are you sure you want to complete the workflow?");
+    }
+
+    private void actionWorkflow (String workflowStateName, String message, String workflowConfirmationMessage) {
         assertTrue (click (stageActionDots));
         assertTrue (waitUntilVisible (stageActionsDropdown));
         assertTrue (click (format (dropdownItem, workflowStateName)));

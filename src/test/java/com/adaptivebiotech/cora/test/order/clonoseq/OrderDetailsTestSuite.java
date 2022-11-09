@@ -262,33 +262,43 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
         specimen.collectionDate = genLocalDate (-6);
         Order order = diagnostic.createClonoSeqOrder (physician, patient, icdCode, orderTest, specimen);
         testLog ("Created order");
+
         // Cancel Order
         diagnostic.gotoOrderEntry (order.id);
         diagnostic.clickCancelOrder ();
         diagnostic.cancelStreckOrder (GenerateFailureReport);
+        orderStatus.isCorrectPage ();
         specimen.sampleName = orderStatus.getWorkflowId ();
         testLog ("Cancelled Order");
+
         // Go to Patient page and check status
-        diagnostic.clickOrderDetailsTab ();
-        diagnostic.clickPatientOrderHistory ();
+        orderStatus.clickPatientCode ();
+        patientDetail.isCorrectPage ();
+        patientDetail.clickPatientOrderHistoryTab ();
         patientOrderHistory.isCorrectPage ();
         assertTrue (patientOrderHistory.statusHeadersPresent ());
         testLog ("Status Headers are both present");
         assertEquals (patientOrderHistory.getOrderStatus (order), PendingCancellation);
         assertEquals (patientOrderHistory.getTestStatus (order), Pending);
         testLog ("Order Status is PendingCancellation and Test Status is Pending");
+
         // Fully cancel order
         orderStatus.gotoOrderStatusPage (order.id);
         orderStatus.waitFor (specimen.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
         testLog ("Awaiting Clinical QC Reached");
+
         clonoSeqOrderDetail.gotoOrderDetailsPage (order.id);
         clonoSeqOrderDetail.clickReportTab (orderTest);
+        reportClonoSeq.isCorrectPage ();
         reportClonoSeq.releaseReport (orderTest, QC.Pass);
         testLog ("Released Report, waiting for delivery finished");
-        clonoSeqOrderDetail.clickOrderStatusTab ();
+
+        reportClonoSeq.clickOrderStatusTab ();
+        orderStatus.isCorrectPage ();
         orderStatus.waitFor (specimen.sampleName, Finalize, StageStatus.Cancelled);
-        diagnostic.clickOrderDetailsTab ();
-        diagnostic.clickPatientOrderHistory ();
+        orderStatus.clickPatientCode ();
+        patientDetail.isCorrectPage ();
+        patientDetail.clickPatientOrderHistoryTab ();
         patientOrderHistory.isCorrectPage ();
         assertEquals (patientOrderHistory.getOrderStatus (order), CancelledWithReport);
         assertEquals (patientOrderHistory.getTestStatus (order), Cancelled);

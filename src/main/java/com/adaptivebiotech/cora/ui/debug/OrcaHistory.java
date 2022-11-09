@@ -382,4 +382,21 @@ public class OrcaHistory extends CoraPage {
         return isElementVisible (workflowHeaderString);
     }
 
+    public String getPopUpConfirmationText () {
+        String parentWindow = getDriver ().getWindowHandle ();
+        String popUpConfirmationText = getDriver ().switchTo ().alert ().getText ();
+        getDriver ().switchTo ().window (parentWindow);
+        return popUpConfirmationText;
+    }
+
+    public boolean acceptPopUpAlert () {
+        getDriver ().switchTo ().alert ().accept ();
+        pageLoading ();
+        return true;
+    }
+
+    public boolean cancelPopUpAlert () {
+        getDriver ().switchTo ().alert ().dismiss ();
+        return true;
+    }
 }

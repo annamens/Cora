@@ -41,9 +41,8 @@ public class PatientOrderHistory extends PatientHeader {
     }
 
     public boolean statusHeadersPresent () {
-        return isTextInElement ("thead th:nth-child(9)",
-                                "Test Status") && isTextInElement ("thead th:nth-child(10)",
-                                                                   "Order Status");
+        return isTextInElement ("thead th:nth-child(9)", "Test Status") && isTextInElement ("thead th:nth-child(10)",
+                                                                                            "Order Status");
     }
 
     public OrderStatus getTestStatus (Order order) {
