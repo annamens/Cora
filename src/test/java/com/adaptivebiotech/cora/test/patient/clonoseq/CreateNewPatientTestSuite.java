@@ -3,28 +3,38 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.test.patient.clonoseq;
 
+import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.clonoSEQ_selfpay;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+import java.util.stream.IntStream;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Orders.ChargeType;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.patient.PatientDetail;
+import com.adaptivebiotech.cora.ui.patient.PatientsList;
 import com.adaptivebiotech.cora.ui.patient.PickPatientModule;
+import com.adaptivebiotech.test.utils.TestHelper;
 
 @Test (groups = "regression")
 public class CreateNewPatientTestSuite extends CoraBaseBrowser {
 
+    private final int         emailMaxLength   = 254;
+    private final Patient     patient          = newPatient ();
     private Login             login            = new Login ();
     private OrdersList        ordersList       = new OrdersList ();
     private NewOrderClonoSeq  newOrderClonoSeq = new NewOrderClonoSeq ();
-    private Patient           patient          = newPatient ();
+    private PatientsList      patientsList     = new PatientsList ();
     private PickPatientModule createNewPatient = new PickPatientModule ();
+    private PatientDetail     patientDetail    = new PatientDetail ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -35,7 +45,7 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-9302
      */
-    @Test (groups = "entlebucher")
+    @Test (groups = { "entlebucher", "smoke" })
     public void verifyPatientBirthdateValidation () {
         newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
         newOrderClonoSeq.isCorrectPage ();
@@ -71,5 +81,99 @@ public class CreateNewPatientTestSuite extends CoraBaseBrowser {
         assertEquals (newOrderClonoSeq.getPatientName (), patient.fullname);
         assertEquals (newOrderClonoSeq.getPatientDOB (), patient.dateOfBirth);
         testLog ("Patient was created");
+    }
+
+    /**
+     * @sdlc.requirements SR-8370 ,SR-8369
+     */
+    @Test (groups = "irish-wolfhound")
+    public void characterLimitEmailAndOrderNotes () {
+        newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
+        newOrderClonoSeq.isCorrectPage ();
+        newOrderClonoSeq.selectPhysician (coraApi.getPhysician (clonoSEQ_selfpay));
+        newOrderClonoSeq.clickPickPatient ();
+        createNewPatient.clickCreateNewPatient ();
+        createNewPatient.fillPatientInfo (patient);
+        createNewPatient.clickSave ();
+        newOrderClonoSeq.isCorrectPage ();
+
+        // sendKeys() has a limit for large string
+        String notes = TestHelper.randomString (500);
+        int count = 120;
+        IntStream.range (0, count).forEach (i -> newOrderClonoSeq.enterOrderNotes (notes));
+        newOrderClonoSeq.clickSave ();
+        int notesSize = newOrderClonoSeq.getOrderNotes ().length ();
+        assertEquals (notesSize, notes.length () * count);
+        testLog ("Order notes character length is: " + notesSize);
+
+        newOrderClonoSeq.billing.selectBilling (ChargeType.PatientSelfPay);
+        String chars63 = TestHelper.randomString (63);
+        String email = TestHelper.randomString (64) + "@" + chars63 + "." + chars63 + "." + TestHelper.randomString (62);
+        newOrderClonoSeq.billing.enterPatientEmail (email);
+        newOrderClonoSeq.clickOrderSave ();
+        assertEquals (newOrderClonoSeq.getToastError (), "Please fix errors in the form");
+        testLog ("Length of string: " + email.length ());
+
+        String trimmedEmail = email.substring (0, emailMaxLength);
+        newOrderClonoSeq.billing.enterPatientEmail (trimmedEmail);
+        newOrderClonoSeq.clickSave ();
+        assertEquals (trimmedEmail.length (), emailMaxLength);
+        assertFalse (newOrderClonoSeq.isToastErrorPresent ());
+        testLog ("Length of string: " + trimmedEmail.length ());
+
+        newOrderClonoSeq.clickPatientCode ();
+        patientDetail.clickEditPatientShippingAddress ();
+        patientDetail.enterEmail (email);
+        patientDetail.clickSavePatientInsurance ();
+        int savedEmailLength = patientDetail.getShippingEmailEntered ().length ();
+        assertEquals (savedEmailLength, emailMaxLength);
+        testLog ("Entered email length is: " + email.length () + ", saved email length is: " + savedEmailLength);
+
+        patientDetail.clickEditPatientBillingAddress ();
+        patientDetail.enterEmail (email);
+        patientDetail.clickSavePatientInsurance ();
+        savedEmailLength = patientDetail.getBillingEmailEntered ().length ();
+        assertEquals (savedEmailLength, emailMaxLength);
+        testLog ("Entered email length is: " + email.length () + ", saved email length is: " + savedEmailLength);
+    }
+
+    /**
+     * @sdlc.requirements SR-4934
+     */
+    @Test (groups = "irish-wolfhound")
+    public void patientLastNameSearch () {
+        Patient patientDigit = newPatient ();
+        patientDigit.firstName = "ClonoSeq";
+        patientDigit.lastName = "493401";
+
+        newOrderClonoSeq.selectNewClonoSEQDiagnosticOrder ();
+        newOrderClonoSeq.isCorrectPage ();
+        newOrderClonoSeq.selectPhysician (coraApi.getPhysician (clonoSEQ_selfpay));
+
+        newOrderClonoSeq.clickPickPatient ();
+        createNewPatient.searchOrCreatePatient (patientDigit);
+        createNewPatient.clickRemovePatient ();
+        newOrderClonoSeq.clickPickPatient ();
+        createNewPatient.searchPatientWithLastName (patientDigit);
+        assertTrue (createNewPatient.isPickPatientRowPresent ());
+        assertFalse (createNewPatient.isNoPatientsFound ());
+
+        String patientDetails = createNewPatient.getFirstRowPatient ();
+        assertEquals (patientDetails.split ("\n")[0], patientDigit.firstName);
+        assertEquals (patientDetails.split ("\n")[1], patientDigit.lastName);
+        assertEquals (patientDetails.split ("\n")[2], patientDigit.dateOfBirth);
+        testLog ("Patient details searched with last name are: " + patientDetails);
+        testLog ("Patient search with numeric lastname is working");
+
+        createNewPatient.clickCancel ();
+        newOrderClonoSeq.clickPatients ();
+        patientsList.ignoredUnsavedChanges ();
+        patientsList.waitForNewPatientToAppear (patientDetails.split ("\n")[3]);
+        testLog ("numeric lastname patient is searchable on Patient List page");
+
+        assertEquals (patientDetail.getFirstName (), patientDigit.firstName);
+        assertEquals (patientDetail.getLastName (), patientDigit.lastName);
+        assertEquals (patientDetail.getDateOfBirth (), patientDigit.dateOfBirth);
+        testLog ("validate numeric lastname patient on Patient Details page");
     }
 }

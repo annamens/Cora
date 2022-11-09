@@ -1,6 +1,6 @@
-/**
-* Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
-*/
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.attachment.tdetect;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
@@ -40,8 +40,9 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
     /**
      * NOTE: SR-T4205
      * 
-     * @sdlc.requirements SR-11381
+     * @sdlc.requirements SR-11381, SR-9398
      */
+    @Test (groups = "irish-wolfhound")
     public void previewOrderShipmentAttachment () {
         login.doLogin ();
         ordersList.isCorrectPage ();
@@ -57,7 +58,6 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
         shipment.clickShipmentTab ();
         UUID shipmentId = shipment.getShipmentId ();
         shipment.uploadAttachments (uploadPreviewFiles);
-
         for (String file : previewFiles) {
             shipment.clickFilePreviewLink (file);
             shipment.closeFilePreview ();
@@ -66,7 +66,6 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
         newOrderTDetect.gotoOrderEntry (order.id);
         newOrderTDetect.uploadAttachments (uploadPreviewFiles);
-        newOrderTDetect.gotoOrderEntry (order.id);
 
         previewFilesPendingOrder ("Orders", previewFiles);
         validateAttachments (newOrderTDetect.getCoraAttachments (), previewFiles, Pending);
@@ -84,7 +83,6 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
         previewFilesActiveOrder ("Shipments", previewFiles);
         validateAttachments (orderDetailTDetect.getShipmentAttachments (), previewFiles, Active);
-
     }
 
     private void previewFilesPendingOrder (String attachmentSection, List <String> previewFiles) {
@@ -100,5 +98,4 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
             orderDetailTDetect.closeFilePreview ();
         }
     }
-
 }

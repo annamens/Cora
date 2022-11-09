@@ -4,8 +4,9 @@
 package com.adaptivebiotech.cora.ui.order;
 
 import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
 import java.util.List;
-import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Orders.SkuProperties;
 import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
@@ -14,10 +15,12 @@ import com.adaptivebiotech.cora.ui.CoraPage;
  */
 public class OrderTestsList extends CoraPage {
 
-    private final String confirmRequeueButton = "[data-ng-click=\"ctrl.confirm()\"]";
+    private final String confirmRequeueButton = "[data-ng-click='ctrl.confirm()']";
+    private final String downloadCSVbutton    = ".download-list .glyphicon-save";
+    private final String skuColumnNames       = "//th//span";
 
     public OrderTestsList () {
-        staticNavBarHeight = 90;
+        staticNavBarHeight = 50;
     }
 
     @Override
@@ -27,8 +30,16 @@ public class OrderTestsList extends CoraPage {
     }
 
     public void clickQueriesButton () {
-        String css = "[ng-click=\"ctrl.queryClick()\"]";
+        String css = "[ng-click='ctrl.queryClick()']";
         assertTrue (click (css));
+    }
+
+    public void clickSKUproperties () {
+        String sku = "//a[text()='SKU Properties']";
+        assertTrue (click (sku));
+        pageLoading ();
+        assertTrue (waitUntilVisible (".container-fluid"));
+        assertTrue (waitUntilVisible (downloadCSVbutton));
     }
 
     public void querySamplesPendingRequeue () {
@@ -40,17 +51,16 @@ public class OrderTestsList extends CoraPage {
         waitForElementVisible ("[data-ng-click=\"ctrl.fail()\"]");
     }
 
-    public void requeueSample (String flowcellId) {
-        List <WebElement> requeueItems = waitForElementsVisible ("[ng-repeat-start=\"detail in ctrl.requeueDetails\"]");
-        for (WebElement row : requeueItems) {
-            String rowFlowcellId = getText (row, "[ng-bind=\"::detail.flowcell\"]");
-            if (flowcellId.equals (rowFlowcellId)) {
-                assertTrue (click (row, "input"));
-            }
-        }
-        assertTrue (click (confirmRequeueButton));
-        waitForElementVisible (".confirm-requeue-modal-dialog");
-        assertTrue (click ("[ng-click=\"ctrl.ok()\"]"));
-        pageLoading ();
+    public void clickCSVdownloadButton () {
+        assertTrue (click (downloadCSVbutton));
     }
+
+    public List <SkuProperties> listOfSkuColumnNames () {
+        List <SkuProperties> skuPropertiesEnumList = new ArrayList <> ();
+        for (String skuName : getTextList (skuColumnNames)) {
+            skuPropertiesEnumList.add (SkuProperties.getSkuPropertyName (skuName));
+        }
+        return skuPropertiesEnumList;
+    }
+
 }

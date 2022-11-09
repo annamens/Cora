@@ -6,6 +6,8 @@ package com.adaptivebiotech.cora.test.smoke;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.TubeBox5x5;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraCSAdminTestPass;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraCSAdminTestUser;
 import static com.adaptivebiotech.cora.utils.PageHelper.LinkShipment.SalesforceOrder;
 import static com.adaptivebiotech.cora.utils.PageHelper.LinkType.Project;
 import static com.adaptivebiotech.cora.utils.TestHelper.newPatient;
@@ -96,11 +98,11 @@ public class SmokeTestSuite extends CoraBaseBrowser {
      * Note: SR-T2015
      */
     public void global_navigation () {
-        login.doLogin ();
-        oList.isCorrectTopNavRow1 (coraTestUser);
+        login.doLogin (coraCSAdminTestUser, coraCSAdminTestPass);
+        oList.isCorrectTopNavRow1 ("svc_cora_test_cs_admin preprod");
         oList.isCorrectTopNavRow2 ();
-        testLog (join ("\n",
-                       "header nav contained the elements",
+        testLog (join ("\n\t",
+                       "header nav contained these elements:",
                        "CORA",
                        "+ New",
                        "Orders",
@@ -127,8 +129,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         oList.clickNew ();
         assertEquals (oList.getNewPopupMenu (), menu);
         oList.clickNew ();
-        testLog ("dropdown menu displayed the following options:");
-        testLog (join ("\n", menu));
+        testLog (join ("\n\t", "dropdown menu displayed the following options:", join ("\n\t", menu)));
 
         oList.selectNewDiagnosticShipment ();
         shipment.isDiagnostic ();
@@ -220,8 +221,9 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         pList.clickUtilities ();
         assertEquals (pList.getUtilitiesMenu (), utilities);
         pList.clickUtilities ();
-        testLog ("Utilities dropdown menu was displayed and contained these options:");
-        testLog (join ("\n", utilities));
+        testLog (join ("\n\t",
+                       "Utilities dropdown menu was displayed and contained these options:",
+                       join ("\n\t", utilities)));
 
         pList.selectAuditTool ();
         AuditTool auditTool = new AuditTool ();
@@ -386,14 +388,13 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         addContainer.pickContainerType (TubeBox5x5);
         addContainer.enterQuantity (1);
         addContainer.clickAdd ();
+        addContainer.setContainerLocation (1, freezer);
+        addContainer.clickSave ();
         Containers containers = addContainer.getContainers ();
         assertEquals (containers.list.size (), 1);
         assertEquals (containers.list.get (0).containerType, TubeBox5x5);
         assertNotNull (containers.list.get (0).containerNumber);
         testLog (TubeBox5x5.label + " displayed below the Add Container(s) section");
-
-        addContainer.setContainerLocation (1, freezer);
-        addContainer.clickSave ();
         assertFalse (addContainer.isAddContainerHeaderVisible ());
         assertFalse (addContainer.isContainerTypeVisible ());
         assertFalse (addContainer.isQuantityVisible ());
@@ -405,7 +406,7 @@ public class SmokeTestSuite extends CoraBaseBrowser {
 
         containers = addContainer.getContainers ();
         Container test = containers.list.get (0);
-        assertTrue (test.containerNumber.matches ("CO-\\d{6}"), test.containerNumber);
+        assertTrue (test.containerNumber.matches (containerNumberPattern), test.containerNumber);
         testLog (TubeBox5x5.label + " table displayed a " + test.containerNumber);
 
         addContainer.clickContainers ();
@@ -426,10 +427,11 @@ public class SmokeTestSuite extends CoraBaseBrowser {
         cList.takeCustody (test);
         testLog (format ("message displayed indicating %s is in my custody", test.containerNumber));
 
-        // it takes few seconds to reflect the updated Custody Size
-        doWait (1000);
         int CUSTODYEND = cList.getMyCustodySize ();
-        assertEquals (CUSTODYEND - CUSTODYBEGIN, 1);
+        // one more try, it takes few seconds to reflect the updated Custody Size
+        if (CUSTODYEND - CUSTODYBEGIN < 1)
+            CUSTODYEND = cList.getMyCustodySize ();
+        assertTrue (CUSTODYEND - CUSTODYBEGIN >= 1);
         testLog ("the delta between before and after scan for My Custody size is 1");
     }
 

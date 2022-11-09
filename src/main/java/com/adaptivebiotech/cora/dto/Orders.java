@@ -335,7 +335,8 @@ public final class Orders {
         PathRequest ("Adaptive Assists with Specimen Retrieval"),
         Reflex ("Use Specimen Stored at Adaptive (Reflex)"),
         BloodDrawLabCorp ("Adaptive Schedules Patient Blood Draw with LabCorp"),
-        BloodDrawHome ("Adaptive Schedules Patient In-Home Blood Draw");
+        BloodDrawHome ("Adaptive Schedules Patient In-Home Blood Draw"),
+        BloodPlasmaLabCorp ("Adaptive Schedules Patient Blood Draw and Plasma Isolation with LabCorp");
 
         public String label;
 
@@ -354,7 +355,16 @@ public final class Orders {
     }
 
     public enum OrderStatus {
-        All, Pending, Active, Completed, Cancelled, Failed, FailedActivation, PendingActivation
+        All,
+        Pending,
+        Active,
+        Completed,
+        Cancelled,
+        Failed,
+        FailedActivation,
+        PendingActivation,
+        PendingCancellation,
+        CancelledWithReport
     }
 
     public enum Assay {
@@ -406,6 +416,77 @@ public final class Orders {
             return allOf (OrderAuthorization.class).parallelStream ().filter (st -> st.coraLabel.equals (coraLabel))
                                                    .findAny ().orElse (null);
         }
+    }
+
+    public enum CancelOrderAction {
+        GenerateFailureReport ("Generate Failure Report"),
+        NoActionRequired ("No Action Required");
+
+        public String label;
+
+        private CancelOrderAction (String label) {
+            this.label = label;
+        }
+
+        public static CancelOrderAction getCancelOrderAction (String label) {
+            return allOf (CancelOrderAction.class).parallelStream ().filter (st -> st.label.equals (label))
+                                                  .findAny ().orElse (null);
+        }
+    }
+
+    public enum SkuProperties {
+        Name ("Name"),
+        ReceptorFamily ("Receptor Family"),
+        ProductCode ("Product Code"),
+        Locus ("Locus"),
+        IsIUO ("Is IUO"),
+        Measure ("Measure"),
+        Resolution ("Resolution"),
+        LineClearance ("Line Clearance"),
+        PatientReport ("Patient Report"),
+        MoltagThreshold ("Moltag Threshold"),
+        RegulationLevel ("Regulation Level"),
+        ExtractionFamily ("Extraction Family"),
+        PortalDisplayName ("Portal Display Name"),
+        MinProcessingLevel ("Min Processing Level"),
+        AllowMrdCoProcessing ("Allow Mrd Co Processing"),
+        CheckExtractionBatch ("Check Extraction Batch"),
+        CheckCloneShareContamination ("Check Clone Share Contamination"),
+        AnalyzerLocus ("Analyzer Locus"),
+        AnalyzerResolution ("Analyzer Resolution"),
+        AutoCalibrating ("Auto Calibrating"),
+        AutoPublishToAnalyzer ("Auto Publish To Analyzer"),
+        ClarityWorkflow ("Clarity Workflow"),
+        ClinicalQcAutoAccept ("Clinical Qc Auto Accept"),
+        ClonoSeqV1 ("ClonoSeq V1"),
+        DepthEquivalent ("Depth Equivalent"),
+        Directives ("Directives"),
+        DisableMrdAwaitClonesTimeout ("Disable Mrd Await Clones Timeout"),
+        GenoWorkflow ("Geno Workflow"),
+        IsClonoSEQBlockable ("Is ClonoSEQ Blockable"),
+        IsDeprecated ("Is Deprecated"),
+        IsKit ("Is Kit"),
+        IsMiraEnabled ("Is Mira Enabled"),
+        IsQc ("Is Qc"),
+        PipelineConfigOverride ("Pipeline Config Override"),
+        SkipInterimTimePoints ("Skip Interim Time Points"),
+        Species ("Species"),
+        SSFAssayReceptors ("SSF Assay Receptors"),
+        Workflow ("Workflow"),
+        IghvAnalysisEnabled ("Ighv Analysis Enabled");
+
+        public String skupropertyName;
+
+        private SkuProperties (String skupropertyName) {
+            this.skupropertyName = skupropertyName;
+        }
+
+        public static SkuProperties getSkuPropertyName (String skupropertyName) {
+            return allOf (SkuProperties.class).parallelStream ()
+                                              .filter (st -> st.skupropertyName.equals (skupropertyName))
+                                              .findAny ().orElse (null);
+        }
+
     }
 
 }

@@ -3,11 +3,13 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.shipment;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static java.util.stream.Collectors.toList;
 import static org.testng.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Containers.ContainerType;
@@ -15,13 +17,12 @@ import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
 import com.adaptivebiotech.cora.dto.Shipment;
 import com.adaptivebiotech.cora.dto.Shipment.ShippingCondition;
 import com.adaptivebiotech.cora.dto.Specimen.SpecimenStatus;
-import com.adaptivebiotech.cora.ui.CoraPage;
 
 /**
  * @author jpatel
  *
  */
-public class ShipmentDetail extends CoraPage {
+public class ShipmentDetail extends ShipmentHeader {
 
     private final String orderNumber       = "[data-ng-bind='ctrl.entry.order.orderNumber']";
     private final String activeTab         = "[role='tablist'] .active a";
@@ -40,6 +41,12 @@ public class ShipmentDetail extends CoraPage {
     public void isCorrectPage () {
         assertTrue (isTextInElement (activeTab, "SHIPMENT"));
         assertTrue (waitUntilVisible (orderNumber));
+    }
+
+    public void gotoShipmentDetail (UUID shipmentId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/shipment/entry/" + shipmentId));
+        pageLoading ();
+        isCorrectPage ();
     }
 
     public String getOrderNumber () {

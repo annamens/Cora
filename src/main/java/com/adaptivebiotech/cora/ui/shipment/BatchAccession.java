@@ -4,7 +4,6 @@
 package com.adaptivebiotech.cora.ui.shipment;
 
 import static org.testng.Assert.assertTrue;
-import java.io.File;
 
 /**
  * @author Harry Soehalim
@@ -15,7 +14,7 @@ public class BatchAccession extends Accession {
     private final String intakeRow = "[ng-if='ctrl.entry.shipment.intakeInitialized']";
 
     public void uploadIntakeManifest (String file) {
-        waitForElement ("input[name='intakeManifestFiles']").sendKeys (new File (file).getAbsolutePath ());
+        uploadFile ("input[name='intakeManifestFiles']", file);
         transactionInProgress ();
         assertTrue (isTextInElement ("#proceed-ui span", "Containers successfully created."));
         assertTrue (click ("#proceed-ui button"));
@@ -34,7 +33,7 @@ public class BatchAccession extends Accession {
         waitForElements (intakeRow).forEach (el -> {
             assertTrue (click (el, "[ng-click='ctrl.setLabelingComplete(container)']"));
             assertTrue (isTextInElement (popupTitle, "Labeling Complete Confirmation"));
-            clickPopupOK ();
+            clickLabelingCompleteButton ();
         });
         assertTrue (isTextInElement (shipmentStatus, "Labeling Complete"));
     }
@@ -43,7 +42,7 @@ public class BatchAccession extends Accession {
         waitForElements (intakeRow).forEach (el -> {
             assertTrue (click (el, "[ng-click='ctrl.setLabelVerificationComplete(container)']"));
             assertTrue (isTextInElement (popupTitle, "Label Verification Complete Confirmation"));
-            clickPopupOK ();
+            clickLabelVerificationCompleteButton ();
         });
         assertTrue (isTextInElement (shipmentStatus, "Label Verification Complete"));
     }

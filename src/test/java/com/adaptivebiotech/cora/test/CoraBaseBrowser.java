@@ -16,6 +16,7 @@ import static com.adaptivebiotech.test.utils.Logging.testLog;
 import static com.seleniumfy.test.utils.Logging.info;
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static org.testng.Assert.assertTrue;
 import static org.testng.ITestResult.SKIP;
 import static org.testng.Reporter.getCurrentTestResult;
 import java.lang.reflect.Method;
@@ -35,11 +36,12 @@ import com.adaptivebiotech.test.TestBase;
 
 public class CoraBaseBrowser extends TestBase {
 
-    protected final String        azTsvPath      = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
-    protected final String        azE2EPath      = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e";
-    protected final String        azPipelineClia = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
-    protected final String        azPipelineFda  = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
-    protected final String        SEAaccount     = "SEA_QA";
+    protected final String        azTsvPath              = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/scenarios";
+    protected final String        azE2EPath              = "https://adaptivetestcasedata.blob.core.windows.net/selenium/tsv/e2e";
+    protected final String        azPipelineClia         = "https://adaptiveruopipeline.blob.core.windows.net/pipeline-results";
+    protected final String        azPipelineFda          = "https://adaptiveivdpipeline.blob.core.windows.net/pipeline-results";
+    protected final String        SEAaccount             = "SEA_QA";
+    protected final String        containerNumberPattern = "CO-\\d{7}";
     protected static CoraApi      coraApi;
     protected static CoraDebugApi coraDebugApi;
     protected static CoraDb       coraDb;
@@ -133,5 +135,11 @@ public class CoraBaseBrowser extends TestBase {
             getCurrentTestResult ().setStatus (SKIP);
             throw new SkipException ("Required feature Flag is true, expected false");
         }
+    }
+
+    protected void validatePdfContent (String fileContent, String stringToValidate) {
+        fileContent = fileContent.replace ("\n", " ");
+        info ("Validate: " + stringToValidate + ", in: " + fileContent);
+        assertTrue (fileContent.contains (stringToValidate));
     }
 }

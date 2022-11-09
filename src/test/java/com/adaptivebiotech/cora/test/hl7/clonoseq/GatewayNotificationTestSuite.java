@@ -97,12 +97,10 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_BCell2_CLIA);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, SecondaryAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ShmAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (orderTest.orderId);
-        orderDetail.isCorrectPage ();
+        orderDetail.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.clickReportTab (ID_BCell2_CLIA);
         report.isCorrectPage ();
         report.releaseReport (ID_BCell2_CLIA, Pass);
@@ -128,7 +126,6 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         testLog ("released updated report");
 
         taskStatus.gotoTaskStatus (report.getCorrectedReportTaskId ());
-        taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();
         taskDetail.isCorrectPage ();
@@ -148,12 +145,10 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
         orderTest = diagnostic.findOrderTest (MRD_BCell2_CLIA);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, SecondaryAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ShmAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (orderTest.orderId);
-        orderDetail.isCorrectPage ();
+        orderDetail.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.clickReportTab (MRD_BCell2_CLIA);
         report.isCorrectPage ();
         report.releaseReport (MRD_BCell2_CLIA, Pass);
@@ -179,7 +174,6 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         testLog ("released amended report");
 
         taskStatus.gotoTaskStatus (report.getCorrectedReportTaskId ());
-        taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();
         taskDetail.isCorrectPage ();
@@ -202,14 +196,12 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
         OrderTest orderTest = diagnostic.findOrderTest (ID_TCRB);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, NorthQC, Finished);
         orderStatus.waitFor (orderTest.sampleName, CalculateSampleSummary, Finished);
         orderStatus.waitFor (orderTest.sampleName, Analyzer, Finished);
         orderStatus.waitFor (orderTest.sampleName, SecondaryAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (orderTest.orderId);
-        orderDetail.isCorrectPage ();
+        orderDetail.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.clickReportTab (ID_TCRB);
         report.isCorrectPage ();
         report.releaseReport (ID_TCRB, Pass);
@@ -235,7 +227,6 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         testLog ("released updated report");
 
         taskStatus.gotoTaskStatus (report.getCorrectedReportTaskId ());
-        taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();
         taskDetail.isCorrectPage ();
@@ -255,14 +246,12 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
 
         orderTest = diagnostic.findOrderTest (MRD_TCRB);
         orderStatus.gotoOrderStatusPage (orderTest.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.waitFor (orderTest.sampleName, NorthQC, Finished);
         orderStatus.waitFor (orderTest.sampleName, CalculateSampleSummary, Finished);
         orderStatus.waitFor (orderTest.sampleName, Analyzer, Finished);
         orderStatus.waitFor (orderTest.sampleName, SecondaryAnalysis, Finished);
         orderStatus.waitFor (orderTest.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
-        orderStatus.gotoOrderDetailsPage (orderTest.orderId);
-        orderDetail.isCorrectPage ();
+        orderDetail.gotoOrderDetailsPage (orderTest.orderId);
         orderDetail.clickReportTab (MRD_TCRB);
         report.isCorrectPage ();
         report.releaseReport (MRD_TCRB, Pass);
@@ -288,7 +277,6 @@ public class GatewayNotificationTestSuite extends HL7TestBase {
         testLog ("released updated report");
 
         taskStatus.gotoTaskStatus (report.getCorrectedReportTaskId ());
-        taskStatus.isCorrectPage ();
         taskStatus.waitFor (ReportDelivery, Awaiting, SENDING_REPORT_NOTIFICATION);
         taskStatus.clickTaskDetail ();
         taskDetail.isCorrectPage ();

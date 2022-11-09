@@ -1,6 +1,6 @@
-/**
-* Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
-*/
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.specimen.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
@@ -136,6 +136,7 @@ public class CollectionDateTestSuite extends SpecimenTestBase {
      * 
      * @sdlc.requirements SR-4420:R2
      */
+    @Test (groups = "smoke")
     public void collectionDatePatientDOB () {
         Specimen specimenDto = bloodSpecimen ();
         specimenDto.collectionDate = genLocalDate (-2);

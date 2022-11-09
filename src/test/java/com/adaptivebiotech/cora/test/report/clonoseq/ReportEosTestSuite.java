@@ -8,6 +8,7 @@ import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IVD;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_IVD;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getPageCount;
 import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -115,7 +116,7 @@ public class ReportEosTestSuite extends ReportTestBase {
 
         ClonoSeq clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isCLIA = true;
-        clonoseq.pageSize = 3;
+        clonoseq.pageSize = getPageCount (actualPdf);
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[CLIA] the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
@@ -161,7 +162,7 @@ public class ReportEosTestSuite extends ReportTestBase {
 
         clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isCLIA = true;
-        clonoseq.pageSize = 4;
+        clonoseq.pageSize = getPageCount (actualPdf);
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[CLIA] the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }
@@ -227,7 +228,7 @@ public class ReportEosTestSuite extends ReportTestBase {
 
         ClonoSeq clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isIVD = true;
-        clonoseq.pageSize = 3;
+        clonoseq.pageSize = getPageCount (actualPdf);
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[IVD] the EOS ClonoSEQ 2.0 clonality report matched with the baseline");
 
@@ -273,7 +274,7 @@ public class ReportEosTestSuite extends ReportTestBase {
 
         clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isIVD = true;
-        clonoseq.pageSize = 4;
+        clonoseq.pageSize = getPageCount (actualPdf);
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[IVD] the EOS ClonoSEQ 2.0 tracking report matched with the baseline");
     }

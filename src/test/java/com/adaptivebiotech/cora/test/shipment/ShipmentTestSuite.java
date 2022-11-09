@@ -42,7 +42,7 @@ public class ShipmentTestSuite extends CoraBaseBrowser {
     /**
      * @sdlc.requirements SR-9174
      */
-    @Test (groups = "entlebucher")
+    @Test (groups = { "entlebucher", "smoke" })
     public void diagnosticShipment () {
         login.doLogin ();
         ordersList.isCorrectPage ();
@@ -71,8 +71,7 @@ public class ShipmentTestSuite extends CoraBaseBrowser {
         newOrderClonoSeq.activateOrder ();
         testLog (format ("Able to generate order with %s shipping condition", Refrigerated));
 
-        newOrderClonoSeq.gotoShipmentEntry (shipmentId);
-        shipmentDetail.isCorrectPage ();
+        shipmentDetail.gotoShipmentDetail (shipmentId);
         assertEquals (shipmentDetail.getShippingCondition (), Refrigerated);
         testLog (format ("Shipping Condition displayed %s on the Shipment Details page", Refrigerated));
     }

@@ -3,9 +3,13 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.dto;
 
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static com.adaptivebiotech.test.utils.TestHelper.toStringOverride;
 import static java.util.EnumSet.allOf;
+import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
+import java.sql.ResultSet;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import com.adaptivebiotech.cora.dto.Containers.Container;
@@ -17,21 +21,49 @@ import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
  */
 public final class Shipment {
 
-    public UUID              id;
-    public String            shipmentNumber;
-    public String            link;
-    public OrderCategory     category;
-    public String            status;
-    public Object            arrivalDate;
-    public ShippingCondition condition;
-    public String            carrier;
-    public String            trackingNumber;
-    public String            expectedRecordType;
-    public List <Container>  containers;
+    public UUID               id;
+    public String             shipmentNumber;
+    public String             link;
+    public OrderCategory      category;
+    public String             status;
+    public Object             arrivalDate;
+    public ShippingCondition  condition;
+    public String             carrier;
+    public String             trackingNumber;
+    public String             expectedRecordType;
+    public List <Container>   containers;
+    public ShipmentProperties properties;
+
+    public Shipment () {}
+
+    public Shipment (ResultSet rs) {
+        try {
+            this.id = fromString (rs.getString ("id"));
+            this.shipmentNumber = rs.getString ("shipment_number");
+            this.category = OrderCategory.valueOf (rs.getString ("shipment_category_type"));
+            this.status = rs.getString ("shipment_status_type");
+            this.arrivalDate = rs.getDate ("arrival_date");
+            this.condition = ShippingCondition.valueOf (rs.getString ("shipment_condition_type"));
+            this.carrier = rs.getString ("shipping_carrier_type");
+            this.trackingNumber = rs.getString ("tracking_number");
+            this.expectedRecordType = rs.getString ("expected_record_type");
+            this.properties = mapper.readValue (rs.getString ("properties"), ShipmentProperties.class);
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
 
     @Override
     public String toString () {
         return toStringOverride (this);
+    }
+
+    public static final class ShipmentProperties {
+        public Boolean       HighPriority;
+        public Boolean       TrfProblem;
+        public Boolean       ManifestProblem;
+        public Boolean       SpecimenMissing;
+        public LocalDateTime TouchedShipmentEntry;
     }
 
     public enum ShippingCondition {

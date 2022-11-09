@@ -256,7 +256,6 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
                                                 validICD,
                                                 genCDxTest (ID_BCell2_CLIA, bCellIDTsv)).findOrderTest (ID_BCell2_CLIA);
         orderStatus.gotoOrderStatusPage (test.orderId);
-        orderStatus.isCorrectPage ();
         orderStatus.failWorkflow (test.sampleName, "testing prior no result autorelease");
         verifyAutoReleaseFailure (test,
                                   "Failed Auto Release Rules: IsSentToFailureTarget expected wasSentToFailureTarget not to be true.");
@@ -362,9 +361,11 @@ public class ClonoSEQAutoReleaseTestSuite extends ReportTestBase {
     private void waitForReportGeneration (OrderTest orderTest) {
         history.gotoOrderDebug (orderTest.sampleName);
         history.waitFor (ClonoSEQReport, Awaiting, CLINICAL_QC);
-        history.clickOrderTest ();
+        history.clickOrder ();
+
         Assay assay = Assay.getAssay (orderTest.test.name);
-        report.clickReportTab (assay);
+        orderStatus.isCorrectPage ();
+        orderStatus.clickReportTab (assay);
         if (orderTest.test.receptorFamily.equals ("TCell")) {
             report.generateReport (assay);
         }

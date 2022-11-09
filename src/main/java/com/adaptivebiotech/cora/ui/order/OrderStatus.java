@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
+import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Stuck;
 import static java.lang.String.format;
 import static java.util.UUID.fromString;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.openqa.selenium.WebElement;
+import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.test.utils.PageHelper.StageName;
 import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
@@ -42,6 +44,12 @@ public class OrderStatus extends OrderHeader {
         pageLoading ();
     }
 
+    public void gotoOrderStatusPage (UUID orderId) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/order/status/" + orderId));
+        pageLoading ();
+        isCorrectPage ();
+    }
+
     public List <String> getCancelOrderMessages () {
         String css = "[ng-if='ctrl.orderEntry.order | orderIsCancelled']";
         List <String> cancellationMsgs = new ArrayList <String> ();
@@ -58,6 +66,17 @@ public class OrderStatus extends OrderHeader {
 
     public String getTestName () {
         return getText ("[ng-bind='::orderTest.testName']");
+    }
+
+    // Active order status has different locator than OrderHeader
+    @Override
+    public Orders.OrderStatus getOrderStatus () {
+        return Orders.OrderStatus.valueOf (getText ("[ng-bind='ctrl.orderEntry.order.status']"));
+    }
+
+    // Returns order TEST status, different locator from order status in header
+    public Orders.OrderStatus getOrderTestStatus () {
+        return Orders.OrderStatus.valueOf (getText ("[ng-bind='::orderTest.status']"));
     }
 
     // aka sample name
@@ -140,14 +159,23 @@ public class OrderStatus extends OrderHeader {
 
     public void failWorkflow (String sampleName, String message) {
         clickHistory (sampleName);
+        actionWorkflow ("Fail workflow", message, "Are you sure you want to fail the workflow?");
+        clickHide (sampleName);
+    }
+
+    public void completeWorkflow (String message) {
+        actionWorkflow ("Complete workflow", message, "Are you sure you want to complete the workflow?");
+    }
+
+    private void actionWorkflow (String workflowStateName, String message, String workflowConfirmationMessage) {
         assertTrue (click (stageActionDots));
         assertTrue (waitUntilVisible (stageActionsDropdown));
-        assertTrue (click (format (dropdownItem, "Fail workflow")));
+        assertTrue (click (format (dropdownItem, workflowStateName)));
         assertTrue (setText (subStatusMsg, message));
         assertTrue (click (submit));
-        assertTrue (isTextInElement (actionConfirm, "Are you sure you want to fail the workflow?"));
+        assertTrue (isTextInElement (actionConfirm, workflowConfirmationMessage));
         assertTrue (click (confirmYes));
-        clickHide (sampleName);
+        transactionInProgress ();
     }
 
     public String getSpecimenId () {

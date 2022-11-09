@@ -1,6 +1,6 @@
-/**
-* Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
-*/
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.attachment.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
@@ -40,8 +40,9 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
     /**
      * NOTE: SR-T4205
      * 
-     * @sdlc.requirements SR-11381
+     * @sdlc.requirements SR-11381, SR-9398
      */
+    @Test (groups = "irish-wolfhound")
     public void previewOrderShipmentAttachment () {
         login.doLogin ();
         ordersList.isCorrectPage ();
@@ -65,7 +66,6 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
         newOrderClonoSeq.gotoOrderEntry (order.id);
         newOrderClonoSeq.uploadAttachments (uploadPreviewFiles);
-        newOrderClonoSeq.gotoOrderEntry (order.id);
 
         previewFilesPendingOrder ("Orders", previewFiles);
         validateAttachments (newOrderClonoSeq.getCoraAttachments (), previewFiles, Pending);
@@ -83,7 +83,6 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
 
         previewFilesActiveOrder ("Shipments", previewFiles);
         validateAttachments (orderDetailClonoSeq.getShipmentAttachments (), previewFiles, Active);
-
     }
 
     private void previewFilesPendingOrder (String attachmentSection, List <String> previewFiles) {
@@ -99,5 +98,4 @@ public class PreviewAttachmentTestSuite extends AttachmentTestBase {
             orderDetailClonoSeq.closeFilePreview ();
         }
     }
-
 }

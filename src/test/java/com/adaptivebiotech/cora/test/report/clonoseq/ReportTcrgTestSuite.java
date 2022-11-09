@@ -6,6 +6,7 @@ package com.adaptivebiotech.cora.test.report.clonoseq;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_TCRG;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_TCRG;
 import static com.adaptivebiotech.cora.utils.PageHelper.QC.Pass;
+import static com.adaptivebiotech.cora.utils.PdfUtil.getPageCount;
 import static com.adaptivebiotech.cora.utils.PdfUtil.getTextFromPDF;
 import static com.adaptivebiotech.cora.utils.TestHelper.scenarioBuilderPatient;
 import static com.adaptivebiotech.cora.utils.TestScenarioBuilder.stage;
@@ -83,7 +84,7 @@ public class ReportTcrgTestSuite extends ReportTestBase {
 
         ClonoSeq clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isCLIA = true;
-        clonoseq.pageSize = 3;
+        clonoseq.pageSize = getPageCount (actualPdf);
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[TCRG] the ClonoSEQ 2.0 clonality report matched with the baseline");
 
@@ -110,7 +111,7 @@ public class ReportTcrgTestSuite extends ReportTestBase {
 
         clonoseq = basicClonoSeq (reportRender, patient, diagnostic, orderTest);
         clonoseq.helper.isCLIA = true;
-        clonoseq.pageSize = 3;
+        clonoseq.pageSize = getPageCount (actualPdf);
         verifyReport (clonoseq, getTextFromPDF (actualPdf));
         testLog ("[TCRG] the ClonoSEQ 2.0 tracking report matched with the baseline");
     }
