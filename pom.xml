@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.42</version>
+            <version>1.1.43-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.adaptivebiotech.test.functional</groupId>
