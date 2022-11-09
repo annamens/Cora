@@ -1,6 +1,6 @@
-/**
-* Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
-*/
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.attachment;
 
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;

@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
 package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.test.utils.Logging.testLog;
@@ -32,7 +35,7 @@ public class ReanimateWorkflowTestSuite extends CoraBaseBrowser {
     /**
      * Note:SR-T4299
      * 
-     * @sdlc.requirement SR-12650:R2
+     * @sdlc.requirements SR-12650:R2
      */
     public void verifyReanimateForOrderTests () {
 
