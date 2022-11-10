@@ -14,11 +14,25 @@ public class BatchAccession extends Accession {
     private final String intakeRow = "[ng-if='ctrl.entry.shipment.intakeInitialized']";
 
     public void uploadIntakeManifest (String file) {
-        uploadFile ("input[name='intakeManifestFiles']", file);
+        String uploadBeforeContainersAdded = "input[name='intakeManifestFiles']";
+        // different locator in UI depending on if containers have been added prior
+        if (isElementPresent (uploadBeforeContainersAdded)) {
+            uploadFile (uploadBeforeContainersAdded, file);
+        } else {
+            uploadFile ("input[name='file']", file);
+        }
         transactionInProgress ();
-        assertTrue (isTextInElement ("#proceed-ui span", "Containers successfully created."));
+        pageLoading ();
+    }
+
+    public void clickProceed () {
         assertTrue (click ("#proceed-ui button"));
         pageLoading ();
+    }
+
+    public void clickCreateIntakeDetails () {
+        assertTrue (click ("[ng-click='ctrl.initializeResearchAccession()']"));
+        transactionInProgress ();
     }
 
     public void clickPassAllSpecimens () {

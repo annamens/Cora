@@ -123,6 +123,7 @@ public class IghvBatchTestSuite extends BatchTestBase {
         login.doLogin ();
         ordersList.isCorrectPage ();
         String shipmentNumber = newShipment.createBatchShipment (SalesforceOrder);
+        newShipment.clickAccessionTab ();
         testLog ("created a new batch shipment for IgHV: " + shipmentNumber);
 
         accession.completeBatchAccession (intakeManifest);

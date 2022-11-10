@@ -15,6 +15,7 @@ import java.util.Map;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import com.adaptivebiotech.cora.dto.Containers.ContainerType;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.Batch;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
@@ -40,6 +41,8 @@ public class BatchTestSuite extends BatchTestBase {
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod (Method test) {
         downloadDir.set (artifacts (this.getClass ().getName (), test.getName ()));
+        login.doLogin ();
+        ordersList.isCorrectPage ();
     }
 
     @AfterMethod (alwaysRun = true)
@@ -58,16 +61,60 @@ public class BatchTestSuite extends BatchTestBase {
         prepManifestFile ("batch/eos-intakemanifest.xlsx", intakeManifest, sample);
         prepManifestFile ("batch/eos-premanifest.xlsx", preManifest, sample);
 
-        login.doLogin ();
-        ordersList.isCorrectPage ();
         String shipmentNumber = newShipment.createBatchShipment (SalesforceOrder);
         testLog ("created a new batch shipment: " + shipmentNumber);
 
-        accession.completeBatchAccession (intakeManifest);
+        newShipment.selectSpecimenContainerType (ContainerType.TubeBox10x10);
+        newShipment.setContainerName (1, "Box1");
+        newShipment.clickSave ();
+        newShipment.clickAccessionTab ();
+        accession.uploadIntakeManifest (intakeManifest);
+        accession.clickCreateIntakeDetails ();
+        accession.completeBatchAccession ();
         testLog ("completed the batch accession");
 
         batch.createBatchOrder (sfdcOrder, shipmentNumber, preManifest);
         orderNumber.set (batch.getOrderNumber ());
         testLog ("activated the batch order");
     }
+
+    public void allContainersIntakeComplete () {
+        String shipmentNumber = newShipment.createBatchShipment (SalesforceOrder);
+        testLog ("created a new batch shipment: " + shipmentNumber);
+
+        Map <ContainerType, String> containerMap = new HashMap <ContainerType, String> ();
+
+        containerMap.put (ContainerType.TubeBox5x5, "TB5x5");
+        containerMap.put (ContainerType.TubeBox5x10, "TB5x10");
+        containerMap.put (ContainerType.TubeBox9x9, "TB9x9");
+        containerMap.put (ContainerType.TubeBox10x10, "TB10x10");
+        containerMap.put (ContainerType.VacutainerBox7x7, "VB7x7");
+        containerMap.put (ContainerType.ConicalBox6x6, "CB6x6");
+        containerMap.put (ContainerType.Plate, "96plate");
+        containerMap.put (ContainerType.SlideBox5, "5SBWO");
+        containerMap.put (ContainerType.SlideBox5CS, "5SBW");
+        containerMap.put (ContainerType.SlideBox25, "25SBWO");
+        containerMap.put (ContainerType.SlideBox25CS, "25SBW");
+        containerMap.put (ContainerType.SlideBox100, "100SBWO");
+        containerMap.put (ContainerType.SlideBox100CS, "100SBW");
+        containerMap.put (ContainerType.SlideTube, "STWO");
+        containerMap.put (ContainerType.SlideTubeCS, "STW");
+        containerMap.put (ContainerType.OtherSlideBox, "OSBWO");
+        containerMap.put (ContainerType.OtherSlideBoxCS, "OSBW");
+
+        int i = 1;
+        for (Map.Entry <ContainerType, String> entry : containerMap.entrySet ()) {
+            newShipment.selectSpecimenContainerType (entry.getKey ());
+            newShipment.setContainerName (i, entry.getValue ());
+            i++;
+        }
+
+        newShipment.clickSave ();
+        newShipment.clickAccessionTab ();
+        accession.uploadIntakeManifest ("batch/allContainers-intakemanifest.xlsx");
+        accession.clickCreateIntakeDetails ();
+        accession.completeBatchAccession ();
+        testLog ("completed the batch accession with all container types");
+    }
+
 }
