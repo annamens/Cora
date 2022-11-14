@@ -27,6 +27,7 @@ public class OrderHeader extends CoraPage {
 
     protected final String oEntry              = ".order-entry";
     protected final String oDetail             = ".detail-sections";
+    private final String   patientCode         = "//*[@class='summary']//a[*[@ng-bind='ctrl.orderEntry.order.patient.patientCode']]";
     private final String   newAlert            = ".new-alert";
     private final String   alertDashboard      = ".alert-dashboard-main";
     private final String   activeAlertCount    = ".alert-count";
@@ -90,9 +91,15 @@ public class OrderHeader extends CoraPage {
         assertEquals (orderStatus, Active, "Order did not activated successfully");
     }
 
+    public void clickPatientCode () {
+        int tabCount = getDriver ().getWindowHandles ().size ();
+        assertTrue (click (patientCode));
+        assertTrue (waitForChildWindows (tabCount + 1));
+        navigateToTab (tabCount);
+    }
+
     public UUID getPatientId () {
-        String css = "//*[@class='summary']//a[*[@ng-bind='ctrl.orderEntry.order.patient.patientCode']]";
-        return fromString (substringAfterLast (getAttribute (css, "href"), "patient/"));
+        return fromString (substringAfterLast (getAttribute (patientCode, "href"), "patient/"));
     }
 
     public boolean isActiveAlertCountPresent () {

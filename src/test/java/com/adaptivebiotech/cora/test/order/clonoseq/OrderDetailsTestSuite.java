@@ -5,22 +5,34 @@ package com.adaptivebiotech.cora.test.order.clonoseq;
 
 import static com.adaptivebiotech.cora.dto.Containers.ContainerType.Tube;
 import static com.adaptivebiotech.cora.dto.Orders.Assay.ID_BCell2_IUO_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.Assay.MRD_BCell2_CLIA;
+import static com.adaptivebiotech.cora.dto.Orders.CancelOrderAction.GenerateFailureReport;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilling;
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Cancelled;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.CancelledWithReport;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Pending;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.PendingCancellation;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
+import static com.adaptivebiotech.cora.dto.Specimen.Anticoagulant.Streck;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.limsTestUrl;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
+import static com.adaptivebiotech.test.utils.DateHelper.genLocalDate;
 import static com.adaptivebiotech.test.utils.DateHelper.utcZoneId;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static com.adaptivebiotech.test.utils.PageHelper.SpecimenSource.Blood;
 import static com.adaptivebiotech.test.utils.PageHelper.StageName.Clarity;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.ClonoSEQReport;
+import static com.adaptivebiotech.test.utils.PageHelper.StageName.Finalize;
 import static com.adaptivebiotech.test.utils.PageHelper.StageStatus.Awaiting;
 import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CANCELLED;
+import static com.adaptivebiotech.test.utils.PageHelper.StageSubstatus.CLINICAL_QC;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
@@ -41,10 +53,14 @@ import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
+import com.adaptivebiotech.cora.ui.order.ReportClonoSeq;
 import com.adaptivebiotech.cora.ui.patient.PatientDetail;
+import com.adaptivebiotech.cora.ui.patient.PatientOrderHistory;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
 import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
+import com.adaptivebiotech.cora.utils.PageHelper.QC;
+import com.adaptivebiotech.test.utils.PageHelper.StageStatus;
 
 /**
  * @author jpatel
@@ -62,6 +78,8 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
     private ShipmentDetail      shipmentDetail      = new ShipmentDetail ();
     private Accession           accession           = new Accession ();
     private PatientDetail       patientDetail       = new PatientDetail ();
+    private PatientOrderHistory patientOrderHistory = new PatientOrderHistory ();
+    private ReportClonoSeq      reportClonoSeq      = new ReportClonoSeq ();
 
     /**
      * Note: SR-T2166, SR-T4353
@@ -221,5 +239,69 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
         assertEquals (orderStatus.getCancelOrderMessages (),
                       asList (CANCELLED + " - Other - Internal. Specimen - Not Rejected. Other.", "this is a test"));
         testLog ("STEP 15 - Cancelled messaging displays Reason1, SStatus1, Disposition1, and Comment1");
+    }
+
+    /**
+     * Note: SR-T4384
+     * 
+     * @sdlc.requirements SR-13623:R2
+     */
+    @Test (groups = "jack-russell")
+    public void verifyOrderStatusAfterCancelStreck () {
+        login.doLogin ();
+        ordersList.isCorrectPage ();
+
+        // Create Order
+        Physician physician = coraApi.getPhysician (non_CLEP_clonoseq);
+        Patient patient = newNoChargePatient ();
+        String[] icdCode = new String[] { "C83.31" };
+        Assay orderTest = MRD_BCell2_CLIA;
+        Specimen specimen = bloodSpecimen ();
+        specimen.compartment = CellFree;
+        specimen.anticoagulant = Streck;
+        specimen.collectionDate = genLocalDate (-6);
+        Order order = diagnostic.createClonoSeqOrder (physician, patient, icdCode, orderTest, specimen);
+        testLog ("Created order");
+
+        // Cancel Order
+        diagnostic.gotoOrderEntry (order.id);
+        diagnostic.clickCancelOrder ();
+        diagnostic.cancelStreckOrder (GenerateFailureReport);
+        orderStatus.isCorrectPage ();
+        specimen.sampleName = orderStatus.getWorkflowId ();
+        testLog ("Cancelled Order");
+
+        // Go to Patient page and check status
+        orderStatus.clickPatientCode ();
+        patientDetail.isCorrectPage ();
+        patientDetail.clickPatientOrderHistoryTab ();
+        patientOrderHistory.isCorrectPage ();
+        assertTrue (patientOrderHistory.statusHeadersPresent ());
+        testLog ("Status Headers are both present");
+        assertEquals (patientOrderHistory.getOrderStatus (order), PendingCancellation);
+        assertEquals (patientOrderHistory.getTestStatus (order), Pending);
+        testLog ("Order Status is PendingCancellation and Test Status is Pending");
+
+        // Fully cancel order
+        orderStatus.gotoOrderStatusPage (order.id);
+        orderStatus.waitFor (specimen.sampleName, ClonoSEQReport, Awaiting, CLINICAL_QC);
+        testLog ("Awaiting Clinical QC Reached");
+
+        clonoSeqOrderDetail.gotoOrderDetailsPage (order.id);
+        clonoSeqOrderDetail.clickReportTab (orderTest);
+        reportClonoSeq.isCorrectPage ();
+        reportClonoSeq.releaseReport (orderTest, QC.Pass);
+        testLog ("Released Report, waiting for delivery finished");
+
+        reportClonoSeq.clickOrderStatusTab ();
+        orderStatus.isCorrectPage ();
+        orderStatus.waitFor (specimen.sampleName, Finalize, StageStatus.Cancelled);
+        orderStatus.clickPatientCode ();
+        patientDetail.isCorrectPage ();
+        patientDetail.clickPatientOrderHistoryTab ();
+        patientOrderHistory.isCorrectPage ();
+        assertEquals (patientOrderHistory.getOrderStatus (order), CancelledWithReport);
+        assertEquals (patientOrderHistory.getTestStatus (order), Cancelled);
+        testLog ("Order Status is CancelledWithReport and Test Status is Cancelled");
     }
 }

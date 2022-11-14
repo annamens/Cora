@@ -159,14 +159,23 @@ public class OrderStatus extends OrderHeader {
 
     public void failWorkflow (String sampleName, String message) {
         clickHistory (sampleName);
+        actionWorkflow ("Fail workflow", message, "Are you sure you want to fail the workflow?");
+        clickHide (sampleName);
+    }
+
+    public void completeWorkflow (String message) {
+        actionWorkflow ("Complete workflow", message, "Are you sure you want to complete the workflow?");
+    }
+
+    private void actionWorkflow (String workflowStateName, String message, String workflowConfirmationMessage) {
         assertTrue (click (stageActionDots));
         assertTrue (waitUntilVisible (stageActionsDropdown));
-        assertTrue (click (format (dropdownItem, "Fail workflow")));
+        assertTrue (click (format (dropdownItem, workflowStateName)));
         assertTrue (setText (subStatusMsg, message));
         assertTrue (click (submit));
-        assertTrue (isTextInElement (actionConfirm, "Are you sure you want to fail the workflow?"));
+        assertTrue (isTextInElement (actionConfirm, workflowConfirmationMessage));
         assertTrue (click (confirmYes));
-        clickHide (sampleName);
+        transactionInProgress ();
     }
 
     public String getSpecimenId () {

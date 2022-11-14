@@ -20,7 +20,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 import java.time.LocalDate;
@@ -172,7 +171,6 @@ public abstract class NewOrder extends OrderHeader {
     public void clickPatientOrderHistory () {
         assertTrue (click ("//a[text()='Patient Order History']"));
         pageLoading ();
-        assertEquals (waitForElementVisible ("[uisref='main.patient.orders']").getText (), "Patient Order History");
     }
 
     public UUID getPatientId () {

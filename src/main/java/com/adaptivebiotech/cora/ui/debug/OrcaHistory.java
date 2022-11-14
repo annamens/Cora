@@ -36,8 +36,11 @@ import com.seleniumfy.test.utils.Timeout;
  */
 public class OrcaHistory extends CoraPage {
 
-    private final long millisDuration = 3000000l; // 50mins
-    private final long millisPoll     = 60000l;   // 60sec
+    private final long   millisDuration       = 3000000l;                                              // 50mins
+    private final long   millisPoll           = 60000l;                                                // 60sec
+    private final String workflowHeaderString = "//table[@class='genoTable']/following-sibling::h3[1]";
+    private final String reasonText           = "input#animationReason";
+    private final String stageNameSelect      = "select[name='stageName']";
 
     public OrcaHistory () {
         staticNavBarHeight = 200;
@@ -49,8 +52,8 @@ public class OrcaHistory extends CoraPage {
         assertTrue (waitUntilVisible ("table.genoTable"));
     }
 
-    public void gotoOrderDebug (String id) {
-        assertTrue (navigateTo (coraTestUrl + "/cora/debug/orcaHistory?workflowId=" + id));
+    public void gotoOrderDebug (Object idOrName) {
+        assertTrue (navigateTo (coraTestUrl + "/cora/debug/orcaHistory?workflowId=" + idOrName));
         isCorrectPage ();
     }
 
@@ -250,7 +253,6 @@ public class OrcaHistory extends CoraPage {
 
     public void forceStatusUpdate (StageName stageName, StageStatus stageStatus) {
         String orcaHistoryUrl = getCurrentUrl ();
-        String stageNameSelect = "select[name='stageName']";
         String stageStatusSelect = "select[name='stageStatus']";
 
         assertTrue (clickAndSelectValue (stageNameSelect, stageName.name ()));
@@ -292,24 +294,30 @@ public class OrcaHistory extends CoraPage {
 
     public List <Stage> parseStatusHistory () {
         List <Stage> histories = new ArrayList <> ();
-        for (WebElement tr : waitForElements (".genoTable tr")) {
-            if (isElementPresent (tr, "td")) {
-                Stage stage = new Stage ();
-                stage.stageName = StageName.valueOf (getText (tr, "td:nth-child(1)"));
-                stage.stageStatus = StageStatus.valueOf (getText (tr, "td:nth-child(2)"));
-                String subs = getText (tr, "td:nth-child(3)");
-                stage.stageSubstatus = isNullOrEmpty (subs) ? null : StageSubstatus.valueOf (subs.replace ("-", "_"));
-                stage.subStatusMessage = getText (tr, ".ssm");
-                stage.timestamp = getText (tr, "td:nth-child(5)");
-                stage.actor = getText (tr, "td:nth-child(6)");
-
-                String drilldown = "td:nth-child(7) a";
-                if (isElementPresent (tr, drilldown))
-                    stage.drilldownUrl = getAttribute (tr, drilldown, "href");
-                histories.add (stage);
-            }
-        }
+        for (WebElement tr : waitForElements (".genoTable tr"))
+            if (isElementPresent (tr, "td"))
+                histories.add (parseStatusRow (tr));
         return histories;
+    }
+
+    public Stage getWorkflowLatestStatus () {
+        return parseStatusRow (waitForElementVisible ("//table[@class='genoTable']//tr[2]"));
+    }
+
+    private Stage parseStatusRow (WebElement tr) {
+        Stage stage = new Stage ();
+        stage.stageName = StageName.valueOf (getText (tr, "td:nth-child(1)"));
+        stage.stageStatus = StageStatus.valueOf (getText (tr, "td:nth-child(2)"));
+        String subs = getText (tr, "td:nth-child(3)");
+        stage.stageSubstatus = isNullOrEmpty (subs) ? null : StageSubstatus.valueOf (subs.replace ("-", "_"));
+        stage.subStatusMessage = getText (tr, ".ssm");
+        stage.timestamp = getText (tr, "td:nth-child(5)");
+        stage.actor = getText (tr, "td:nth-child(6)");
+
+        String drilldown = "td:nth-child(7) a";
+        if (isElementPresent (tr, drilldown))
+            stage.drilldownUrl = getAttribute (tr, drilldown, "href");
+        return stage;
     }
 
     public void uploadFile (String path, String filename) {
@@ -357,5 +365,38 @@ public class OrcaHistory extends CoraPage {
             }
         };
         return waitUntil (millisDuration, millisPoll / 6, func);
+    }
+
+    public void reanimateWorkflow (StageName stageName, String reason) {
+        assertTrue (clickAndSelectText (stageNameSelect, stageName.name ()));
+        assertTrue (clear (reasonText));
+        assertTrue (setText (reasonText, reason));
+        assertTrue (click ("input#animationButton[type='submit']"));
+    }
+
+    public String getWorkflowText () {
+        return getText (workflowHeaderString);
+    }
+
+    public boolean isWorkflowHeaderVisible () {
+        return isElementVisible (workflowHeaderString);
+    }
+
+    public String getPopUpConfirmationText () {
+        String parentWindow = getDriver ().getWindowHandle ();
+        String popUpConfirmationText = getDriver ().switchTo ().alert ().getText ();
+        getDriver ().switchTo ().window (parentWindow);
+        return popUpConfirmationText;
+    }
+
+    public boolean acceptPopUpAlert () {
+        getDriver ().switchTo ().alert ().accept ();
+        pageLoading ();
+        return true;
+    }
+
+    public boolean cancelPopUpAlert () {
+        getDriver ().switchTo ().alert ().dismiss ();
+        return true;
     }
 }

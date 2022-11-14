@@ -294,13 +294,6 @@ public class OrderDetail extends OrderHeader {
         return getText ("[ng-bind='ctrl.orderEntry.order.patient.gender']");
     }
 
-    public void clickPatientCode () {
-        String css = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
-        assertTrue (click (css));
-        assertTrue (waitForChildWindows (2));
-        navigateToTab (1);
-    }
-
     public Integer getPatientCode () {
         String xpath = "[ng-bind='ctrl.orderEntry.order.patient.patientCode']";
         return Integer.valueOf (getText (xpath));
