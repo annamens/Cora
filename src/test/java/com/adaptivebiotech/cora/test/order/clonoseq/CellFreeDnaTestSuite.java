@@ -36,6 +36,7 @@ import static com.adaptivebiotech.test.utils.PageHelper.Compartment.CellFree;
 import static java.lang.String.format;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertFalse;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
@@ -355,11 +356,11 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     }
 
     /**
-     * NOTE: SR-T4324
+     * NOTE: SR-T4324, SR-T4400
      * 
      * @sdlc.requirements SR-12635:R4, SR-11721:R4, SR-13826
      */
-    @Test (groups = "irish-wolfhound")
+    @Test (groups = { "irish-wolfhound", "jack-russell" })
     public void majorDiscrepancyResolvedAfterLabelVerify () {
         skipTestIfFeatureFlagOff (cfDna.get ());
         skipTestIfFeatureFlagOff (specimenActivation.get ());
@@ -799,10 +800,11 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     }
 
     /**
-     * NOTE: SR-T4289
+     * NOTE: SR-T4289, SR-T4399
      * 
-     * @sdlc.requirements SR-11721:R2
+     * @sdlc.requirements SR-11721:R2, SR-13827
      */
+    @Test (groups = "jack-russell")
     public void verifyUpdatedOrderActivationPlasma () {
         Specimen specimenDto = bloodSpecimen ();
         specimenDto.compartment = CellFree;
@@ -830,6 +832,15 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
                       "Order save failed with reason: Streck (Plasma) was not extracted within 45 days from the isolation date.");
         testLog ("Streck Plasma Isolation Date = Today - 45, Order Activation Blocked");
 
+        // Isolation date = today - 0 (pass), collection date updated to today - 7, activation fail
+        updateIsolationDateAndVerifyPlasmaStabilityWindow (0, Advisory, specimenDto.specimenNumber);
+        newOrderClonoSeq.enterCollectionDate (genLocalDate (-7));
+        newOrderClonoSeq.clickSaveAndActivate ();
+        newOrderClonoSeq.confirmActivate ();
+        assertEquals (newOrderClonoSeq.getToastError (),
+                      "Order save failed with reason: Streck (Blood) was not isolated within 7 days from the collection date.");
+        testLog ("Streck Blood updated to Collection Date = Today - 7, Order Activation Blocked");
+
         /*
          * Isolation date = today - 44, activation pass
          * TO DO: Pending SR-13054 in Baiji release which will allow order activation without
@@ -849,9 +860,9 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
     }
 
     /**
-     * NOTE: SR-T4291, SR-T4372
+     * NOTE: SR-T4291, SR-T4372, SR-T4391
      * 
-     * @sdlc.requirements SR-11341, SR-13576
+     * @sdlc.requirements SR-11341, SR-13576, SR-13623:R3
      */
     @Test (groups = { "irish-wolfhound", "jack-russell" })
     public void verifyCancelStreckOrderWithoutFastLane () {
@@ -878,6 +889,8 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
         assertEquals (newOrderClonoSeq.getOrderStatus (), Cancelled);
         assertEquals (orderStatus.getOrderTestStatus (), Cancelled);
         testLog ("Order Status is Cancelled");
+        assertFalse (orderStatus.isReportTabPresent (assayTest));
+        testLog ("Report Tab is not Present for Streck Order");
     }
 
     /**

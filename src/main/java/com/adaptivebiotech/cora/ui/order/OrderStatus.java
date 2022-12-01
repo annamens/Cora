@@ -33,6 +33,7 @@ public class OrderStatus extends OrderHeader {
     private final String confirmYes           = "//button[text()='Yes']";
     private final String hideShow             = "//tr[td[text()='%s']]//*[contains (@class, 'history-link') and text()='%s']";
     private final String workflowTable        = "//tr[td[text()='%s']]/following-sibling::tr[1]//tbody/tr[1]";
+    private final String orderActionDots      = "#orderActionsDropdown";
 
     public OrderStatus () {
         staticNavBarHeight = 200;
@@ -189,6 +190,17 @@ public class OrderStatus extends OrderHeader {
         assertTrue (click (format (dropdownItem, "Nudge workflow")));
         assertTrue (click (confirmYes));
         transactionInProgress ();
+    }
+
+    public boolean isOrderActionDotsPresent () {
+        return isElementVisible (orderActionDots);
+    }
+
+    public void clickRestartOrder () {
+        assertTrue (click (orderActionDots));
+        assertTrue (isTextInElement ("//*[@class='dropdown-menu restart-menu']//a[text()='Overflow Menu']",
+                                     "Overflow Menu"));
+        assertTrue (click ("//a[text()='Restart Order']"));
     }
 
     public void checkForStuck (String sampleName, StageStatus status) {
