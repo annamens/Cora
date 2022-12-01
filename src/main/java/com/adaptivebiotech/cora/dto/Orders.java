@@ -261,6 +261,11 @@ public final class Orders {
         public ChargeType   BillingType;
         public DeliveryType SpecimenDeliveryType;
         public String       Icd10Codes;
+        public String       CancellationNotes;
+        public String       CancellationReason;
+        public String       CancellationReason2;
+        public String       CancellationReason3;
+        public String       CancellationDateTime;
 
         public OrderProperties () {}
 

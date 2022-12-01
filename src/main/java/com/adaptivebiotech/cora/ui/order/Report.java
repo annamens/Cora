@@ -154,6 +154,10 @@ public class Report extends OrderHeader {
         reportLoading ();
     }
 
+    public boolean isCorrectReportButtonPresent () {
+        return isElementPresent ("//button[text()='Correct Report']");
+    }
+
     public void selectCorrectionType (CorrectionType correctionType) {
         assertTrue (click ("#" + correctionType.name ().toLowerCase () + "[name='correctionType']"));
     }

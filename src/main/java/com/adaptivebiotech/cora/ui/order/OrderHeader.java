@@ -68,6 +68,10 @@ public class OrderHeader extends CoraPage {
         assertTrue (waitUntilVisible (".order-test-report"));
     }
 
+    public boolean isReportTabPresent (Assay assay) {
+        return isElementPresent ("//a[text()='REPORT | " + assay.test + "']");
+    }
+
     public String getheaderOrderNumber () {
         return getText ("//*[label[@id='order-number-text']]//span");
     }
