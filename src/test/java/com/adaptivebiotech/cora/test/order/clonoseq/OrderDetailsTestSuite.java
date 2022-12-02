@@ -9,10 +9,10 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.InternalPharmaBilli
 import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Active;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.non_CLEP_clonoseq;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
-import static com.adaptivebiotech.cora.test.CoraEnvironment.limsTestUrl;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newNoChargePatient;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUser;
+import static com.adaptivebiotech.test.BaseEnvironment.limsTestUrl;
 import static com.adaptivebiotech.test.utils.DateHelper.formatDt7;
 import static com.adaptivebiotech.test.utils.DateHelper.genDate;
 import static com.adaptivebiotech.test.utils.DateHelper.utcZoneId;
@@ -36,7 +36,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
 import com.adaptivebiotech.cora.dto.Specimen;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.order.OrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
@@ -52,7 +52,7 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentDetail;
  *
  */
 @Test (groups = "regression")
-public class OrderDetailsTestSuite extends NewOrderTestBase {
+public class OrderDetailsTestSuite extends OrderTestBase {
 
     private Login               login               = new Login ();
     private OrdersList          ordersList          = new OrdersList ();
@@ -72,7 +72,7 @@ public class OrderDetailsTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-13087, SR-13623:R3
      */
-    @Test (groups = { "irish-wolfhound", "jack-russell" })
+    @Test (groups = "irish-wolfhound")
     public void verifyOrderDetailsPage () {
         login.doLogin ();
         ordersList.isCorrectPage ();

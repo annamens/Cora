@@ -30,7 +30,8 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.order.OrderTestBase;
+//git@gitlab.com/adaptivebiotech/cora/test/cora.git
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
 import com.adaptivebiotech.cora.ui.order.OrderDetail;
@@ -44,7 +45,7 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  * - ICD codes and patient billing address are not required
  */
 @Test (groups = "regression")
-public class NewOrderTestSuite extends NewOrderTestBase {
+public class NewOrderTestSuite extends OrderTestBase {
 
     private Login           login           = new Login ();
     private OrdersList      ordersList      = new OrdersList ();
@@ -142,7 +143,6 @@ public class NewOrderTestSuite extends NewOrderTestBase {
     /**
      * @sdlc.requirements SR-4383:R1
      */
-    @Test (groups = "jack-russell")
     public void verifyUndoCancellationMultipleTimes () {
         int repetition = 3;
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
@@ -160,7 +160,6 @@ public class NewOrderTestSuite extends NewOrderTestBase {
     /**
      * @sdlc.requirements SR-4383:R1
      */
-    @Test (groups = "jack-russell")
     public void verifyUndoCancellationAbsentForOrdersWithOrderTests () {
         Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
                                                           newClientPatient (),

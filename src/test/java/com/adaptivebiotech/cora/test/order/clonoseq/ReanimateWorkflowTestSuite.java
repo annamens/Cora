@@ -11,7 +11,7 @@ import java.util.Arrays;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Orders.OrderTest;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.order.OrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.OrderStatus;
@@ -25,7 +25,7 @@ import com.adaptivebiotech.test.utils.PageHelper.StageSubstatus;
  *
  */
 @Test (groups = { "regression", "irish-wolfhound" })
-public class ReanimateWorkflowTestSuite extends CoraBaseBrowser {
+public class ReanimateWorkflowTestSuite extends OrderTestBase {
 
     private Login       login       = new Login ();
     private OrdersList  ordersList  = new OrdersList ();

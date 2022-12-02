@@ -30,7 +30,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.order.OrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetail;
@@ -38,7 +38,7 @@ import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 
 @Test (groups = "regression")
-public class NewOrderTestSuite extends NewOrderTestBase {
+public class NewOrderTestSuite extends OrderTestBase {
 
     private Login            login            = new Login ();
     private OrdersList       ordersList       = new OrdersList ();
@@ -108,7 +108,6 @@ public class NewOrderTestSuite extends NewOrderTestBase {
     /**
      * @sdlc.requirements SR-4383:R1
      */
-    @Test (groups = "jack-russell")
     public void verifyUndoCancellationMultipleTimes () {
         int repetition = 3;
         Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_client),
@@ -126,7 +125,6 @@ public class NewOrderTestSuite extends NewOrderTestBase {
     /**
      * @sdlc.requirements SR-4383:R1
      */
-    @Test (groups = "jack-russell")
     public void verifyUndoCancellationAbsentForOrdersWithOrderTests () {
         Order order = newOrderClonoSeq.createClonoSeqOrder (coraApi.getPhysician (clonoSEQ_client),
                                                             newClientPatient (),

@@ -6,20 +6,33 @@
     <groupId>com.adaptivebiotech.test.functional</groupId>
     <artifactId>cora</artifactId>
     <version>2.0.8-SNAPSHOT</version>
-    <name>Adaptive Biotechnologies Functional Tests for Cora</name>
+    <name>SEA Tests for Cora</name>
     <parent>
         <groupId>com.adaptivebiotech.test.utils</groupId>
         <artifactId>parent-pom</artifactId>
-        <version>1.0.4</version>
+        <version>1.0.5</version>
     </parent>
     <repositories>
         <repository>
             <id>adaptivebiotech-libs-release</id>
             <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
         <repository>
             <id>adaptivebiotech-libs-snapshot-local</id>
             <url>https://artifactory.dna.corp.adaptivebiotech.com/artifactory/libs-snapshot-local</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
     <properties>
@@ -41,7 +54,7 @@
                         <project.git.commit.id>${git.commit.id}</project.git.commit.id>
                         <test.tags>${git.branch}</test.tags>
                         <test.env>${test.env}</test.env>
-                        <test.webdriver.wait>30</test.webdriver.wait>
+                        <test.webdriver.wait>60</test.webdriver.wait>
                         <path.to.config>config/${test.env}.properties</path.to.config>
                         <sauce.user>automated.user3</sauce.user>
                         <sauce.key>e1a7d2b0-cdd5-4606-bfe9-9621da401859</sauce.key>
@@ -60,7 +73,7 @@
         <dependency>
             <groupId>com.adaptivebiotech.test.utils</groupId>
             <artifactId>test-commons</artifactId>
-            <version>1.1.43-SNAPSHOT</version>
+            <version>1.1.43</version>
         </dependency>
         <dependency>
             <groupId>com.adaptivebiotech.test.functional</groupId>
