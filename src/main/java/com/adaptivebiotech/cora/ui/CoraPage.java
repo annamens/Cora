@@ -191,6 +191,21 @@ public class CoraPage extends BasePage {
         clickOrder (orderNum);
     }
 
+    public void clickQueriesButton () {
+        assertTrue (click (".input-group-btn .glyphicon-list"));
+        assertTrue (isElementVisible (".queries-list-header"));
+    }
+
+    public List <String> getQueriesList () {
+        return getTextList ("//div[@class='queries-list ng-scope']//li[@ng-repeat='query in ctrl.queryList']");
+    }
+
+    public void clickWorkList (String workList) {
+        String wl = "//*[contains(text(),'%s')]";
+        assertTrue (click (format (wl, workList)), "Failed to click on worklist item - " + wl);
+        pageLoading ();
+    }
+
     public void doOrderSearch (String searchTerm) {
         // return setText ("[type='search']", searchTerm) && pressKey (Keys.ENTER);
         // we have an issue with navbar hiding the "Search" field
@@ -230,7 +245,7 @@ public class CoraPage extends BasePage {
         moduleLoading ();
     }
 
-    protected void pageLoading () {
+    public void pageLoading () {
         assertTrue (waitForElementInvisible (".loading"));
     }
 
@@ -250,7 +265,7 @@ public class CoraPage extends BasePage {
         return fromString (href.replaceFirst (".*container/details/", ""));
     }
 
-    protected void clickPopupOK () {
+    public void clickPopupOK () {
         assertTrue (click ("//*[text()='Ok']"));
         moduleLoading ();
     }

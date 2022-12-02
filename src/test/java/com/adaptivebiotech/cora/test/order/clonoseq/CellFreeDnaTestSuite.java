@@ -53,7 +53,7 @@ import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Specimen.StabilityStatus;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.order.OrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
 import com.adaptivebiotech.cora.ui.order.OrderDetailClonoSeq;
@@ -72,7 +72,7 @@ import com.adaptivebiotech.test.utils.DateHelper;
  *
  */
 @Test (groups = { "clonoSeq", "regression", "irish-wolfhound" })
-public class CellFreeDnaTestSuite extends NewOrderTestBase {
+public class CellFreeDnaTestSuite extends OrderTestBase {
 
     private Login                  login                   = new Login ();
     private OrdersList             ordersList              = new OrdersList ();
@@ -360,7 +360,7 @@ public class CellFreeDnaTestSuite extends NewOrderTestBase {
      * 
      * @sdlc.requirements SR-12635:R4, SR-11721:R4, SR-13826
      */
-    @Test (groups = { "irish-wolfhound", "jack-russell" })
+    @Test (groups = "irish-wolfhound")
     public void majorDiscrepancyResolvedAfterLabelVerify () {
         skipTestIfFeatureFlagOff (cfDna.get ());
         skipTestIfFeatureFlagOff (specimenActivation.get ());

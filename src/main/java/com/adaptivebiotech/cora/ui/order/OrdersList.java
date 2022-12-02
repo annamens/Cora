@@ -3,27 +3,19 @@
  *******************************************************************************/
 package com.adaptivebiotech.cora.ui.order;
 
-import static com.adaptivebiotech.cora.dto.Orders.Assay.getAssay;
 import static com.adaptivebiotech.cora.dto.Orders.OrderCategory.Diagnostic;
 import static com.adaptivebiotech.cora.utils.PageHelper.DateRange.Last30;
 import static com.adaptivebiotech.test.BaseEnvironment.coraTestUrl;
 import static java.lang.String.format;
-import static java.util.UUID.fromString;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 import java.util.List;
 import com.adaptivebiotech.cora.dto.Orders;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Orders.OrderCategory;
 import com.adaptivebiotech.cora.dto.Orders.OrderStatus;
-import com.adaptivebiotech.cora.dto.Orders.OrderTest;
-import com.adaptivebiotech.cora.dto.Patient;
-import com.adaptivebiotech.cora.dto.Workflow;
 import com.adaptivebiotech.cora.ui.CoraPage;
 import com.adaptivebiotech.cora.utils.PageHelper.DateRange;
-import com.seleniumfy.test.utils.Timeout;
 
 /**
  * @author Harry Soehalim
@@ -97,21 +89,6 @@ public class OrdersList extends CoraPage {
         }).filter (o -> o.name.length () > 1).collect (toList ()));
     }
 
-    public Orders getOrderTests () {
-        Timeout timer = new Timeout (millisDuration, millisPoll);
-        Orders orders = tryGettingOrderTests ();
-        do {
-            assertTrue (refresh ());
-            pageLoading ();
-            timer.Wait ();
-            orders = tryGettingOrderTests ();
-        } while (!timer.Timedout () && orders.list.parallelStream ().anyMatch (o -> o.workflow.name == null));
-        if (orders.list.parallelStream ().anyMatch (o -> o.workflow.name == null))
-            fail ("orderTest workflowName is null");
-
-        return orders;
-    }
-
     public void goToOrderTests () {
         String url = "/cora/ordertests?status=all&sort=duedate&ascending=false&search=";
         assertTrue (navigateTo (coraTestUrl + url));
@@ -120,26 +97,5 @@ public class OrdersList extends CoraPage {
 
     public List <String> getStageDropDownMenuItemLabelList () {
         return getTextList ("[name='stage']");
-    }
-
-    private Orders tryGettingOrderTests () {
-        return new Orders (waitForElements ("[ng-repeat-start='orderTest in ctrl.orderTests']").stream ().map (el -> {
-            Order o = new Order ();
-            o.name = getText (el, "[ng-bind='::orderTest.orderName']");
-
-            String href = getAttribute (el, "[ng-bind='::orderTest.orderName']", "href");
-            o.id = fromString (substringAfterLast (href, "ordertestid="));
-            o.tests.add (new OrderTest (getAssay (getText (el, "[ng-bind='::orderTest.testName']"))));
-
-            Patient patient = new Patient ();
-            patient.patientCode = Integer.valueOf (getText (el, "[ng-bind='::orderTest.patientCode']"));
-            o.patient = patient;
-
-            Workflow workflow = new Workflow ();
-            workflow.name = getText (el, "[ng-bind='::orderTest.workflowName']");
-            o.workflow = workflow;
-            o.orderNumber = o.name.replaceFirst (".*-D-", "D-");
-            return o;
-        }).filter (o -> o.name.length () > 1).collect (toList ()));
     }
 }

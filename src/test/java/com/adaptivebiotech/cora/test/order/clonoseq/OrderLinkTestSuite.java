@@ -27,7 +27,7 @@ import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Orders.Order;
 import com.adaptivebiotech.cora.dto.Patient;
 import com.adaptivebiotech.cora.dto.Physician;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.order.OrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.container.Detail;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -47,7 +47,7 @@ import com.adaptivebiotech.cora.ui.shipment.ShipmentsList;
  *
  */
 @Test (groups = "regression")
-public class OrderLinkTestSuite extends NewOrderTestBase {
+public class OrderLinkTestSuite extends OrderTestBase {
 
     private final String[]         icdcodes               = new String[] { "B33.1" };
     private Login                  login                  = new Login ();
