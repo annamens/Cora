@@ -9,23 +9,33 @@ import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Client;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.CommercialInsurance;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.Medicare;
 import static com.adaptivebiotech.cora.dto.Orders.ChargeType.PatientSelfPay;
+import static com.adaptivebiotech.cora.dto.Orders.OrderStatus.Pending;
 import static com.adaptivebiotech.cora.dto.Physician.PhysicianType.TDetect_client;
 import static com.adaptivebiotech.cora.dto.Shipment.ShippingCondition.Ambient;
 import static com.adaptivebiotech.cora.utils.TestHelper.bloodSpecimen;
 import static com.adaptivebiotech.cora.utils.TestHelper.newClientPatient;
 import static com.adaptivebiotech.test.utils.Logging.testLog;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
+import java.util.List;
+import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Containers;
 import com.adaptivebiotech.cora.dto.Containers.Container;
 import com.adaptivebiotech.cora.dto.Orders.Order;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.dto.Orders.OrderProperties;
+import com.adaptivebiotech.cora.test.order.OrderTestBase;
+//git@gitlab.com/adaptivebiotech/cora/test/cora.git
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.NewOrderTDetect;
+import com.adaptivebiotech.cora.ui.order.OrderDetail;
+import com.adaptivebiotech.cora.ui.order.OrderStatus;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.shipment.Accession;
 import com.adaptivebiotech.cora.ui.shipment.NewShipment;
@@ -35,13 +45,15 @@ import com.adaptivebiotech.cora.ui.shipment.NewShipment;
  * - ICD codes and patient billing address are not required
  */
 @Test (groups = "regression")
-public class NewOrderTestSuite extends NewOrderTestBase {
+public class NewOrderTestSuite extends OrderTestBase {
 
     private Login           login           = new Login ();
     private OrdersList      ordersList      = new OrdersList ();
     private NewOrderTDetect newOrderTDetect = new NewOrderTDetect ();
     private NewShipment     shipment        = new NewShipment ();
     private Accession       accession       = new Accession ();
+    private OrderStatus     orderStatus     = new OrderStatus ();
+    private OrderDetail     orderDetail     = new OrderDetail ();
 
     @BeforeMethod (alwaysRun = true)
     public void beforeMethod () {
@@ -128,4 +140,55 @@ public class NewOrderTestSuite extends NewOrderTestBase {
         testLog ("STEP 2 - Order is Active.");
     }
 
+    /**
+     * @sdlc.requirements SR-4383:R1
+     */
+    public void verifyUndoCancellationMultipleTimes () {
+        int repetition = 3;
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
+                                                          newClientPatient (),
+                                                          null,
+                                                          null,
+                                                          bloodSpecimen ());
+        testLog (format ("T-Detect Order number without Order Tests is: %s", order.orderNumber));
+        for (int i = 1; i <= repetition; i++) {
+            cancelAndRestartOrder (order.orderNumber);
+        }
+        testLog ("T-Detect order cancelled and restarted to pending status " + repetition + " times");
+    }
+
+    /**
+     * @sdlc.requirements SR-4383:R1
+     */
+    public void verifyUndoCancellationAbsentForOrdersWithOrderTests () {
+        Order order = newOrderTDetect.createTDetectOrder (coraApi.getPhysician (TDetect_client),
+                                                          newClientPatient (),
+                                                          null,
+                                                          COVID19_DX_IVD,
+                                                          bloodSpecimen ());
+        testLog (format ("T-Detect Order Number with Order Tests is: %s", order.orderNumber));
+        newOrderTDetect.clickAndCancelOrder ();
+        orderStatus.isCorrectPage ();
+        assertFalse (orderStatus.isOrderActionDotsPresent ());
+        testLog ("Restart order button not visible for T-Detect order with order tests");
+    }
+
+    private void cancelAndRestartOrder (String orderNumber) {
+        newOrderTDetect.clickAndCancelOrder ();
+        orderStatus.isCorrectPage ();
+        orderStatus.clickRestartOrder ();
+        orderDetail.isCorrectPage ();
+        assertEquals (orderDetail.getOrderStatus (), Pending);
+        List <Map <String, Object>> properties = coraDb.executeSelect (format ("select properties from cora.orders where order_number= '%s';",
+                                                                               orderNumber));
+        OrderProperties cancellationProperties = mapper.readValue (properties.get (0).get ("properties").toString (),
+                                                                   OrderProperties.class);
+        asList (cancellationProperties).forEach (r -> {
+            assertNull (r.CancellationNotes);
+            assertNull (r.CancellationReason);
+            assertNull (r.CancellationReason2);
+            assertNull (r.CancellationReason3);
+            assertNull (r.CancellationDateTime);
+        });
+    }
 }

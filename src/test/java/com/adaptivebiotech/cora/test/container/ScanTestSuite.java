@@ -145,6 +145,7 @@ public class ScanTestSuite extends ContainerTestBase {
         BatchAccession accession = new BatchAccession ();
         accession.isCorrectPage ();
         accession.uploadIntakeManifest ("batch/intakemanifest_full_slidebox.xlsx");
+        accession.clickProceed ();
         accession.clickIntakeComplete ();
         accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();

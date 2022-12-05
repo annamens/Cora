@@ -143,6 +143,7 @@ public class MoveToFreezerTestSuite extends ContainerTestBase {
 
         accession.isCorrectPage ();
         accession.uploadIntakeManifest (manifestFileName.getAbsolutePath ());
+        accession.clickProceed ();
         accession.clickIntakeComplete ();
         accession.clickShipmentTab ();
         Containers containers = shipment.getBatchContainers ();

@@ -67,7 +67,7 @@ import com.adaptivebiotech.cora.dto.ShmResultData;
 import com.adaptivebiotech.cora.dto.Specimen;
 import com.adaptivebiotech.cora.dto.Workflow.Stage;
 import com.adaptivebiotech.cora.dto.Workflow.WorkflowProperties;
-import com.adaptivebiotech.cora.test.order.NewOrderTestBase;
+import com.adaptivebiotech.cora.test.order.OrderTestBase;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.debug.OrcaHistory;
 import com.adaptivebiotech.cora.ui.order.NewOrderClonoSeq;
@@ -95,7 +95,7 @@ import com.adaptivebiotech.test.utils.PageHelper.WorkflowProperty;
  *         <a href="mailto:jpatel@adaptivebiotech.com">jpatel@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "nutmeg" })
-public class IghvOrderTestSuite extends NewOrderTestBase {
+public class IghvOrderTestSuite extends OrderTestBase {
 
     private Physician            IgHVPhysician;
     private Physician            NYPhysician;

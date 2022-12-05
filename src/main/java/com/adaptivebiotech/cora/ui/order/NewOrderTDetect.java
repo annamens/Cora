@@ -139,7 +139,8 @@ public class NewOrderTDetect extends NewOrder {
         if (icdCodes != null)
             enterPatientICD_Codes (icdCodes);
         enterCollectionDate ((LocalDate) specimen.collectionDate);
-        clickAssayTest (assayTest);
+        if (assayTest != null)
+            clickAssayTest (assayTest);
 
         switch (patient.billingType) {
         case CommercialInsurance:
@@ -217,5 +218,4 @@ public class NewOrderTDetect extends NewOrder {
 
         return order;
     }
-
 }

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import org.testng.annotations.Test;
 import com.adaptivebiotech.cora.dto.Physician.PhysicianType;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
 import com.adaptivebiotech.cora.ui.Login;
 import com.adaptivebiotech.cora.ui.order.OrdersList;
 import com.adaptivebiotech.cora.ui.order.reservation.ReservationModule;
@@ -28,7 +27,7 @@ import com.adaptivebiotech.cora.ui.order.reservation.ReservationModule;
  *         <a href="mailto:sfisco@adaptivebiotech.com">sfisco@adaptivebiotech.com</a>
  */
 @Test (groups = { "regression", "irish-wolfhound" })
-public class OrderTestReservationTestSuite extends CoraBaseBrowser {
+public class OrderTestReservationTestSuite extends OrderTestBase {
     private ReservationModule reservationModule = new ReservationModule ();
     private OrdersList        ordersList        = new OrdersList ();
     private Login             login             = new Login ();

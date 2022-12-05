@@ -4,8 +4,8 @@
 package com.adaptivebiotech.cora.test;
 
 import static com.adaptivebiotech.cora.test.CoraEnvironment.coraDbInfo;
+import static com.adaptivebiotech.cora.test.CoraEnvironment.coraJumpbox;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.initialization;
-import static com.adaptivebiotech.cora.test.CoraEnvironment.jumpbox;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalCliaTestUrl;
 import static com.adaptivebiotech.cora.test.CoraEnvironment.portalIvdTestUrl;
 import static com.adaptivebiotech.pipeline.test.PipelineEnvironment.isIVD;
@@ -54,7 +54,7 @@ public class CoraBaseBrowser extends TestBase {
         coraApi = new CoraApi ();
         coraApi.getAuthToken ();
         coraDebugApi = new CoraDebugApi ();
-        coraDb = new CoraDb (coraDbInfo, jumpbox);
+        coraDb = new CoraDb (coraDbInfo, coraJumpbox);
         coraDb.openConnection ();
     }
 

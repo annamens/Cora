@@ -15,13 +15,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import com.adaptivebiotech.cora.test.CoraBaseBrowser;
+import com.adaptivebiotech.cora.test.order.OrderTestBase;
 
 /**
  * @author Harry Soehalim
  *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
  */
-public class BatchTestBase extends CoraBaseBrowser {
+public class BatchTestBase extends OrderTestBase {
 
     protected void resetBatchOrder (String orderNumber) {
         String query = "update cora.orders set salesforce_order_id=null, salesforce_order_number=null where order_number='%s'";
