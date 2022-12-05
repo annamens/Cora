@@ -11,7 +11,7 @@ import com.adaptivebiotech.cora.test.CoraBaseBrowser;
  * @author jpatel
  *
  */
-public class NewOrderTestBase extends CoraBaseBrowser {
+public class OrderTestBase extends CoraBaseBrowser {
 
     protected final List <String> headers             = asList ("Customer Instructions",
                                                                 "Order Notes",

@@ -132,6 +132,11 @@ public class NewShipment extends ShipmentHeader {
         assertTrue (click ("[ng-click='ctrl.addContainer()']"));
     }
 
+    public void selectSpecimenContainerType (ContainerType containerType) {
+        assertTrue (click ("//button[contains(text(),'Add...')]"));
+        assertTrue (click ("//a[contains(text(),'" + containerType.label + "')]"));
+    }
+
     public void clickAddSlide () {
         assertTrue (click ("[ng-click='ctrl.addChildContainer(container)']"));
     }
@@ -390,8 +395,6 @@ public class NewShipment extends ShipmentHeader {
         isBatchOrGeneral ();
         enterShippingCondition (Ambient);
         clickSave ();
-        String shipmentNumber = getShipmentNumber ();
-        clickAccessionTab ();
-        return shipmentNumber;
+        return getShipmentNumber ();
     }
 }

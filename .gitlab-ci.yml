@@ -20,10 +20,6 @@ Run Test:
     - echo "TEST_GROUP is $TEST_GROUP"
     - echo "TEST_THREADS is $TEST_THREADS"
     - echo "TESTNG_VERBOSE is $TESTNG_VERBOSE"
-    # get config files
-    - git clone -b cora-regression --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/adaptivebiotech/testing/config.git config-project
-    - mkdir config
-    - cp config-project/cora/* config/
     # run test
     - mvn --no-transfer-progress -U clean test $MAVEN_OPTS -Dtest.env=$TEST_ENV -Dgroups=$TEST_GROUP -Dtest=$TEST_SUITE -DuseSauceLabs=true -Dtest.threads=$TEST_THREADS -Dtestng.verbose=$TESTNG_VERBOSE
   artifacts:
@@ -50,6 +46,7 @@ Sonar Analysis:
     - >
       mvn clean install sonar:sonar
       -Dmaven.test.skip=true
+      -Dsonar.projectName="SEA Tests for Cora"
       -Dsonar.qualitygate.wait=$SONAR_GATE_WAIT
       -Dsonar.projectKey=$SONAR_PROJECT_KEY
       -Dsonar.sources=src

@@ -16,8 +16,7 @@ public class CoraEnvironment extends BaseEnvironment {
 
     public static String portalCliaTestUrl;
     public static String portalIvdTestUrl;
-    public static String limsTestUrl;
-    public static Server jumpbox;
+    public static Server coraJumpbox;
     public static Server coraDbInfo;
     public static String coraCSAdminTestUser;
     public static String coraCSAdminTestPass;
@@ -43,17 +42,17 @@ public class CoraEnvironment extends BaseEnvironment {
 
             limsTestUrl = format (getProperty ("lims.test.url"), env);
 
-            jumpboxServer = format (getProperty ("jumpbox.server"), env);
-            jumpboxUser = getProperty ("jumpbox.user");
-            jumpboxPass = getProperty ("jumpbox.pass");
-            jumpbox = new Server (jumpboxServer, jumpboxUser, jumpboxPass);
-            jumpbox.localHost = "localhost";
-            jumpbox.localPort = 6000;
-            jumpbox.remoteHost = format (getProperty ("cora.db.host"), env);
-            jumpbox.remotePort = 5432;
+            String jumpboxServer = format (getProperty ("jumpbox.server"), env);
+            String jumpboxUser = getProperty ("jumpbox.user");
+            String jumpboxPass = getProperty ("jumpbox.pass");
+            coraJumpbox = new Server (jumpboxServer, jumpboxUser, jumpboxPass);
+            coraJumpbox.localHost = "localhost";
+            coraJumpbox.localPort = 6000;
+            coraJumpbox.remoteHost = format (getProperty ("cora.db.host"), env);
+            coraJumpbox.remotePort = 5432;
 
             coraDbInfo = new Server ();
-            coraDbInfo.databaseUrl = format ("jdbc:postgresql://%s:5432/coradb", jumpbox.remoteHost);
+            coraDbInfo.databaseUrl = format ("jdbc:postgresql://%s:5432/coradb", coraJumpbox.remoteHost);
             coraDbInfo.user = getProperty ("cora.db.user");
             coraDbInfo.pass = getPropertyEncrypted ("cora.db.pass");
 
@@ -61,8 +60,8 @@ public class CoraEnvironment extends BaseEnvironment {
             if (useDbTunnel) {
                 coraDbInfo.useDbTunnel = useDbTunnel;
                 coraDbInfo.databaseUrl = format ("jdbc:postgresql://%s:%s/coradb",
-                                                 jumpbox.localHost,
-                                                 jumpbox.localPort);
+                                                 coraJumpbox.localHost,
+                                                 coraJumpbox.localPort);
             }
         } catch (Exception e) {
             error ("failed to parse the config file", e);

@@ -406,7 +406,8 @@ public class NewOrderClonoSeq extends NewOrder {
             enterCellCount (1000000);
 
         enterCollectionDate ((LocalDate) specimen.collectionDate);
-        clickAssayTest (assayTest);
+        if (assayTest != null)
+            clickAssayTest (assayTest);
         clickSave ();
 
         Order order = new Order ();
