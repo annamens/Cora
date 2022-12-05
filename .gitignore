@@ -1,10 +1,7 @@
 /target/
-/config/
 *.gitignore
 *.DS_Store
 *.classpath
 *.project
 *.settings
-*intakemanifest_holding_w_child.xlsx
-test-output
 jmeter.log
