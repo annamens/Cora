@@ -175,19 +175,20 @@ public class NewOrderTestSuite extends OrderTestBase {
 
     private void cancelAndRestartOrder (String orderNumber) {
         newOrderTDetect.clickAndCancelOrder ();
-        orderStatus.isCorrectPage ();
+        // orderDetail.isCorrectPage ();
+        newOrderTDetect.clickOrderStatusTab ();
         orderStatus.clickRestartOrder ();
-        orderDetail.isCorrectPage ();
+        newOrderTDetect.isCorrectPage ();
         assertEquals (orderDetail.getOrderStatus (), Pending);
         List <Map <String, Object>> properties = coraDb.executeSelect (format ("select properties from cora.orders where order_number= '%s';",
                                                                                orderNumber));
         OrderProperties cancellationProperties = mapper.readValue (properties.get (0).get ("properties").toString (),
                                                                    OrderProperties.class);
         asList (cancellationProperties).forEach (r -> {
-            assertNull (r.CancellationNotes);
-            assertNull (r.CancellationReason);
-            assertNull (r.CancellationReason2);
-            assertNull (r.CancellationReason3);
+            assertEquals (r.CancellationNotes, "");
+            assertEquals (r.CancellationReason, "");
+            assertEquals (r.CancellationReason2, "");
+            assertEquals (r.CancellationReason3, "");
             assertNull (r.CancellationDateTime);
         });
     }

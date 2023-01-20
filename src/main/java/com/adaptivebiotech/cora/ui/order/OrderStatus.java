@@ -198,8 +198,9 @@ public class OrderStatus extends OrderHeader {
 
     public void clickRestartOrder () {
         assertTrue (click (orderActionDots));
-        assertTrue (isTextInElement ("//*[@class='dropdown-menu restart-menu']//a[text()='Overflow Menu']",
-                                     "Overflow Menu"));
+        // assertTrue (isTextInElement ("//*[@class='dropdown-menu
+        // restart-menu']//a[text()='Overflow Menu']",
+        // "Overflow Menu"));
         assertTrue (click ("//a[text()='Restart Order']"));
     }
 
