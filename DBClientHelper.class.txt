@@ -1,0 +1,145 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test.utils;
+
+import static com.seleniumfy.test.utils.Logging.error;
+import static com.seleniumfy.test.utils.Logging.info;
+import static java.lang.String.format;
+import static java.sql.DriverManager.getConnection;
+import static org.testng.Assert.assertFalse;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import org.apache.ibatis.jdbc.ScriptRunner;
+import org.json.JSONObject;
+import org.postgresql.util.PGobject;
+import com.adaptivebiotech.common.dto.Server;
+
+/**
+ * @author Harry Soehalim
+ *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
+ */
+public class DbClientHelper {
+
+    public boolean       useDbTunnel = false;
+    private Server       jumpbox;
+    private Server       db;
+    private TunnelHelper tunnel;
+    protected Connection connection;
+
+    public DbClientHelper (Server database, Server jumpbox) {
+        this.db = database;
+        this.useDbTunnel = this.db.useDbTunnel;
+        this.jumpbox = jumpbox;
+        info (format ("DB client, db host: [%s], user: [%s]", database.databaseUrl, database.user));
+    }
+
+    public void openConnection () {
+        try {
+            if (useDbTunnel) {
+                info ("Creating a DB connection using tunnel");
+                tunnel = TunnelHelper.getTunnel ();
+                tunnel.jumpbox = jumpbox;
+                Thread t = new Thread (tunnel);
+                t.start ();
+                tunnel.waitForConnection ();
+            }
+
+            connection = getConnection (db.databaseUrl, db.user, db.pass);
+            info ("DB connection successful");
+        } catch (Exception e) {
+            error ("Failed to open database connection", e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    public void closeConnection () {
+        try {
+            connection.close ();
+            connection = null;
+
+            if (useDbTunnel)
+                tunnel.close ();
+            info ("DB connection closed");
+        } catch (Exception e) {
+            error ("Failed to close Database connection", e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    public List <Map <String, Object>> executeSelect (String query) {
+        info ("query is: " + query);
+
+        try (Statement statement = connection.createStatement ();
+                ResultSet resultSet = statement.executeQuery (query)) {
+
+            List <Map <String, Object>> tableData = new LinkedList <> ();
+            if (resultSet != null) {
+                ResultSetMetaData metaData = resultSet.getMetaData ();
+                int columns = metaData.getColumnCount ();
+
+                while (resultSet.next ()) {
+                    Map <String, Object> row = new HashMap <String, Object> (columns);
+                    for (int i = 1; i <= columns; ++i) {
+                        row.put (metaData.getColumnName (i), resultSet.getObject (i));
+                    }
+                    tableData.add (row);
+                }
+            }
+            return tableData;
+        } catch (Exception e) {
+            error ("Failed to run SQL query", e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    public int executeUpdate (String query) {
+        info ("query is: " + query);
+
+        try (Statement statement = connection.createStatement ()) {
+            assertFalse (statement.execute (query)); // returns false on update
+            return statement.getUpdateCount ();
+        } catch (Exception e) {
+            error ("Failed to run SQL query", e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    public void executeScript (String script) {
+        String logfile = "target/logs/test.log";
+        try (Reader reader = new BufferedReader (new FileReader (script));
+                FileWriter fileWriter = new FileWriter (logfile, true)) {
+            try {
+                ScriptRunner scriptRunner = new ScriptRunner (connection);
+                scriptRunner.setLogWriter (new PrintWriter (fileWriter));
+                scriptRunner.setErrorLogWriter (new PrintWriter (fileWriter));
+                scriptRunner.runScript (reader);
+            } catch (Exception e) {
+                error ("Failed to execute script: " + script, e);
+                throw new RuntimeException (e);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    public String jsonbToString (Object data) {
+        try {
+            return new JSONObject ( ((PGobject) data).getValue ()).toString ();
+        } catch (Exception e) {
+            error ("Unable to convert jsonb to string", e);
+            throw new RuntimeException (e);
+        }
+    }
+}

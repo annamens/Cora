@@ -1,0 +1,296 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test.utils;
+
+import static java.util.EnumSet.allOf;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * @author Harry Soehalim
+ *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
+ */
+public class PageHelper {
+
+    public enum yesNo {
+        Y, N, Yes, No, Unsure, Other
+    }
+
+    /**
+     * SpecimenType - SpecimenSource in Cora:
+     * 
+     * CellPellet - BoneMarrow, PBMC, BCells, TCells, Other
+     * CellSuspension
+     * FFPEScrolls - Skin, LymphNode, BoneMarrow, Other
+     * FFPESlides
+     * gDNA - Skin, Tissue, BoneMarrow, PBMC, Other
+     * Tissue - Skin, LymphNode, Other
+     */
+    public enum SpecimenType {
+        @JsonAlias ("Bone Marrow Aspirate Slides")
+        BoneMarrowAspirateSlide("Bone Marrow Aspirate Slides"),
+        Blood ("Blood"),
+        @JsonAlias ("Fresh Bone Marrow")
+        FreshBoneMarrow("Fresh Bone Marrow"),
+        gDNA ("gDNA"),
+        @JsonAlias ("Cell Pellet")
+        CellPellet("Cell Pellet"),
+        @JsonAlias ("Cell Suspension")
+        CellSuspension("Cell Suspension"),
+        @JsonAlias ("FFPE Scrolls")
+        FFPEScrolls("FFPE Scrolls"),
+        @JsonAlias ("FFPE Slides")
+        FFPESlides("FFPE Slides"),
+        Plasma ("Plasma"),
+        Tissue ("Tissue"),
+        Other ("Other"),
+        @JsonAlias ("Blood Smear Slide")
+        BloodSmearSlide("Blood Smear Slide"),
+        OCTTissue ("OCT Tissue"),
+        PowderedTissue ("Powdered Tissue"),
+        Serum ("Serum");
+
+        public String label;
+
+        private SpecimenType (String label) {
+            this.label = label;
+        }
+
+        public static SpecimenType getSpecimenType (String label) {
+            return allOf (SpecimenType.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                                             .orElse (null);
+        }
+    }
+
+    public enum Compartment {
+        Cellular ("Cellular", "Cellular (gDNA)"),
+        @JsonProperty ("Cell-free")
+        @JsonAlias ({ "CellFree", "Cell-free" })
+        CellFree("Cell-free", "Cell-free (cfDNA)");
+
+        public String label;
+        public String doraLabel;
+
+        private Compartment (String label, String doraLabel) {
+            this.label = label;
+            this.doraLabel = doraLabel;
+        }
+
+        public static Compartment getCompartment (String label) {
+            return allOf (Compartment.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ().get ();
+        }
+
+        public static Compartment getDoraCompartment (String doraLabel) {
+            return allOf (Compartment.class).parallelStream ().filter (st -> st.doraLabel.equals (doraLabel)).findAny ()
+                                            .get ();
+        }
+    }
+
+    public enum SpecimenSource {
+        Blood ("Blood"),
+        Skin ("Skin"),
+        Splenocyte ("Splenocyte"),
+        Tissue ("Tissue"),
+        @JsonAlias ("Bone Marrow")
+        BoneMarrow("Bone Marrow"),
+        PBMC ("PBMC"),
+        @JsonAlias ("Lymph Node")
+        LymphNode("Lymph Node"),
+        @JsonAlias ("Lymphatic Tissue")
+        LymphaticTissue("Lymphatic Tissue"),
+        @JsonAlias ("B cells")
+        BCells("B cells"),
+        @JsonAlias ("T cells")
+        TCells("T cells"),
+        BMMC ("BMMC"),
+        Other ("Other"),
+        Unknown ("Unknown");
+
+        public String label;
+
+        private SpecimenSource (String label) {
+            this.label = label;
+        }
+
+        public static SpecimenSource getSpecimenSource (String label) {
+            return allOf (SpecimenSource.class).parallelStream ().filter (st -> st.label.equals (label)).findAny ()
+                                               .orElse (null);
+        }
+    }
+
+    public enum StageName {
+        Clarity,
+        NorthPipeline,
+        NorthQC,
+        NorthReport,
+        SecondaryAnalysis,
+        CalculateSampleSummary,
+        SampleSummaryReport,
+        ClonoSEQReport,
+        ClonoSEQReportDataPrep,
+        ReportDelivery,
+        Finalize,
+        MrdBatchReport,
+        ClinicalQC,
+        CoraScript,
+        AzCoraScript,
+        Analyzer,
+        TagClones,
+        ConvertClones,
+        ClonoSeq2_WorkflowNanny,
+        Utility,
+        KitPrep,
+        KitReportDelivery,
+        KitClonoSEQReport,
+        Genologics,
+        DxAnalysis,
+        DxContamination,
+        DxReport,
+        Agate,
+        BatchReportInit,
+        Publishing,
+        MIRAPrep,
+        MIRAShip,
+        PoolExtraction,
+        immunoSEQ,
+        MIRAAnalysis,
+        MIRAQC,
+        MIRAAgate,
+        ShmAnalysis
+    }
+
+    public enum StageStatus {
+        Ready, Processing, Awaiting, Stuck, Failed, Finished, Cancelled
+    }
+
+    public enum StageSubstatus {
+        @JsonProperty ("FAST-FORWARDING")
+        FAST_FORWARDING,
+        SEQUENCING_PENDING,
+        SAMPLE_NOT_FOUND,
+        SUBMITTING_PIPELINE_JOB,
+        SENDING,
+        SENDING_REPORT_NOTIFICATION,
+        PENDING,
+        PENDING_ANALYSIS,
+        PENDING_LIFT_OTHER_REPORTS,
+        PENDING_LIFT_ANALYSIS,
+        PENDING_OTHER_REPORTS,
+        PENDING_COORDINATION,
+        PENDING_CONTAMINATION_REVIEW,
+        PENDING_QC_REVIEW,
+        SKIPPPED_HIFREQ_CONTAMINATION,
+        CHECKING_HIFREQ_CONTAMINATION,
+        CONTAMINATION_REVIEWED,
+        QC_REVIEWED,
+        ACTIVE_COORDINATION,
+        PROCESSING_RESULTS,
+        LIFT_VALIDATION_ERROR,
+        MRD_CONTAMINATION_ANALYSIS,
+        MRD_WAITING_FOR_ID_CLONES,
+        CLINICAL_QC,
+        CLINICAL_CONSULTANT,
+        ALL_SUCCEEDED,
+        EXCEPTION,
+        NEED_RESOLUTION,
+        RESOLVED,
+        RELEASED,
+        FINISHED,
+        COMPLETED,
+        SCRIPT_EXECUTING,
+        SCRIPT_COMPLETED,
+        PREREQ_FAILED,
+        ACCEPTED_AUTO,
+        DOWNLOADING,
+        IMPORTING,
+        FAILED,
+        CANCELLED,
+        CONTAINER_SELECTION,
+        POOL_DETAILS,
+        MIRA_PREP_COMPLETE,
+        SHIPMENT_DECISION,
+        MANIFEST_GENERATION,
+        IMMUNOSEQ_TESTS,
+        IMMUNOSEQ_RESULTS,
+        TESTS_FINISHED,
+        TASK_IN_PROGRESS,
+        TASK_FINISHED,
+        MIRA_QC_COMPLETE,
+        PAIRSEQ_ANALYSIS,
+        PAIRSEQ_IGNORED,
+        START,
+        PROCESSING_SAMPLE,
+        Hidden,
+        Published,
+        Embargoed
+    }
+
+    // conf/reloadable/techtransfer/default.conf
+    public enum TestSkus {
+        ID,
+        MRD,
+        FDAID,
+        FDAMRD,
+        RUOID,
+        RUOMRD,
+        TECHID,
+        TECHMRD,
+        HSTCRBSURVEY,
+        RUOIDLAB,
+        RUOMRDLAB,
+        KITREPORTFDAID,
+        KITREPORTFDAMRD,
+        MIRAUNSORTED,
+        MIRASORTED
+    }
+
+    public enum ReportType {
+        clonality, tracking
+    }
+
+    public enum WorkflowProperty {
+        sampleName,
+        clinicalReportAddlComments,
+        clinicalReportFilename,
+        clinicalReportDateUtc,
+        clinicalReportActor,
+        clinicalReportNote,
+        clinicalReportCorrectionReason,
+        clinicalQcStatus,
+        clinicalQcComments,
+        clinicalQcExtraComments,
+        tsvOverridePath,
+        lastAcceptedTsvPath,
+        wasSentToFailureTarget,
+        correctionDisabled,
+        lastFlowcellId,
+        lastFinishedPipelineJobId,
+        ignoreTCRAutoCalib,
+        disableHiFreqSave,
+        disableHiFreqSharing,
+        disableAnalyzerUpload,
+        analysisResultFileOverride,
+        kitPipelineResultOverride,
+        skipNorthQCToContam,
+        HOLD_NorthQC,
+        workspaceName,
+        analysisResultPath,
+        miraPipelineResultOverride,
+        miraPanelId,
+        miraPanelName,
+        miraCostCenter,
+        miraType,
+        miraOwner,
+        expansionNumber,
+        labType,
+        specimenNumber,
+        flowcell,
+        hasSampleOverrides,
+        shmDataSourcePath,
+        notifyGateway,
+        country,
+        AutoPassedClinicalQC,
+        AutoReleasedReport
+    }
+}

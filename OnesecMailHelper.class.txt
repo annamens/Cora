@@ -1,0 +1,94 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test.utils;
+
+import static com.adaptivebiotech.test.utils.HttpClientHelper.contentForm;
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static java.lang.String.format;
+import static org.testng.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.message.BasicNameValuePair;
+import com.adaptivebiotech.common.dto.onesecmail.Message;
+import com.seleniumfy.test.utils.Timeout;
+
+/**
+ * Note:
+ * - this is a helper class for 1secmail.com
+ * 
+ * @author Harry Soehalim
+ *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
+ */
+public class OnesecMailHelper {
+
+    private static final HttpClientHelper httpClientHelper = new HttpClientHelper ();
+    private static final String           onesecmail       = "https://www.1secmail.com/api/v1/?action=";
+    public static long                    millisRetry      = 30000l;                                    // 30sec
+    public static long                    waitRetry        = 1000l;                                     // 1sec
+
+    /**
+     * Delete an existing mailbox at 1secmail.com
+     * 
+     * @param email
+     *            The email address of the mailbox
+     */
+    public static void deleteTempEmail (String email) {
+        try {
+            String[] emails = email.split ("@");
+            List <NameValuePair> params = new ArrayList <> ();
+            params.add (new BasicNameValuePair ("action", "deleteMailbox"));
+            params.add (new BasicNameValuePair ("login", emails[0]));
+            params.add (new BasicNameValuePair ("domain", emails[1]));
+            httpClientHelper.headers.get ().clear ();
+            httpClientHelper.headers.get ().add (contentForm);
+            httpClientHelper.post ("https://www.1secmail.com/mailbox", new UrlEncodedFormEntity (params));
+            httpClientHelper.resetheaders ();
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Get add messages for the given email address
+     * 
+     * @param email
+     *            The target email address
+     * @return List of {@link Message}
+     */
+    public static Message[] getAllMessages (String email) {
+        // get the content of inbox
+        String[] emails = email.split ("@");
+        String getUrl = format (onesecmail + "getMessages&login=%s&domain=%s", emails[0], emails[1]);
+        Message[] messages = mapper.readValue (httpClientHelper.get (getUrl), Message[].class);
+
+        // check if we're getting 0 msg
+        Timeout timer = new Timeout (millisRetry, waitRetry);
+        while (!timer.Timedout () && messages.length == 0) {
+            timer.Wait ();
+            messages = mapper.readValue (httpClientHelper.get (getUrl), Message[].class);
+        }
+        assertTrue (messages.length > 0);
+        return messages;
+    }
+
+    /**
+     * Read the email's body
+     * 
+     * @param email
+     *            The target email address
+     * @param message
+     *            The target email message
+     * @return The email body (html if exists, text otherwise)
+     */
+    public static String readMessage (String email, Message message) {
+        String[] emails = email.split ("@");
+        String readUrl = format (onesecmail + "readMessage&login=%s&domain=%s&id=%s",
+                                 emails[0],
+                                 emails[1],
+                                 message.id);
+        return mapper.readValue (httpClientHelper.get (readUrl), Message.class).body;
+    }
+}

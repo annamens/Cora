@@ -1,0 +1,61 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test;
+
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.seleniumfy.test.utils.Environment.sauceKey;
+import static com.seleniumfy.test.utils.Environment.sauceUser;
+import static com.seleniumfy.test.utils.Environment.useSauceLabs;
+import static java.lang.String.format;
+import static java.lang.String.join;
+import static java.lang.String.valueOf;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+import static org.testng.ITestResult.FAILURE;
+import static org.testng.Reporter.getCurrentTestResult;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import com.adaptivebiotech.common.dto.saucelabs.SauceAsset;
+import com.adaptivebiotech.common.dto.saucelabs.SauceJob;
+import com.adaptivebiotech.test.utils.SauceHelper;
+import com.seleniumfy.test.utils.BaseBrowser;
+import com.seleniumfy.test.utils.Timeout;
+
+public class TestBase extends BaseBrowser {
+
+    @AfterMethod (alwaysRun = true)
+    public final void afterMethodTestBase (ITestResult result) {
+        long millisRetry = 300000l; // 300sec
+        long waitRetry = 5000l; // 5sec
+
+        closeBrowser ();
+        if (useSauceLabs) {
+            Object[] params = result.getParameters ();
+            String jobId = getSessionId ();
+
+            if (jobId != null) {
+                SauceHelper sauce = new SauceHelper (sauceUser, sauceKey);
+                SauceAsset asset = null;
+                Timeout timer = new Timeout (millisRetry, waitRetry);
+                while (!timer.Timedout () && (asset = sauce.getAssetList (jobId)) == null)
+                    timer.Wait ();
+                if (asset == null)
+                    throw new RuntimeException ("failed to retrieve assets for jobId: " + jobId);
+
+                String testName = join (".", result.getTestClass ().getName (), result.getMethod ().getMethodName ());
+                if (params != null && params.length > 0)
+                    testName = join (".", testName, stream (params).map (p -> valueOf (p)).collect (joining (".")));
+
+                sauce.downloadVideoMp4 (jobId, format ("target/saucelabs/%s.mp4", testName));
+                sauce.downloadScreenshots (jobId, format ("target/saucelabs/%s.zip", testName));
+                SauceJob sauceJob = mapper.readValue (sauce.getJobInfo (jobId), SauceJob.class);
+                if (asList ("error", "in progress").contains (sauceJob.consolidated_status)) {
+                    sauce.jobFailed (jobId);
+                    getCurrentTestResult ().setStatus (FAILURE);
+                }
+            }
+        }
+    }
+}

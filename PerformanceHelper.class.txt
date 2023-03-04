@@ -1,0 +1,32 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test.utils;
+
+import static java.lang.String.format;
+import org.testng.asserts.SoftAssert;
+
+public class PerformanceHelper {
+
+    public static SoftAssert softAssert = new SoftAssert ();
+
+    public static void checkLessThanThreshold (double metricValue, double threshold, String metricName,
+                                               String pageName) {
+        softAssert.assertTrue (metricValue <= threshold,
+                               failedAssertionMsg (pageName, threshold, metricName, metricValue));
+    }
+
+    public static void checkGreaterThanThreshold (double metricValue, double threshold, String metricName,
+                                                  String pageName) {
+        softAssert.assertTrue (metricValue >= threshold,
+                               failedAssertionMsg (pageName, threshold, metricName, metricValue));
+    }
+
+    public static String failedAssertionMsg (String pageName, double threshold, String metricName, double metricValue) {
+        return format ("[%s] page did not pass threshold [%s] for metric [%s], metric value obtained: [%s]",
+                       pageName,
+                       threshold,
+                       metricName,
+                       metricValue);
+    }
+}

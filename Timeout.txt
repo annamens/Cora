@@ -1,0 +1,46 @@
+package com.seleniumfy.test.utils;
+
+import static com.seleniumfy.test.utils.Logging.error;
+
+/**
+ * @author Harry Soehalim - <a href="mailto:harry.soehalim@gmail.com">harry.soehalim@gmail.com</a>
+ *         Copyright (c) 2012 by Harry Soehalim
+ */
+public class Timeout {
+
+    long _timeout;
+    long _retry;
+
+    /**
+     * Constructor method
+     * 
+     * @param millis
+     *            Timeout value (in milliseconds)
+     * @param retry
+     *            Sleep time in between retries (in milliseconds)
+     */
+    public Timeout (long millis, long retry) {
+        _retry = retry;
+        _timeout = System.currentTimeMillis () + millis;
+    }
+
+    /**
+     * Wait for the next instruction
+     */
+    public void Wait () {
+        try {
+            Thread.sleep (_retry);
+        } catch (InterruptedException e) {
+            error (e.getMessage (), e);
+        }
+    }
+
+    /**
+     * Check to see if it has timedout or not
+     * 
+     * @return True if it has timedout, otherwise false
+     */
+    public boolean Timedout () {
+        return System.currentTimeMillis () > _timeout;
+    }
+}

@@ -1,0 +1,102 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test.utils;
+
+import static java.time.LocalDateTime.now;
+import static java.time.LocalDateTime.parse;
+import static java.time.ZoneId.SHORT_IDS;
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.time.temporal.ChronoField.AMPM_OF_DAY;
+import static java.time.temporal.ChronoField.CLOCK_HOUR_OF_AMPM;
+import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
+import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+
+public class DateHelper {
+
+    public static final DateTimeFormatter formatDt1 = ofPattern ("MM/dd/uuuu");
+    public static final DateTimeFormatter formatDt2 = ofPattern ("uuuu-MM-dd");
+    public static final DateTimeFormatter formatDt3 = ofPattern ("dd MMMM uuuu");
+    public static final DateTimeFormatter formatDt4 = ofPattern ("uuuu-MM-dd'T'HH:mm:ss[.SSSSSS][.SSS][Z]['Z']");
+    public static final DateTimeFormatter formatDt5 = ofPattern ("uuuuMMdd-HHmm");
+    public static final DateTimeFormatter formatDt6 = ofPattern ("MM/dd/uuuu HH:mm:ss.SSSS");
+    public static final DateTimeFormatter formatDt7 = ofPattern ("MM/dd/uuuu h:mm a");
+    public static final ZoneId            utcZoneId = ZoneId.of ("UTC");
+    public static final ZoneId            pstZoneId = ZoneId.of (SHORT_IDS.get ("PST"));
+
+    /**
+     * Generate date from current date in MM/dd/uuuu format
+     * 
+     * @param days
+     *            no of days to add/remove (use negative) from current date
+     * @return a date formatted string
+     */
+    public static String genDate (int days) {
+        return formatDt1.format (now (pstZoneId).plusDays (days));
+    }
+
+    /**
+     * Generate {@link LocalDate} from current date
+     * 
+     * @param days
+     *            no of days to add/remove (use negative) from current date
+     * @return {@link LocalDate} object
+     */
+    public static LocalDate genLocalDate (int days) {
+        return now (pstZoneId).plusDays (days).toLocalDate ();
+    }
+
+    /**
+     * Generate {@link LocalDateTime} from current date
+     * 
+     * @param days
+     *            no of days to add/remove (use negative) from current date
+     * @return {@link LocalDateTime} object
+     */
+    public static LocalDateTime genLocalDateTime (int days) {
+        return now (pstZoneId).plusDays (days);
+    }
+
+    /**
+     * Generate date from current date in formatDate format
+     * 
+     * @param days
+     *            no of days to add/remove from current date
+     * @param formatDate
+     *            {@link DateTimeFormatter} format e.g., MM/dd/uuuu
+     * @param zoneId
+     *            ZoneId
+     * @return a date formatted string
+     */
+    public static String genDate (int days, final DateTimeFormatter formatDate, ZoneId zoneId) {
+        return formatDate.format (now (zoneId).plusDays (days));
+    }
+
+    /**
+     * Convert given date in fromPattern to toPattern
+     * 
+     * @param dateToConvert
+     *            String date to convert
+     * @param fromPattern
+     *            The date format to covert from
+     * @param toPattern
+     *            The date format to convert to
+     * @return String date in toPattern
+     */
+    public static String convertDateFormat (String dateToConvert, String fromPattern, String toPattern) {
+        DateTimeFormatter fromFormat = new DateTimeFormatterBuilder ().appendPattern (fromPattern)
+                                                                      .parseDefaulting (CLOCK_HOUR_OF_AMPM, 12)
+                                                                      .parseDefaulting (MINUTE_OF_HOUR, 0)
+                                                                      .parseDefaulting (SECOND_OF_MINUTE, 0)
+                                                                      .parseDefaulting (AMPM_OF_DAY, 0)
+                                                                      .toFormatter ();
+        DateTimeFormatter toFormat = DateTimeFormatter.ofPattern (toPattern);
+        toFormat.withZone (pstZoneId);
+        return parse (dateToConvert, fromFormat).format (toFormat);
+    }
+}

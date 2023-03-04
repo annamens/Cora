@@ -1,0 +1,188 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test.utils;
+
+import static com.adaptivebiotech.test.BaseEnvironment.azClientId;
+import static com.adaptivebiotech.test.BaseEnvironment.azClientSecret;
+import static com.adaptivebiotech.test.BaseEnvironment.azTenantId;
+import static com.adaptivebiotech.test.utils.DateHelper.pstZoneId;
+import static com.seleniumfy.test.utils.Logging.error;
+import static com.seleniumfy.test.utils.Logging.info;
+import static java.lang.String.format;
+import static java.net.URLDecoder.decode;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.createDirectories;
+import static java.nio.file.Paths.get;
+import static java.time.Duration.ofMinutes;
+import static java.time.OffsetDateTime.now;
+import static org.testng.util.Strings.isNullOrEmpty;
+import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import com.azure.identity.ClientSecretCredential;
+import com.azure.identity.ClientSecretCredentialBuilder;
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.models.ListBlobsOptions;
+import com.azure.storage.blob.models.UserDelegationKey;
+import com.azure.storage.blob.sas.BlobContainerSasPermission;
+import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
+
+/**
+ * @author Harry Soehalim
+ *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
+ */
+public class AzureClientHelper {
+
+    private static final HttpClientHelper   httpClientHelper = new HttpClientHelper ();
+    private static BlobServiceClientBuilder blobServiceClient;
+
+    static {
+        if (isNullOrEmpty (azTenantId))
+            throw new RuntimeException ("Azure Tenant ID is needed for credential");
+        if (isNullOrEmpty (azClientId))
+            throw new RuntimeException ("Azure Client ID is needed for credential");
+        if (isNullOrEmpty (azClientSecret))
+            throw new RuntimeException ("Azure Client Secret is needed for credential");
+
+        blobServiceClient = new BlobServiceClientBuilder ().credential (setClientCredential (azTenantId,
+                                                                                             azClientId,
+                                                                                             azClientSecret));
+        info ("generated a new azure client credential");
+    }
+
+    public synchronized static ClientSecretCredential setClientCredential (String azTenantId,
+                                                                           String azClientId,
+                                                                           String azClientSecret) {
+        return new ClientSecretCredentialBuilder ().tenantId (azTenantId)
+                                                   .clientId (azClientId)
+                                                   .clientSecret (azClientSecret).build ();
+
+    }
+
+    /**
+     * Wrapper for Azure Blob Container Client for dowloading file(s) from an azure storage
+     * 
+     * @param azPath
+     *            The azure URl path. For ex:
+     *            https://{accountName}.blob.core.windows.net/{container}/dir1/file.txt - a file
+     *            https://{accountName}.blob.core.windows.net/{container}/dir1/ - a directory
+     * @param downloadDir
+     *            The download directory
+     */
+    public static void downloadAzure (String azPath, String downloadDir) {
+        try {
+            boolean isDirectory = azPath.endsWith ("/");
+            String[] paths = azPath.replace ("https://", "").split ("/", 3);
+            BlobContainerClient blobContainerClient = blobServiceClient.endpoint ("https://" + paths[0])
+                                                                       .buildClient ()
+                                                                       .getBlobContainerClient (paths[1]);
+
+            if (isDirectory) {
+                ListBlobsOptions options = new ListBlobsOptions ().setPrefix (paths[2]);
+                blobContainerClient.listBlobs (options, ofMinutes (10)).forEach (blob -> {
+                    Path target = get (downloadDir, blob.getName ().replace (paths[2], ""));
+                    downloadFile (blobContainerClient.getBlobClient (httpClientHelper.encodeUrl (blob.getName ())),
+                                  target);
+                });
+            } else {
+                Path target = get (downloadDir, get (paths[2]).getFileName ().toString ());
+                downloadFile (blobContainerClient.getBlobClient (httpClientHelper.encodeUrl (paths[2])), target);
+            }
+        } catch (Exception e) {
+            error ("failed to download file(s) from azure", e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Wrapper for Azure Blob Container Client for uploading a file to an azure storage
+     * 
+     * @param filePath
+     *            The path of the file to upload
+     * @param azPath
+     *            The azure URl path. For ex:
+     *            https://{accountName}.blob.core.windows.net/{container}/dir1
+     */
+    public static void uploadAzure (String filePath, String azPath) {
+        try {
+            String[] paths = azPath.replace ("https://", "").split ("/", 3);
+            String target = get (paths[2], get (filePath).getFileName ().toString ()).toString ();
+            target = target.replace ("\\", "/");
+            BlobContainerClient blobContainerClient = blobServiceClient.endpoint ("https://" + paths[0])
+                                                                       .buildClient ()
+                                                                       .getBlobContainerClient (paths[1]);
+            BlobClient blobClient = blobContainerClient.getBlobClient (httpClientHelper.encodeUrl (target));
+            blobClient.uploadFromFile (filePath, true);
+            info (format ("uploaded %s", filePath));
+        } catch (Exception e) {
+            error ("failed to upload file(s) to azure", e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Wrapper for Azure Blob Container Client for cloning azure directory to another location
+     * 
+     * @param azSourceDir
+     *            The path of azure directory (not a single file) to clone. For ex:
+     *            https://{accountName1}.blob.core.windows.net/{container1}/source_dir
+     * 
+     *            and source_dir/dir2/file1
+     * @param azTargetDir
+     *            The path of azure directory where we want the clone directory to live (doesn't
+     *            have to exist). For ex:
+     *            https://{accountName2}.blob.core.windows.net/{container2}/new_dir
+     * 
+     *            The end result is
+     *            https://{accountName2}.blob.core.windows.net/{container2}/new_dir/dir2/file1
+     * 
+     *            Note:
+     *            if "new_dir" is missing, then "source_dir" will be use instead
+     *            if "new_dir" exists, then the content of that directory will be overwritten
+     */
+    public static void cloneAzure (String azSourceDir, String azTargetDir) {
+        String[] sourcePaths = azSourceDir.replace ("https://", "").split ("/", 3);
+        BlobServiceClient sourceServiceClient = blobServiceClient.endpoint ("https://" + sourcePaths[0]).buildClient ();
+        BlobContainerClient sourceContainerClient = sourceServiceClient.getBlobContainerClient (sourcePaths[1]);
+
+        String[] targetPaths = azTargetDir.replace ("https://", "").split ("/", 3);
+        BlobContainerClient targetContainerClient = blobServiceClient.endpoint ("https://" + targetPaths[0])
+                                                                     .buildClient ()
+                                                                     .getBlobContainerClient (targetPaths[1]);
+
+        // the source must either be public or authenticated with a SAS token
+        OffsetDateTime keyExpiry = now (pstZoneId).plusDays (1);
+        UserDelegationKey userDelegationKey = sourceServiceClient.getUserDelegationKey (now (pstZoneId), keyExpiry);
+        BlobServiceSasSignatureValues sasSignatureValues = new BlobServiceSasSignatureValues (keyExpiry,
+                BlobContainerSasPermission.parse ("r"));
+        String sasToken = sourceContainerClient.generateUserDelegationSas (sasSignatureValues, userDelegationKey);
+
+        ListBlobsOptions options = new ListBlobsOptions ().setPrefix (sourcePaths[2]);
+        sourceContainerClient.listBlobs (options, ofMinutes (10)).forEach (blob -> {
+            String targetFile;
+            if (targetPaths.length == 3)
+                targetFile = get (targetPaths[2], blob.getName ().replace (sourcePaths[2] + "/", "")).toString ();
+            else
+                targetFile = get (blob.getName ()).toString ();
+
+            BlobClient sourceBlob = sourceContainerClient.getBlobClient (httpClientHelper.encodeUrl (blob.getName ()));
+            targetContainerClient.getBlobClient (httpClientHelper.encodeUrl (targetFile))
+                                 .beginCopy (sourceBlob.getBlobUrl () + "?" + sasToken, null);
+        });
+        info (format ("cloned %s to %s", azSourceDir, azTargetDir));
+    }
+
+    private static void downloadFile (BlobClient blobClient, Path target) {
+        try {
+            createDirectories (target.getParent ());
+            blobClient.downloadToFile (target.toString (), true);
+            info (format ("downloaded %s to %s", decode (blobClient.getBlobUrl (), UTF_8.name ()), target));
+        } catch (Exception e) {
+            error ("failed to create missing target download dir(s)", e);
+            throw new RuntimeException (e);
+        }
+    }
+}

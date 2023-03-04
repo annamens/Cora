@@ -1,0 +1,332 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test.utils;
+
+import static com.seleniumfy.test.utils.Logging.error;
+import static com.seleniumfy.test.utils.Logging.info;
+import static com.seleniumfy.test.utils.Logging.warn;
+import static java.lang.String.format;
+import static java.nio.file.Files.lines;
+import static java.util.stream.Collectors.toList;
+import static net.schmizz.sshj.common.IOUtils.readFully;
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
+import static org.testng.Assert.fail;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import com.adaptivebiotech.common.dto.Server;
+import com.github.javafaker.Faker;
+import com.thedeanda.lorem.LoremIpsum;
+import com.univocity.parsers.common.processor.BeanListProcessor;
+import com.univocity.parsers.common.processor.ObjectRowWriterProcessor;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
+import com.univocity.parsers.csv.CsvWriter;
+import com.univocity.parsers.csv.CsvWriterSettings;
+import com.univocity.parsers.tsv.TsvParser;
+import com.univocity.parsers.tsv.TsvParserSettings;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.connection.channel.direct.Session.Command;
+import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
+
+/**
+ * @author Harry Soehalim
+ *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
+ */
+public class TestHelper {
+
+    public static TestObjectMapper mapper = TestObjectMapper.setMapper ();
+
+    public static String randomWords (int count) {
+        return LoremIpsum.getInstance ().getWords (count);
+    }
+
+    public static String randomString (int count) {
+        return new Faker ().lorem ().characters (count, true);
+    }
+
+    /**
+     * Parse a text file into a list of strings
+     * 
+     * @param txtFile
+     *            Text file to parse
+     * @return a list of strings
+     */
+    public static List <String> fileToList (String txtFile) {
+        try {
+            return lines (new File (txtFile).toPath ()).collect (toList ());
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Parses TSV File, returns a list of extracted lines. This function can also take in Gzip
+     * files.
+     * 
+     * @param <T>
+     *            Any TSV dto class
+     * @param file
+     *            {@link File} to parse
+     * @param beanType
+     *            {@link Class} to initialize {@link BeanListProcessor}
+     * @return List of extracted lines
+     */
+    public static <T> List <T> parseTsv (String file, Class <T> beanType) {
+        return parseTsv (file, null, beanType, null);
+    }
+
+    /**
+     * Parses TSV File, returns a list of extracted lines. This function can also take in Gzip
+     * files.
+     * 
+     * @param <T>
+     *            Any TSV dto class
+     * @param file
+     *            {@link File} to parse
+     * @param beanType
+     *            {@link Class} to initialize {@link BeanListProcessor}
+     * @param comparator
+     *            {@link Comparator} - for sorting the results list
+     * @return List of extracted lines
+     */
+    public static <T> List <T> parseTsv (String file, Class <T> beanType, Comparator <T> comparator) {
+        return parseTsv (file, null, beanType, comparator);
+    }
+
+    /**
+     * Parses TSV File, returns a list of extracted lines. This function can also take in Gzip
+     * files.
+     * 
+     * @param <T>
+     *            Any TSV dto class
+     * @param file
+     *            {@link File} to parse
+     * @param settings
+     *            {@link TsvParserSettings}
+     * @param beanType
+     *            {@link Class} to initialize {@link BeanListProcessor}
+     * @param comparator
+     *            {@link Comparator} - for sorting the results list
+     * @return List of extracted lines
+     */
+    public static <T> List <T> parseTsv (String file,
+                                         TsvParserSettings settings,
+                                         Class <T> beanType,
+                                         Comparator <T> comparator) {
+        TsvParser parser = null;
+        try (BufferedReader reader = new BufferedReader (
+                new InputStreamReader (file.endsWith (".gz") ? new GZIPInputStream (
+                        new FileInputStream (file)) : new FileInputStream (file)))) {
+            if (settings == null) {
+                settings = new TsvParserSettings ();
+                settings.setLineSeparatorDetectionEnabled (true);
+                settings.setAutoClosingEnabled (true);
+                settings.setAutoConfigurationEnabled (true);
+            }
+            BeanListProcessor <T> processor = new BeanListProcessor <> (beanType);
+            settings.setProcessor (processor);
+
+            parser = new TsvParser (settings);
+            parser.parse (reader);
+
+            List <T> beans = processor.getBeans ();
+            if (beans.size () == 0)
+                warn (format ("[%s]: the results size: %s", file, beans.size ()));
+            if (comparator != null)
+                beans.sort (comparator);
+
+            return beans;
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        } finally {
+            parser.stopParsing ();
+        }
+    }
+
+    /**
+     * Parses CSV File, returns a list of extracted lines. This function can also take in Gzip
+     * files.
+     * 
+     * @param <T>
+     *            Any CSV dto class
+     * @param file
+     *            {@link File} to parse
+     * @param beanType
+     *            {@link Class} to initialize {@link BeanListProcessor}
+     * @return List of extracted lines
+     */
+    public static <T> List <T> parseCsv (String file, Class <T> beanType) {
+        return parseCsv (file, null, beanType, null);
+    }
+
+    /**
+     * Parses CSV File, returns a list of extracted lines. This function can also take in Gzip
+     * files.
+     * 
+     * @param <T>
+     *            Any CSV dto class
+     * @param file
+     *            {@link File} to parse
+     * @param settings
+     *            {@link CsvParserSettings}
+     * @param beanType
+     *            {@link Class} to initialize {@link BeanListProcessor}
+     * @param comparator
+     *            {@link Comparator} - for sorting the results list
+     * @return List of extracted lines
+     */
+    public static <T> List <T> parseCsv (String file,
+                                         CsvParserSettings settings,
+                                         Class <T> beanType,
+                                         Comparator <T> comparator) {
+        CsvParser parser = null;
+        try (BufferedReader reader = new BufferedReader (
+                new InputStreamReader (file.endsWith (".gz") ? new GZIPInputStream (
+                        new FileInputStream (file)) : new FileInputStream (file)))) {
+            if (settings == null) {
+                settings = new CsvParserSettings ();
+                settings.setLineSeparatorDetectionEnabled (true);
+                settings.setAutoClosingEnabled (true);
+                settings.setAutoConfigurationEnabled (true);
+            }
+            BeanListProcessor <T> processor = new BeanListProcessor <> (beanType);
+            settings.setProcessor (processor);
+
+            parser = new CsvParser (settings);
+            parser.parse (reader);
+
+            List <T> beans = processor.getBeans ();
+            if (beans.size () == 0)
+                warn (format ("[%s]: the results size: %s", file, beans.size ()));
+            if (comparator != null)
+                beans.sort (comparator);
+
+            return beans;
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        } finally {
+            parser.stopParsing ();
+        }
+    }
+
+    /**
+     * Write to CSV File
+     * 
+     * @param file
+     *            {@link File} to write to
+     * @param rows
+     *            List of {@link Map} containing data from a DB query
+     */
+    public static void writeCsv (String file, List <Map <String, Object>> rows) {
+        CsvWriterSettings settings = new CsvWriterSettings ();
+        settings.setHeaderWritingEnabled (true);
+        settings.setAutoConfigurationEnabled (true);
+        settings.setRowWriterProcessor (new ObjectRowWriterProcessor ());
+        settings.setHeaders (rows.get (0).keySet ().toArray (new String[] {}));
+
+        CsvWriter writer = new CsvWriter (new File (file), settings);
+        writer.writeHeaders ();
+        rows.forEach (r -> {
+            writer.writeRow (r.values ().toArray ());
+        });
+        writer.close ();
+    }
+
+    /**
+     * Run command on remote server via ssh
+     * 
+     * @param server
+     *            {@link Server} object
+     * @param cmds
+     *            String of command(s)
+     * @return {@link List} of String of output from the command(s)
+     */
+    public static List <String> runSshCmd (Server server, String... cmds) {
+        List <String> outputs = new ArrayList <> ();
+        try (SSHClient ssh = new SSHClient ()) {
+            ssh.addHostKeyVerifier (new PromiscuousVerifier ());
+            ssh.connect (server.host);
+            ssh.authPassword (server.user, server.pass);
+
+            // run the cmd
+            for (String cmd : cmds) {
+                info (format ("exec on %s : %s", server.host, cmd));
+                try (Session session = ssh.startSession ()) {
+                    Command output = session.exec (cmd);
+                    String in = readFully (output.getInputStream ()).toString ();
+                    info ("output: " + in);
+                    Integer exit;
+                    if ( (exit = output.getExitStatus ()) != null && !exit.equals (0)) {
+                        error ("error: " + readFully (output.getErrorStream ()).toString ());
+                        fail ("exit status: " + output.getExitStatus ());
+                    }
+                    outputs.add (in);
+                }
+            }
+            return outputs;
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Helper method for overriding toString()
+     * 
+     * @param object
+     *            The instance of the object that you want to generate toString()
+     * @return A string based json output of the object
+     */
+    public static String toStringOverride (Object object) {
+        return mapper.writeValueAsString (object);
+    }
+
+    /**
+     * Helper method for overriding equals()
+     * 
+     * @param expected
+     *            The instance of the expected object
+     * @param actual
+     *            The instance of the actual object that you want to against
+     * @param excludeFields
+     *            Exclude these fields for the assertion
+     * @return True if both expexted and actual objects have the same values, false if otherwise
+     */
+    public static boolean equalsOverride (Object expected, Object actual, String... excludeFields) {
+        if (actual == expected)
+            return true;
+
+        if (!actual.getClass ().equals (expected.getClass ()))
+            return false;
+
+        return reflectionEquals (expected, actual, excludeFields);
+    }
+
+    /**
+     * Helper method for overriding equals()
+     * 
+     * @param expected
+     *            The instance of the expected object
+     * @param actual
+     *            The instance of the actual object that you want to against
+     * @return True if both expexted and actual objects have the same values, false if otherwise
+     */
+    public static boolean equalsOverrideWithSuper (Object expected, Object actual) {
+        if (actual == expected)
+            return true;
+
+        if (!actual.getClass ().equals (expected.getClass ()))
+            return false;
+
+        return new EqualsBuilder ().appendSuper (true).reflectionAppend (expected, actual).isEquals ();
+    }
+}

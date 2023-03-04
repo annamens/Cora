@@ -1,0 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test.utils;
+
+/**
+ * Logging utility class
+ * 
+ * @author Harry Soehalim
+ *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
+ */
+public class Logging extends com.seleniumfy.test.utils.Logging {
+
+    public synchronized static void testLog (String message) {
+        System.out.println ("test: " + message);
+    }
+}

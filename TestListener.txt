@@ -1,0 +1,119 @@
+package com.seleniumfy.test.utils;
+
+import static com.saucelabs.common.Utils.addBuildNumberToUpdate;
+import static com.seleniumfy.test.utils.Environment.sauceKey;
+import static com.seleniumfy.test.utils.Environment.sauceUser;
+import static com.seleniumfy.test.utils.Environment.useSauceLabs;
+import static java.lang.String.join;
+import static java.lang.String.valueOf;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+import java.util.HashMap;
+import java.util.Map;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
+import com.saucelabs.common.SauceOnDemandAuthentication;
+import com.saucelabs.common.SauceOnDemandSessionIdProvider;
+import com.saucelabs.saucerest.SauceREST;
+import com.saucelabs.testng.SauceOnDemandAuthenticationProvider;
+
+/**
+ * To avoid using static testng.xml, add this TestNG listener class
+ * 
+ * @author Harry Soehalim - <a href="mailto:harry.soehalim@gmail.com">harry.soehalim@gmail.com</a>
+ *         Copyright (c) 2012 by Harry Soehalim
+ */
+public class TestListener extends TestListenerAdapter {
+
+    private SauceOnDemandSessionIdProvider sessionIdProvider;
+    private SauceREST                      sauceREST;
+
+    @Override
+    public void onStart (ITestContext testContext) {
+        super.onStart (testContext);
+    }
+
+    @Override
+    public void onTestStart (ITestResult result) {
+        super.onTestStart (result);
+        printTestStatus (result, "test start");
+
+        if (useSauceLabs) {
+            if (result.getInstance () instanceof SauceOnDemandSessionIdProvider)
+                sessionIdProvider = (SauceOnDemandSessionIdProvider) result.getInstance ();
+
+            SauceOnDemandAuthentication sauceAuth;
+            if (result.getInstance () instanceof SauceOnDemandAuthenticationProvider) {
+                SauceOnDemandAuthenticationProvider provider = (SauceOnDemandAuthenticationProvider) result.getInstance ();
+                sauceAuth = provider.getAuthentication ();
+            } else {
+                sauceAuth = new SauceOnDemandAuthentication (sauceUser, sauceKey);
+            }
+
+            if (sessionIdProvider != null) {
+                sauceREST = new SauceREST (sauceAuth.getUsername (), sauceAuth.getAccessKey ());
+                String sessionId = sessionIdProvider.getSessionId ();
+                if (sessionId != null) {
+                    Map <String, Object> updates = new HashMap <> ();
+                    updates.put ("name", getTestName (result));
+                    addBuildNumberToUpdate (updates);
+                    sauceREST.updateJobInfo (sessionId, updates);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onTestSkipped (ITestResult result) {
+        super.onTestSkipped (result);
+        printTestStatus (result, "test skipped");
+    }
+
+    @Override
+    public void onTestFailure (ITestResult result) {
+        super.onTestFailure (result);
+        printTestStatus (result, "FAILED");
+
+        if (sauceREST != null && sessionIdProvider != null) {
+            String sessionId = sessionIdProvider.getSessionId ();
+            if (sessionId != null) {
+                Map <String, Object> updates = new HashMap <> ();
+                updates.put ("name", getTestName (result));
+                updates.put ("passed", false);
+                addBuildNumberToUpdate (updates);
+                sauceREST.updateJobInfo (sessionId, updates);
+            }
+        }
+    }
+
+    @Override
+    public void onTestSuccess (ITestResult result) {
+        super.onTestSuccess (result);
+        printTestStatus (result, "test passed");
+
+        if (sauceREST != null && sessionIdProvider != null) {
+            String sessionId = sessionIdProvider.getSessionId ();
+            if (sessionId != null) {
+                Map <String, Object> updates = new HashMap <> ();
+                updates.put ("name", getTestName (result));
+                updates.put ("passed", true);
+                addBuildNumberToUpdate (updates);
+                sauceREST.updateJobInfo (sessionId, updates);
+            }
+        }
+    }
+
+    private void printTestStatus (ITestResult result, String status) {
+        System.out.println (status + ": " + getTestName (result) + "()");
+    }
+
+    private String getTestName (ITestResult result) {
+        Object[] params = result.getParameters ();
+        String[] temp = result.getTestClass ().getName ().split ("\\.");
+        String name = join (".", temp[temp.length - 2], temp[temp.length - 1], result.getMethod ().getMethodName ());
+        if (params != null && params.length > 0)
+            name = join (".", name, stream (params).map (p -> valueOf (p)).collect (joining (".")));
+        return name;
+    }
+}

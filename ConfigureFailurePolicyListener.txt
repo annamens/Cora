@@ -1,0 +1,22 @@
+package com.seleniumfy.test.utils;
+
+import static org.testng.xml.XmlSuite.CONTINUE;
+import static org.testng.xml.XmlSuite.SKIP;
+import java.util.List;
+import org.testng.IAlterSuiteListener;
+import org.testng.xml.XmlSuite;
+
+/**
+ * @author Harry Soehalim - <a href="mailto:harry.soehalim@gmail.com">harry.soehalim@gmail.com</a>
+ *         Copyright (c) 2012 by Harry Soehalim
+ */
+public class ConfigureFailurePolicyListener implements IAlterSuiteListener {
+
+    @Override
+    public void alter (List <XmlSuite> suites) {
+        for (XmlSuite suite : suites) {
+            if (suite.getConfigFailurePolicy ().equals (SKIP))
+                suite.setConfigFailurePolicy (CONTINUE);
+        }
+    }
+}

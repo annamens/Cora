@@ -1,0 +1,89 @@
+package com.seleniumfy.test.utils;
+
+import static java.lang.String.format;
+import static java.util.logging.Level.OFF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Harry Soehalim - <a href="mailto:harry.soehalim@gmail.com">harry.soehalim@gmail.com</a>
+ *         Copyright (c) 2012 by Harry Soehalim
+ */
+public class Logging {
+
+    private static java.util.logging.Logger selenium = java.util.logging.Logger.getLogger ("org.openqa.selenium.remote");
+    private static Logger                   doLog;
+
+    /**
+     * Log an info message
+     * 
+     * @param message
+     *            An info message to log
+     */
+    public synchronized static void info (String message) {
+        selenium.setLevel (OFF);
+        doLog = LoggerFactory.getLogger (getCallerClass ());
+        doLog.info (message);
+    }
+
+    /**
+     * Log a warning message
+     * 
+     * @param message
+     *            A warning message to log
+     */
+    public synchronized static void warn (String message) {
+        selenium.setLevel (OFF);
+        doLog = LoggerFactory.getLogger (getCallerClass ());
+        doLog.warn (message);
+    }
+
+    /**
+     * Log a debug message
+     * 
+     * @param message
+     *            A debug message to log
+     */
+    public synchronized static void debug (String message) {
+        selenium.setLevel (OFF);
+        doLog = LoggerFactory.getLogger (getCallerClass ());
+        doLog.debug (message);
+    }
+
+    /**
+     * Log an error message
+     * 
+     * @param message
+     *            An error message to log
+     */
+    public synchronized static void error (String message) {
+        selenium.setLevel (OFF);
+        doLog = LoggerFactory.getLogger (getCallerClass ());
+        doLog.error (message);
+    }
+
+    /**
+     * Log an error message and any {@link Throwable} {@link Exception}
+     * 
+     * @param message
+     *            An error message to log
+     * @param ex
+     *            {@link Throwable} {@link Exception}
+     */
+    public synchronized static void error (String message, Throwable ex) {
+        selenium.setLevel (OFF);
+        doLog = LoggerFactory.getLogger (getCallerClass ());
+        doLog.error (message, ex);
+    }
+
+    private synchronized static String getCallerClass () {
+        for (StackTraceElement elem : Thread.currentThread ().getStackTrace ())
+            if (elem.getClassName () != Logging.class.getName () && elem.getClassName () != Thread.class.getName ())
+                return format ("%1$s [%2$s (:%3$d)]",
+                               elem.getClassName (),
+                               elem.getMethodName (),
+                               elem.getLineNumber ());
+
+        return null;
+    }
+}

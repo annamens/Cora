@@ -1,0 +1,770 @@
+package com.seleniumfy.test.utils;
+
+import static com.seleniumfy.test.utils.Environment.browserHeight;
+import static com.seleniumfy.test.utils.Environment.browserName;
+import static com.seleniumfy.test.utils.Environment.browserVersion;
+import static com.seleniumfy.test.utils.Environment.browserWidth;
+import static com.seleniumfy.test.utils.Environment.doBrowserResize;
+import static com.seleniumfy.test.utils.Environment.initialization;
+import static com.seleniumfy.test.utils.Environment.isRemoteTest;
+import static com.seleniumfy.test.utils.Environment.os;
+import static com.seleniumfy.test.utils.Environment.platform;
+import static com.seleniumfy.test.utils.Environment.projectVersion;
+import static com.seleniumfy.test.utils.Environment.remoteHubUrl;
+import static com.seleniumfy.test.utils.Environment.resolution;
+import static com.seleniumfy.test.utils.Environment.sauceKey;
+import static com.seleniumfy.test.utils.Environment.sauceOptions;
+import static com.seleniumfy.test.utils.Environment.sauceTunnel;
+import static com.seleniumfy.test.utils.Environment.sauceUrl;
+import static com.seleniumfy.test.utils.Environment.sauceUser;
+import static com.seleniumfy.test.utils.Environment.tags;
+import static com.seleniumfy.test.utils.Environment.useRemoteHub;
+import static com.seleniumfy.test.utils.Environment.useSauceLabs;
+import static com.seleniumfy.test.utils.Environment.windowPositions;
+import static com.seleniumfy.test.utils.Environment.BrowserName.chrome;
+import static com.seleniumfy.test.utils.Environment.Platform.getPlatform;
+import static com.seleniumfy.test.utils.Environment.Platform.osx15;
+import static com.seleniumfy.test.utils.Environment.Platform.win10;
+import static com.seleniumfy.test.utils.Logging.error;
+import static com.seleniumfy.test.utils.Logging.info;
+import static com.seleniumfy.test.utils.Logging.warn;
+import static io.github.bonigarcia.wdm.config.DriverManagerType.CHROME;
+import static io.github.bonigarcia.wdm.config.DriverManagerType.EDGE;
+import static io.github.bonigarcia.wdm.config.DriverManagerType.FIREFOX;
+import static io.github.bonigarcia.wdm.config.DriverManagerType.IEXPLORER;
+import static java.io.File.separator;
+import static java.lang.ClassLoader.getSystemResource;
+import static java.lang.ClassLoader.getSystemResourceAsStream;
+import static java.lang.String.join;
+import static java.lang.System.getProperty;
+import static java.nio.file.Files.createDirectories;
+import static java.nio.file.Paths.get;
+import static java.util.stream.Collectors.toMap;
+import static org.openqa.selenium.firefox.FirefoxDriver.PROFILE;
+import static org.openqa.selenium.firefox.FirefoxOptions.FIREFOX_OPTIONS;
+import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
+import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeDriverService;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.GeckoDriverService;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.ie.InternetExplorerDriverService;
+import org.openqa.selenium.ie.InternetExplorerOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.LocalFileDetector;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.safari.SafariDriverService;
+import org.openqa.selenium.safari.SafariOptions;
+import org.slf4j.MDC;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
+import com.saucelabs.common.SauceOnDemandAuthentication;
+import com.saucelabs.common.SauceOnDemandSessionIdProvider;
+import com.saucelabs.saucerest.SauceREST;
+import com.saucelabs.testng.SauceOnDemandAuthenticationProvider;
+import com.seleniumfy.test.utils.Environment.BrowserName;
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+/**
+ * @author Harry Soehalim - <a href="mailto:harry.soehalim@gmail.com">harry.soehalim@gmail.com</a>
+ *         Copyright (c) 2012 by Harry Soehalim
+ */
+@Listeners ({ TestListener.class, ConfigureFailurePolicyListener.class })
+public class BaseBrowser implements SauceOnDemandSessionIdProvider, SauceOnDemandAuthenticationProvider {
+
+    static void setDriver (WebDriver driver) {
+        info ("setting webDriver ...");
+        webDriver.set (driver);
+    }
+
+    static void setSessionId (String id) {
+        sessionId.set (id);
+    }
+
+    private static final ThreadLocal <WebDriver> webDriver      = new ThreadLocal <> ();
+    private static final ThreadLocal <String>    sessionId      = new ThreadLocal <> ();
+    private static final ThreadLocal <Point>     windowPosition = new ThreadLocal <> ();
+    private static SauceOnDemandAuthentication   authentication;
+    private static SauceREST                     sauceREST;
+    protected String                             jobId          = "job.id";
+    protected long                               millisDuration = 30000l;               // 30sec
+    protected long                               millisPoll     = 1000l;                // 1sec
+
+    static {
+        try {
+            info ("initializing env properties ...");
+            initialization ();
+
+            if (useSauceLabs) {
+                info ("authenticate sauce on demand ...");
+                authentication = new SauceOnDemandAuthentication (sauceUser, sauceKey);
+                sauceREST = new SauceREST (authentication.getUsername (), authentication.getAccessKey ());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Get the current session webdriver
+     * 
+     * @return {@link WebDriver}
+     */
+    public WebDriver getDriver () {
+        return webDriver.get ();
+    }
+
+    /**
+     * Get the current session ID
+     * 
+     * @return session ID
+     */
+    public String getSessionId () {
+        return sessionId.get ();
+    }
+
+    /**
+     * Get the browser window position
+     * 
+     * @return {@link Point}
+     */
+    private Point getWindowPosition () {
+        return windowPosition.get ();
+    }
+
+    @AfterMethod (alwaysRun = true)
+    public final void afterMethodBase () {
+        info ("closing browser, clear sessionId and nullify webdriver");
+        closeBrowser ();
+        setSessionId (null);
+        setDriver (null);
+    }
+
+    @AfterSuite (alwaysRun = true)
+    public final void afterSuiteBase () {
+        info ("closing browser, clear sessionId and nullify webdriver");
+        closeBrowser ();
+        setSessionId (null);
+        setDriver (null);
+    }
+
+    @BeforeClass (alwaysRun = true)
+    public final void beforeClassBase () {
+        MDC.put (jobId, this.getClass ().getName ());
+
+        // must do this after a new thread is created
+        initDriver ();
+
+        if (useSauceLabs) {
+            Map <String, Object> updates = new HashMap <> ();
+            updates.put ("name", classNameForSaucelabs (this.getClass ()));
+            sauceREST.updateJobInfo (getSessionId (), updates);
+        }
+    }
+
+    @BeforeMethod (alwaysRun = true)
+    public final void beforeMethodBase (Method method) {
+        if (useSauceLabs) {
+            if (hasQuit ())
+                initDriver ();
+
+            Map <String, Object> updates = new HashMap <> ();
+            updates.put ("name", join (".", classNameForSaucelabs (this.getClass ()), method.getName ()));
+            sauceREST.updateJobInfo (getSessionId (), updates);
+        }
+    }
+
+    @Override
+    public SauceOnDemandAuthentication getAuthentication () {
+        info ("get sauce on demand auth ...");
+        return authentication;
+    }
+
+    /**
+     * Close the current session web browser
+     */
+    public void closeBrowser () {
+        if (!hasQuit ()) {
+            try {
+                getDriver ().quit ();
+            } catch (Exception e) {
+                // when saucelabs terminated the job, we'll run into:
+                // JsonException: Unable to determine type from: E. Last 1 characters read: E
+                error ("failed to execute driver.quit()", e);
+            }
+        }
+
+        Point position = getWindowPosition ();
+        if (position != null)
+            windowPositions.add (position);
+    }
+
+    /**
+     * Initialize {@link WebDriver} object
+     */
+    public void initDriver () {
+        info ("initialize webDriver ...");
+        RemoteWebDriver driver;
+        if (useRemoteHub) {
+            driver = new RemoteWebDriver (remoteHubUrl, getRemoteDriverDesiredCapabilites ());
+            driver.setFileDetector (new LocalFileDetector ());
+            setDriver (driver);
+            if (doBrowserResize)
+                getDriver ().manage ().window ().maximize ();
+        } else if (useSauceLabs) {
+            driver = new RemoteWebDriver (sauceUrl, getSauceLabsDesiredCapabilites ());
+            driver.setFileDetector (new LocalFileDetector ());
+            setDriver (driver);
+            if (doBrowserResize)
+                getDriver ().manage ().window ().maximize ();
+        } else {
+            setWindowPosition (windowPositions.poll ());
+            Point windowPosition = getWindowPosition ();
+            if (windowPosition == null)
+                windowPosition = new Point (0, 0);
+
+            if (browserName == null)
+                browserName = chrome;
+
+            switch (browserName) {
+            case chrome:
+                setDriver (new ChromeDriver (initChromeService (), buildChromeOptions ()));
+                break;
+            case ff:
+                setDriver (new FirefoxDriver (initGeckoService (), buildFirefoxOptions ()));
+                break;
+            case edge:
+                setDriver (new EdgeDriver (initEdgeService (), buildEdgeOptions ()));
+                break;
+            case ie:
+                setDriver (new InternetExplorerDriver (initIEService (), buildIEOptions ()));
+                break;
+            case safari:
+                setDriver (new SafariDriver (SafariDriverService.createDefaultService (), buildSafariOptions ()));
+                break;
+            }
+
+            if (doBrowserResize) {
+                getDriver ().manage ().window ().setPosition (windowPosition);
+                getDriver ().manage ().window ().setSize (new Dimension (browserWidth, browserHeight));
+            }
+        }
+        setSessionId ( ((RemoteWebDriver) getDriver ()).getSessionId ().toString ());
+        getDriver ().manage ().deleteAllCookies ();
+    }
+
+    /**
+     * Construct {@link DesiredCapabilities} for {@link RemoteWebDriver}
+     * 
+     * @return {@link DesiredCapabilities}
+     */
+    private DesiredCapabilities getRemoteDriverDesiredCapabilites () {
+        DesiredCapabilities caps = new DesiredCapabilities ();
+        if (browserName == null)
+            browserName = chrome;
+
+        switch (browserName) {
+        case chrome:
+            caps = DesiredCapabilities.chrome ();
+            break;
+        case ff:
+            caps = DesiredCapabilities.firefox ();
+            caps.setCapability (PROFILE, buildFirefoxProfile ());
+            caps.setCapability (FIREFOX_OPTIONS, buildFirefoxOptions ());
+            break;
+        case edge:
+            caps = DesiredCapabilities.edge ();
+            break;
+        case ie:
+            caps = DesiredCapabilities.internetExplorer ();
+            break;
+        case safari:
+            caps = DesiredCapabilities.safari ();
+            break;
+        }
+
+        caps.setCapability (BROWSER_NAME, browserName.value);
+        caps.setCapability (BROWSER_VERSION, browserVersion);
+        caps.setVersion (browserVersion);
+        caps.setJavascriptEnabled (true);
+        caps.setAcceptInsecureCerts (true);
+        caps.setCapability ("ensureCleanSession", true);
+        return caps;
+    }
+
+    /**
+     * Construct {@link MutableCapabilities} for SauceLabs
+     * - For platform/browser/version combinations see: https://saucelabs.com/platforms
+     * - For a list of capabilities:
+     * https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options
+     * 
+     * @return {@link MutableCapabilities}
+     */
+    private MutableCapabilities getSauceLabsDesiredCapabilites () {
+        MutableCapabilities options = new MutableCapabilities ();
+        try {
+            MutableCapabilities caps = new MutableCapabilities ();
+            Properties props = new Properties ();
+            props.load (getSystemResourceAsStream ("saucelabs.options"));
+            props.stringPropertyNames ()
+                 .stream ()
+                 .filter (key -> !BROWSER_NAME.equals (key))
+                 .filter (key -> !"platform".equals (key))
+                 .filter (key -> !key.startsWith ("prerun"))
+                 .forEach (key -> caps.setCapability (key, props.getProperty (key)));
+
+            // option for prerun script
+            Map <String, String> prerun = props.stringPropertyNames ()
+                                               .stream ()
+                                               .filter (key -> key.startsWith ("prerun"))
+                                               .collect (toMap (key -> key.replace ("prerun.", ""),
+                                                                key -> props.getProperty (key)));
+            if (!prerun.isEmpty ())
+                caps.setCapability ("prerun", prerun);
+
+            // if sauceOptions is not null, consume it
+            if (sauceOptions != null)
+                sauceOptions.forEach ( (k, v) -> caps.setCapability (k, v));
+
+            caps.setCapability ("javascriptEnabled", true);
+            caps.setCapability ("acceptSslCerts", true);
+
+            // overwrite with -Dproperty
+            if (sauceUser != null)
+                caps.setCapability ("username", sauceUser);
+            if (sauceKey != null)
+                caps.setCapability ("accessKey", sauceKey);
+            if (sauceTunnel != null)
+                caps.setCapability ("tunnel-identifier", sauceTunnel);
+            if (projectVersion != null)
+                caps.setCapability ("build", projectVersion);
+            if (resolution != null)
+                caps.setCapability ("screenResolution", resolution);
+            if (tags != null)
+                caps.setCapability ("tags", tags);
+            if (browserVersion == null && props.getProperty ("browserVersion") != null)
+                browserVersion = props.getProperty ("browserVersion");
+            if (platform == null && props.getProperty ("platform") != null)
+                platform = getPlatform (props.getProperty ("platform"));
+            if (browserName == null)
+                if (props.getProperty (BROWSER_NAME) != null)
+                    browserName = BrowserName.valueOf (props.getProperty (BROWSER_NAME));
+                else
+                    browserName = chrome;
+
+            switch (browserName) {
+            case chrome:
+                options = buildChromeOptions ();
+                break;
+            case ff:
+                caps.setCapability (PROFILE, buildFirefoxProfile ());
+                caps.setCapability (FIREFOX_OPTIONS, buildFirefoxOptions ());
+                options = new FirefoxOptions ();
+                break;
+            case edge:
+                options = buildEdgeOptions ();
+                break;
+            case safari:
+                options = buildSafariOptions ();
+                break;
+            case ie:
+                options = buildIEOptions ();
+                break;
+            }
+            options.setCapability ("platformName", platform.value);
+            options.setCapability ("browserVersion", browserVersion);
+            options.setCapability ("sauce:options", caps);
+        } catch (NullPointerException e) {
+            error ("SauceLabs Options file: saucelabs.options doesn't exist");
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+        return options;
+    }
+
+    /**
+     * Get the current session web browser url
+     * 
+     * @return A url string
+     */
+    public String getCurrentUrl () {
+        return getDriver ().getCurrentUrl ();
+    }
+
+    /**
+     * Send browser to the location provided in the url and wait for the page to finished loading
+     * 
+     * @param url
+     *            A url string
+     * @return Boolean status returning false on timedout
+     */
+    public boolean navigateTo (String url) {
+        getDriver ().navigate ().to (url);
+        return true;
+    }
+
+    /**
+     * Open a new web browser
+     */
+    public void openBrowser () {
+        openBrowser (null);
+    }
+
+    /**
+     * Open a new web browser
+     * 
+     * @param url
+     *            A url string
+     */
+    public void openBrowser (String url) {
+        if (hasQuit ())
+            initDriver ();
+
+        if (url != null)
+            navigateTo (url);
+    }
+
+    /**
+     * To check if we have closed the current session web browser
+     * 
+     * @return True if the session has been closed, false if otherwise
+     */
+    public boolean hasQuit () {
+        RemoteWebDriver driver = (RemoteWebDriver) getDriver ();
+        return driver == null || driver.getSessionId () == null;
+    }
+
+    private void setWindowPosition (Point position) {
+        windowPosition.set (position);
+    }
+
+    /**
+     * Return the location of chromedriver executable binary
+     * 
+     * @return The path to the chromedriver executable binary
+     */
+    public File getChromeDriver () {
+        String driverName = "chromedriver_mac";
+        if (os.startsWith ("win"))
+            driverName = "chromedriver.exe";
+        else if (os.contains ("nix") || os.contains ("nux"))
+            driverName = "chromedriver_linux64";
+        return getDriver (driverName);
+    }
+
+    /**
+     * Return the location of geckodriver executable binary
+     * 
+     * @return The path to the geckodriver executable binary
+     */
+    public File getGeckoDriver () {
+        String driverName = "geckodriver_mac";
+        if (os.startsWith ("win"))
+            driverName = "geckodriver.exe";
+        else if (os.contains ("nix") || os.contains ("nux"))
+            driverName = "geckodriver_linux64";
+        return getDriver (driverName);
+    }
+
+    /**
+     * Return the location of msedgedriver executable binary
+     * 
+     * @return The path to the msedgedriver executable binary
+     */
+    public File getEdgeDriver () {
+        String driverName = "msedgedriver";
+        if (os.startsWith ("win"))
+            driverName = "msedgedriver.exe";
+        return getDriver (driverName);
+    }
+
+    /**
+     * Return the location of IEDriverServer executable binary
+     * 
+     * @return The path to the IEDriverServer executable binary
+     */
+    public File getIEDriver () {
+        return getDriver ("IEDriverServer.exe");
+    }
+
+    private File getDriver (String driverName) {
+        File file = new File (getSystemResource (driverName).getPath ());
+        file.setExecutable (true);
+        return file;
+    }
+
+    /**
+     * Wrapper for {@link Thread}.sleep()
+     * 
+     * @param milliSeconds
+     *            Wait for x milliseconds
+     */
+    public void doWait (long milliSeconds) {
+        try {
+            Thread.sleep (milliSeconds);
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Get the remote file if using RemoteWebDriver
+     * 
+     * @param file
+     *            The file path on remote server
+     * @return {@link File}
+     */
+    public File getRemoteFile (String file) {
+        return ((RemoteWebDriver) getDriver ()).getFileDetector ().getLocalFile (file);
+    }
+
+    /**
+     * Initialize {@link ChromeDriverService} object
+     * 
+     * @return {@link ChromeDriverService}
+     */
+    protected ChromeDriverService initChromeService () {
+        try {
+            Path log = get ("target/logs/chromedriver.log");
+            createDirectories (log.getParent ());
+
+            WebDriverManager.getInstance (CHROME).setup ();
+            ChromeDriverService service = new ChromeDriverService.Builder ().usingAnyFreePort ()
+                                                                            .withSilent (true)
+                                                                            .build ();
+            service.sendOutputTo (new FileOutputStream (log.toString ()));
+            return service;
+        } catch (Exception e) {
+            error ("failed to initialize ChromeDriverService", e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Initialize {@link GeckoDriverService} object
+     * 
+     * @return {@link GeckoDriverService}
+     */
+    protected GeckoDriverService initGeckoService () {
+        try {
+            Path log = get ("target/logs/geckodriver.log");
+            createDirectories (log.getParent ());
+
+            WebDriverManager.getInstance (FIREFOX).setup ();
+            return new GeckoDriverService.Builder ().usingAnyFreePort ().withLogFile (log.toFile ()).build ();
+        } catch (Exception e) {
+            error ("failed to initialize GeckoDriverService", e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Initialize {@link EdgeDriverService} object
+     * 
+     * @return {@link EdgeDriverService}
+     */
+    protected EdgeDriverService initEdgeService () {
+        try {
+            Path log = get ("target/logs/edgedriver.log");
+            createDirectories (log.getParent ());
+
+            WebDriverManager.getInstance (EDGE).setup ();
+            return new EdgeDriverService.Builder ().usingAnyFreePort ().withLogFile (log.toFile ()).build ();
+        } catch (Exception e) {
+            error ("failed to initialize EdgeDriverService", e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Initialize {@link InternetExplorerDriverService} object
+     * 
+     * @return {@link InternetExplorerDriverService}
+     */
+    protected InternetExplorerDriverService initIEService () {
+        WebDriverManager.getInstance (IEXPLORER).setup ();
+        return new InternetExplorerDriverService.Builder ().usingAnyFreePort ().withSilent (true).build ();
+    }
+
+    /**
+     * Construct {@link ChromeOptions} based on what specified in chrome.options file
+     * 
+     * @return {@link ChromeOptions}
+     */
+    protected ChromeOptions buildChromeOptions () {
+        HashMap <String, Object> chromePrefs = new HashMap <> ();
+        chromePrefs.put ("download.default_directory", getDownloadsDir ());
+
+        ChromeOptions options = new ChromeOptions ();
+        if (!isRemoteTest) {
+            options.addArguments ("window-size=" + browserWidth + "," + browserHeight);
+            options.addArguments ("window-position=" + windowPosition);
+            options.setExperimentalOption ("prefs", chromePrefs);
+        }
+
+        try (BufferedReader br = new BufferedReader (
+                new InputStreamReader (getSystemResourceAsStream ("chrome.options")))) {
+            String content;
+            while ( (content = br.readLine ()) != null)
+                options.addArguments (content);
+        } catch (NullPointerException e) {
+            warn ("Chrome Options file: chrome.options doesn't exist");
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+        return options;
+    }
+
+    /**
+     * Construct {@link FirefoxOptions} based on what specified in firefox.options file
+     * 
+     * @return {@link FirefoxOptions}
+     */
+    protected FirefoxOptions buildFirefoxOptions () {
+        FirefoxOptions options = new FirefoxOptions ();
+        options.addPreference ("nativeEvents", false);
+        options.setAcceptInsecureCerts (true);
+        options.setProfile (buildFirefoxProfile ());
+
+        try (BufferedReader br = new BufferedReader (
+                new InputStreamReader (getSystemResourceAsStream ("firefox.options")))) {
+            String content;
+            while ( (content = br.readLine ()) != null)
+                options.addArguments (content);
+        } catch (NullPointerException e) {
+            warn ("Firefox Options file: firefox.options doesn't exist");
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+        return options;
+    }
+
+    /**
+     * Construct {@link FirefoxProfile} object
+     * 
+     * @return {@link FirefoxProfile}
+     */
+    protected FirefoxProfile buildFirefoxProfile () {
+        FirefoxProfile profile = new FirefoxProfile ();
+        // Accept Untrusted Certificates
+        profile.setAcceptUntrustedCertificates (true);
+        profile.setAssumeUntrustedCertificateIssuer (false);
+        // Use No Proxy Settings
+        profile.setPreference ("network.proxy.type", 0);
+        profile.setPreference ("browser.download.dir", getDownloadsDir ());
+        return profile;
+    }
+
+    /**
+     * Construct {@link EdgeOptions} based on what specified in edge.options file
+     * 
+     * @return {@link EdgeOptions}
+     */
+    protected EdgeOptions buildEdgeOptions () {
+        EdgeOptions options = new EdgeOptions ();
+        try (BufferedReader br = new BufferedReader (
+                new InputStreamReader (getSystemResourceAsStream ("edge.options")))) {
+            String line;
+            while ( (line = br.readLine ()) != null) {
+                String[] lines = line.split ("=");
+                options.setCapability (lines[0], lines[1]);
+            }
+        } catch (NullPointerException e) {
+            warn ("Edge Options file: edge.options doesn't exist");
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+        return options;
+    }
+
+    /**
+     * Construct {@link InternetExplorerOptions} based on what specified in iexplorer.options file
+     * 
+     * @return {@link InternetExplorerOptions}
+     */
+    protected InternetExplorerOptions buildIEOptions () {
+        InternetExplorerOptions options = new InternetExplorerOptions ();
+        try (BufferedReader br = new BufferedReader (
+                new InputStreamReader (getSystemResourceAsStream ("iexplorer.options")))) {
+            String line;
+            while ( (line = br.readLine ()) != null) {
+                String[] lines = line.split ("=");
+                options.setCapability (lines[0], lines[1]);
+            }
+        } catch (NullPointerException e) {
+            warn ("Internet Explorer Options file: iexplorer.options doesn't exist");
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+        return options;
+    }
+
+    /**
+     * Construct {@link SafariOptions} based on what specified in safari.options file
+     * 
+     * @return {@link SafariOptions}
+     */
+    protected SafariOptions buildSafariOptions () {
+        SafariOptions options = new SafariOptions ();
+        try (BufferedReader br = new BufferedReader (
+                new InputStreamReader (getSystemResourceAsStream ("safari.options")))) {
+            String line;
+            while ( (line = br.readLine ()) != null) {
+                String[] lines = line.split ("=");
+                options.setCapability (lines[0], lines[1]);
+            }
+        } catch (NullPointerException e) {
+            warn ("Safari Options file: safari.options doesn't exist");
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+        return options;
+    }
+
+    /**
+     * Get the browser default downloads directory
+     * 
+     * @return The path to Downloads directory
+     */
+    public String getDownloadsDir () {
+        if (useSauceLabs && platform != null) {
+            if (win10.equals (platform))
+                return "C:\\Users\\Administrator\\Downloads\\";
+            else if (osx15.equals (platform))
+                return "/Users/chef/Downloads/";
+            else
+                return "/home/chef/Downloads";
+        }
+
+        return getProperty ("user.home") + separator + "Downloads" + separator;
+    }
+
+    private String classNameForSaucelabs (Class <?> klass) {
+        String[] temp = klass.getName ().split ("\\.");
+        return join (".", temp[temp.length - 2], temp[temp.length - 1]);
+    }
+}

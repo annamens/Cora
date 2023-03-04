@@ -1,0 +1,502 @@
+/*******************************************************************************
+ * Copyright (c) 2022 by Adaptive Biotechnologies, Co. All rights reserved
+ *******************************************************************************/
+package com.adaptivebiotech.test.utils;
+
+import static com.adaptivebiotech.test.utils.TestHelper.mapper;
+import static com.seleniumfy.test.utils.Logging.error;
+import static com.seleniumfy.test.utils.Logging.info;
+import static java.lang.String.format;
+import static java.lang.String.join;
+import static javax.xml.bind.DatatypeConverter.printBase64Binary;
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
+import static org.apache.http.HttpHeaders.ACCEPT;
+import static org.apache.http.HttpHeaders.AUTHORIZATION;
+import static org.apache.http.HttpHeaders.CONNECTION;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.apache.http.client.config.CookieSpecs.IGNORE_COOKIES;
+import static org.apache.http.client.fluent.Request.Post;
+import static org.apache.http.conn.ssl.NoopHostnameVerifier.INSTANCE;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.net.ssl.SSLContext;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.fluent.Executor;
+import org.apache.http.client.fluent.Form;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustAllStrategy;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.util.EntityUtils;
+
+/**
+ * @author Harry Soehalim
+ *         <a href="mailto:hsoehalim@adaptivebiotech.com">hsoehalim@adaptivebiotech.com</a>
+ */
+public class HttpClientHelper {
+
+    public static final String             BODY           = "BODY";
+    public static final String             STATUS         = "STATUS";
+    public static final String             HTTP_RESPONSE  = "HTTP_RESPONSE";
+    public static final String             X_API_USERNAME = "X-Api-UserName";
+    public static final String             X_API_TOKEN    = "X-Api-Token";
+    public static final String             X_API_VERSION  = "X-Api-Version";
+    public static final Header             acceptJson     = new BasicHeader (ACCEPT, "application/json");
+    public static final Header             contentJson    = new BasicHeader (CONTENT_TYPE, "application/json");
+    public static final Header             contentXml     = new BasicHeader (CONTENT_TYPE, "application/xml");
+    public static final Header             contentForm    = new BasicHeader (CONTENT_TYPE,
+            "application/x-www-form-urlencoded");
+    public static final Header             keepAlive      = new BasicHeader (CONNECTION, "keep-alive");
+    public static final Header             nocheck        = new BasicHeader ("Csrf-Token", "nocheck");
+    public ThreadLocal <Boolean>           checkStatus    = new ThreadLocal <Boolean> () {
+                                                              @Override
+                                                              public Boolean initialValue () {
+                                                                  return true;
+                                                              }
+                                                          };
+    public ThreadLocal <List <Header>>     headers        = new ThreadLocal <List <Header>> () {
+                                                              @Override
+                                                              public List <Header> initialValue () {
+                                                                  List <Header> headers = new ArrayList <> ();
+                                                                  headers.add (acceptJson);
+                                                                  headers.add (contentJson);
+                                                                  return headers;
+                                                              }
+                                                          };
+    public ThreadLocal <HttpClientContext> cookies        = new ThreadLocal <HttpClientContext> () {
+                                                              @Override
+                                                              public HttpClientContext initialValue () {
+                                                                  HttpClientContext context = HttpClientContext.create ();
+                                                                  context.setCookieStore (new BasicCookieStore ());
+                                                                  return context;
+                                                              }
+                                                          };
+
+    /**
+     * Set default HTTP headers
+     */
+    public void resetheaders () {
+        headers.set (new ArrayList <> ());
+        headers.get ().add (acceptJson);
+        headers.get ().add (contentJson);
+    }
+
+    /**
+     * Generate basic authentication for the give username and password
+     * 
+     * @param user
+     *            A username
+     * @param pass
+     *            A password
+     * @return A basic authentication for the give username and password
+     */
+    public Header basicAuth (String user, String pass) {
+        return new BasicHeader (AUTHORIZATION, "Basic " + printBase64Binary (join (":", user, pass).getBytes ()));
+    }
+
+    /**
+     * Contruct a payload body of HTTP Request
+     * 
+     * @param body
+     *            A DTO object payload, which parseable to json format
+     * @return {@link HttpEntity}
+     */
+    public HttpEntity body (Object body) {
+        return body (mapper.writeValueAsString (body));
+    }
+
+    /**
+     * Contruct a payload body of HTTP Request
+     * 
+     * @param body
+     *            A string payload in json format
+     * @return {@link HttpEntity}
+     */
+    public HttpEntity body (String body) {
+        try {
+            info ("payload:\n" + body);
+            return new StringEntity (body);
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Construct a url with name=value parameters (encoded)
+     * 
+     * @param url
+     *            A url string
+     * @param params
+     *            An arrays of parameters
+     * @return An encoded url string
+     */
+    public String encodeUrl (String url, String... params) {
+        try {
+            URIBuilder ub = new URIBuilder (url);
+            for (String param : params) {
+                String[] p = param.split ("=", 2);
+                ub.addParameter (p[0], p[1]);
+            }
+            return ub.toString ();
+        } catch (Exception e) {
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Wrapper around {@link HttpGet}
+     * 
+     * @param url
+     *            A url string
+     * @return A response string
+     */
+    public String get (String url) {
+        List <Header> xtraHeaders = null;
+        return get (url, xtraHeaders);
+    }
+
+    /**
+     * Wrapper around {@link HttpGet}
+     * 
+     * @param url
+     *            A url string
+     * @param xtraHeaders
+     *            An list of {@link Header} for additional HTTP headers
+     * @return A response string
+     */
+    public String get (String url, List <Header> xtraHeaders) {
+        HttpGet httpGet = new HttpGet (url);
+        for (Header header : headers.get ())
+            httpGet.addHeader (header);
+        if (xtraHeaders != null)
+            for (Header header : xtraHeaders)
+                httpGet.addHeader (header);
+
+        info ("Executing request: " + httpGet.getRequestLine ());
+        Map <String, Object> result = execute (httpGet);
+        info ("response:" + result);
+        return String.valueOf (result.get (BODY));
+    }
+
+    /**
+     * Wrapper around {@link HttpGet} for testing non 200 responses
+     * 
+     * @param url
+     *            A url string
+     * @return A {@link Map} of response containing HTTP Status Code and response string
+     */
+    public Map <String, Object> getTest (String url) {
+        HttpGet httpGet = new HttpGet (url);
+        for (Header header : headers.get ())
+            httpGet.addHeader (header);
+
+        info ("Executing request: " + httpGet.getRequestLine ());
+        return execute (httpGet);
+    }
+
+    /**
+     * Wrapper around {@link HttpPut}
+     * 
+     * @param url
+     *            A url string
+     * @param body
+     *            {@link HttpEntity} payload body of HTTP Request
+     * @return A response string
+     */
+    public String put (String url, HttpEntity body) {
+        return put (url, body, null);
+    }
+
+    /**
+     * Wrapper around {@link HttpPut}
+     * 
+     * @param url
+     *            A url string
+     * @param body
+     *            {@link HttpEntity} payload body of HTTP Request
+     * @param xtraHeaders
+     *            An list of {@link Header} for additional HTTP headers
+     * @return A response string
+     */
+    public String put (String url, HttpEntity body, List <Header> xtraHeaders) {
+        HttpPut httpPut = new HttpPut (url);
+        for (Header header : headers.get ())
+            httpPut.addHeader (header);
+        if (xtraHeaders != null)
+            for (Header header : xtraHeaders)
+                httpPut.addHeader (header);
+
+        info ("Executing request: " + httpPut.getRequestLine ());
+        httpPut.setEntity (body);
+        Map <String, Object> result = execute (httpPut);
+        info ("response:" + result);
+        return String.valueOf (result.get (BODY));
+    }
+
+    public Map <String, Object> putTest (String url, HttpEntity body) {
+        HttpPut httpPut = new HttpPut (url);
+        for (Header header : headers.get ())
+            httpPut.addHeader (header);
+
+        info ("Executing request: " + httpPut.getRequestLine ());
+        httpPut.setEntity (body);
+        return execute (httpPut);
+    }
+
+    /**
+     * Wrapper around {@link HttpPost}
+     * 
+     * @param url
+     *            A url string
+     * @param body
+     *            {@link HttpEntity} payload body of HTTP Request
+     * @return A response string
+     */
+    public String post (String url, HttpEntity body) {
+        return post (url, body, null);
+    }
+
+    /**
+     * Wrapper around {@link HttpPost}
+     * 
+     * @param url
+     *            A url string
+     * @param body
+     *            {@link HttpEntity} payload body of HTTP Request
+     * @param xtraHeaders
+     *            An list of {@link Header} for additional HTTP headers
+     * @return A response string
+     */
+    public String post (String url, HttpEntity body, List <Header> xtraHeaders) {
+        HttpPost httpPost = new HttpPost (url);
+        for (Header header : headers.get ())
+            httpPost.addHeader (header);
+        if (xtraHeaders != null)
+            for (Header header : xtraHeaders)
+                httpPost.addHeader (header);
+
+        info ("Executing request: " + httpPost.getRequestLine ());
+        httpPost.setEntity (body);
+        Map <String, Object> result = execute (httpPost);
+        info ("response:" + result);
+        return String.valueOf (result.get (BODY));
+    }
+
+    /**
+     * Wrapper around {@link HttpPost} for testing non 200 responses
+     * 
+     * @param url
+     *            A url string
+     * @param body
+     *            {@link HttpEntity} payload body of HTTP Request
+     * @return A {@link Map} of response containing HTTP Status Code and response string
+     */
+    public Map <String, Object> postTest (String url, HttpEntity body) {
+        HttpPost httpPost = new HttpPost (url);
+        for (Header header : headers.get ())
+            httpPost.addHeader (header);
+
+        info ("Executing request: " + httpPost.getRequestLine ());
+        httpPost.setEntity (body);
+        return execute (httpPost);
+    }
+
+    /**
+     * Wrapper around {@link HttpDelete}
+     * 
+     * @param url
+     *            A url string
+     * @param xtraHeaders
+     *            An list of {@link Header} for additional HTTP headers
+     * @return A response string
+     */
+    public String deleteUrl (String url, List <Header> xtraHeaders) {
+        HttpDelete httpDelete = new HttpDelete (url);
+        for (Header header : headers.get ())
+            httpDelete.addHeader (header);
+        if (xtraHeaders != null)
+            for (Header header : xtraHeaders)
+                httpDelete.addHeader (header);
+
+        info ("Executing request: " + httpDelete.getRequestLine ());
+        Map <String, Object> result = execute (httpDelete);
+        info ("response:" + result);
+        return String.valueOf (result.get (BODY));
+    }
+
+    /**
+     * A wrapper around {@link CloseableHttpClient}.execute()
+     * 
+     * @param request
+     *            {@link HttpUriRequest} HTTP Request
+     * @return A {@link Map} of response containing HTTP Status Code and response string
+     */
+    public Map <String, Object> execute (HttpUriRequest request) {
+        try {
+            RequestConfig rConfig = RequestConfig.custom ().setCookieSpec (IGNORE_COOKIES).build ();
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory (sslTrustAll (), INSTANCE);
+            try (CloseableHttpClient client = HttpClients.custom ()
+                                                         .setSSLSocketFactory (sslsf)
+                                                         .setDefaultRequestConfig (rConfig)
+                                                         .setDefaultCookieStore (new BasicCookieStore ())
+                                                         .build ()) {
+                cookies.get ().getCookieStore ().getCookies ().forEach (c -> {
+                    request.addHeader ("Cookie", c.getValue ());
+                });
+
+                Map <String, Object> result = new HashMap <> ();
+                try (CloseableHttpResponse response = client.execute (request)) {
+                    result.put (HTTP_RESPONSE, response);
+                    if (response.getEntity () != null)
+                        result.put (BODY, EntityUtils.toString (response.getEntity ()));
+
+                    int status = response.getStatusLine ().getStatusCode ();
+                    result.put (STATUS, status);
+                    if (checkStatus.get () && status >= 300) {
+                        error ("HTTP error code: " + status);
+                        error ("response:\n" + result);
+                        throw new RuntimeException (new Exception (response.getStatusLine ().toString ()));
+                    }
+                }
+                return result;
+            }
+        } catch (Exception e) {
+            error ("Error: " + String.valueOf (e), e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * A wrapper around {@link CloseableHttpClient}.execute()
+     * 
+     * @param request
+     *            {@link HttpUriRequest} HTTP Request
+     * @param resultFile
+     *            Where to store the downloaded file
+     */
+    protected void executeToFile (HttpUriRequest request, String resultFile) {
+        try {
+            RequestConfig rConfig = RequestConfig.custom ().setCookieSpec (IGNORE_COOKIES).build ();
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory (sslTrustAll (), INSTANCE);
+            try (CloseableHttpClient client = HttpClients.custom ()
+                                                         .setSSLSocketFactory (sslsf)
+                                                         .setDefaultRequestConfig (rConfig)
+                                                         .setDefaultCookieStore (new BasicCookieStore ())
+                                                         .build ()) {
+                cookies.get ().getCookieStore ().getCookies ().forEach (c -> {
+                    request.addHeader ("Cookie", c.getValue ());
+                });
+
+                try (CloseableHttpResponse response = client.execute (request)) {
+                    int status = response.getStatusLine ().getStatusCode ();
+                    if (checkStatus.get () && status >= 300) {
+                        error ("HTTP error code: " + status);
+                        throw new RuntimeException (new Exception (response.getStatusLine ().toString ()));
+                    }
+
+                    if (response.getEntity () != null)
+                        copyInputStreamToFile (response.getEntity ().getContent (), new File (resultFile));
+                }
+            }
+        } catch (Exception e) {
+            error ("Error: " + String.valueOf (e), e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    /**
+     * Wrapper around {@link HttpGet} for downloading files
+     * 
+     * @param url
+     *            A url string
+     * @param resultFile
+     *            Where to store the downloaded file
+     */
+    public void get (String url, String resultFile) {
+        HttpGet httpGet = new HttpGet (url);
+        httpGet.addHeader (keepAlive);
+        for (Header header : headers.get ())
+            httpGet.addHeader (header);
+
+        info ("Executing request: " + httpGet.getRequestLine ());
+        executeToFile (httpGet, resultFile);
+    }
+
+    /**
+     * Post {@link Form} payload
+     * 
+     * @param url
+     *            URL endpoint
+     * @param forms
+     *            A {@link Map} of form contents to match {@link BasicNameValuePair}
+     * @return A {@link Map} where { BODY = HttpResponse.getEntity() }
+     */
+    public Map <String, Object> formPost (String url, Map <String, String> forms) {
+        try {
+            Form form = Form.form ();
+            for (String key : forms.keySet ())
+                form.add (key, forms.get (key));
+
+            info ("Executing request: POST " + url);
+            info ("payload: " + forms);
+            HttpClient client = HttpClientBuilder.create ().setSSLContext (sslTrustAll ()).build ();
+            HttpResponse response = Executor.newInstance (client)
+                                            .execute (Post (url).bodyForm (form.build ()))
+                                            .returnResponse ();
+            for (Header cookie : response.getHeaders ("Set-Cookie")) {
+                info (format ("Cookie[%s]: %s", cookie.getName (), cookie.getValue ()));
+                cookies.get ()
+                       .getCookieStore ()
+                       .addCookie (new BasicClientCookie (cookie.getName (), cookie.getValue ()));
+            }
+
+            Map <String, Object> result = new HashMap <> ();
+            result.put (HTTP_RESPONSE, response);
+            if (response.getEntity () != null)
+                result.put (BODY, EntityUtils.toString (response.getEntity ()));
+
+            int status = response.getStatusLine ().getStatusCode ();
+            result.put (STATUS, status);
+            if (checkStatus.get () && status >= 300) {
+                error ("HTTP error code: " + status);
+                error ("response:\n" + result);
+                throw new RuntimeException (new Exception (response.getStatusLine ().toString ()));
+            }
+            return result;
+        } catch (Exception e) {
+            error ("Error: " + String.valueOf (e), e);
+            throw new RuntimeException (e);
+        }
+    }
+
+    public SSLContext sslTrustAll () {
+        try {
+            return SSLContexts.custom ().loadTrustMaterial (null, new TrustAllStrategy ()).build ();
+        } catch (Exception e) {
+            error ("Error: " + String.valueOf (e), e);
+            throw new RuntimeException (e);
+        }
+    }
+}
