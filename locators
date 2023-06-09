@@ -1,0 +1,55 @@
+//*[contains(text(),'Apply')]
+//*[starts-with(@ahref,'/compensation/')]
+//label[text()='Client']//following::div//span[contains(@class,'webix_input_icon wxi-menu-down')]
+
+//ul[@class='flyout-compplan']//li[@planid='10'][contains(text(),'PLAN for shajahan syed') or text()='PLAN Recommendations']
+
+[flyout-itemid*='/planning/10/42618Grp?useXSLT=/resources/compensation/soa/xslt/CompPlanning.xsl']
+𝐂𝐒𝐒 𝐬𝐞𝐥𝐞𝐜𝐭𝐨𝐫𝐬
+
+id --> div#idvalue or #idvalue
+class--> div.class or .class
+.c1.c2.c3
+#idvalue.class
+input[id=;username'][type='email']
+input[id*='user']  --contains
+input[id^='user'] --starts-with
+input[id$='name'] --ends-with
+
+ul#categories>li:first-of-type
+ul#categories>li:last-of-type
+ul#categories>li:nth-of-type(n)
+
+sibling of element
+div.private-form + div
+
+𝐗𝐏𝐀𝐓𝐇 𝐬𝐞𝐥𝐞𝐜𝐭𝐨𝐫𝐬
+driver.findElements(By.xpath("//tag1[@attribute='value1'] | //tag2[@attribute='value2']"));
+
+//input[@type='text']
+//*[contains(@name, 'btn')]
+//*[contains(text,'message')]
+//*[starts-with(@id,'value')]
+//div[ends-with(@tagname, 'Destination')]
+//*[@type='submit' or @name='btnReset']
+//input[@type='submit' and @name='btnLogin']
+//label[starts-with(@id,'message')]
+//*[@type='text']//following::input[1]
+//*[text()='Enterprise Testing']//ancestor::div[1]
+//*[@id='java_technologies']//child::li[1]
+//*[@type='submit']//preceding::input
+//*[@type='submit']//following-sibling::input
+//*[@id='rt-feature']//parent::div
+//*[@type='password']//self::input
+//*[@id='rt-feature']//descendant::a
+//div[@class=’Mammal’]/ancestor-or-self::div
+ //div[@class=’Animal’]/descendant-or-self::div
+//span[normalize-space()='Notes']
+//div[string-length(substring-before(@tagname, 'Destination')) >= 0 and  string-length(substring-after(@tagname, 'Destination')) = 0 and contains(@tagname, 'Destination')]
+
+https://hrsofti-tcc2200-uat.cloud.hrsoft.com/content/portal/tccserver/loadApp.htm?mode=RUN&wiztype=DATAVIEW_APPD_TEST_AUTOMATION_CHANNEL_3_DATAAPI_READ&wizinstanceid=41C9EFC2-870F-4439-980E-4BA484654292&paramhier_guid=2A1BA49F-E635-4F40-AA84-8F24CF61F3DA&paramuser_guid_csv=9E5CB69A-EA1C-4069-9311-7F57952ACDD9
+
+
+https://hrsofti-tcc2200-uat.cloud.hrsoft.com/content/portal/tccserver/loadApp.htm?mode=RUN&wiztype=DATAVIEW_APPD_TEST_AUTOMATION_CHANNEL_3_DATAAPI_READ&wizinstanceid=41C9EFC2-870F-4439-980E-4BA484654292&paramhier_guid=0EFFC3AD-5C72-4C13-AA10-022ED4748108&paramuser_guid_csv=25BA539C-3625-4E03-823F-00A5924674E3
+
+$('div.widgetGRID:first').data('jsonObj')
